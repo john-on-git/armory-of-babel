@@ -28,7 +28,7 @@
     // TODO button click functionality
     function generateDemand() {
         // generate the new demand
-        // TODO
+        // TODO fix this unsafe cast
         demand = mkDemand(weapon as unknown as Weapon);
 
         // switch animations
@@ -90,10 +90,25 @@
     }
 
     .weapon-demands-generator-content {
-        height: 2rem;
+        height: fit-content;
+
+        text-align: center;
+
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    @media (orientation: landscape) {
+        .weapon-demands-generator-content {
+            min-height: 2rem;
+        }
+    }
+
+    @media (orientation: portrait) {
+        .weapon-demands-generator-content {
+            min-height: 4rem;
+        }
     }
 
     div > .weapon-demands-generator-button {
