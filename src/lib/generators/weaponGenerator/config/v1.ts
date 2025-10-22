@@ -679,7 +679,7 @@ export default {
                     sweet: [
                         mkGen("one charge each time it eats an extravagant dessert"),
                         mkGen("all charges each time its wielder hosts a feast"),
-                        mkGen("one charge whenever its wielder compliments someone")
+                        mkGen("one charge each time its wielder gives a well-received compliment")
                     ],
                     sour: [
                         mkGen("all charges after an hour immersed in acid"),
@@ -2068,7 +2068,7 @@ export default {
                 }, (k, shapeOrShapename) => {
                     switch (typeof shapeOrShapename) {
                         case "string":
-                            return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k}-${shapeOrShapename}`,
+                            return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k}-${shapeOrShapename.toLocaleLowerCase()}`,
                                 {
                                     particular: shapeOrShapename,
                                     group: k as WeaponShape["group"]
@@ -2081,7 +2081,7 @@ export default {
                             {
                                 const shape = shapeOrShapename as WeaponShape & WeaponPowerCond;
                                 if (shape !== null) {
-                                    return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k.replaceAll(/\s/g, "-")}-${shape.particular}`,
+                                    return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k.replaceAll(/\s/g, "-")}-${shape.particular.toLocaleLowerCase()}`,
                                         {
                                             particular: shape.particular,
                                             group: k as WeaponShape["group"]

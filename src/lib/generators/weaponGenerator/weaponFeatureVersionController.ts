@@ -162,7 +162,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<PassivePower, WeaponPowerCond>('mist-aura',
                     {
                         miscPower: true,
-                        desc: "The weapon emits a 30-ft cloud of magical mist, which the wielder can see through clearly. When you sheathe the weapon, the mist is sucked inside."
+                        desc: "The weapon emits a 30-ft cloud of magical mist, which the wielder can see through clearly. When the weapon is sheathed, the mist is sucked inside."
                     },
                     {
                         rarity: {
