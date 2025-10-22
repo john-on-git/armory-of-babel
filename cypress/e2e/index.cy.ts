@@ -119,15 +119,22 @@ describe("Weapon Generator Main Page", () => {
 
     it("The app should replace the current entry in the user's browser history if (and only if) this is the first time it is loaded.", () => {
 
-        // visit the page
+        // visit the page, then wait for the weapon to load for the first time
         cy.visit("/");
-
-        // wait for the weapon to load for the first time
         cy.getByTestId('weapon-display').should('be.visible');
 
-        // then try to go back, which should fail because there's nothing in the history, leaving us at the same page
-        cy.location().then((prevLoc) => {
-            cy.go('back').location().should((newLoc) => expect(newLoc.href).to.be.eq(prevLoc.href))
+        // keep track of the location
+        cy.location().then((firstWeaponLoc) => {
+
+            // generate a new weapon, then wait for that to load
+            cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
+            cy.getByTestId('weapon-display').should('be.visible');
+
+            // navigate backwards in history, which should send us back to the first weapon
+            cy.go('back').location().should((loc) => expect(loc.href).to.be.eq(firstWeaponLoc.href));
+
+            // then do it again, which should send us to about:black (because this is the start of history)
+            cy.go('back').location().should((loc) => expect(loc.href).to.be.eq('about:blank'));
         })
     });
 });
