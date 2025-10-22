@@ -60,7 +60,12 @@ export type DeltaCollection<T2 extends Record<string | number | symbol, Patchabl
 }
 
 
-export class VersionController<TTarget extends Patchable, TDelta extends Record<string | number | symbol, TTarget>, TCollection extends DeltaCollection<TDelta> = DeltaCollection<TDelta>> {
+export class VersionController<
+    TTarget extends Patchable,
+    TDelta extends Record<string | number | symbol, TTarget>,
+    TCollection extends DeltaCollection<TDelta> = DeltaCollection<TDelta>,
+    TOut extends Record<keyof TCollection, TTarget[]>
+> {
     protected deltaCollections: [TCollection, ...TCollection[]];
 
     constructor(deltas: [TCollection, ...TCollection[]]) {
@@ -72,7 +77,7 @@ export class VersionController<TTarget extends Patchable, TDelta extends Record<
      * @param v 
      * @returns the things for this version, or undefined if this version does not exist
      */
-    getVersion(v: number): Record<keyof TCollection, TTarget[]> | undefined {
+    getVersion(v: number): TOut | undefined {
 
         if (v >= 0 && v < this.deltaCollections.length) {
             // build the base object

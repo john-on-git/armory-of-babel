@@ -1,11 +1,14 @@
+import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
 import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 
 const nRuns = 10e1;
 
+const weaponFeatures = weaponFeatureVersionController.getVersion(0);
+
 describe('Weapon Generator', () => {
     it('1. Always generates a weapon with a number of active abilities matching its params.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const weapon = mkWeapon(i.toString());
+            const weapon = mkWeapon(weaponFeatures, i.toString());
 
             expect(weapon.active.powers.length).toBe(weapon.params.nActive + weapon.params.nUnlimitedActive);
         }
