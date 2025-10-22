@@ -57,6 +57,8 @@ export interface Cond {
     never?: true;
 }
 
+export type WithUUID<T extends object> = { UUID: string; } & T;
+
 
 function gatherIDs<T extends object>(x: T, acc: Set<string>): Set<string> {
     // get all the UUIDs of all patchables in the subtree

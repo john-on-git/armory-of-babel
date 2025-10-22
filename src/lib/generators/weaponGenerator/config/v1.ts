@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pointedWeaponShapes, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, mkWepToGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -76,6 +76,87 @@ export default {
             //         }
             //     }
             // ),
+            new ProviderElement('descriptor-pommel-embed',
+                {
+                    generate: (rng, weapon) => {
+                        const embedsByTheme = {
+                            ice: [
+                                MISC_DESC_FEATURES.embedded["a piece of selenite"],
+                                MISC_DESC_FEATURES.embedded["a piece of eternal ice"],
+                                MISC_DESC_FEATURES.embedded["a sapphire"],
+                                MISC_DESC_FEATURES.embedded["a piece of blue jade"]
+                            ],
+                            fire: [
+                                MISC_DESC_FEATURES.embedded["a ruby"],
+                                MISC_DESC_FEATURES.embedded["a garnet"],
+                                MISC_DESC_FEATURES.embedded["a piece of carnelian"],
+                                MISC_DESC_FEATURES.embedded["a tiger's eye stone"],
+                                MISC_DESC_FEATURES.embedded["a topaz"],
+                                MISC_DESC_FEATURES.embedded["a tourmaline"],
+                                MISC_DESC_FEATURES.embedded['an opal']
+                            ],
+                            cloud: [
+                                MISC_DESC_FEATURES.embedded["a piece of green jade"],
+                                MISC_DESC_FEATURES.embedded["a piece of blue jade"],
+                                MISC_DESC_FEATURES.embedded["a diamond"],
+                                MISC_DESC_FEATURES.embedded['a piece of lapis lazuli'],
+                                MISC_DESC_FEATURES.embedded['a sapphire']
+                            ],
+                            earth: [
+                                MISC_DESC_FEATURES.embedded["a ruby"],
+                                MISC_DESC_FEATURES.embedded["an emerald"],
+                                MISC_DESC_FEATURES.embedded["a sapphire"],
+                                MISC_DESC_FEATURES.embedded["an onyx"],
+                                MISC_DESC_FEATURES.embedded["a garnet"],
+                                MISC_DESC_FEATURES.embedded["a diamond"],
+                                MISC_DESC_FEATURES.embedded["a piece of carnelian"],
+                                MISC_DESC_FEATURES.embedded["a piece of lapis lazuli"],
+                                MISC_DESC_FEATURES.embedded["a tiger's eye stone"],
+                                MISC_DESC_FEATURES.embedded["a tourmaline"],
+                                MISC_DESC_FEATURES.embedded["an opal"],
+                            ],
+                            light: [
+                                MISC_DESC_FEATURES.embedded["a diamond"],
+                                MISC_DESC_FEATURES.embedded["a pearl"],
+                                MISC_DESC_FEATURES.embedded["a piece of selenite"],
+                                MISC_DESC_FEATURES.embedded["a tourmaline"]
+                            ],
+                            dark: [
+                                MISC_DESC_FEATURES.embedded["an onyx"],
+                                MISC_DESC_FEATURES.embedded["a dark sapphire"]
+                            ],
+                            sweet: [
+                                MISC_DESC_FEATURES.embedded["a tourmaline"]
+                            ],
+                            sour: [
+                                MISC_DESC_FEATURES.embedded["a citrine"],
+                                MISC_DESC_FEATURES.embedded["acid diamond"],
+                                MISC_DESC_FEATURES.embedded["toxic pearl"]
+                            ],
+                            wizard: [
+                                MISC_DESC_FEATURES.embedded["an amethyst"],
+                                MISC_DESC_FEATURES.embedded["a piece of porphyry"],
+                                MISC_DESC_FEATURES.embedded["a sapphire"],
+                                MISC_DESC_FEATURES.embedded["a piece of lapis lazuli"]
+                            ],
+                            nature: [MISC_DESC_FEATURES.embedded.amber]
+                        } as const satisfies Partial<Record<Theme, Descriptor[]>>;
+
+                        return pickForTheme(weapon, embedsByTheme, rng).choice(rng);
+                    },
+                    applicableTo: {
+                        any: embeddableParts
+                    }
+                },
+                {
+                    shapeFamily: {
+                        none: shapeFamiliesWithoutPommels
+                    },
+                    themes: {
+                        any: ['ice', 'fire', 'cloud', 'earth', 'light', 'dark', 'wizard']
+                    },
+                }
+            ),
             new ProviderElement('material-primitive-hard',
                 {
                     generate: (rng) => {
@@ -100,13 +181,18 @@ export default {
 
             new ProviderElement('material-fire-hard',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
                             MATERIALS['scarlet steel'],
                             MATERIALS.flint,
                             MATERIALS.goldPlated,
                             MATERIALS.gold,
                             MATERIALS["rose gold"],
+                            ...(
+                                bluntWeaponShapeFamilies.includes(weapon.shape.group as "club" | "staff" | "mace")
+                                    ? [MATERIALS.vitStone, MATERIALS.basalt]
+                                    : []
+                            )
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -389,7 +475,7 @@ export default {
                     generate: (rng) => {
                         return [
                             MATERIALS["black iron"],
-                            MATERIALS["meteoric iron"],
+                            MATERIALS.darkSteel,
                             MATERIALS.adamantum,
                             MATERIALS.darkness
                         ].choice(rng);
@@ -426,6 +512,36 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['dark']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
+                    }
+                }
+            ),
+
+
+            new ProviderElement('material-light-holding',
+                {
+                    generate: (rng) => {
+                        return genMaybeGen([
+                            MATERIALS.maple,
+                            MATERIALS.birch,
+                            MATERIALS.alabaster,
+                            MATERIALS.ivory,
+                            MATERIALS.glass,
+                            MATERIALS.crystal,
+                            MATERIALS.quartz,
+                            MATERIALS.porcelain
+                        ].choice(rng), rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    allowDuplicates: true,
+                    themes: {
+                        any: ['light']
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
@@ -504,40 +620,6 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('eat-to-heal-forced',
-                {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS.hardCandy,
-                            MATERIALS.rockCandy,
-                            MATERIALS.gingerbread,
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    never: true
-                }
-            ),
-            new ProviderElement('injector-module-forced', {
-                generate: () => (
-                    {
-                        descriptor: {
-                            descType: 'possession',
-                            singular: "a small glass vial built into it",
-                            plural: 'a small glass vial built into it',
-                        },
-                        ephitet: { pre: 'Headhunter' }
-                    }),
-                applicableTo: {
-                    any: ['grip']
-                }
-            }, {
-
-                never: true
-            }),
 
             new ProviderElement('material-sweet-hard',
                 {
@@ -756,6 +838,31 @@ export default {
                 }
             ),
 
+            new ProviderElement('material-steampunk-holding',
+                {
+                    generate: (rng) => {
+                        return genMaybeGen([
+                            MATERIALS.copper,
+                            MATERIALS.tin,
+                            MATERIALS.brass,
+                            MATERIALS.glass,
+                            MATERIALS.porcelain
+                        ].choice(rng), rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    allowDuplicates: true,
+                    themes: {
+                        any: ['steampunk']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
+                    }
+                }
+            ),
             new ProviderElement('material-nature-hard',
                 {
                     generate: (rng, weapon) => {
@@ -778,6 +885,35 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['nature']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-nature-holding',
+                {
+                    generate: (rng, weapon) => {
+                        return genMaybeGen([
+                            MATERIALS.oak,
+                            MATERIALS.birch,
+                            animeWeaponShapes.includes(weapon.shape.particular as typeof animeWeaponShapes[number]) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
+                            MATERIALS.ebonyWood,
+                            MATERIALS.maple,
+                            MATERIALS.ivory,
+                            MATERIALS.beetleShell,
+                            MATERIALS.ironWood
+                        ].choice(rng), rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    allowDuplicates: true,
+                    themes: {
+                        any: ['nature']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
                     }
                 }
             ),
@@ -825,12 +961,12 @@ export default {
             ),
             new ProviderElement('club-staff-main-material-rare',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
                             MATERIALS.oak,
                             MATERIALS.pine,
                             MATERIALS.birch,
-                            MATERIALS.cherryNormal,
+                            animeWeaponShapes.includes(weapon.shape.particular as typeof animeWeaponShapes[number]) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
                             MATERIALS.ironWood,
                             MATERIALS.bloodWood
@@ -884,14 +1020,14 @@ export default {
                         gte: 'epic'
                     },
                     themes: {
-                        all: ['light', 'dark']
+                        all: ['ice', 'fire']
                     }
                 }
             ),
             new ProviderElement('frutiger-blade',
                 {
                     generate: () => ({
-                        material: "a glass tank containing an aquarium, the contents seem unaffected by any movement",
+                        material: "a glass tank containing an aquarium, the contents seem unaffected by movement",
                         ephitet: { pre: 'Steamy' }
                     }),
                     applicableTo: {
@@ -926,25 +1062,106 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('elemental-quadblade',
+            new ProviderElement('elemental-quadblade', {
+                generate: () => ({
+                    material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
+                    ephitet: { post: 'of the Elemental Lord' }
+                }),
+                applicableTo: {
+                    any: importantPart
+                }
+            }, {
+                rarity: {
+                    gte: 'legendary'
+                },
+                themes: {
+                    all: ['earth', 'cloud', 'fire']
+                }
+            }
+            ),
+
+
+
+            new ProviderElement('descriptor-clock-embed-forced',
                 {
                     generate: () => ({
-                        material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
-                        ephitet: { post: 'of the Elemental Lord' }
+                        descriptor: {
+                            descType: 'possession',
+                            singular: `a clock embedded in it`,
+                            plural: `clocks embedded in them`,
+                        },
+                        ephitet: { pre: "Timekeeper's" }
                     }),
                     applicableTo: {
-                        any: importantPart
+                        any: embeddableParts
                     }
                 },
                 {
-                    rarity: {
-                        gte: 'legendary'
-                    },
-                    themes: {
-                        all: ['earth', 'cloud', 'fire']
-                    }
+                    /**
+                     * Can only be added by the passive power "integrated-clock"
+                     */
+                    never: true
                 }
             ),
+            new ProviderElement('descriptor-compass-embed-forced',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'possession',
+                            singular: `a compass embedded in it`,
+                            plural: `compass embedded in them`,
+                        },
+                        ephitet: mkGen(rng => ephExplorer.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: embeddableParts
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "integrated-compass"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('eat-to-heal-forced', {
+                generate: (rng) => {
+                    return [
+                        MATERIALS.hardCandy,
+                        MATERIALS.rockCandy,
+                        MATERIALS.gingerbread,
+                    ].choice(rng);
+                },
+                applicableTo: {
+                    any: importantPart
+                }
+            }, {
+                /**
+                 * Can only be added by the passive power "eat-to-heal"
+                 */
+                never: true
+            }
+            ),
+
+            new ProviderElement('injector-module-forced', {
+                generate: () => (
+                    {
+                        descriptor: {
+                            descType: 'possession',
+                            singular: "a small glass vial built into it",
+                            plural: 'a small glass vial built into it',
+                        },
+                        ephitet: { pre: 'Headhunter' }
+                    }),
+                applicableTo: {
+                    any: ['grip']
+                }
+            }, {
+                /**
+                 * Can only be added by the passive power "injector-module"
+                 */
+                never: true
+            }),
 
             new ProviderElement('energy-core-void',
                 {
@@ -964,7 +1181,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -987,7 +1204,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1010,7 +1227,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1033,7 +1250,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1056,7 +1273,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1079,7 +1296,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1102,7 +1319,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1129,7 +1346,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1152,7 +1369,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1175,7 +1392,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1198,7 +1415,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -1221,7 +1438,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by passive power "death blast"
+                     * Can only be added by the passive power "death blast"
                      */
                     never: true
                 }
@@ -2179,7 +2396,10 @@ export default {
                 additionalNotes: [
                     "This attack always hits. It deals damage = weapon damage × number of charges remaining.",
                     'Afterwards, the weapon explodes and is destroyed.'
-                ]
+                ],
+                bonus: {
+                    addChargedPowers: 1
+                }
             }, {
                 rarity: {
                     lte: 'rare'
@@ -2393,7 +2613,7 @@ export default {
                 desc: 'Smog',
                 cost: 2,
                 additionalNotes: [
-                    'A cloud of black smoke billows from the weapon, filling up to 270000ft³. It chokes characters and is highly flammable.'
+                    'A cloud of black smoke billows from the weapon, filling up to 27,000 ft³. It chokes characters and is highly flammable.'
                 ]
             }, {
                 themes: {
@@ -2837,19 +3057,27 @@ export default {
                 {
 
                     miscPower: true,
-                    desc: "Wielder always knows which way is north."
+                    desc: "Wielder always knows which way is north.",
+                    descriptorPartGenerator: "descriptor-compass-embed-forced"
                 },
                 {
                     themes: { any: ["steampunk"] },
+                    shapeFamily: {
+                        none: shapeFamiliesWithoutPommels
+                    }
                 }
             ),
             new ProviderElement("integrated-clock",
                 {
                     miscPower: true,
-                    desc: "A widget on the weapon displays the time."
+                    desc: "A widget on the weapon displays the time.",
+                    descriptorPartGenerator: "descriptor-clock-embed-forced"
                 },
                 {
                     themes: { any: ["steampunk"] },
+                    shapeFamily: {
+                        none: shapeFamiliesWithoutPommels
+                    }
                 }
             ),
             new ProviderElement("shoot-water",
