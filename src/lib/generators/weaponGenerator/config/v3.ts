@@ -27,7 +27,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -47,7 +51,7 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'has',
+                                descType: 'possession',
                                 singular: 'superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
                                 plural: 'superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
                             },
@@ -70,7 +74,7 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'has',
+                                descType: 'possession',
                                 singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
                                 plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
                             },
@@ -92,7 +96,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -111,7 +119,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -130,8 +142,12 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
-                            ephitet: { pre: '' },
+                            descriptor: {
+                                descType: 'property',
+                                singular: mkGen((_, __, partName) => `'s partially transparent revealing a beating heart at its core, which emits a gentle red glow that diffuses through the ${partName}`),
+                                plural: mkGen((_, __, partName) => `'re partially transparent revealing a luminous red veins, which spread a gentle red glow throughout the ${partName}`)
+                            },
+                            ephitet: { pre: 'Crimson' },
                         }
                     },
                     applicableTo: {
@@ -149,7 +165,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -169,11 +189,15 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'has',
+                                descType: 'possession',
                                 singular: 'an integrated nuclear reactor which gives it a healthy glow',
                                 plural: 'an integrated nuclear reactor which gives them a healthy glow'
                             },
-                            ephitet: { pre: '' },
+                            ephitet: mkGen((rng) => [
+                                { pre: 'Atomic' },
+                                { pre: 'Nuclear' },
+                                { pre: 'of the Mushroom Bombs' },
+                            ].choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -191,7 +215,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -211,6 +239,7 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
+                                descType: 'possession',
                                 singular: 'is shaped like a corkscrew (which surrounds a bolt of dark energy, eternally crackling at its center)',
                                 plural: 'are shaped like corkscrews (each surrounds a bolt of dark energy, eternally crackling at its center)'
                             },
@@ -233,8 +262,8 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'has',
-                                singular: 'large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
+                                descType: 'possession',
+                                singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
                                 plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
                             },
                             ephitet: { pre: '' },
@@ -256,8 +285,8 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'has',
-                                singular: 'glass section running down the center (which crackles with electrical energy)',
+                                descType: 'possession',
+                                singular: 'a glass section running down the center (which crackles with electrical energy)',
                                 plural: 'glass sections running down their center (which crackle with electrical energy)'
                             },
                             ephitet: { pre: '' },

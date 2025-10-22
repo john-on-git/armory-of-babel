@@ -242,8 +242,7 @@ export interface WeaponPowerCond extends Cond {
 }
 
 
-interface WeaponPartAtom {
-    atomType?: 'has' | 'is';
+interface SharedAtom {
     /**
      * Text of the element in the description.
      * @example
@@ -269,15 +268,21 @@ interface WeaponPartAtom {
     };
     UUID: string;
 }
+
+type MaterialAtom = SharedAtom;
+type DescriptorAtom = SharedAtom & {
+    descType: DescriptorType;
+}
+
 export interface WeaponPart {
     /**
      * Main material of the part, if it's notable.
      */
-    material?: WeaponPartAtom;
+    material?: MaterialAtom;
     /**
      * A list of facts about the physical properties of this part, which could be combined into a sentence.
      */
-    descriptors: WeaponPartAtom[];
+    descriptors: DescriptorAtom[];
 }
 
 
@@ -438,24 +443,15 @@ export function isAre(name: WeaponPartName) {
             return 'are';
     }
 }
-export function hasHave(name: WeaponPartName) {
-    switch (getPlurality(name)) {
-        case 'singular':
-            return 'has';
-        case 'plural':
-            return 'have';
-    }
-}
-
-export function isOrPossessionFor(name: WeaponPartName, type: 'has' | 'is' | undefined) {
+export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
     const plurality = getPlurality(name);
     switch (plurality) {
         case 'singular':
             switch (type) {
-                case 'has':
-                    return 'it has';
-                case 'is':
-                    return "it's";
+                case 'possession':
+                    return 'has ';
+                case 'property':
+                    return "it";
                 case undefined:
                     return '';
                 default:
@@ -463,10 +459,40 @@ export function isOrPossessionFor(name: WeaponPartName, type: 'has' | 'is' | und
             }
         case 'plural':
             switch (type) {
-                case 'has':
-                    return 'they each have';
-                case 'is':
-                    return "they're";
+                case 'possession':
+                    return 'have ';
+                case 'property':
+                    return "they";
+                case undefined:
+                    return '';
+                default:
+                    return type satisfies never;
+            }
+        default:
+            return plurality satisfies never;
+    }
+}
+
+export function linkingIsOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
+    const plurality = getPlurality(name);
+    switch (plurality) {
+        case 'singular':
+            switch (type) {
+                case 'possession':
+                    return 'it has ';
+                case 'property':
+                    return "it";
+                case undefined:
+                    return '';
+                default:
+                    return type satisfies never;
+            }
+        case 'plural':
+            switch (type) {
+                case 'possession':
+                    return 'they each have ';
+                case 'property':
+                    return "they";
                 case undefined:
                     return '';
                 default:
@@ -534,18 +560,17 @@ export type Ephitet = {
     post: string;
 };
 
+export type DescriptorType = 'possession' | 'property';
+
 /**
  * Union type representing different kinds of description. Used to prefix the description with varying plurality.
- * classification: claims some kind of property. It is red. It is covered in paint.
+ * property: claims some kind of property. It is red. It is covered in paint.
  * possession: usually a sub-part. It has jewels in it.
- * quantityless: singular and plural are both the same
  */
 export type DescriptorText = ({
-    descType?: 'has' | 'is';
-    singular: string | TGenerator<string, [Weapon]>;
-    plural: string | TGenerator<string, [Weapon]>;
-} | {
-    quantityless: string | TGenerator<string, [Weapon]>;
+    descType: DescriptorType;
+    singular: string | TGenerator<string, [Weapon, WeaponPartName]>;
+    plural: string | TGenerator<string, [Weapon, WeaponPartName]>;
 });
 
 export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: DescriptorText }) & {
