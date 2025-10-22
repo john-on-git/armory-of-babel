@@ -1192,8 +1192,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
-                                plural: 'superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
+                                singular: 'a superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
+                                plural: 'a superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
                             },
                             ephitet: mkGen((rng) => ephHot.choice(rng)),
                         }
