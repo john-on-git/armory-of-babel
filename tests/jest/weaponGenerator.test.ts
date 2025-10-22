@@ -2,7 +2,7 @@ import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/
 import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { FeatureProviderCollection } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
-const nRuns = 10e1;
+const nRuns = 1e2;
 
 
 describe('Weapon Generator', () => {
@@ -64,6 +64,7 @@ describe('Weapon Generator', () => {
         for (let i = 0; i < nRuns; i++) {
             const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
+            console.log(weapon)
             expect(weapon.description.length).toBeGreaterThan(0);
         }
     });

@@ -335,17 +335,17 @@ export const weaponStructures = {
         other: ['crossguard', 'pommel']
     },
     maceLike: {
-        business: ['head'],
+        business: ['maceHead'],
         holding: ['grip'],
         other: ['shaft', 'pommel']
     },
     axeLike: {
-        business: ['blade'],
+        business: ['axeHead'],
         holding: ['grip'],
         other: ['shaft', 'pommel']
     },
     clubLike: {
-        business: ['head'],
+        business: ['maceHead'],
         holding: ['grip'],
         other: []
     },
@@ -385,17 +385,17 @@ export const weaponStructures = {
         other: ['shaft', 'pommel', 'barrel']
     },
     multiClubLike: {
-        business: ['heads'],
+        business: ['maceHeads'],
         holding: ['grip'],
         other: []
     },
     flailLike: {
-        business: ['head'],
+        business: ['maceHead'],
         holding: ['grip'],
         other: ['chain', 'pommel']
     },
     multiFlailLike: {
-        business: ['heads'],
+        business: ['maceHeads'],
         holding: ['grip'],
         other: ['chains', 'pommel']
     },

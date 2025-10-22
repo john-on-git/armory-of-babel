@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -37,9 +37,10 @@ export default {
         add: [
             new ProviderElement('vampire-mouth',
                 {
-                    generate: () => MISC_DESC_FEATURES.sensorium.eyes.beady,
+                    generate: () => MISC_DESC_FEATURES.sensorium.mouth.vampire,
+                    ephitet: '',
                     applicableTo: {
-                        any: eyeAcceptingParts
+                        any: mouthAcceptingParts
                     }
                 },
                 {
@@ -1687,8 +1688,8 @@ export default {
                     desc: 'Life Drain',
                     cost: 3,
                     additionalNotes: [
-                        "Upon landing a blow, you empower it to drain the target's life force. You regain hit points (or equivalent stat) equal to the damage dealt.",
-                        "Health gained in this way can heal you over your natural cap. These additional hit points are lost at the end of the scene."
+                        "Upon landing a blow, you empower it to drain the target's life force. You regain HP (or equivalent stat) equal to the damage dealt.",
+                        "HP gained in this way can heal you over your natural cap, but any HP over the cap is lost at the end of the scene."
                     ],
                     descriptorPartGenerator: 'vampire-mouth'
                 },
@@ -1703,10 +1704,11 @@ export default {
             ),
             new ProviderElement("caustic-strike",
                 {
-                    desc: "Caustic Strike",
+                    desc: "Mailleburn",
                     cost: 2,
                     additionalNotes: [
-                        "Upon hitting, you can choose to infuse the attack. Melts objects, or damages armor of characters."
+                        "Upon landing a blow, you empower it to melt the target's armor.",
+                        "The armor is weaked by one step, or otherwise destroyed. If they are wearing multiple pieces of armor, choose one at random."
                     ]
                 },
                 {
@@ -1718,7 +1720,7 @@ export default {
                     desc: "Chilling Strike",
                     cost: 2,
                     additionalNotes: [
-                        "Upon hitting, you can choose to infuse the attack. Characters must save or be frozen solid next turn."
+                        "Upon landing a blow, you empower it with ice. Characters must save or be frozen solid next turn."
                     ],
                 },
                 {
@@ -2404,13 +2406,13 @@ export default {
 
                     const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
 
-                    const allAnimals = [...sharedAnimals[quantity], ...themeSpecificAnimals];
+                    const chosenAnimal = [...sharedAnimals[quantity], ...themeSpecificAnimals].choice(rng);
 
                     return {
-                        desc: 'Summon Animal',
+                        desc: `Summon ${chosenAnimal.toTitleCase()}`,
                         cost: 5,
                         additionalNotes: [
-                            `Call ${quantity} ${allAnimals.choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
+                            `Call ${quantity} ${chosenAnimal} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
                         ]
                     }
                 }),
@@ -2559,6 +2561,9 @@ export default {
                 rarity: {
                     lte: 'rare'
                 },
+                shapeParticular: {
+                    any: animeWeaponShapes
+                }
             }),
             new ProviderElement('instant-door',
                 mkGen((rng, weapon) => {
@@ -2806,6 +2811,17 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("potion-resistant",
+                {
+                    miscPower: true,
+                    desc: "The effects of harmful potions and poisons on the wielder are halved.",
+                },
+                {
+                    themes: {
+                        any: ["wizard", "sour"],
+                    },
+                }
+            ),
             new ProviderElement("psi-immune",
                 {
                     miscPower: true,
@@ -3242,7 +3258,7 @@ export default {
             new ProviderElement("attack-wisps",
                 {
                     miscPower: true,
-                    desc: "Each hit you land with the weapon generates a wisp, which dissipate when combat ends. On your turn, you can launch any number of wisps (instantly / as no action). d4 damage, range as bow.",
+                    desc: "Each blow you land with the weapon generates a wisp, which dissipate when combat ends. On your turn, you can launch any number of wisps (instantly / as no action). d4 damage, range as bow.",
                 },
                 {
                     themes: { any: ["wizard"] },
@@ -3752,7 +3768,7 @@ export default {
             ),
             new ProviderElement('injector-module', {
                 miscPower: true,
-                desc: 'Has a small vial embedded in the grip, which can be filled with fluid. When you land a hit with the weapon, you may expend the liquid, injecting it into the target.',
+                desc: 'Has a small vial embedded in the grip, which can be filled with fluid. When you land a blow with the weapon, you may expend the liquid, injecting it into the target.',
                 descriptorPartGenerator: 'injector-module-forced'
             }, {
                 themes: {
@@ -3918,6 +3934,7 @@ export default {
                     ],
                     "greatsword": [
                         "Greatsword",
+                        "Claymore",
                         "Zweihander",
                         "Nodachi",
                         {

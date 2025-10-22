@@ -105,6 +105,18 @@ export const pronounLoc = {
  */
 export function structuredDescToString(_locale: string, weapon: Weapon) {
 
+    function locWeaponPartName(weaponPart: WeaponPartName) {
+        switch (weaponPart) {
+            case 'axeHead':
+            case 'maceHead':
+                return 'head';
+            case 'maceHeads':
+                return 'heads'
+            default:
+                return weaponPart;
+        }
+    }
+
     if (weapon.description === null) {
         throw new Error('cannot generate description for a weapon with null description');
     }
@@ -171,7 +183,7 @@ export function structuredDescToString(_locale: string, weapon: Weapon) {
 
             usedAndThisSentence = usedAndThisSentence || usesAnd(parts[i][1]);
 
-            const partStr = `${start} ${partName}${materialStr}${descriptorsStr}`;
+            const partStr = `${start} ${locWeaponPartName(partName)}${materialStr}${descriptorsStr}`;
 
             // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
             // but don't merge more than two

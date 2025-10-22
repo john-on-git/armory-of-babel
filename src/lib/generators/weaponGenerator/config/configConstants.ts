@@ -396,7 +396,7 @@ export const MATERIALS = {
     ..._.mapKeys(simpleMaterials, x => x.material) as Record<(typeof simpleMaterials)[number]['material'], (typeof simpleMaterials)[number]>,
 } as const satisfies Record<string, Descriptor | TGenerator<Descriptor, [Weapon]>>;
 
-const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'crustacean', 'lizard', 'dragonfly', 'hummingbird'].choice(rng))]);
+const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'fish', 'crustacean', 'lizard', 'dragonfly', 'hummingbird', 'shrew'].choice(rng))]);
 const embeddedArr = [
     ['a ruby', ephRed],
     ['a garnet', ephRed],
@@ -437,6 +437,7 @@ const eyeStructureGen = mkGen((rng, weapon: Weapon) => [
     `three eyes mounted in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
     `four eyes mounted in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
     `a cluster of eyes: they're ${eyeColorGen.generate(rng, weapon)}`,
+    `eyes dotted randomly across: they're ${eyeColorGen.generate(rng, weapon)}`,
 ].choice(rng));
 
 const eyeColorGen = mkGen((rng, weapon: Weapon) => {
@@ -490,8 +491,8 @@ export const MISC_DESC_FEATURES = {
         amber: {
             descriptor: {
                 descType: 'possession',
-                singular: new StringGenerator([amberGen, 'embedded in it']),
-                plural: new StringGenerator([amberGen, 'embedded in them']),
+                singular: new StringGenerator([amberGen, ' embedded in it']),
+                plural: new StringGenerator([amberGen, ' embedded in them']),
             },
             ephitet: mkGen((rng) => ({ pre: ephOld.choice(rng) }))
         } as Descriptor
@@ -672,7 +673,22 @@ export const MISC_DESC_FEATURES = {
         },
     },
     sensorium: {
-        // mouth: {},
+        mouth: {
+            eldritch: {
+                descriptor: {
+                    descType: 'possession',
+                    singular: `a mouth with dozens of razor teeth`,
+                    plural: `a mouth with dozens of razor teeth`
+                }
+            },
+            vampire: {
+                descriptor: {
+                    descType: 'possession',
+                    singular: `a mouth with two fangs`,
+                    plural: `a mouth with two fangs`
+                }
+            }
+        },
         eyes: {
             animalistic: {
                 descriptor: {
@@ -703,17 +719,17 @@ export const MISC_DESC_FEATURES = {
 
 // weapon parts
 
-export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'grip', 'head', 'heads', 'limbs', 'orb', 'pommel', 'quiver', 'shaft', 'string', 'tip'] as const satisfies WeaponPartName[];
+export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'grip', 'axeHead', 'maceHead', 'maceHeads', 'limbs', 'orb', 'pommel', 'quiver', 'shaft', 'string', 'tip'] as const satisfies WeaponPartName[];
 
 /**
  * The main / signature part the weapon
  */
-export const importantPart = ['blade', 'blades', 'tip', 'prongs', 'head', 'heads', 'body'] as const satisfies WeaponPartName[];
+export const importantPart = ['blade', 'blades', 'tip', 'prongs', 'axeHead', 'maceHead', 'maceHeads', 'body'] as const satisfies WeaponPartName[];
 
 
 /** Parts of a weapon specialised for striking and clashing, usually made of metal.
 */
-export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'head', 'heads', 'barrel', 'crossguard', 'pommel', 'chain', 'chains'] as const satisfies WeaponPartName[];
+export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'axeHead', 'maceHead', 'maceHeads', 'barrel', 'crossguard', 'pommel', 'chain', 'chains'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that are used to hold it. Usually made of wood.
@@ -724,12 +740,12 @@ export const holdingParts = ['body', 'grip', 'limbs'] as const satisfies WeaponP
 /**
  * Parts of a weapon that a sentient weapon's eyes can be placed on.
  */
-export const eyeAcceptingParts = ['crossguard', 'head', 'heads', 'chain', 'chains', 'tip', 'body', 'base', 'quiver', 'limbs'] as const satisfies WeaponPartName[];
+export const eyeAcceptingParts = ['crossguard', 'axeHead', 'maceHead', 'maceHeads', 'chain', 'chains', 'tip', 'body', 'base', 'quiver', 'limbs'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that a sentient weapon's mouth can be placed on.
  */
-export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'orb', 'head', 'heads', 'tip', 'base', 'quiver'] as const satisfies WeaponPartName[];
+export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'orb', 'axeHead', 'tip', 'base', 'quiver'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).
@@ -739,4 +755,4 @@ export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver'
 /**
  * Parts of a weapon that a small object such as a gem could be embedded in.
  */
-export const embeddableParts = ['crossguard', 'pommel', 'base', 'quiver', 'head', 'chain'] as const satisfies WeaponPartName[];
+export const embeddableParts = ['crossguard', 'pommel', 'base', 'quiver', 'maceHead', 'maceHeads', 'chain'] as const satisfies WeaponPartName[];

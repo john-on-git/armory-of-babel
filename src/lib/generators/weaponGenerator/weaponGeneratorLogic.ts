@@ -20,7 +20,7 @@ export function getPlurality(name: WeaponPartName) {
     switch (name) {
         case 'blades':
         case 'limbs':
-        case 'heads':
+        case 'maceHeads':
         case 'chains':
         case 'prongs':
             return 'plural';
@@ -231,16 +231,15 @@ const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
     // features may provide pieces of description, which are stored here
-    const featureDescriptorProviders: (DescriptorGenerator & { UUID: string })[] = [];
+    const featureDescriptorProviders = new Set<string>();
     /**
      * Handle a possibly invalid request for a descriptor. Applying the descriptor if it's valid, or ignoring it and printing an error if it isn't.
      * @param UUID the UUID of the requested descriptor, or undefined if one wasn't requested
      */
     function tryPushProvider(UUID: string | undefined) {
         if (UUID !== undefined) {
-            const requestedPartProvider = featureProviders.descriptorIndex[UUID];
-            if (requestedPartProvider) {
-                featureDescriptorProviders.push(requestedPartProvider);
+            if (featureProviders.descriptorIndex[UUID]) {
+                featureDescriptorProviders.add(UUID);
             }
             else {
                 console.error(`\x1b[31mfeature requested the descriptor "${UUID}" but it was falsey: implement this descriptor.`)
@@ -306,7 +305,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         params,
     };
 
-    // draw themes until we have enough to cover our number of powers
+    /*
+     * Draw themes for the weapon, until we have enough to cover our target number of powers.
+     * Note, since it's possible for powers to increase the number of powers, this could still theoretically fail, but it's not very likely.
+     */
     const unusedThemes = new Set<Theme>(featureProviders.themeProvider); // this could be a provider but whatever go my Set<Theme>
     const minThemes = 1 + Math.floor(rng() * 2);
     while (
@@ -338,6 +340,11 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     */
     weapon.description = structuredDesc;
 
+
+    /*
+     * Generate the personality if the weapon is sentient.
+     */
+
     if (weapon.sentient) {
         const nPersonalities = 2;
         while (weapon.sentient.personality.length < nPersonalities) {
@@ -350,6 +357,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
         }
     }
+
+    /*
+     * Generate the powers.
+     */
 
     // draw passive powers
     for (let i = 0; i < params.nPassive; i++) {
@@ -417,41 +428,29 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             .filter(x => x.cost != 'at will')
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 1 : x.cost, acc), weapon.active.maxCharges);
 
+    /*
+     * Generate the structured description.
+     */
 
-    /** 
-        Generate the weapon's description based on its parts.
-        Ideas (???)
-
-        • Some abilites have the side effect of adding a visual feature? Would need to be capped to prevent a sparkledog type situation.
-        • How do we generate the material. Can only really have one or two.
-        • Theme-based? Maybe if there aren't enough from abilities we just keep drawing.
-
-        Ideas (bad)
-        
-        • Each part should be guaranteed at least one feature & material. Nah, kinda too much going on.
-
-        TODO: 
-            1. formatting descriptions for display
-            2. why are Jest tests crashing?
-    */
-
-    const MAX_DESCRIPTORS = weapon.themes.length * (1 + Math.floor(rng() * 2));
+    const maxDescriptors = weapon.themes.length * (1 + Math.floor(rng() * 2));
     let nDescriptors = 0;
 
+
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
-    for (const featureDescriptorProvider of featureDescriptorProviders) {
-        applyDescriptionPartProvider(rng, featureDescriptorProvider, weapon);
+    for (const UUID of featureDescriptorProviders.values()) {
+        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex[UUID], weapon);
 
         nDescriptors++;
-        if (nDescriptors >= MAX_DESCRIPTORS) {
+        if (nDescriptors >= maxDescriptors) {
             break;
         }
     }
 
     // then, apply theme-based descriptors, up to the cap
-    while (nDescriptors < MAX_DESCRIPTORS) {
-
+    while (nDescriptors < maxDescriptors) {
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
+
+
         applyDescriptionPartProvider(rng, descriptorProvider, weapon);
         nDescriptors++;
     }
