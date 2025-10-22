@@ -2,7 +2,7 @@ import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 
 const nRuns = 10e1;
 
-describe('Weapon Generator Tests', () => {
+describe('Weapon Generator', () => {
     it('1. Always generates a weapon with a number of active abilities matching its params.', () => {
         for (let i = 0; i < nRuns; i++) {
             const weapon = mkWeapon(i.toString());

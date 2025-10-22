@@ -191,3 +191,14 @@ export interface WeaponPowerCond extends Cond {
  * TODO this should really just accept weapon
  */
 export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 'sentient' | 'rarity' | 'themes' | 'shape'>
+
+
+
+// TODO make all the features implement patchable
+// interface WeaponFeatureCollectionDelta {
+//     themes: Delta<Theme[]>;
+//     personalities: Delta<Personality[]>;
+//     active: Delta<ActivePower[]>;
+//     passive: Delta<PassivePower[]>;
+//     languages: Delta<Language[]>;
+// }
