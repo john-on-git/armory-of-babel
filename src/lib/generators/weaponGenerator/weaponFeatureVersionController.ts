@@ -22,7 +22,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
         descriptors: new WeaponFeatureProvider(x.descriptors),
-        descriptorIndex: (x.descriptors as ProviderElement<DescriptorGenerator>[]).reduce<Record<string, DescriptorGenerator & { UUID: string }>>((acc, gen) => {
+        descriptorIndex: ([...(x.descriptors as ProviderElement<DescriptorGenerator>[]), ...x.nonRollableDescriptors as ProviderElement<DescriptorGenerator>[]]).reduce<Record<string, DescriptorGenerator & { UUID: string }>>((acc, gen) => {
             acc[gen.UUID] = {
                 ...gen.thing,
                 UUID: gen.UUID,

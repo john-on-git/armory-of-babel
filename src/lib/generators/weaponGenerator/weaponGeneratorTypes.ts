@@ -512,6 +512,7 @@ export interface FeatureProviderCollection {
 
 export interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
+    nonRollableDescriptors: ProviderElement<DescriptorGenerator>;
     descriptors: ProviderElement<DescriptorGenerator>;
     personalities: ProviderElement<Personality>
 

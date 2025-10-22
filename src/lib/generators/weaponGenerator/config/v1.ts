@@ -33,8 +33,19 @@ export default {
             "nature" as const
         ] satisfies Theme[]).map(theme => new PrimitiveContainer(theme))
     },
-    descriptors: {
+    nonRollableDescriptors: {
         add: [
+            new ProviderElement('vampire-mouth',
+                {
+                    generate: () => MISC_DESC_FEATURES.sensorium.eyes.beady,
+                    applicableTo: {
+                        any: eyeAcceptingParts
+                    }
+                },
+                {
+                    never: true
+                }
+            ),
             new ProviderElement('generic-eyes',
                 {
                     generate: (rng) =>
@@ -51,7 +62,446 @@ export default {
                 {
                     never: true
                 }
+            ), new ProviderElement('material-telekill',
+                {
+                    generate: () => ({
+                        material: 'telekill alloy',
+                        ephitet: mkGen(() => ({ pre: 'Nullifying' }))
+                    }),
+                    applicableTo: { any: importantPart }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "psi-immune"
+                     */
+                    never: true
+                }
             ),
+            new ProviderElement('descriptor-wreathed-fire',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` is wreathed in flames`,
+                            plural: ` are wreathed in flames`,
+                        },
+                        ephitet: mkGen(rng => ephHot.choice(rng))
+                    }),
+                    applicableTo: { any: importantPart }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "integrated-clock"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('descriptor-wreathed-dark-fire',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` is wreathed in lightless black flames`,
+                            plural: ` are wreathed in lightless black flames`,
+                        },
+                        ephitet: mkGen((rng) => ephHot.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power ""
+                     */
+                    never: true
+                }
+            ), new ProviderElement('descriptor-wreathed-ice',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` is wreathed in icy mist`,
+                            plural: ` are wreathed in icy mist`,
+                        },
+                        ephitet: mkGen(rng => ephCold.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive powers "damage-bonus-ice" & "damage-bonus-ice-blunt"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('descriptor-clock-embed-forced',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'possession',
+                            singular: `a clock embedded in it`,
+                            plural: `clocks embedded in them`,
+                        },
+                        ephitet: { pre: "Timekeeper's" }
+                    }),
+                    applicableTo: {
+                        any: embeddableParts
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "integrated-clock"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('descriptor-compass-embed-forced',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'possession',
+                            singular: `a compass embedded in it`,
+                            plural: `compass embedded in them`,
+                        },
+                        ephitet: mkGen(rng => ephExplorer.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: embeddableParts
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "integrated-compass"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('eat-to-heal-forced', {
+                generate: (rng) => {
+                    return [
+                        MATERIALS.hardCandy,
+                        MATERIALS.rockCandy,
+                        MATERIALS.gingerbread,
+                    ].choice(rng);
+                },
+                applicableTo: {
+                    any: importantPart
+                }
+            }, {
+                /**
+                 * Can only be added by the passive power "eat-to-heal"
+                 */
+                never: true
+            }
+            ),
+
+            new ProviderElement('injector-module-forced', {
+                generate: () => (
+                    {
+                        descriptor: {
+                            descType: 'possession',
+                            singular: "a small glass vial built into it",
+                            plural: 'a small glass vial built into it',
+                        },
+                        ephitet: { pre: 'Headhunter' }
+                    }),
+                applicableTo: {
+                    any: ['grip']
+                }
+            }, {
+                /**
+                 * Can only be added by the passive power "injector-module"
+                 */
+                never: true
+            }),
+
+            new ProviderElement('energy-core-void',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: " hurts to look at. When it moves it leaves behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles",
+                                plural: " hurt to look at. When they move it leaves  behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles"
+                            },
+                            ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-fire',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
+                                plural: 'a superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
+                            },
+                            ephitet: mkGen(rng => ephHot.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-ice',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
+                                plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
+                            },
+                            ephitet: mkGen(rng => ephCold.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-ultraviolet',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a glass bulb running down the middle (it blasts ultraviolet light in all directions)',
+                                plural: 'a glass bulb running down the middle (blasting ultraviolet light in all directions)'
+                            },
+                            ephitet: mkGen(rng => ephPurple.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-azure',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a river of sapphire curling through its center (waves of light ebb and flow within it)',
+                                plural: 'rivers of sapphire curling through them (waves of light ebb and flow within)'
+                            },
+                            ephitet: mkGen(rng => ephBlue.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-crimson',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: mkGen((_, __, partName) => ` is partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
+                                plural: mkGen((_, __, partName) => ` are partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
+                            },
+                            ephitet: mkGen(rng => ephRed.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-verdant',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'channels of brilliant green light, spreading out from its base and across its surface in an organic fractal',
+                                plural: 'channels of brilliant green light, spreading out from their bases and across their surfaces in organic fractals'
+                            },
+                            ephitet: mkGen(rng => ephGreen.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-atomic',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'an integrated nuclear reactor which gives it a healthy glow',
+                                plural: 'an integrated nuclear reactor which gives them a healthy glow'
+                            },
+                            ephitet: mkGen(rng => [
+                                { pre: 'Atomic' },
+                                { pre: 'Nuclear' },
+                                { pre: 'of the Mushroom Bombs' },
+                            ].choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-gold',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: " is criss-crossed by a complex system of geometric lines, which glow with golden energy",
+                                plural: " are criss-crossed by a complex system of geometric lines, which glow with golden energy"
+                            },
+                            ephitet: mkGen(rng => ephGold.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-dark',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: " is shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
+                                plural: " are shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
+                            },
+                            ephitet: mkGen(rng => ephBlack.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-aether',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
+                                plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
+                            },
+                            ephitet: mkGen(rng => ephSky.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-steampunk',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a glass tube running down the center (which crackles with electrical energy)',
+                                plural: 'glass tube running down their center (which crackle with electrical energy)'
+                            },
+                            ephitet: mkGen(rng => ephSteampunk.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+        ]
+    },
+    descriptors: {
+        add: [
             // new ProviderElement('material-extravagant-hard',
             //     {
             //         generate: (rng) => {
@@ -981,444 +1431,6 @@ export default {
                     all: ['earth', 'cloud', 'fire']
                 }
             }
-            ),
-
-
-            new ProviderElement('material-telekill',
-                {
-                    generate: () => ({
-                        material: 'telekill alloy',
-                        ephitet: mkGen(() => ({ pre: 'Nullifying' }))
-                    }),
-                    applicableTo: { any: importantPart }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "psi-immune"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('descriptor-wreathed-fire',
-                {
-                    generate: () => ({
-                        descriptor: {
-                            descType: 'property',
-                            singular: ` is wreathed in flames`,
-                            plural: ` are wreathed in flames`,
-                        },
-                        ephitet: mkGen(rng => ephHot.choice(rng))
-                    }),
-                    applicableTo: { any: importantPart }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "integrated-clock"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('descriptor-wreathed-dark-fire',
-                {
-                    generate: () => ({
-                        descriptor: {
-                            descType: 'property',
-                            singular: ` is wreathed in lightless black flames`,
-                            plural: ` are wreathed in lightless black flames`,
-                        },
-                        ephitet: mkGen((rng) => ephHot.choice(rng))
-                    }),
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power ""
-                     */
-                    never: true
-                }
-            ), new ProviderElement('descriptor-wreathed-ice',
-                {
-                    generate: () => ({
-                        descriptor: {
-                            descType: 'property',
-                            singular: ` is wreathed in icy mist`,
-                            plural: ` are wreathed in icy mist`,
-                        },
-                        ephitet: mkGen(rng => ephCold.choice(rng))
-                    }),
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive powers "damage-bonus-ice" & "damage-bonus-ice-blunt"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('descriptor-clock-embed-forced',
-                {
-                    generate: () => ({
-                        descriptor: {
-                            descType: 'possession',
-                            singular: `a clock embedded in it`,
-                            plural: `clocks embedded in them`,
-                        },
-                        ephitet: { pre: "Timekeeper's" }
-                    }),
-                    applicableTo: {
-                        any: embeddableParts
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "integrated-clock"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('descriptor-compass-embed-forced',
-                {
-                    generate: () => ({
-                        descriptor: {
-                            descType: 'possession',
-                            singular: `a compass embedded in it`,
-                            plural: `compass embedded in them`,
-                        },
-                        ephitet: mkGen(rng => ephExplorer.choice(rng))
-                    }),
-                    applicableTo: {
-                        any: embeddableParts
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "integrated-compass"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('eat-to-heal-forced', {
-                generate: (rng) => {
-                    return [
-                        MATERIALS.hardCandy,
-                        MATERIALS.rockCandy,
-                        MATERIALS.gingerbread,
-                    ].choice(rng);
-                },
-                applicableTo: {
-                    any: importantPart
-                }
-            }, {
-                /**
-                 * Can only be added by the passive power "eat-to-heal"
-                 */
-                never: true
-            }
-            ),
-
-            new ProviderElement('injector-module-forced', {
-                generate: () => (
-                    {
-                        descriptor: {
-                            descType: 'possession',
-                            singular: "a small glass vial built into it",
-                            plural: 'a small glass vial built into it',
-                        },
-                        ephitet: { pre: 'Headhunter' }
-                    }),
-                applicableTo: {
-                    any: ['grip']
-                }
-            }, {
-                /**
-                 * Can only be added by the passive power "injector-module"
-                 */
-                never: true
-            }),
-
-            new ProviderElement('energy-core-void',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'property',
-                                singular: " hurts to look at. When it moves it leaves behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles",
-                                plural: " hurt to look at. When they move it leaves  behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles"
-                            },
-                            ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-fire',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'a superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
-                                plural: 'a superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
-                            },
-                            ephitet: mkGen(rng => ephHot.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-ice',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
-                                plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
-                            },
-                            ephitet: mkGen(rng => ephCold.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-ultraviolet',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'a glass bulb running down the middle (it blasts ultraviolet light in all directions)',
-                                plural: 'a glass bulb running down the middle (blasting ultraviolet light in all directions)'
-                            },
-                            ephitet: mkGen(rng => ephPurple.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-azure',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'a river of sapphire curling through its center (waves of light ebb and flow within it)',
-                                plural: 'rivers of sapphire curling through them (waves of light ebb and flow within)'
-                            },
-                            ephitet: mkGen(rng => ephBlue.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-crimson',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'property',
-                                singular: mkGen((_, __, partName) => ` is partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
-                                plural: mkGen((_, __, partName) => ` are partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
-                            },
-                            ephitet: mkGen(rng => ephRed.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-verdant',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'channels of brilliant green light, spreading out from its base and across its surface in an organic fractal',
-                                plural: 'channels of brilliant green light, spreading out from their bases and across their surfaces in organic fractals'
-                            },
-                            ephitet: mkGen(rng => ephGreen.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-atomic',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'an integrated nuclear reactor which gives it a healthy glow',
-                                plural: 'an integrated nuclear reactor which gives them a healthy glow'
-                            },
-                            ephitet: mkGen(rng => [
-                                { pre: 'Atomic' },
-                                { pre: 'Nuclear' },
-                                { pre: 'of the Mushroom Bombs' },
-                            ].choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-gold',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'property',
-                                singular: " is criss-crossed by a complex system of geometric lines, which glow with golden energy",
-                                plural: " are criss-crossed by a complex system of geometric lines, which glow with golden energy"
-                            },
-                            ephitet: mkGen(rng => ephGold.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-dark',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'property',
-                                singular: " is shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
-                                plural: " are shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
-                            },
-                            ephitet: mkGen(rng => ephBlack.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-aether',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
-                                plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
-                            },
-                            ephitet: mkGen(rng => ephSky.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
-            ),
-            new ProviderElement('energy-core-steampunk',
-                {
-                    generate: () => {
-                        return {
-                            descriptor: {
-                                descType: 'possession',
-                                singular: 'a glass tube running down the center (which crackles with electrical energy)',
-                                plural: 'glass tube running down their center (which crackle with electrical energy)'
-                            },
-                            ephitet: mkGen(rng => ephSteampunk.choice(rng)),
-                        }
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    /**
-                     * Can only be added by the passive power "death blast"
-                     */
-                    never: true
-                }
             ),
         ]
     },
