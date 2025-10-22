@@ -2806,7 +2806,7 @@ export default {
                     const [desc, howItsMade, madeOf] = pickForTheme(weapon, effects, rng);
                     return {
                         desc,
-                        cost: `a charge for each month of work that an expert would take to produce a regular version of the structure, rounding up`,
+                        cost: `a charge per month that an expert would need to produce a regular version of the object, rounding up`,
                         additionalNotes: [
                             `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}.`,
                             "Only replicates the structure of the object, not any special functions. Its magical nature is obvious at a glance."

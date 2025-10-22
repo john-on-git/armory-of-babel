@@ -224,9 +224,9 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
             case "ice":
                 return { pre: 'Icy' };
             case "cloud":
-                return { post: 'of the Sky' };
+                return { post: 'of the Sky', alliteratesWith: 'S' };
             case "earth":
-                return { post: 'of the Earth' };
+                return { post: 'of the Earth', alliteratesWith: 'E' };
             case "light":
                 return { pre: 'Divine' };
             case "dark":
@@ -246,9 +246,23 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
         }
     }
 
+    function isAlliterative(ephitet: Ephitet) {
+        // Take the alliteratesWith if one was provided, then if it's pre, fall back to taking the first letter, otherwise count it as non illiterative
+        const compareTo = ephitet?.alliteratesWith ?? ('pre' in ephitet ? ephitet.pre[0] : undefined);
+        return compareTo !== undefined && weapon.shape.particular[0].localeCompare(compareTo, undefined, { sensitivity: "base" }) === 0;
+
+    }
+
     if (weapon.description !== null) {
         const maybeEphitets = Object.values(weapon.description).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
-        return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng) ?? fallbackEph(weapon.themes.choice(rng));
+
+        const ephitets = (maybeEphitets.filter(x => x !== undefined) as Ephitet[]);
+        const alliterativeEphitets = (ephitets.filter(x => isAlliterative(x)) as Ephitet[]);
+
+        console.log(weapon.shape.particular, ephitets, alliterativeEphitets, '\n');
+
+
+        return alliterativeEphitets.choice(rng) ?? ephitets.choice(rng) ?? fallbackEph(weapon.themes.choice(rng));
     }
 }
 
@@ -562,6 +576,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
 
 export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig) {
+    console.clear();
     return {
         weapons: weaponRarities.reduce((acc, rarity) => {
             acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, rarity).weaponViewModel
