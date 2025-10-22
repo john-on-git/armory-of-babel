@@ -75,7 +75,7 @@ export default {
                         }
                     }),
                     ephitet: mkGen({ pre: "Bejewelled" }),
-                    applicableTo: { any: ['blade', 'blades', 'body', 'shaft', 'limbs'] }
+                    applicableTo: { any: ['blade', 'blades', 'body', 'shaft', 'spearShaft', 'limbs'] }
                 },
                 /**
                  * Can only be added by the passive power "counter"
@@ -1557,6 +1557,14 @@ export default {
     },
     personalities: {
         add: [
+            new ProviderElement("jealous",
+                {
+                    desc: "Jealous."
+                },
+                {
+                    themes: { none: ["light", "steampunk", "wizard"] },
+                }
+            ),
             new ProviderElement("vengeful",
                 {
                     desc: "Vengeful."
@@ -1608,7 +1616,7 @@ export default {
                     "cold",
                     "formal",
                     "haughty",
-                    "pitiless",
+                    "merciless",
                     "reserved",
                     "serious",
                     "stubborn",
@@ -1626,7 +1634,7 @@ export default {
                 ],
                 sour: [
                     "antagonistic",
-                    "pitiless",
+                    "merciless",
                     "manic",
                     "sassy"
                 ],
@@ -1782,7 +1790,7 @@ export default {
                         ]
                     }
                     : {
-                        desc: "Revealing Flare",
+                        desc: "Flare",
                         cost: 3,
                         additionalNotes: [
                             "You fire a flare from the weapon's tip, which targets everything it illuminates. Target cannot be affected by magical illusions such as invisibility.",
@@ -1883,8 +1891,8 @@ export default {
 
                     const projectileByTheme = {
                         ice: "a snowflake shuriken",
-                        fire: "a fiery chakram",
-                        cloud: "a pressurized stream of water, razor-sharp",
+                        fire: weapon.themes.includes('cloud') ? "a pressurised stream of steam" : "a fiery chakram",
+                        cloud: weapon.themes.includes('fire') ? "a pressurised stream of steam" : "a pressurized stream of water, razor-sharp",
                         steampunk: "an arc of electricity",
                         light: `a wave of ${core.desc}`,
                         dark: `a wave of ${core.desc}`,
@@ -1895,9 +1903,9 @@ export default {
                     } as const satisfies Record<PossibleCoreThemes | 'void', string>;
 
                     const titleByTheme = {
-                        fire: "Ring of Fire",
+                        fire: weapon.themes.includes('cloud') ? "Steam Blast" : "Ring of Fire",
                         ice: "Ice Blast",
-                        cloud: "Pressure Washer",
+                        cloud: weapon.themes.includes('fire') ? "Steam Blast" : "Pressure Washer",
                         steampunk: "Arc Blast",
                         nature: `${core.adj} Blast`,
                         light: `${core.adj} Blast`,

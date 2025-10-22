@@ -156,7 +156,7 @@ export const ephTransparent = [{ pre: 'Glass' }, { post: ' of Glass', alliterate
 export const adjLight = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { pre: 'Sunlit' }, { post: 'of Dawn', alliteratesWith: 'D' }] satisfies Ephitet[];
 
 export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { post: ' of Selene', alliteratesWith: 'S' }] satisfies Ephitet[];
-export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }, { post: 'of Dusk', alliteratesWith: 'D' }] satisfies Ephitet[];
+export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }, { post: ' of Dusk', alliteratesWith: 'D' }] satisfies Ephitet[];
 export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows', alliteratesWith: 'R' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
 
 export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood-Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
@@ -443,27 +443,17 @@ const embeddedArr = [
     ['a toxic pearl', ephAcid],
 ] as const satisfies [string, Ephitet[]][];
 
-const eyeStructureGenSingular = mkGen((rng, weapon: Weapon) => [
-    `one large eye: it's ${eyeColorGen.generate(rng, weapon)}`,
-    `a pair of eyes: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `three eyes mounted on it in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `four eyes mounted on it, in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
+const eyeStructureGen = mkGen((rng, weapon: Weapon, plurality: 'singular' | 'plural') => choice([
+    ["one large ", "eye", ""],
+    ["a pair of ", "eyes", ""],
+    ["three ", "eyes", " mounted in a triangle"],
+    ["four ", "eyes", " mounted in two sets"],
     ...(weapon?.themes?.includes?.('dark') ? [
-        `a cluster of eyes on it: they're ${eyeColorGen.generate(rng, weapon)}`,
-        `eyes dotted randomly across it: they're ${eyeColorGen.generate(rng, weapon)}`,
-    ] : []),
-].choice(rng));
+        ["a cluster of ", "eyes", ` mounted on ${plurality === 'singular' ? "it" : "them"}`],
+        ["", "eyes", ` dotted randomly across ${plurality === 'singular' ? "it" : "them"}`]
+    ] as const : []),
+] as const, rng) satisfies readonly ["" | `${string} `, "eye" | "eyes", "" | `${string}`]);
 
-const eyeStructureGenPlural = mkGen((rng, weapon: Weapon) => [
-    `one large eye mounted on them: it's ${eyeColorGen.generate(rng, weapon)}`,
-    `a pair of eyes mounted on them: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `three eyes mounted on them in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `four eyes mounted on them in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
-    ...(weapon?.themes?.includes?.('dark') ? [
-        `a cluster of eyes on them: they're ${eyeColorGen.generate(rng, weapon)}`,
-        `eyes dotted randomly across them: they're ${eyeColorGen.generate(rng, weapon)}`
-    ] : []),
-].choice(rng));
 
 const eyeColorGen = mkGen((rng, weapon: Weapon) => {
     const effects = {
@@ -478,7 +468,7 @@ const eyeColorGen = mkGen((rng, weapon: Weapon) => {
         wizard: ['purple', 'blue', 'gold'],
         steampunk: ['white', 'grey', 'gold'],
         nature: ['green', 'brown', 'hazel', 'blue']
-    } satisfies Record<Theme, string[]>;
+    } as const satisfies Record<Theme, string[]>;
 
     return effects[weapon.themes.choice(rng)].choice(rng);
 });
@@ -802,22 +792,54 @@ export const MISC_DESC_FEATURES = {
             animalistic: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGenSingular, ' and shaped like ', themedAnimal]),
-                    plural: new StringGenerator([eyeStructureGenPlural, ' and shaped like ', themedAnimal]),
+                    singular: mkGen((rng, weapon) => {
+                        const [quantity, eye, arrangement] = eyeStructureGen.generate(rng, weapon, 'singular');
+                        const color = eyeColorGen.generate(rng, weapon);
+                        const animal = themedAnimal.generate(rng, weapon);
+
+                        return `${quantity}${color} ${eye} shaped like ${animal}${arrangement}`;
+                    }),
+                    plural: mkGen((rng, weapon) => {
+                        const [quantity, eye, arrangement] = eyeStructureGen.generate(rng, weapon, 'plural');
+                        const color = eyeColorGen.generate(rng, weapon);
+                        const animal = themedAnimal.generate(rng, weapon);
+
+                        return `${quantity}${color} ${eye} shaped like ${animal}${arrangement}`;
+                    }),
                 },
             },
             deepSet: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGenSingular, ", and indented slightly into the surface",]),
-                    plural: new StringGenerator([eyeStructureGenPlural, ", and indented slightly into the surface"])
+                    singular: mkGen((rng, weapon) => {
+                        const [quantity, eye, arrangement] = eyeStructureGen.generate(rng, weapon, 'singular');
+                        const color = eyeColorGen.generate(rng, weapon);
+
+                        return `${quantity}${color} ${eye}${arrangement}${arrangement === "" ? "" : ","} indented slightly into the surface`;
+                    }),
+                    plural: mkGen((rng, weapon) => {
+                        const [quantity, eye, arrangement] = eyeStructureGen.generate(rng, weapon, 'plural');
+                        const color = eyeColorGen.generate(rng, weapon);
+
+                        return `${quantity}${color} ${eye}${arrangement}${arrangement === "" ? "" : ","} indented slightly into the surface`;
+                    })
                 },
             },
             beady: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGenSingular, ', round and beady']),
-                    plural: new StringGenerator([eyeStructureGenPlural, ', round and beady']),
+                    singular: mkGen((rng, weapon) => {
+                        const [quantity, eye, arrangement] = eyeStructureGen.generate(rng, weapon, 'singular');
+                        const color = eyeColorGen.generate(rng, weapon);
+
+                        return `${quantity}beady ${color} ${eye}${arrangement}`;
+                    }),
+                    plural: mkGen((rng, weapon) => {
+                        const [quantity, eye, arrangement] = eyeStructureGen.generate(rng, weapon, 'plural');
+                        const color = eyeColorGen.generate(rng, weapon);
+
+                        return `${quantity}beady ${color} ${eye}${arrangement}`;
+                    }),
                 },
             },
         }
@@ -828,7 +850,7 @@ export const MISC_DESC_FEATURES = {
 
 // weapon parts
 
-export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'grip', 'axeHead', 'maceHead', 'maceHeads', 'limbs', 'pommel', 'quiver', 'shaft', 'string', 'tip'] as const satisfies WeaponPartName[];
+export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'grip', 'axeHead', 'maceHead', 'maceHeads', 'limbs', 'pommel', 'quiver', 'shaft', 'spearShaft', 'string', 'tip'] as const satisfies WeaponPartName[];
 
 /**
  * The main / signature part the weapon
