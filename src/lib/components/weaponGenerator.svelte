@@ -27,6 +27,7 @@
         window.addEventListener("popstate", () => {
             weaponID.set(getIDFromURL());
         });
+        generateWeapon();
     });
 
     /** Generate a new weapon ID / seed.
@@ -59,13 +60,16 @@
         searchParams.set("id", getNewId());
 
         // and update the URL params to point to its ID
+        const newQuery = `?${searchParams.toString()}`;
         // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
-        window.history.pushState(
-            //navigate back to main
-            null,
-            "",
-            `?${searchParams.toString()}`,
-        );
+        if (window.location.search !== newQuery) {
+            window.history.pushState(
+                //navigate back to main
+                null,
+                "",
+                newQuery,
+            );
+        }
 
         dispatchEvent(new PopStateEvent("popstate", { state: null }));
     }
