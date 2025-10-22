@@ -71,14 +71,13 @@
         });
 
         tick().then(() => {
+            const searchParams = new URLSearchParams(window.location.search);
             // and initialize any values in the URL that have not been set yet
-            if (
-                new URLSearchParams(window.location.search).get("id") === null
-            ) {
-                pushIdToURL(weaponID);
+            if (!searchParams.has("id")) {
+                syncIdToURL(weaponID, "replace");
             }
-            if (new URLSearchParams(window.location.search).get("v") === null) {
-                pushVersionToURL(version);
+            if (!searchParams.has("v")) {
+                replaceVersionInURL(version);
             }
         });
     });
@@ -114,7 +113,7 @@
             return latest;
         }
     }
-    function pushVersionToURL(id: number) {
+    function replaceVersionInURL(id: number) {
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set("v", id.toString());
@@ -137,20 +136,20 @@
             ? maybeNumber.toString()
             : getNewId();
     }
-    function pushIdToURL(id: string) {
+    function syncIdToURL(id: string, mode: "push" | "replace" = "push") {
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set("id", id);
 
         // and update the URL params to point to its ID
-        syncLocationWithURLSearchParams(searchParams, "push");
+        syncLocationWithURLSearchParams(searchParams, mode);
     }
 
     /**
      * Generate a new weapon, called when the page is loaded without an ID in the URL, and when the 'generate' button is clicked.
      */
     function generateWeapon() {
-        pushIdToURL(getNewId());
+        syncIdToURL(getNewId());
     }
 </script>
 
