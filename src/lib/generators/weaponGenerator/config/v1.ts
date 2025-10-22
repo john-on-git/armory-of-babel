@@ -622,7 +622,6 @@ export default {
                     },
                     {
                         themes: { all: [theme as Theme] },
-                        allowDuplicates: true
                     }
                 )
             })
@@ -740,8 +739,7 @@ export default {
                 {
                     themes: {
                         any: ["nature"],
-                    },
-                    allowDuplicates: true
+                    }
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>(
