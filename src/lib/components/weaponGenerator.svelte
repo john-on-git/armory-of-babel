@@ -82,6 +82,13 @@
                     !_.isEqual(newReq, weaponState?.req)
                 ) {
                     try {
+                        if (
+                            new URLSearchParams(window.location.search).has(
+                                "testForceNegative",
+                            )
+                        ) {
+                            searchParams.set("testForceNegative", "");
+                        }
                         const res = await fetch(`/api/weapon?${searchParams}`);
                         if (res.status === StatusCodes.OK) {
                             // if this still matches the UI state

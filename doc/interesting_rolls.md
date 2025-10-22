@@ -9,3 +9,7 @@
     - http://localhost:5174/?id=60724988481853520000
     - http://localhost:5174/?id=51873240923928300000
         - duplicate active
+
+- Negative
+    - Uncommon: http://localhost:5173/?v=0&id=3715&o=0.12&o=0.60&o=0.95&o=0.99
+    

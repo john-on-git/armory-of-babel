@@ -32,8 +32,7 @@ function isGenerateWeaponRequest(x: unknown): x is GenerateWeaponRequest {
         // type of id is correct
         typeof (x.id) === 'string' && x.id !== '' &&
         // type of v is correct
-        typeof x.v === 'number' &&
-        !Number.isNaN(x.v) && Number.isFinite(x.v) &&
+        typeof x.v === 'number' && Number.isInteger(x.v) &&
         // v is a supported version
         x.v >= 0 && x.v <= LATEST_VERSION_NUM
     );
@@ -51,11 +50,19 @@ export async function GET({ request }: { request: Request, }) {
         v: v === null ? NaN : Number.parseInt(v),
     }
 
+    const forceNegative = params.has('testForceNegative');
+
     // respond to the request if it's valid under the type-guard, otherwise respond bad req
-    if (params.size === 2 && isGenerateWeaponRequest(weaponRequest)) {
+    if (((params.size === 2 && !forceNegative) || (params.size === 3 && forceNegative)) && isGenerateWeaponRequest(weaponRequest)) {
 
         // generate the weapon, and silence logging if we are not in dev
-        const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, getFeatureProviderForVersion(weaponRequest.v), undefined, !dev);
+        const weaponViewModels = mkWeaponsForAllRarities(
+            weaponRequest.id,
+            getFeatureProviderForVersion(weaponRequest.v),
+            undefined,
+            forceNegative ? 1 : undefined,
+            !dev
+        );
 
         return json(weaponViewModels);
     }
