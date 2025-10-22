@@ -261,7 +261,7 @@ interface SharedAtom {
      *      post: 'of the Volcano'
      * } 
      */
-    ephitet: {
+    ephitet?: {
         pre: string;
     } | {
         post: string;
@@ -269,8 +269,8 @@ interface SharedAtom {
     UUID: string;
 }
 
-type MaterialAtom = SharedAtom;
-type DescriptorAtom = SharedAtom & {
+export type MaterialAtom = SharedAtom;
+export type DescriptorAtom = SharedAtom & {
     descType: DescriptorType;
 }
 
@@ -341,7 +341,7 @@ const weaponStructures = {
     lanceLike: {
         business: ['tip'],
         holding: ['grip'],
-        other: ['pommel']
+        other: ['pommel', 'base']
     },
     spearLike: {
         business: ['tip'],
@@ -574,7 +574,7 @@ export type DescriptorText = ({
 });
 
 export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: DescriptorText }) & {
-    ephitet: Ephitet | TGenerator<Ephitet, [Weapon]>;
+    ephitet?: Ephitet | TGenerator<Ephitet, [Weapon]>;
 };
 export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
