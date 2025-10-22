@@ -67,10 +67,6 @@
                 // construct the search params for the API
                 const searchParams = new URLSearchParams();
 
-                searchParams.set("o", odds[0].toFixed(2));
-                for (let i = 1; i < odds.length; i++) {
-                    searchParams.append("o", odds[i].toFixed(2));
-                }
                 searchParams.set("v", version.toString());
                 searchParams.set("id", weaponID);
 

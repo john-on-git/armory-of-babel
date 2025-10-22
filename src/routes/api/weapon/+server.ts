@@ -27,10 +27,14 @@ function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponR
     const asReq = maybeReq as GenerateWeaponRequest;
 
     return (
+        // only expected keys
+        'id' in asReq && 'v' in asReq && Object.keys(asReq).length === 2 &&
+        // type of id is correct
         typeof (asReq.id) === 'string' && asReq.id !== '' &&
-
+        // type of v is correct
         typeof asReq.v === 'number' &&
         !Number.isNaN(asReq.v) && Number.isFinite(asReq.v) &&
+        // v is a supported version
         asReq.v >= 0 && asReq.v <= LATEST_VERSION_NUM
     );
 }
