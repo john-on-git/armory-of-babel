@@ -1,10 +1,11 @@
 <script lang="ts">
+    import { pushState } from "$app/navigation";
     import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import {
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
@@ -27,7 +28,7 @@
         window.addEventListener("popstate", () => {
             weaponID.set(getIDFromURL());
         });
-        generateWeapon();
+        tick().then(generateWeapon);
     });
 
     /** Generate a new weapon ID / seed.
@@ -63,13 +64,10 @@
         const newQuery = `?${searchParams.toString()}`;
         // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
         if (window.location.search !== newQuery) {
-            window.history.pushState(
-                //navigate back to main
-                null,
-                "",
-                newQuery,
-            );
+            pushState(newQuery, {});
         }
+
+        console.log("generated weapon", weapon);
 
         dispatchEvent(new PopStateEvent("popstate", { state: null }));
     }
