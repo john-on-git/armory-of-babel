@@ -11,7 +11,8 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"type-check": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.31.0",
@@ -36,6 +37,7 @@
 	},
 	"dependencies": {
 		"lodash": "^4.17.21",
-		"seedrandom": "^3.0.5"
+		"seedrandom": "^3.0.5",
+		"smelte": "^1.1.8"
 	}
 }

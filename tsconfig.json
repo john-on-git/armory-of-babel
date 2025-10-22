@@ -15,7 +15,7 @@
 		"erasableSyntaxOnly": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true,
-		"verbatimModuleSyntax": false,
+		"verbatimModuleSyntax": true,
 		"allowImportingTsExtensions": true
 	}
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias

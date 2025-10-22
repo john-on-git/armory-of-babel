@@ -1,8 +1,8 @@
 import seedrandom from "seedrandom";
-import { GLOBAL_UUID_ISSUER, ProviderElement, WithUUID } from "./weaponGenerator/provider";
+import { mkGen, StringGenerator, type TGenerator } from "./recursiveGenerator";
+import { GLOBAL_UUID_ISSUER, type ProviderElement, type WithUUID } from "./weaponGenerator/provider";
 import { WeaponFeatureProvider } from "./weaponGenerator/weaponGeneratorLogic";
-import { Theme, Weapon, WeaponPowerCond } from "./weaponGenerator/weaponGeneratorTypes";
-import { mkGen, StringGenerator, TGenerator } from "./recursiveGenerator";
+import type { Theme, Weapon, WeaponPowerCond } from "./weaponGenerator/weaponGeneratorTypes";
 
 interface Demand {
     desc: TGenerator<string>;
@@ -148,9 +148,9 @@ const demands = [
         thing: {
             desc: mkGen("Interact With Specific Dungeon Object (d6 charges).")
         },
-        cond: {} satisfies WeaponPowerCond 
+        cond: {} satisfies WeaponPowerCond
     },
-    
+
     {
         thing: {
             desc: mkGen("Release Specific Animal From Captivity (d4 charges).")
@@ -290,7 +290,7 @@ const demands = [
         cond: {} satisfies WeaponPowerCond
     },
     {
-        
+
         thing: {
             desc: mkGen("Dissolve Someone in Acid (1 charge per victim HD).")
         },
@@ -301,7 +301,7 @@ const demands = [
         } satisfies WeaponPowerCond
     },
     {
-        
+
         thing: {
             desc: mkGen("Burn Someone Alive (1 charge per victim HD).")
         },
@@ -312,7 +312,7 @@ const demands = [
         } satisfies WeaponPowerCond
     },
     {
-        
+
         thing: {
             desc: mkGen("Drown Someone (1 charge per victim HD).")
         },
@@ -323,7 +323,7 @@ const demands = [
         } satisfies WeaponPowerCond
     },
     {
-        
+
         thing: {
             desc: mkGen("Drop Someone to Their Death (1 charge per victim HD).")
         },
@@ -334,7 +334,7 @@ const demands = [
         } satisfies WeaponPowerCond
     },
     {
-        
+
         thing: {
             desc: mkGen("Freeze Someone to Death (1 charge per victim HD).")
         },
