@@ -10,6 +10,30 @@ import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, Pr
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { commonDieSizes, type DamageDice, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
 
+
+/**
+ * Flatten a weapon description into the parts and their names.
+ * @param description description to flatten. if it is null, return the empty list
+ * @returns a list of all the weapon parts in the description, with their names
+ */
+function flatDesc(description: Weapon['description']): [WeaponPartName, WeaponPart][] {
+    function entries<K extends string, V>(x: Record<K, V> | null): [K, V][] {
+        return x === null ? [] : _.entries(x) as [K, V][];
+    }
+    function vals<T>(x: Record<string | number | symbol, T> | null): T[] {
+        return x === null ? [] : _.values(x);
+    }
+    return description === null ? [] : vals(description).flatMap(entries);
+}
+
+/**
+ * Get the number of parts of a description.
+ * @param description 
+ */
+function numParts(description: StructuredDescription): number {
+    return flatDesc(description).length;
+}
+
 /**
  * Get the maximum amount of damage that can be dealt by a given roll.
  */
@@ -160,15 +184,9 @@ export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerato
      * should really be based on it & not its cond, so I suppose this is not really quite right...
      */
     protected placementIsPossible(thing: DescriptorGenerator, params: DescriptorCondParams): boolean {
-        function entries<K extends string, V>(x: Record<K, V> | null): [K, V][] {
-            return x === null ? [] : _.entries(x) as [K, V][];
-        }
-        function vals<T>(x: Record<string | number | symbol, T> | null): T[] {
-            return x === null ? [] : _.values(x);
-        }
 
         // there must be least one part that can accept the element 
-        return vals(params.description).flatMap(entries).some(([k, v]) => {
+        return flatDesc(params.description).some(([k, v]) => {
             // console.log(
             //     thing, '\n', k, v.material, '\n',
 
@@ -376,7 +394,7 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
         const maybeEphitets = Object.values(weapon.description).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
 
         const ephitets = (maybeEphitets.filter(x => x !== undefined) as Ephitet[]);
-        const alliterativeEphitets = (ephitets.filter(x => isAlliterative(x)) as Ephitet[]);
+        const alliterativeEphitets = (ephitets.filter(x => isAlliterative(x)));
 
 
         return alliterativeEphitets.choice(rng) ?? ephitets.choice(rng) ?? fallbackEph(weapon.themes.choice(rng));
@@ -584,8 +602,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // first, apply theme-based descriptors, up to the cap
     while (nDescriptors < maxDescriptors) {
-        // TODO, in order to stop all misses, we need to 
-        // draw based on what it's applicable to, and whether it's a material
         try {
             const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
             applyDescriptionPartProvider(rng, descriptorProvider, weapon, silent);

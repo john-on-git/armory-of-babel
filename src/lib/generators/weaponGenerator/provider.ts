@@ -73,7 +73,7 @@ function gatherProperties<T extends object>(property: string | number | symbol, 
             if (property in x) {
                 acc.add(x.UUID);
             }
-            gatherProperties(x, acc);
+            gatherProperties(property, x, acc);
         }
     });
     return acc;
@@ -92,7 +92,6 @@ export function gatherUUIDs<T extends object>(x: T, acc: Set<string> = new Set<s
 export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { set: Set<string> }) {
 
     if ('target' in x) {
-
         const allIDs = gatherUUIDs(x);
 
         return evQuant(quantUUID, Array.from(allIDs.values()));

@@ -753,6 +753,22 @@ export const MISC_DESC_FEATURES = {
         }),
         // warriorEngraving: {},
         // tricksterEngraving: {},
+        pitted: {
+            descriptor: {
+                descType: 'property',
+                singular: ' is pitted and scratched',
+                plural: ' are pitted and scratched'
+            },
+            ephitet: mkGen(rng => ephAcid.choice(rng))
+        },
+        acidBurned: {
+            descriptor: {
+                descType: 'property',
+                singular: ' has a number of dark and discolored sections',
+                plural: ' have a number of dark and discolored sections'
+            },
+            ephitet: mkGen(rng => ephAcid.choice(rng))
+        }
     },
     glyph: {
         oldCoatOfArms: {
