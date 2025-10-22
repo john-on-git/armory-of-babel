@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { sharpWeaponShapeFamilies } from "$lib/generators/weaponGenerator/config/configConstants";
+import { hardNonHoldingParts, holdingParts, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -33,56 +33,481 @@ export default {
     },
     descriptors: {
         add: [
-            new ProviderElement('metal-extravagant',
+            new ProviderElement('material-extravagant-hard',
                 {
                     generate: (rng) => {
                         return [
-                            {
-                                material: 'silver',
-                                ephitet: 'Silver',
-                            },
-                            {
-                                material: 'gold',
-                                ephitet: 'Golden',
-                            },
-                            {
-                                material: 'purple gold',
-                                ephitet: 'Golden',
-                            },
-                            {
-                                material: 'rose gold',
-                                ephitet: 'Gold',
-                            },
-                            {
-                                material: 'platinum',
-                                ephitet: 'Platinum',
-                            },
-                            {
-                                material: 'palladium',
-                                ephitet: 'Palladium',
-                            }
+                            MATERIALS.silver,
+                            MATERIALS.gold,
+                            MATERIALS["rose gold"],
+                            MATERIALS['white gold'],
+                            MATERIALS['purple gold'],
+                            MATERIALS['blue gold'],
+                            MATERIALS.platinum,
+                            MATERIALS.palladium,
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: ['barrel', 'blade', 'blades', 'tip', 'head', 'crossguard', 'pommel']
+                        any: hardNonHoldingParts
                     }
                 },
                 {
-                    shapeFamily: {
-                        any: sharpWeaponShapeFamilies
-                    },
                     themes: {
                         none: ['nature']
                     }
                 }
             ),
-            ...(['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].map((color) =>
-                new ProviderElement(`test-${color}`,
-                    {
-                        generate: () => ({ descriptor: `is ${color}`, ephitet: `${color.capFirst()}ish` })
+            new ProviderElement('material-primitive-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.tin,
+                            MATERIALS.copper,
+                            MATERIALS.bronze,
+                            MATERIALS.flint,
+                            MATERIALS.obsidian
+                        ].choice(rng);
                     },
-                    {}
-                )))
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['nature', 'earth', 'fire']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-fire-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS['scarlet steel'],
+                            MATERIALS.flint,
+                            MATERIALS["gold-plated"],
+                            MATERIALS.gold,
+                            MATERIALS["rose gold"],
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['ice']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-ice-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.ice,
+                            MATERIALS["glass-like-steel"],
+                            MATERIALS["glass"],
+                            MATERIALS["boreal steel"],
+                            MATERIALS.silver,
+                            MATERIALS['silver-plated'],
+                            MATERIALS["white gold"],
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['ice']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-cloud-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS["meteoric iron"],
+                            MATERIALS.silver,
+                            MATERIALS.ice,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['cloud']
+                    }
+                }
+            ),
+            new ProviderElement('material-earth-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.alabaster,
+                            MATERIALS.bronze,
+                            MATERIALS.diamond,
+                            MATERIALS.amethyst,
+                            MATERIALS.emerald,
+                            MATERIALS.flint,
+                            MATERIALS.fossils,
+                            MATERIALS.gold,
+                            MATERIALS["rose gold"],
+                            MATERIALS["white gold"],
+                            MATERIALS.granite,
+                            MATERIALS.marble,
+                            MATERIALS.onyx,
+                            MATERIALS.quartz,
+                            MATERIALS.ruby,
+                            MATERIALS.sandstone,
+                            MATERIALS.sapphire,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['earth']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-dark-hard-mundane',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.obsidian,
+                            MATERIALS.onyx,
+                            MATERIALS["black iron"],
+                            MATERIALS["meteoric iron"],
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['dark']
+                    },
+                    rarity: {
+                        lte: 'rare',
+                    }
+                }
+            ),
+            new ProviderElement('material-dark-hard-rare',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS["black iron"],
+                            MATERIALS["meteoric iron"],
+                            MATERIALS.adamantum,
+                            MATERIALS.darkness
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['dark']
+                    },
+                    rarity: {
+                        gte: 'epic',
+                    }
+                }
+            ),
+            new ProviderElement('material-dark-ice',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.iceBlood
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        all: ['dark', 'ice']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-light-hard-mundane',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS["white gold"],
+                            MATERIALS.silver,
+                            MATERIALS["silver-plated"],
+                            MATERIALS.crystal,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['light']
+                    },
+                    rarity: {
+                        lte: 'uncommon',
+                    }
+                }
+            ),
+            new ProviderElement('material-light-hard-rare',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.light,
+                            MATERIALS.glass,
+                            MATERIALS["white gold"],
+                            MATERIALS.silver,
+                            MATERIALS["silver-plated"],
+                            MATERIALS.mythrel,
+                            MATERIALS.crystal,
+                            MATERIALS.diamond,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['light']
+                    },
+                    rarity: {
+                        gte: 'rare',
+                    }
+                }
+            ),
+            new ProviderElement('material-sour-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.citrine,
+                            MATERIALS.toxisteel
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['sour']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-sweet-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS["ultrahard candy"]
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['sweet']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-sweet-holding',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.maple
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['sweet']
+                    }
+                }
+            ),
+            new ProviderElement('material-sour-holding',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.lemonWood,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['sour']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-wizard-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS["blue gold"],
+                            MATERIALS['purple gold'],
+                            MATERIALS['tin'],
+                            MATERIALS.cobalt,
+                            MATERIALS["glass-like-steel"],
+                            MATERIALS["glass"],
+                            MATERIALS.force,
+                            MATERIALS["meteoric iron"],
+                            MATERIALS.quartz,
+                            MATERIALS.sapphire,
+                            MATERIALS.crystal,
+                            MATERIALS.amethyst
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['wizard']
+                    }
+                }
+            ),
+            new ProviderElement('material-wizard-nature',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.wiseWood,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['wizard', 'nature']
+                    }
+                }
+            ),
+            new ProviderElement('material-steampunk-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.clockwork,
+                            MATERIALS.tin,
+                            MATERIALS.copper,
+                            MATERIALS.brass,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: hardNonHoldingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['steampunk']
+                    }
+                }
+            ),
+            new ProviderElement('misc-silk-wrapping',
+                {
+                    generate: () => MISC_DESC_FEATURES.wrap.silkWrap,
+                    applicableTo: {
+                        any: wrappableParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['wizard']
+                    }
+                }
+            ),
+            new ProviderElement('misc-wrapping',
+                {
+                    generate: (rng) => [
+                        MISC_DESC_FEATURES.wrap.bannerWrap,
+                        MISC_DESC_FEATURES.wrap.silverChainWrap,
+                        MISC_DESC_FEATURES.wrap.goldChainWrap,
+                        MISC_DESC_FEATURES.wrap.beadsWrap,
+                    ].choice(rng),
+                    applicableTo: {
+                        any: wrappableParts
+                    }
+                },
+                {}
+            ),
+
+            new ProviderElement('club-staff-main-material-mundane',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.oak,
+                            MATERIALS.pine,
+                            MATERIALS.birch,
+                            MATERIALS.cherry,
+                            MATERIALS.ebonyWood,
+                            MATERIALS.ironWood,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    shapeFamily: {
+                        any: ['staff', 'club']
+                    },
+                    rarity: {
+                        lte: 'rare',
+                    }
+                }
+            ),
+            new ProviderElement('club-staff-main-material-rare',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.oak,
+                            MATERIALS.pine,
+                            MATERIALS.birch,
+                            MATERIALS.cherry,
+                            MATERIALS.ebonyWood,
+                            MATERIALS.ironWood,
+                            MATERIALS.bloodWood
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    shapeFamily: {
+                        any: ['staff', 'club']
+                    },
+                    rarity: {
+                        lte: 'rare',
+                    }
+                }
+            ),
         ]
     },
     personalities: {

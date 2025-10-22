@@ -44,12 +44,12 @@
     <div class="weapon-display-body" data-test>
         <div class="weapon-display-powers">
             <div class="weapon-generator-row-flex">
-                <p>
+                <p class="weapon-damage">
                     <span class="weapon-damage-title">Damage:</span>
                     {damageString}
                     {toHitString}
                 </p>
-                <p>
+                <p class="weapon-desc">
                     {weapon.description}
                 </p>
             </div>
@@ -242,5 +242,13 @@
     .weapon-generator-row-flex > * {
         padding: 0;
         margin: 0;
+    }
+    .weapon-damage {
+        flex-grow: 1;
+        text-wrap: nowrap;
+    }
+
+    .weapon-desc {
+        margin-left: auto;
     }
 </style>
