@@ -1,5 +1,8 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
 
+    - Broken.
+        - http://localhost:5173/?v=0&id=95206297674600050000
+
     - could add overlapping themes, it wouldn't break anything.
         - discrete latent space? map it all out
         - what about descriptors? lot of work...

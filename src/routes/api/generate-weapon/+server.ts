@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { WeaponRarity, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { StatusCodes } from "http-status-codes";
@@ -45,16 +46,13 @@ export async function GET({ request }: { request: Request, }) {
         v: v === null ? NaN : Number.parseInt(v),
     }
 
+    // respond to the request if it's valid under the type-guard, otherwise respond bad req
     if (isGenerateWeaponRequest(weaponRequest)) {
 
-        const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, getFeatureProviderForVersion(weaponRequest.v));
+        // generate the weapon, and silence logging if we are not in dev
+        const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, getFeatureProviderForVersion(weaponRequest.v), undefined, !dev);
 
-        return new Response(
-            JSON.stringify(weaponViewModels),
-            {
-                status: StatusCodes.OK
-            }
-        );
+        return new Response(JSON.stringify(weaponViewModels), { status: StatusCodes.OK });
     }
     else {
         return new Response(null, { status: StatusCodes.BAD_REQUEST });
