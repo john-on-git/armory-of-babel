@@ -22,7 +22,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
         paramsProvider: (rng) => ({
             damage: {},
             nPassive: 1,
-            nCharges: Math.ceil(rng() * 4),
+            nCharges: Math.ceil((rng() * 4) + 2),
             nActive: [0, 1].choice(rng),
             nUnlimitedActive: 0,
             sentienceChance: 0.1,
@@ -34,7 +34,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
         paramsProvider: (rng) => ({
             damage: {},
             nPassive: [1, 2].choice(rng),
-            nCharges: Math.ceil(rng() * 4),
+            nCharges: Math.ceil((rng() * 8) + 2),
             nActive: [1, 2].choice(rng),
             nUnlimitedActive: 0,
             sentienceChance: 1 / 3,
@@ -46,7 +46,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
         paramsProvider: (rng) => ({
             damage: {},
             nPassive: [1, 2, 3].choice(rng),
-            nCharges: Math.ceil(rng() * 8),
+            nCharges: Math.ceil((rng() * 8) + 4),
             nActive: [1, 2, 3].choice(rng),
             nUnlimitedActive: 0,
             sentienceChance: 1 / 2,
@@ -58,7 +58,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
         paramsProvider: (rng) => ({
             damage: {},
             nPassive: 3,
-            nCharges: Math.ceil(rng() * 10),
+            nCharges: Math.ceil((rng() * 16) + 4),
             nActive: [2, 3, 4].choice(rng),
             nUnlimitedActive: 1,
             sentienceChance: 1,
