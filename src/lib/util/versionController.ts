@@ -1,30 +1,32 @@
 
-abstract class Patchable {
+export abstract class Patchable {
     UUID: string;
 
     constructor(UUID: string) {
         this.UUID = UUID;
     }
 
-    patch(other: typeof this) {
-        for (const k of Object.keys(this) as (keyof this)[]) {
-            this[k] = structuredClone(other[k]);
+    patch(other: Partial<typeof this>) {
+        for (const k of Object.keys(other) as (keyof this)[]) {
+            if (other[k] !== undefined) {
+                this[k] = structuredClone(other[k]);
+            }
         }
     };
 }
 
-interface Delta<T extends Patchable> {
-    add: Iterable<T>;
-    remove: Set<string>;
-    modify: Record<string, T>;
+export interface Delta<T extends Patchable> {
+    add?: Iterable<T>;
+    remove?: Set<string>;
+    modify?: Record<string, Partial<T>>;
 }
 
-interface DeltaCollection<T extends Patchable> {
-    [k: string | number | symbol]: Delta<T>;
+export type DeltaCollection<T2 extends Record<string | number | symbol, Patchable>> = {
+    [k in keyof T2]?: Delta<T2[k]>
 }
 
 
-export abstract class VersionController<T extends Patchable, TCollection extends DeltaCollection<T>> {
+export class VersionController<TTarget extends Patchable, TDelta extends Record<string | number | symbol, TTarget>, TCollection extends DeltaCollection<TDelta> = DeltaCollection<TDelta>> {
     protected deltaCollections: [TCollection, ...TCollection[]];
 
     constructor(deltas: [TCollection, ...TCollection[]]) {
@@ -32,38 +34,49 @@ export abstract class VersionController<T extends Patchable, TCollection extends
     }
 
     /**
-     * get the features for this version
+     * get the things for this version
      * @param v 
-     * @returns the features for this version, or undefined if this version does not exist
+     * @returns the things for this version, or undefined if this version does not exist
      */
-    getVersion(v: number): Record<keyof TCollection, T[]> | undefined {
+    getVersion(v: number): Record<keyof TCollection, TTarget[]> | undefined {
 
         if (v >= 0 && v < this.deltaCollections.length) {
             // build the base object
-            const head = (Object.keys(this.deltaCollections[0]) as (keyof TCollection)[]).reduce<Record<keyof TCollection, T[]>>((acc, k) => {
+            const head = (Object.keys(this.deltaCollections[0]) as (keyof TCollection)[]).reduce<Record<keyof TCollection, TTarget[]>>((acc, k) => {
                 acc[k] = [];
                 return acc;
-            }, {} as Record<keyof TCollection, T[]>);
+            }, {} as Record<keyof TCollection, TTarget[]>);
+
 
             // apply all the deltas in sequence
-            for (const deltaCollection of this.deltaCollections) {
+            for (const deltaCollection of this.deltaCollections.slice(0, v + 1)) {
                 for (const k in deltaCollection) {
-                    // apply each of the three components to the head
+                    if (deltaCollection[k] !== undefined) {
+                        // apply each of the three components to the head
 
-                    // apply all the additions
-                    head[k].push(...deltaCollection[k].add);
+                        // apply all the additions
+                        if (deltaCollection[k].add !== undefined) {
+                            head[k].push(...deltaCollection[k].add);
+                        }
 
-                    // apply all the removals
-                    head[k].filter(x => !deltaCollection[k].remove.has(x.UUID));
+                        // apply all the removals
+                        if (deltaCollection[k].remove !== undefined) {
+                            // remove will be flagged as possibly undefined
+                            // in the filter unless take a copy. odd
+                            const remove = deltaCollection[k].remove;
+                            head[k] = head[k].filter(x => !(remove.has(x.UUID)));
+                        }
 
-                    // apply all the updates
-                    // check each object for modifications, and apply each one if it exists
-                    for (const x of head[k]) {
-                        if (x.UUID in deltaCollection[k].modify) {
-                            x.patch(deltaCollection[k].modify[x.UUID]);
+                        // apply all the updates
+                        // check each object for modifications, and apply each one if it exists
+                        if (deltaCollection[k].modify !== undefined) {
+                            for (const x of head[k]) {
+                                if (x.UUID in deltaCollection[k].modify) {
+                                    x.patch(deltaCollection[k].modify[x.UUID]);
+                                }
+                            }
                         }
                     }
-
                 }
             }
 
