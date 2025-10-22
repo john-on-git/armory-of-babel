@@ -5,7 +5,7 @@
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
-    import { onMount, tick } from "svelte";
+    import { onMount } from "svelte";
     import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
@@ -15,12 +15,6 @@
     }
 
     const { config, logging = false }: Props = $props();
-
-    $effect(() => {
-        if (config !== undefined) {
-            console.log(Object.values(config).map((x) => x.percentile));
-        }
-    });
 
     let weapon: Weapon = $derived(mkWeapon(getIDFromURL(), config));
     const weaponID = writable<string>(getIDFromURL());
@@ -35,7 +29,6 @@
         window.addEventListener("popstate", () => {
             weaponID.set(getIDFromURL());
         });
-        tick().then(generateWeapon);
     });
 
     /** Generate a new weapon ID / seed.
