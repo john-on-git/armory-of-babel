@@ -287,24 +287,24 @@
 
     @media (prefers-color-scheme: dark) {
         :global(.weapon-rarity-common) {
-            color: white;
+            color: white !important;
         }
     }
     @media (prefers-color-scheme: light) {
         :global(.weapon-rarity-common) {
-            color: black;
+            color: black !important;
         }
     }
     :global(.weapon-rarity-uncommon) {
-        color: var(--color-uncommon);
+        color: var(--color-uncommon) !important;
     }
     :global(.weapon-rarity-rare) {
-        color: var(--color-rare);
+        color: var(--color-rare) !important;
     }
     :global(.weapon-rarity-epic) {
-        color: var(--color-epic);
+        color: var(--color-epic) !important;
     }
     :global(.weapon-rarity-legendary) {
-        color: var(--color-legendary);
+        color: var(--color-legendary) !important;
     }
 </style>
