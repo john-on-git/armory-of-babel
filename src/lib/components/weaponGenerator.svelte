@@ -33,7 +33,7 @@
      */
     let fadeLock = $state(false);
 
-    let isPortrait = new MediaQuery("orientation: portrait");
+    let isLandscape = new MediaQuery("orientation: landscape");
 
     const weapon = $derived.by<WeaponViewModel | null>(() => {
         if (odds === null || !weaponState?.res) {
@@ -252,23 +252,18 @@
             {/if}
         </div>
     </div>
-    {#if isPortrait.current}
-        <button
-            class="action-button portrait-generate-button"
-            data-testid="portrait-generate-button"
-            onclick={generateWeapon}>Generate</button
-        >
-    {:else}
-        <button
-            class="action-button generate-button"
-            data-testid="weapon-generator-generate-button"
-            onclick={generateWeapon}
-            aria-label="generate new weapon button"
-            disabled={weapon === null}
-        >
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </button>
 
+    <button
+        class="action-button generate-button"
+        data-testid="weapon-generator-generate-button"
+        onclick={generateWeapon}
+        aria-label="generate new weapon button"
+        disabled={weapon === null}
+    >
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+    </button>
+
+    {#if isLandscape.current}
         <button
             class="action-button back-button"
             data-testid="go-back-button"
@@ -342,6 +337,11 @@
             margin-left: 5vw;
             margin-right: 5vw;
         }
+
+        .header {
+            margin-top: 20pt;
+            margin-bottom: 20pt;
+        }
     }
 
     .body {
@@ -398,10 +398,20 @@
         right: 1vw;
     }
 
-    .generate-button {
-        right: 1vw;
-        top: 2.5vh;
+    @media (orientation: landscape) {
+        .generate-button {
+            right: 1vw;
+            top: 2.5vh;
 
-        font-size: 10rem;
+            font-size: 10rem;
+        }
+    }
+    @media (orientation: portrait) {
+        .generate-button {
+            bottom: 1rem;
+            right: 1rem;
+
+            font-size: 5rem;
+        }
     }
 </style>

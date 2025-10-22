@@ -279,7 +279,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
                     {
                         miscPower: true,
-                        desc: "Can transform into a pipe."
+                        desc: "Can transform into a wooden pipe."
                     },
                     {
                         rarity: {
