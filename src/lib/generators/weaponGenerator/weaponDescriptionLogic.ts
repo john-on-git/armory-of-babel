@@ -27,7 +27,7 @@ function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
         case 'plural':
             switch (type) {
                 case 'possession':
-                    return ' have ';
+                    return ' each have ';
                 case 'property':
                     return "";
                 case undefined:

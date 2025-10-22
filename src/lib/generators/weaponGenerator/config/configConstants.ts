@@ -26,7 +26,7 @@ export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)"
 
 export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies WeaponShapeGroup[];
 
-export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"] as const;
+export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Kanabo", "Keyblade", "Transforming Sniper Scythle"] as const;
 export const pointedWeaponShapes = ['Stiletto', 'Dirk', 'Rapier', 'Foil', 'Epee', 'Spear', 'Trident', 'Bident', 'Pike', 'Lance'] as const;
 
 // reused descriptors and materials
@@ -452,7 +452,7 @@ const eyeStructureGenSingular = mkGen((rng, weapon: Weapon) => [
 const eyeStructureGenPlural = mkGen((rng, weapon: Weapon) => [
     `one large eye mounted on them: it's ${eyeColorGen.generate(rng, weapon)}`,
     `a pair of eyes mounted on them: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `three eyes mounted on them a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
+    `three eyes mounted on them in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
     `four eyes mounted on them in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
     ...(weapon.themes.includes('dark') ? [
         `a cluster of eyes on them: they're ${eyeColorGen.generate(rng, weapon)}`,
@@ -500,7 +500,7 @@ const themedAnimal = mkGen((rng, weapon: Weapon) => {
         earth: ["a mountain goat's"],
         dark: ["a snake's"],
         sweet: ["a cat's"],
-    } satisfies Partial<Record<Theme, string[]>>;
+    } as const satisfies Partial<Record<Theme, string[]>>;
 
     return [...pickForTheme(weapon, themedAnimals, rng) ?? [], ...sharedAnimals].choice(rng);
 })
@@ -710,6 +710,13 @@ export const MISC_DESC_FEATURES = {
                     plural: `a mouth with dozens of razor teeth`
                 }
             },
+            generic: {
+                descriptor: {
+                    descType: 'possession',
+                    singular: `a mouth with sharp teeth`,
+                    plural: `a mouth with sharp teeth`
+                }
+            },
             vampire: {
                 descriptor: {
                     descType: 'possession',
@@ -748,7 +755,7 @@ export const MISC_DESC_FEATURES = {
 
 // weapon parts
 
-export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'grip', 'axeHead', 'maceHead', 'maceHeads', 'limbs', 'orb', 'pommel', 'quiver', 'shaft', 'string', 'tip'] as const satisfies WeaponPartName[];
+export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'grip', 'axeHead', 'maceHead', 'maceHeads', 'limbs', 'pommel', 'quiver', 'shaft', 'string', 'tip'] as const satisfies WeaponPartName[];
 
 /**
  * The main / signature part the weapon
@@ -774,7 +781,7 @@ export const eyeAcceptingParts = ['crossguard', 'axeHead', 'maceHead', 'maceHead
 /**
  * Parts of a weapon that a sentient weapon's mouth can be placed on.
  */
-export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'orb', 'axeHead', 'tip', 'base', 'quiver'] as const satisfies WeaponPartName[];
+export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'body', 'axeHead', 'maceHead', 'maceHeads', 'tip', 'base', 'quiver'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).

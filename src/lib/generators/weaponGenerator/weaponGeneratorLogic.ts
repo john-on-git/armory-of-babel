@@ -8,8 +8,36 @@ import _ from "lodash";
 import seedrandom, { type PRNG } from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { commonDieSizes, type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
 
+/**
+ * Get the maximum amount of damage that can be dealt by a given roll.
+ */
+export function maxDamage(damage: DamageDice): number {
+    let n = damage['const'] ?? 0;
+    for (const k of commonDieSizes) {
+        n += damage[`d${k}`] ?? 0;
+    }
+    return n;
+}
+
+/**
+ * Apply a function to a weapon's damage, i.e. to multiply it by a given number
+ * 'damage as' will be omitted, and replaced with d6
+ * @param damage the weapon's damage. 
+ * @param f the function to apply
+ * @returns the damage dice after the function was applied
+ */
+export function modDamage(damage: Weapon['damage'], f: (x: number) => number): DamageDice {
+    const { as, d6, ...rest } = damage;
+    return _.mapValues(
+        {
+            d6: 1 + (d6 ?? 0),
+            ...rest
+        },
+        x => x === undefined ? undefined : f(x)
+    );
+}
 
 /**
  * Determines whether a weapon part is one or many.
@@ -165,7 +193,7 @@ function applyBonuses(weapon: Weapon, bonus: PassiveBonus) {
     }
 }
 
-function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon) {
+function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon, silent = false) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined) {
         if (weapon.description === null) {
             return undefined
@@ -200,6 +228,9 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator:
                 UUID: descriptorGenerator.UUID
             };
         }
+        else if (!silent) {
+            console.error('\x1b[31mfailed to get a part for', descriptorGenerator.UUID);
+        }
     }
     else {
         const choice = choosePart(rng, false, descriptorGenerator.applicableTo);
@@ -212,6 +243,9 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator:
                 ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
                 UUID: descriptorGenerator.UUID
             });
+        }
+        else if (!silent) {
+            console.error('\x1b[31mfailed to get a part for', descriptorGenerator.UUID);
         }
     }
 }
@@ -232,7 +266,7 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
             case "dark":
                 return { pre: 'Evil' };
             case "sweet":
-                return { pre: 'Sugar' };
+                return { pre: 'Sugary' };
             case "sour":
                 return { pre: 'Acid' };
             case "wizard":
@@ -270,10 +304,11 @@ export function genMaybeGen<T, TArgs extends Array<unknown>>(x: T | ((TGenerator
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
-export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
+export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity, silent = false): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
     // features may provide pieces of description, which are stored here
     const featureDescriptorProviders = new Set<string>();
+    const tryPushProviders = (UUIDSource: string | string[] = []) => UUIDSource instanceof Array ? UUIDSource.forEach(tryPushProvider) : tryPushProvider(UUIDSource);
     /**
      * Handle a possibly invalid request for a descriptor. Applying the descriptor if it's valid, or ignoring it and printing an error if it isn't.
      * @param UUID the UUID of the requested descriptor, or undefined if one wasn't requested
@@ -283,7 +318,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             if (featureProviders.descriptorIndex[UUID]) {
                 featureDescriptorProviders.add(UUID);
             }
-            else {
+            else if (!silent) {
                 console.error(`\x1b[31mfeature requested the descriptor "${UUID}" but it was falsey: implement this descriptor.`)
             }
         }
@@ -419,7 +454,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 desc: genMaybeGen(gennedChoice.desc, rng, weapon)
             });
 
-            tryPushProvider(gennedChoice.descriptorPartGenerator);
+            tryPushProviders(gennedChoice.descriptorPartGenerator);
 
             if (gennedChoice.bonus) {
                 applyBonuses(weapon, gennedChoice.bonus);
@@ -442,7 +477,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 ...gennedChoice
             });
 
-            tryPushProvider(gennedChoice.descriptorPartGenerator);
+            tryPushProviders(gennedChoice.descriptorPartGenerator);
 
             if (gennedChoice.bonus) {
                 applyBonuses(weapon, gennedChoice.bonus);
@@ -460,7 +495,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 cost: 'at will',
             });
 
-            tryPushProvider(gennedChoice.descriptorPartGenerator);
+            tryPushProviders(gennedChoice.descriptorPartGenerator);
 
             if (gennedChoice.bonus) {
                 applyBonuses(weapon, gennedChoice.bonus);
@@ -484,7 +519,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
     for (const UUID of featureDescriptorProviders.values()) {
-        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex[UUID], weapon);
+        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex[UUID], weapon, silent);
 
         nDescriptors++;
         if (nDescriptors >= maxDescriptors) {
@@ -497,17 +532,17 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
 
 
-        applyDescriptionPartProvider(rng, descriptorProvider, weapon);
+        applyDescriptionPartProvider(rng, descriptorProvider, weapon, silent);
         nDescriptors++;
     }
 
     // if it is sentient, also apply eyes and a mouth
     if (weapon.sentient) {
-        if (!hasEyes(weapon)) {
-            applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-eyes'], weapon);
-        }
         if (!hasMouth(weapon)) {
-            //applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-mouth'], weapon, structure, weapon.description);
+            applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-mouth'], weapon, silent);
+        }
+        if (!hasEyes(weapon)) {
+            applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-eyes'], weapon, silent);
         }
     }
 
@@ -572,10 +607,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 }
 
 
-export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig) {
+export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig, silent = false) {
     return {
         weapons: weaponRarities.reduce((acc, rarity) => {
-            acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, rarity).weaponViewModel
+            acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, rarity, silent).weaponViewModel
             return acc;
         }, {} as Record<WeaponRarity, WeaponViewModel>),
         n: seedrandom(rngSeed)()
