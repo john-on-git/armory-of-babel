@@ -10,7 +10,6 @@
 </script>
 
 {#snippet sidebarContent()}
-    <p>This is my sidebar content</p>
     <p>I have config {config?.toString()}</p>
 {/snippet}
 
