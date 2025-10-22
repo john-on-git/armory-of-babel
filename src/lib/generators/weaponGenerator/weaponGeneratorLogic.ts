@@ -35,7 +35,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].material = {
                 desc: genMaybeGen(descriptor.material, rng, weapon),
-                ephitet: 'pre' in descriptor.ephitet ? { pre: genMaybeGen(descriptor.ephitet.pre, rng, weapon) } : { post: genMaybeGen(descriptor.ephitet.post, rng, weapon) },
+                ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
             };
         }
@@ -47,7 +47,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
                 desc: genMaybeGen(descriptor.descriptor, rng, weapon),
-                ephitet: 'pre' in descriptor.ephitet ? { pre: genMaybeGen(descriptor.ephitet.pre, rng, weapon) } : { post: genMaybeGen(descriptor.ephitet.post, rng, weapon) },
+                ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
             });
         }
@@ -482,6 +482,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             switch (name) {
                 case 'blades':
                 case 'limbs':
+                case 'heads':
+                case 'chains':
                     return 'are';
                 default:
                     return 'is';
@@ -518,12 +520,12 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         if (weapon.sentient === false) {
             weapon.name = 'pre' in ephitet
                 ? `${ephitet.pre} ${weapon.shape.particular}`
-                : `The ${weapon.shape.particular}${ephitet.post} `;
+                : `The ${weapon.shape.particular} ${ephitet.post}`;
         }
         else {
             const ephitetAndShape = 'pre' in ephitet
                 ? `${ephitet.pre} ${weapon.shape.particular}`
-                : `${weapon.shape.particular}${ephitet.post} `;
+                : `${weapon.shape.particular} ${ephitet.post}`;
 
             weapon.name = `${personalName}, the ${ephitetAndShape}`
         }
