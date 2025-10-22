@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { hardNonHoldingParts, holdingParts, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -48,7 +48,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -65,11 +65,10 @@ export default {
                             MATERIALS.copper,
                             MATERIALS.bronze,
                             MATERIALS.flint,
-                            MATERIALS.obsidian
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -91,7 +90,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -115,7 +114,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -135,7 +134,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -168,7 +167,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -189,7 +188,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -212,7 +211,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -232,7 +231,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -253,7 +252,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -280,7 +279,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -301,7 +300,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -319,7 +318,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -383,7 +382,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
@@ -420,7 +419,7 @@ export default {
                         ].choice(rng);
                     },
                     applicableTo: {
-                        any: hardNonHoldingParts
+                        any: importantPart
                     }
                 },
                 {
