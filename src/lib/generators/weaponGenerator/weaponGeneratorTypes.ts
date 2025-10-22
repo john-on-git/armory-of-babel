@@ -278,6 +278,10 @@ export interface WeaponPart {
 }
 
 
+/**
+ * Strings naming the parts of a weapon, in lowercase. If the first character is 'P', then the part is plural and the P should be removed before it is displayed.
+ * Yes I know that's dumb, but the interface demands it be a string. Best I can do without a bunch of refactoring.  
+ */
 interface WeaponStructure {
     /**
      * The part(s) of the weapon that hurt people.
@@ -298,6 +302,11 @@ interface WeaponStructure {
 const weaponStructures = {
     swordLike: {
         business: ['blade'],
+        holding: ['grip'],
+        other: ['crossguard', 'pommel']
+    },
+    multiSwordLike: {
+        business: ['blades'],
         holding: ['grip'],
         other: ['crossguard', 'pommel']
     },
@@ -349,6 +358,7 @@ const shapeToStructure = {
     "club": 'clubLike',
     "staff": 'staffLike',
     "sword": 'swordLike',
+    "Macuahuitl": "multiSwordLike",
     "axe": 'axeLike',
     "mace": 'maceLike',
 
@@ -363,7 +373,7 @@ const shapeToStructure = {
     "dagger (or pistol)": 'gunSwordLike',
     "sword (or musket)": 'gunSwordLike',
     "greataxe (or musket)": "axeLike",
-} as const satisfies Record<WeaponShapeGroup, keyof typeof weaponStructures>
+} as const satisfies Record<WeaponShapeGroup | string, keyof typeof weaponStructures>
 
 export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
 export type StructuredDescription = {
@@ -372,20 +382,31 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
+type Ephitet = {
+    pre: string | TGenerator<string, [Weapon]>;
+} | {
+    post: string | TGenerator<string, [Weapon]>;
+};
+
 export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & {
-    ephitet: {
-        pre: string | TGenerator<string, [Weapon]>;
-    } | {
-        post: string | TGenerator<string, [Weapon]>;
-    };
+    ephitet: Ephitet;
 };
 export type DescriptorGenerator<TArgs extends Array<unknown> = []> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
 };
 
 
-export function structureFor<T extends WeaponShapeGroup>(shape: T) {
-    const structure = weaponStructures[shapeToStructure[shape]];
+export function structureDescFor(shape: WeaponShape) {
+    function getStructure(shape: WeaponShape) {
+
+        switch (shape.particular) {
+            case 'Macuahuitl':
+                return weaponStructures[shapeToStructure[shape.particular]];
+            default:
+                return weaponStructures[shapeToStructure[shape.group]];
+        }
+    }
+    const structure = getStructure(shape);
 
     const structuredDesc = {
         business: structure.business.reduce((acc, partName) => {
@@ -408,7 +429,6 @@ export function structureFor<T extends WeaponShapeGroup>(shape: T) {
         }, {} as Record<WeaponPartName, WeaponPart>),
 
     };
-
     return [structure, structuredDesc as StructuredDescription] as const;
 }
 

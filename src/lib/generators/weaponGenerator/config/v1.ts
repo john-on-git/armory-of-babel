@@ -2,7 +2,7 @@ import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/gen
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
 import { grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { genMaybeGen, mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -101,14 +101,13 @@ export default {
             ),
             new ProviderElement('material-fire-holding',
                 {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS.scorchedWood,
-                            MATERIALS.glass,
-                            MATERIALS.quartz,
-                            MATERIALS.porcelain
-                        ].choice(rng);
-                    },
+                    generate: (rng) => genMaybeGen([
+                        MATERIALS.scorchedWood,
+                        MATERIALS.glass,
+                        MATERIALS.quartz,
+                        MATERIALS.porcelain,
+                        MATERIALS.hotHorn
+                    ].choice(rng), rng),
                     applicableTo: {
                         any: holdingParts
                     }
@@ -615,20 +614,6 @@ export default {
                 }
             ),
 
-            new ProviderElement('misc-wrapping',
-                {
-                    generate: (rng) => [
-                        MISC_DESC_FEATURES.wrap.bannerWrap,
-                        MISC_DESC_FEATURES.wrap.silverChainWrap,
-                        MISC_DESC_FEATURES.wrap.goldChainWrap,
-                        MISC_DESC_FEATURES.wrap.beadsWrap,
-                    ].choice(rng),
-                    applicableTo: {
-                        any: wrappableParts
-                    }
-                },
-                {}
-            ),
             new ProviderElement('misc-charm-emojis',
                 {
                     generate: () => MISC_DESC_FEATURES.charm.emojis,
