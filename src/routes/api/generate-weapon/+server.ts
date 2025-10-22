@@ -35,8 +35,6 @@ function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponR
 }
 
 export async function GET({ request }: { request: Request, }) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     // if we pass the url straight to URLSearchParams, it'll include the URL with the first parameter, for some reason?
     const iStartOfQuery = request.url.indexOf('?');
     const location = request.url.slice(iStartOfQuery);
