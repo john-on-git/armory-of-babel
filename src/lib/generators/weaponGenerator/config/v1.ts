@@ -8,10 +8,10 @@ import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionContr
 
 const agentOfExtractivism = mkGen((rng) =>
     [
-        'a logging company',
-        'a mining company',
-        'a fur trader',
-        'a poacher'
+        "a logging company",
+        "a mining company",
+        "a fur trader",
+        "a poacher"
     ].choice(rng)
 );
 
@@ -50,7 +50,7 @@ export default {
                     "blazing",
                     "roaring",
                     "crackling"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['fire'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["fire"] } }))
             ),
             ...(
                 [
@@ -60,7 +60,7 @@ export default {
                     "polar",
                     "Frostbound",
                     "Icebound"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['ice'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["ice"] } }))
             ),
             ...(
                 [
@@ -69,7 +69,7 @@ export default {
                     "abyssal",
                     "spiked",
                     "Blood-Stained"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['dark'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["dark"] } }))
             ),
             ...(
                 [
@@ -82,7 +82,7 @@ export default {
                     "solar",
                     "lunar",
                     "prismatic",
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['light'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["light"] } }))
             ),
             ...(
                 [
@@ -92,45 +92,45 @@ export default {
                     "Sugar-Glazed",
                     "Honey-Frosted",
                     "Sugar-Frosted"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['sweet'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["sweet"] } }))
             ),
             ...(
                 [
                     "corroded",
                     "corrosive"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['sour'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["sour"] } }))
             ),
             ...(
                 [
                     "Silk-Wrapped",
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['wizard'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["wizard"] } }))
             ),
             ...(
                 [
                     "crystal",
                     "amethyst"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ['wizard'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ["wizard"] } }))
             ),
             ...(
                 [
                     "brass",
                     "clockwork"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ['steampunk'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ["steampunk"] } }))
             ),
             ...(
                 [
                     "heavy",
                     "rough",
                     "slag"
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['earth'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["earth"] } }))
             ),
             ...(
                 [
                     "gossamer",
                     "rusted",
-                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['cloud'] } }))
+                ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["cloud"] } }))
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('tin',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("tin",
 
                 {
                     desc: "tin",
@@ -142,7 +142,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('copper',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("copper",
 
                 {
                     desc: "copper",
@@ -154,7 +154,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('oak',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("oak",
 
                 {
                     desc: "oak",
@@ -165,7 +165,7 @@ export default {
                         lte: "uncommon"
                     }
                 }),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('pine',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("pine",
 
                 {
                     desc: "pine",
@@ -177,7 +177,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('sandstone',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("sandstone",
 
                 {
                     desc: "sandstone",
@@ -195,7 +195,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('granite',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("granite",
 
                 {
                     desc: "granite",
@@ -207,7 +207,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('alabaster',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("alabaster",
 
                 {
                     desc: "alabaster",
@@ -219,7 +219,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('marble',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("marble",
 
                 {
                     desc: "marble",
@@ -231,7 +231,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('silver',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("silver",
 
                 {
                     desc: "silver",
@@ -243,7 +243,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('gold',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("gold",
 
                 {
                     desc: "gold",
@@ -255,7 +255,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('black-iron',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("black-iron",
 
                 {
                     desc: "black iron",
@@ -267,7 +267,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('silver',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("silver",
 
                 {
                     desc: "silver",
@@ -279,7 +279,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('mythril',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("mythril",
 
                 {
                     desc: "mythril",
@@ -291,7 +291,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('adamant',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("adamant",
 
                 {
                     desc: "adamant"
@@ -303,7 +303,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('cobalt',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("cobalt",
 
                 {
                     desc: "cobalt",
@@ -315,7 +315,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('radium',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("radium",
 
                 {
                     desc: "radium"
@@ -327,7 +327,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('diamond',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("diamond",
                 {
                     desc: "diamond",
                 },
@@ -344,7 +344,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('opal',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("opal",
                 {
                     desc: "opal",
                 },
@@ -361,7 +361,7 @@ export default {
                     },
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('ruby',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("ruby",
                 {
                     desc: "ruby"
                 },
@@ -378,7 +378,7 @@ export default {
                     },
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('emerald',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("emerald",
                 {
                     desc: "emerald",
                 },
@@ -396,7 +396,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('sapphire',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("sapphire",
                 {
                     desc: "sapphire",
                 },
@@ -414,7 +414,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('flint',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("flint",
                 {
                     desc: "flint",
                 },
@@ -432,7 +432,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('onyx',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("onyx",
                 {
                     desc: "onyx",
                 },
@@ -450,7 +450,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('quartz',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("quartz",
                 {
                     desc: "quartz",
                 },
@@ -461,7 +461,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('glass',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("glass",
                 {
                     desc: "glass",
                 },
@@ -480,7 +480,7 @@ export default {
                     }
                 },
             ),
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('lumensteel',
+            new ProviderElement<WeaponAdjective, WeaponPowerCond>("lumensteel",
                 {
                     desc: "lumensteel",
                 },
@@ -490,7 +490,7 @@ export default {
                     }
                 }
             ),
-            // new ProviderElement<WeaponAdjective, WeaponPowerCond>('TODO',
+            // new ProviderElement<WeaponAdjective, WeaponPowerCond>("TODO",
 
             // ),
         ]
@@ -498,7 +498,7 @@ export default {
     personalities: {
         add: [
 
-            new ProviderElement<Personality, WeaponPowerCond>('vengeful',
+            new ProviderElement<Personality, WeaponPowerCond>("vengeful",
                 {
                     desc: "Vengeful."
                 },
@@ -509,7 +509,7 @@ export default {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>('cruel',
+            new ProviderElement<Personality, WeaponPowerCond>("cruel",
                 {
                     desc: "Cruel."
                 },
@@ -520,7 +520,7 @@ export default {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>('curious',
+            new ProviderElement<Personality, WeaponPowerCond>("curious",
                 {
                     desc: "Curious."
                 },
@@ -531,7 +531,7 @@ export default {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>('know-it-all',
+            new ProviderElement<Personality, WeaponPowerCond>("know-it-all",
                 {
                     desc: "Know-it-All."
                 },
@@ -615,8 +615,8 @@ export default {
                     "Detail-Oriented"
                 ]
             }, (theme, personality, i) => {
-                const formatted = personality.capFirst() + '.';
-                return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, '-')}-${i}`,
+                const formatted = personality.capFirst() + ".";
+                return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
                     {
                         desc: formatted
                     },
@@ -630,7 +630,7 @@ export default {
     },
     rechargeMethods: {
         add: [
-            new ProviderElement<Personality, WeaponPowerCond>('recharge-at-winter-solstice',
+            new ProviderElement<Personality, WeaponPowerCond>("recharge-at-winter-solstice",
                 {
                     desc: mkWepToGen("all charges at noon on the winter solstice")
                 },
@@ -641,7 +641,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>('recharge-at-summer-solstice',
+            new ProviderElement<Personality, WeaponPowerCond>("recharge-at-summer-solstice",
                 {
                     desc: mkWepToGen("all charges at noon on the summer solstice")
                 },
@@ -688,25 +688,25 @@ export default {
                     ],
                     cloud: [
                         mkGen("all charges when struck by lightning"),
-                        mkGen('all charges when its wielder survives a significant fall'),
-                        mkGen('one charge each time you defeat a winged creature, or all charges if it was also a powerful foe'),
+                        mkGen("all charges when its wielder survives a significant fall"),
+                        mkGen("one charge each time you defeat a winged creature, or all charges if it was also a powerful foe"),
                     ],
                     wizard: [
-                        mkGen('one charge when you cast one of your own spells'),
-                        mkGen('all charges when its wielder learns a new spell'),
-                        mkGen('all charges when its wielder wins a wizard duel'),
-                        mkGen('one charge when its wielder finishes reading a new book'),
-                        mkGen('all charges when its wielder views the night sky'),
+                        mkGen("one charge when you cast one of your own spells"),
+                        mkGen("all charges when its wielder learns a new spell"),
+                        mkGen("all charges when its wielder wins a wizard duel"),
+                        mkGen("one charge when its wielder finishes reading a new book"),
+                        mkGen("all charges when its wielder views the night sky"),
                     ],
                     steampunk: [
-                        mkGen('all charges when its wielder invents something'),
-                        mkGen('all charges when its wielder throws a tea party'),
+                        mkGen("all charges when its wielder invents something"),
+                        mkGen("all charges when its wielder throws a tea party"),
                         mkGen("one charge when its wielder breaks news"),
                     ],
                     earth: [
-                        mkGen('one charge when its wielder throws a rock at something important'),
-                        mkGen('all charges when its wielder meditates atop a mountain'),
-                        mkGen('all charges when driven into the ground while something important is happening')
+                        mkGen("one charge when its wielder throws a rock at something important"),
+                        mkGen("all charges when its wielder meditates atop a mountain"),
+                        mkGen("all charges when driven into the ground while something important is happening")
                     ],
                     nature: [
                         new StringGenerator(["all charges when its wielder drives ", agentOfExtractivism, " to bankruptcy"])
@@ -724,7 +724,7 @@ export default {
     },
     actives: {
         add: [
-            new ProviderElement<ActivePower, WeaponPowerCond>('weapon-animal-transformation',
+            new ProviderElement<ActivePower, WeaponPowerCond>("weapon-animal-transformation",
                 {
                     desc: mkWepToGen("Animal Transformation"),
                     cost: 2,
@@ -739,33 +739,33 @@ export default {
                 },
                 {
                     themes: {
-                        any: ['nature'],
+                        any: ["nature"],
                     },
                     allowDuplicates: true
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>(
-                'fireball',
+                "fireball",
                 { desc: "Fire Ball", cost: 4 },
                 {
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('wall-of-fire',
+            new ProviderElement<ActivePower, WeaponPowerCond>("wall-of-fire",
                 {
                     desc: "Wall of Fire",
                     cost: 4
                 },
                 {
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('control-hot-weather',
+            new ProviderElement<ActivePower, WeaponPowerCond>("control-hot-weather",
                 {
                     desc: "Control Weather",
                     cost: 2,
@@ -774,12 +774,12 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('control-flames',
+            new ProviderElement<ActivePower, WeaponPowerCond>("control-flames",
                 {
                     desc: "Control Flames",
                     cost: 1,
@@ -788,12 +788,12 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-fire-elemental',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-fire-elemental",
                 {
                     desc: "Summon Fire Elemental",
                     cost: 6,
@@ -802,23 +802,23 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "epic"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('wall-of-ice',
+            new ProviderElement<ActivePower, WeaponPowerCond>("wall-of-ice",
                 {
                     desc: "Wall of Ice",
                     cost: 4,
                 },
                 {
-                    themes: { any: ['ice'] },
+                    themes: { any: ["ice"] },
                     rarity: {
                         gte: "rare"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('control-cold-weather',
+            new ProviderElement<ActivePower, WeaponPowerCond>("control-cold-weather",
                 {
                     desc: "Control Weather",
                     cost: 3,
@@ -827,12 +827,12 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['ice'] },
+                    themes: { any: ["ice"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('ice-strike',
+            new ProviderElement<ActivePower, WeaponPowerCond>("ice-strike",
                 {
                     desc: "Chilling Strike",
                     cost: 2,
@@ -841,12 +841,12 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['ice'] },
+                    themes: { any: ["ice"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-ice-elemental',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-ice-elemental",
                 {
                     desc: "Summon Ice Elemental",
                     cost: 6,
@@ -855,46 +855,46 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['ice'] },
+                    themes: { any: ["ice"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('commune-demon',
+            new ProviderElement<ActivePower, WeaponPowerCond>("commune-demon",
                 {
                     desc: "Commune With Demon",
                     cost: 2,
                 },
                 {
-                    themes: { any: ['dark'] },
+                    themes: { any: ["dark"] },
                     rarity: {
                         gte: "uncommon"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('turn-holy',
+            new ProviderElement<ActivePower, WeaponPowerCond>("turn-holy",
                 {
                     desc: "Turn Priests & Angels",
                     cost: 2,
                 },
                 {
-                    themes: { any: ['dark'] },
+                    themes: { any: ["dark"] },
                     rarity: {
                         gte: "uncommon"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('darkness',
+            new ProviderElement<ActivePower, WeaponPowerCond>("darkness",
                 {
                     desc: "Darkness",
                     cost: 1
                 },
                 {
-                    themes: { any: ['dark'] },
+                    themes: { any: ["dark"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-demon',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-demon",
                 {
                     desc: "Summon Demon",
                     cost: 6,
@@ -903,43 +903,43 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['dark'] },
+                    themes: { any: ["dark"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('commune-divinity',
+            new ProviderElement<ActivePower, WeaponPowerCond>("commune-divinity",
                 {
                     desc: "Commune With Divinity",
                     cost: 4,
                 },
                 {
-                    themes: { any: ['light'] },
+                    themes: { any: ["light"] },
                     rarity: {
                         gte: "uncommon"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('turn-undead',
+            new ProviderElement<ActivePower, WeaponPowerCond>("turn-undead",
                 {
                     desc: "Turn Undead",
                     cost: 2
                 },
                 {
-                    themes: { any: ['light'] },
+                    themes: { any: ["light"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('light',
+            new ProviderElement<ActivePower, WeaponPowerCond>("light",
                 {
                     desc: "Light",
                     cost: 1
                 },
                 {
-                    themes: { any: ['light'] },
+                    themes: { any: ["light"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-angel',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-angel",
                 {
                     desc: "Summon Angel",
                     cost: 6,
@@ -948,22 +948,22 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['light'] },
+                    themes: { any: ["light"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('charm-person',
+            new ProviderElement<ActivePower, WeaponPowerCond>("charm-person",
                 {
                     desc: "Charm Person",
                     cost: 2
                 },
                 {
-                    themes: { any: ['sweet'] },
+                    themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('sweetberry',
+            new ProviderElement<ActivePower, WeaponPowerCond>("sweetberry",
                 {
                     desc: "Sweetberry",
                     cost: 3,
@@ -972,10 +972,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['sweet'] },
+                    themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('sugar-spray',
+            new ProviderElement<ActivePower, WeaponPowerCond>("sugar-spray",
                 {
                     desc: "Sugar Spray",
                     cost: 1,
@@ -984,10 +984,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['sweet'] },
+                    themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('caustic-strike',
+            new ProviderElement<ActivePower, WeaponPowerCond>("caustic-strike",
                 {
                     desc: "Caustic Strike",
                     cost: 2,
@@ -996,10 +996,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['sour'] },
+                    themes: { any: ["sour"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('locate-lemon',
+            new ProviderElement<ActivePower, WeaponPowerCond>("locate-lemon",
                 {
                     desc: "Locate Lemon",
                     cost: 1,
@@ -1008,13 +1008,13 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['sour'] },
+                    themes: { any: ["sour"] },
                     rarity: {
-                        lte: 'uncommon'
+                        lte: "uncommon"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('cause-nausea',
+            new ProviderElement<ActivePower, WeaponPowerCond>("cause-nausea",
                 {
                     desc: "Cause Nausea",
                     cost: 1,
@@ -1023,10 +1023,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['sour'] },
+                    themes: { any: ["sour"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-acid-elemental',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-acid-elemental",
                 {
                     desc: "Summon Acid Elemental",
                     cost: 6,
@@ -1035,31 +1035,31 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['sour'] },
+                    themes: { any: ["sour"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('magic-missile',
+            new ProviderElement<ActivePower, WeaponPowerCond>("magic-missile",
                 {
                     desc: "Magic Missile",
                     cost: 2
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('magic-shield',
+            new ProviderElement<ActivePower, WeaponPowerCond>("magic-shield",
                 {
                     desc: "Magic Shield",
                     cost: 2
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('magic-parry',
+            new ProviderElement<ActivePower, WeaponPowerCond>("magic-parry",
                 {
                     desc: "Magic Parry",
                     cost: "equal to spell's level",
@@ -1070,10 +1070,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('instant-message',
+            new ProviderElement<ActivePower, WeaponPowerCond>("instant-message",
                 {
                     desc: "Instant Message",
                     cost: 1,
@@ -1082,10 +1082,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('create-wizard-servant',
+            new ProviderElement<ActivePower, WeaponPowerCond>("create-wizard-servant",
                 {
                     desc: "Create Servant",
                     cost: 3,
@@ -1094,10 +1094,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-steam-elemental',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-steam-elemental",
                 {
                     desc: "Summon Steam Elemental",
                     cost: 6,
@@ -1106,13 +1106,13 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['steampunk'] },
+                    themes: { any: ["steampunk"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('power-machine',
+            new ProviderElement<ActivePower, WeaponPowerCond>("power-machine",
                 {
                     desc: "Power Machine",
                     cost: 1,
@@ -1121,10 +1121,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['steampunk'] },
+                    themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-water-elemental',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-water-elemental",
                 {
                     desc: "Summon Water Elemental",
                     cost: 6,
@@ -1133,13 +1133,13 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('zephyr-strike',
+            new ProviderElement<ActivePower, WeaponPowerCond>("zephyr-strike",
                 {
                     desc: "Zephyr Strike",
                     cost: 2,
@@ -1149,10 +1149,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('wind-blast',
+            new ProviderElement<ActivePower, WeaponPowerCond>("wind-blast",
                 {
                     desc: "Wind Blast",
                     cost: 2,
@@ -1161,10 +1161,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-lightning',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-lightning",
                 {
                     desc: "Summon Lightning",
                     cost: 4,
@@ -1173,43 +1173,43 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('wall-of-stone',
+            new ProviderElement<ActivePower, WeaponPowerCond>("wall-of-stone",
                 {
                     desc: "Wall of stone",
                     cost: 4,
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "rare"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('petrify-person',
+            new ProviderElement<ActivePower, WeaponPowerCond>("petrify-person",
                 {
                     desc: "Petrify Person",
                     cost: 5,
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "rare"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('cure-petrify',
+            new ProviderElement<ActivePower, WeaponPowerCond>("cure-petrify",
                 {
                     desc: "Cure Petrification",
                     cost: 2
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-earth-elemental',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-earth-elemental",
                 {
                     desc: "Summon Earth Elemental",
                     cost: 6,
@@ -1218,22 +1218,22 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('instant-tree',
+            new ProviderElement<ActivePower, WeaponPowerCond>("instant-tree",
                 {
                     desc: "Instant Tree",
                     cost: 1
                 },
                 {
-                    themes: { any: ['nature'] },
+                    themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('summon-chomp-flower',
+            new ProviderElement<ActivePower, WeaponPowerCond>("summon-chomp-flower",
                 {
                     desc: "Instant Chomp-Flower",
                     cost: 2,
@@ -1242,10 +1242,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['nature'] },
+                    themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement<ActivePower, WeaponPowerCond>('vine-hook',
+            new ProviderElement<ActivePower, WeaponPowerCond>("vine-hook",
                 {
                     desc: "Vine Hook",
                     cost: 1,
@@ -1255,14 +1255,14 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ['nature'] },
+                    themes: { any: ["nature"] },
                 }
             ),
         ]
     },
     passives: {
         add: [
-            new ProviderElement<PassivePower, WeaponPowerCond>('detect-unholy',
+            new ProviderElement<PassivePower, WeaponPowerCond>("detect-unholy",
                 {
                     miscPower: true,
                     desc: () => new StringGenerator([
@@ -1274,11 +1274,11 @@ export default {
                 {
 
                     themes: {
-                        any: ['light'],
+                        any: ["light"],
                     },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('command-critters',
+            new ProviderElement<PassivePower, WeaponPowerCond>("command-critters",
                 {
                     miscPower: true,
                     desc: "Cute animals follow the wielder's polite requests i.e. cats and forest birds."
@@ -1290,10 +1290,10 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('detect-unholy',
+            new ProviderElement<PassivePower, WeaponPowerCond>("detect-unholy",
                 {
                     miscPower: true,
-                    desc: "Weapon can telepathically control bees within 100-ft. They can only understand simple commands."
+                    desc: "The weapon can telepathically control bees within 100-ft. They can only understand simple commands."
                 },
                 {
 
@@ -1302,17 +1302,17 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('focus-light-beam',
+            new ProviderElement<PassivePower, WeaponPowerCond>("focus-light-beam",
                 {
                     miscPower: true,
-                    desc: () => new StringGenerator(["Can reflect and focus ", mkGen((rng) => ['sun', 'moon'].choice(rng)), "light as a damaging beam (2d6 damage)."])
+                    desc: () => new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."])
                 },
                 {
 
-                    themes: { any: ['light'] }
+                    themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('move-silently',
+            new ProviderElement<PassivePower, WeaponPowerCond>("move-silently",
                 {
                     miscPower: true,
                     desc: "Wielder is able to move completely silently.",
@@ -1330,7 +1330,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('magically-hovers',
+            new ProviderElement<PassivePower, WeaponPowerCond>("magically-hovers",
                 {
                     miscPower: true,
                     desc: "Can hover in the air to attack for you hands free. Commanding a floating weapon uses the same rules as followers / retainers.",
@@ -1348,17 +1348,20 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('resistance-fire',
+            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-fire",
                 {
                     miscPower: true,
                     desc: "Wielder takes half damage from fire."
                 },
                 {
 
-                    themes: { any: ['fire'] }
+                    themes: { any: ["fire"] },
+                    rarity: {
+                        lte: "uncommon"
+                    }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('immunity-fire',
+            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-fire",
                 {
 
                     miscPower: true,
@@ -1366,13 +1369,13 @@ export default {
                 },
                 {
 
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('damage-bonus-fire',
+            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-fire",
                 {
                     miscPower: true,
                     desc: "Wreathed in flames, glows like a torch",
@@ -1384,10 +1387,10 @@ export default {
                 },
                 {
 
-                    themes: { any: ['fire'] }
+                    themes: { any: ["fire"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('expertise-blacksmithing',
+            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-blacksmithing",
                 {
 
                     miscPower: true,
@@ -1395,11 +1398,11 @@ export default {
                 },
                 {
 
-                    themes: { any: ['fire'] },
+                    themes: { any: ["fire"] },
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('resistance-cold',
+            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-cold",
                 {
 
                     miscPower: true,
@@ -1407,20 +1410,23 @@ export default {
                 },
                 {
 
-                    themes: { any: ['ice'] }
+                    themes: { any: ["ice"] },
+                    rarity: {
+                        lte: "uncommon"
+                    }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('immunity-cold',
+            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-cold",
                 {
                     miscPower: true,
                     desc: "Wielder cannot be harmed by ice & cold."
                 },
                 {
 
-                    themes: { any: ['ice'] }
+                    themes: { any: ["ice"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('damage-bonus-ice-blunt',
+            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-ice-blunt",
                 {
                     miscPower: true,
                     desc: "Wreathed in frigid mist.",
@@ -1432,7 +1438,7 @@ export default {
                 },
                 {
 
-                    themes: { any: ['ice'] },
+                    themes: { any: ["ice"] },
                     shapeFamily: {
                         none: [
                             "dagger",
@@ -1442,7 +1448,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('damage-bonus-ice-sharp',
+            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-ice-sharp",
                 {
                     miscPower: true,
                     desc: "Wreathed in ice, always frozen into its sheath. Requires a strength save to draw.",
@@ -1454,7 +1460,7 @@ export default {
                 },
                 {
 
-                    themes: { any: ['ice'] },
+                    themes: { any: ["ice"] },
                     shapeFamily: {
                         any: [
                             "dagger",
@@ -1464,17 +1470,17 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('sense-cold-weather',
+            new ProviderElement<PassivePower, WeaponPowerCond>("sense-cold-weather",
                 {
                     miscPower: true,
                     desc: "1-in-2 chance to sense icy weather before it hits, giving just enough time to escape."
                 },
                 {
 
-                    themes: { any: ['ice'] }
+                    themes: { any: ["ice"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('walk-on-ice',
+            new ProviderElement<PassivePower, WeaponPowerCond>("walk-on-ice",
                 {
 
                     miscPower: true,
@@ -1482,34 +1488,34 @@ export default {
                 },
                 {
 
-                    themes: { any: ['ice'] }
+                    themes: { any: ["ice"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('vibe-menacing',
+            new ProviderElement<PassivePower, WeaponPowerCond>("vibe-menacing",
                 {
 
                     miscPower: true,
                     desc: "Menacing aura. Bonus to saves to frighten & intimidate."
                 },
                 {
-                    themes: { any: ['dark'] }
+                    themes: { any: ["dark"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('trap-souls',
+            new ProviderElement<PassivePower, WeaponPowerCond>("trap-souls",
                 {
 
                     miscPower: true,
                     desc: "Traps the souls of its victims.",
                     additionalNotes: [
                         "Their ghosts are bound to the weapon, and obey the wielder's commands.",
-                        'Can store up to 4 ghosts, and starts with 1d4 already inside.'
+                        "Can store up to 4 ghosts, and starts with 1d4 already inside."
                     ]
                 },
                 {
-                    themes: { any: ['dark'] }
+                    themes: { any: ["dark"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('damage-bonus-dark-flame',
+            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-dark-flame",
                 {
                     miscPower: true,
                     desc: "Wreathed in lightless black flames.",
@@ -1520,212 +1526,218 @@ export default {
                     }
                 },
                 {
-                    themes: { any: ['dark'] }
+                    themes: { any: ["dark"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('resistance-radiant',
+            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-radiant",
                 {
                     miscPower: true,
                     desc: "Wielder takes half damage from rays & beams."
 
                 },
                 {
-                    themes: { any: ['light'] }
+                    themes: { any: ["light"] },
+                    rarity: {
+                        lte: "uncommon"
+                    }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('immunity-radiant',
+            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-radiant",
                 {
 
                     miscPower: true,
                     desc: "Wielder is immune to the harmful effects of rays & beams."
                 },
                 {
-                    themes: { any: ['light'] }
+                    themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('stats-as-mirror',
+            new ProviderElement<PassivePower, WeaponPowerCond>("stats-as-mirror",
                 {
                     miscPower: true,
                     desc: "Extremely shiny, functions as a mirror."
                 },
                 {
-                    themes: { any: ['light'] }
+                    themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('vibe-wholesome',
+            new ProviderElement<PassivePower, WeaponPowerCond>("vibe-wholesome",
                 {
                     miscPower: true,
                     desc: "Wielder has a wholesome aura. Bonus to saves to spread cheer and/or appear nonthreatening."
                 },
                 {
-                    themes: { any: ['light', 'sweet'] }
+                    themes: { any: ["light", "sweet"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('TODO',
+            new ProviderElement<PassivePower, WeaponPowerCond>("TODO",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert chef.",
                 },
                 {
-                    themes: { any: ['sweet'] },
+                    themes: { any: ["sweet"] },
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('magically-learn-dessert-recipes',
+            new ProviderElement<PassivePower, WeaponPowerCond>("magically-learn-dessert-recipes",
                 {
                     miscPower: true,
                     desc: "The wielder magically knows the recipe of any dessert they taste."
                 },
                 {
-                    themes: { any: ['sweet'] }
+                    themes: { any: ["sweet"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('eat-to-heal',
+            new ProviderElement<PassivePower, WeaponPowerCond>("eat-to-heal",
                 {
 
                     miscPower: true,
                     desc: "Eat business end to heal HP equal to damage roll. Renders weapon unusable until it reforms, 24 hours later."
                 },
                 {
-                    themes: { any: ['sweet'] }
+                    themes: { any: ["sweet"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('expertise-alchemy',
+            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-alchemy",
                 {
 
                     miscPower: true,
                     desc: "Weapon is an expert alchemist.",
                 },
                 {
-                    themes: { any: ['sour'] },
+                    themes: { any: ["sour"] },
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('resistance-acid',
+            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-acid",
                 {
                     miscPower: true,
                     desc: "Wielder takes half damage from corrosive chemicals."
 
                 },
                 {
-                    themes: { any: ['sour'] }
+                    themes: { any: ["sour"] },
+                    rarity: {
+                        lte: "uncommon"
+                    }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('immunity-acid',
+            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-acid",
                 {
                     miscPower: true,
                     desc: "Wielder is immune to the harmful effects of corrosive chemicals."
                 },
                 {
-                    themes: { any: ['sour'] }
+                    themes: { any: ["sour"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('tastes-sour',
+            new ProviderElement<PassivePower, WeaponPowerCond>("tastes-sour",
                 {
                     miscPower: true,
                     desc: "Licking the weapon cures scurvy. It tastes sour."
                 },
                 {
-                    themes: { any: ['sour'] }
+                    themes: { any: ["sour"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('expertise-astrology',
+            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-astrology",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert astrologer.",
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('fire-magic-projectile',
+            new ProviderElement<PassivePower, WeaponPowerCond>("fire-magic-projectile",
                 {
                     miscPower: true,
                     desc: "If you are not wounded, the weapon can also fire a spectral copy of itself as a projectile attack. Damage as weapon, range as bow.",
                 },
                 {
-                    themes: { any: ['wizard'], },
+                    themes: { any: ["wizard"], },
                     rarity: {
                         gte: "rare"
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('attack-wisps',
+            new ProviderElement<PassivePower, WeaponPowerCond>("attack-wisps",
                 {
                     miscPower: true,
                     desc: "Each hit you land with the weapon generates a wisp. On your turn, you can launch any number of wisps at no cost. d4 damage, range as bow.",
                 },
                 {
-                    themes: { any: ['wizard'] },
+                    themes: { any: ["wizard"] },
                     rarity: {
                         gte: "epic"
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('expertise-tinker',
+            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-tinker",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert tinkerer.",
                 },
                 {
                     isSentient: true,
-                    themes: { any: ['steampunk'] },
+                    themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('integrated-compass',
+            new ProviderElement<PassivePower, WeaponPowerCond>("integrated-compass",
                 {
 
                     miscPower: true,
                     desc: "Wielder always knows which way is north."
                 },
                 {
-                    themes: { any: ['steampunk'] },
+                    themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('integrated-clock',
+            new ProviderElement<PassivePower, WeaponPowerCond>("integrated-clock",
                 {
                     miscPower: true,
                     desc: "A widget on the weapon displays the time."
                 },
                 {
-                    themes: { any: ['steampunk'] },
+                    themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('transform-bouquet',
+            new ProviderElement<PassivePower, WeaponPowerCond>("transform-bouquet",
                 {
                     miscPower: true,
                     desc: "Can transform into a bouquet of flowers."
                 },
                 {
-                    themes: { any: ['nature'] },
+                    themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('shoot-water',
+            new ProviderElement<PassivePower, WeaponPowerCond>("shoot-water",
                 {
                     miscPower: true,
                     desc: "Can shoot an endless stream of water from its tip, pressure as garden hose."
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('transform-umbrella',
+            new ProviderElement<PassivePower, WeaponPowerCond>("transform-umbrella",
                 {
                     miscPower: true,
                     desc: "Can transform into an umbrella."
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('stealth-in-rough-weather',
+            new ProviderElement<PassivePower, WeaponPowerCond>("stealth-in-rough-weather",
                 {
                     miscPower: true,
                     desc: "Wielder gains a stealth bonus during rain & snow, as if invisible.",
                 },
                 {
-                    themes: { any: ['cloud'] },
+                    themes: { any: ["cloud"] },
                     shapeFamily: {
                         any: [
                             "dagger",
@@ -1734,63 +1746,115 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('can-fly',
+            new ProviderElement<PassivePower, WeaponPowerCond>("can-fly",
                 {
                     miscPower: true,
-                    desc: "You can fly, as fast as you can walk.",
+                    desc: (weapon) => mkGen((rng) => {
+                        const reasonsToFly = {
+                            fire: new StringGenerator([
+                                "While using the weapon, you can ",
+                                mkGen((rng) => [
+                                    "use the weapon to wreathe yourself in flames. This allows you to fly for some reason",
+                                    "summon a pair of fiery wings. They allows you to fly",
+                                ].choice(rng)),
+                                ", as fast as you can walk."
+                            ]),
+                            cloud: "The weapon can magically summon a small cloud. You can use it to fly, as fast as you can walk.",
+                            earth: "The weapon contains a lodestone. You can its magnetism to fly, as fast as you can walk.",
+                            dark: new StringGenerator([
+                                "While using the weapon, you can summon ",
+                                mkGen((rng) => [
+                                    "wings of black-light",
+                                    "a pair of skeletal wings",
+                                    "a pair of demonic wings",
+                                    "a pair of dark & blood-stained angel wings",
+                                    "wings made from pure darkness"
+                                ].choice(rng)),
+                                ". They allow you to fly, as fast as you can walk."
+                            ]),
+                            light: new StringGenerator([
+                                "While using the weapon, you can summon ",
+                                mkGen((rng) => [
+                                    "wings of light",
+                                    "a pair of angel wings",
+                                ].choice(rng)),
+                                ". They allow you to fly, as fast as you can walk."
+                            ]),
+                            wizard: "You can magically levitate, as fast as you can walk.",
+                            steampunk: "The weapon can detach a series of jet-powered widgets. You can use them to fly, as fast as you can walk.",
+                            nature: new StringGenerator([
+                                "While using the weapon, you can summon a pair of ",
+                                mkGen((rng) => [
+                                    "bird",
+                                    "bat",
+                                    "butterfly",
+                                    "fairy",
+                                    "moth",
+                                    "bee",
+                                    "dragonfly",
+                                    "pterodactyl"
+                                ].choice(rng)),
+                                " wings. They allow you to fly, as fast as you can walk."
+                            ])
+                        };
+                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in reasonsToFly) as (keyof typeof reasonsToFly)[];
+
+                        const chosen = reasonsToFly[supportedThemesOfWeapon.choice(rng)];
+                        return typeof chosen === "string" ? chosen : chosen.generate(rng);
+                    }),
                 },
                 {
-                    themes: { any: ['cloud', 'wizard'] },
+                    themes: { any: ["cloud", "wizard"] },
                     rarity: {
                         gte: "legendary"
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('immunity-petrify',
+            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-petrify",
                 {
 
                     miscPower: true,
                     desc: "Wielder cannot be petrified."
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('transform-pickaxe',
+            new ProviderElement<PassivePower, WeaponPowerCond>("transform-pickaxe",
                 {
                     miscPower: true,
                     desc: "Can transform into a pickaxe."
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('expertise-jeweller',
+            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-jeweller",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert jeweller. It can identify any gemstone.",
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('stats-as-shield',
+            new ProviderElement<PassivePower, WeaponPowerCond>("stats-as-shield",
                 {
                     miscPower: true,
                     desc: "Stats as (function as) a shield."
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('pertify-on-hit',
+            new ProviderElement<PassivePower, WeaponPowerCond>("pertify-on-hit",
                 {
 
                     miscPower: true,
                     desc: "Unaware targets that are hit by the weapon must save or be petrified.",
                 },
                 {
-                    themes: { any: ['earth'] },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "rare"
                     },
@@ -1801,27 +1865,27 @@ export default {
                     }
                 }
             ),
-            // new ProviderElement<MiscPower, WeaponPowerCond>('TODO',
+            // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
             //     {
 
             //     },
             //     {
-            //         themes: { any: ['TODO'] },
+            //         themes: { any: ["TODO"] },
             //     }
             // ),
         ]
     },
     languages: {
         add: [
-            ...(['The language of ice & snow.'].map(x => toLang('ice', x))),
-            ...(['The language of fire.'].map(x => toLang('fire', x))),
-            ...(['Angelic.'].map(x => toLang('light', x))),
-            ...(['Demonic.'].map(x => toLang('dark', x)))
+            ...(["The language of ice & snow."].map(x => toLang("ice", x))),
+            ...(["The language of fire."].map(x => toLang("fire", x))),
+            ...(["Angelic."].map(x => toLang("light", x))),
+            ...(["Demonic."].map(x => toLang("dark", x)))
         ]
     },
     shapes: {
         add: [
-            ...toProviderSource<string, (Pick<WeaponShape, 'particular'> & WeaponPowerCond) | string, WeaponShape>(
+            ...toProviderSource<string, (Pick<WeaponShape, "particular"> & WeaponPowerCond) | string, WeaponShape>(
                 {
                     "club": [
                         {
@@ -2003,24 +2067,24 @@ export default {
                     ]
                 }, (k, shapeOrShapename) => {
                     switch (typeof shapeOrShapename) {
-                        case 'string':
+                        case "string":
                             return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k}-${shapeOrShapename}`,
                                 {
                                     particular: shapeOrShapename,
-                                    group: k as WeaponShape['group']
+                                    group: k as WeaponShape["group"]
                                 },
                                 {
 
                                 }
                             );
-                        case 'object':
+                        case "object":
                             {
                                 const shape = shapeOrShapename as WeaponShape & WeaponPowerCond;
                                 if (shape !== null) {
-                                    return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k.replaceAll(/\s/g, '-')}-${shape.particular}`,
+                                    return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k.replaceAll(/\s/g, "-")}-${shape.particular}`,
                                         {
                                             particular: shape.particular,
-                                            group: k as WeaponShape['group']
+                                            group: k as WeaponShape["group"]
                                         },
                                         {
                                             themes: shape?.themes,
@@ -2033,7 +2097,7 @@ export default {
                                 }
                             }
                     }
-                    throw new Error('invalid shape config');
+                    throw new Error("invalid shape config");
                 }
             )
         ]
