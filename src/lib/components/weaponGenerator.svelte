@@ -207,8 +207,8 @@
     <div class="header">
         <h1>Armory of Babel</h1>
         <p>
-            This site is under active development. Saved weapons may be lost
-            during updates.
+            This site is under active development. Bookmarked weapons may be
+            lost during updates.
         </p>
     </div>
     <div class="body">
