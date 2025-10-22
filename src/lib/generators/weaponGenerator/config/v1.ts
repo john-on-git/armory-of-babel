@@ -1,11 +1,12 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
-import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGreen, ephHot, ephRed, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { genMaybeGen, mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { genMaybeGen, mkWepToGen, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { type ActivePower, type DamageDice, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
+import _ from "lodash";
 
 const agentOfExtractivism = mkGen((rng) =>
     [
@@ -807,6 +808,301 @@ export default {
                     }
                 }
             ),
+
+            /*TODO
+     
+                // test links are for when weapon themes are  forced = ['light']
+    
+                energy-core-void
+                energy-core-ultraviolet http://localhost:5173/?v=3&id=44174633692741450000&o=0.00&o=0.05&o=0.10&o=0.89 (epic)
+    
+                energy-core-azure
+                energy-core-crimson
+                energy-core-verdant: http://localhost:5173/?v=3&id=50765660529976975000&o=0.00&o=0.05&o=0.10&o=0.89 (legendary)
+                energy-core-atomic
+    
+                energy-core-gold http://localhost:5173/?v=3&id=30740175778699964000&o=0.00&o=0.05&o=0.10&o=0.89 (legendary)
+            */
+            new ProviderElement('energy-core-void',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
+                            ephitet: { pre: 'TODO' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-fire',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
+                                plural: 'superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
+                            },
+                            ephitet: mkGen((rng) => ephHot.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-ice',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
+                                plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
+                            },
+                            ephitet: mkGen((rng) => ephCold.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-ultraviolet',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a glass bulb running down the middle (it blasts ultraviolet light in all directions)',
+                                plural: 'glass bulb cylinders running down the middle (blasting ultraviolet light in all directions)'
+                            },
+                            ephitet: { pre: 'TODO' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-azure',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a river of sapphire curling through its center (waves of light ebb and flow within it)',
+                                plural: 'rivers of sapphire curling through them (waves of light ebb and flow within)'
+                            },
+                            ephitet: mkGen((rng) => ephBlue.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-crimson',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: mkGen((_, __, partName) => `'s partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
+                                plural: mkGen((_, __, partName) => `'re partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
+                            },
+                            ephitet: mkGen((rng) => ephRed.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-verdant',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: '',
+                                plural: ''
+                            },
+                            ephitet: mkGen((rng) => ephGreen.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-atomic',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'an integrated nuclear reactor which gives it a healthy glow',
+                                plural: 'an integrated nuclear reactor which gives them a healthy glow'
+                            },
+                            ephitet: mkGen((rng) => [
+                                { pre: 'Atomic' },
+                                { pre: 'Nuclear' },
+                                { pre: 'of the Mushroom Bombs' },
+                            ].choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-gold',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: "'s criss-crossed by a complex system of geometric lines, which glow with golden energy",
+                                plural: "'re criss-crossed by a complex system of geometric lines, which glow with golden energy"
+                            },
+                            ephitet: { pre: 'TODO' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-dark',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'property',
+                                singular: "'s shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
+                                plural: "'re shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
+                            },
+                            ephitet: mkGen((rng) => ephBlack.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-aether',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
+                                plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
+                            },
+                            ephitet: { pre: 'TODO' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-steampunk',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a glass tube running down the center (which crackles with electrical energy)',
+                                plural: 'glass tube running down their center (which crackle with electrical energy)'
+                            },
+                            ephitet: { pre: 'TODO' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
         ]
     },
     personalities: {
@@ -1037,6 +1333,31 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement<ActivePower, WeaponPowerCond>('gravity-gun', {
+                desc: 'Kinesis',
+                cost: 1,
+                additionalNotes: [
+                    mkGen((rng, weapon) => {
+                        const effects = {
+                            light: 'The weapon emits a tether of luminous energy.',
+                            fire: 'The weapon emit a fiery whip.',
+                            nature: "A sturdy vine grows from the weapon's tip.",
+                            cloud: "The weapon emits a vortex of air."
+                        } satisfies Partial<Record<Theme, string>>;
+
+                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
+
+                        const tetherTheme = effects[supportedThemesOfWeapon.choice(rng)];
+                        //const tetherTheme = typeof chosen === "string" ? chosen : chosen(rng)
+
+                        return `${tetherTheme} It can lift and throw object an weighing up to 500 lbs.`;
+                    })
+                ]
+            }, {
+                themes: {
+                    any: ['light', 'fire', 'nature', 'cloud']
+                },
+            }),
             new ProviderElement<ActivePower, WeaponPowerCond>("weapon-animal-transformation",
                 {
                     desc: mkWepToGen("Animal Transformation"),
@@ -1570,6 +1891,295 @@ export default {
                     themes: { any: ["nature"] },
                 }
             ),
+            new ProviderElement<ActivePower, WeaponPowerCond>('jump', {
+                desc: 'Jump',
+                cost: 1,
+                additionalNotes: [
+                    'Jump up to 5× as far as you are naturally capable of.'
+                ]
+            }, {
+                themes: {
+                    any: ['nature']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('summon-animal-weak', {
+                desc: 'Summon Animal',
+                cost: 5,
+                additionalNotes: [
+                    mkWepToGen((rng) => {
+                        const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
+
+                        const animal: Record<(typeof quantity), string[]> = {
+                            '': ['a lion', 'a tiger', 'a caracal', 'an ape', 'a kangaroo', 'a horse', 'a boar'],
+                            '1d6 ': ['wolves', 'coyotes', 'thylacines', 'junglefowl'],
+                            '2d6 ': ['mice', 'crickets', 'geckos', 'snails']
+                        }
+
+                        return `Call ${quantity} ${animal[quantity].choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
+                    })
+                ]
+            }, {
+                themes: {
+                    any: ['nature']
+                },
+                rarity: {
+                    lte: 'rare'
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('summon-animal-strong', {
+                desc: 'Summon Animal',
+                cost: 5,
+                additionalNotes: [
+                    mkWepToGen((rng) => {
+                        const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
+
+                        const animal: Record<(typeof quantity), string[]> = {
+                            '': ['an elephant', 'a rhino', 'a bear', 'a dire wolf', 'a giant carnivorous snail', 'a moose', 'a honey badger', 'a silverback gorilla'],
+                            '1d6 ': ['giant sea termites', 'giant fire ants', 'lions', 'tigers', 'caracals', 'apes', 'kangaroos', 'horses', 'boars'],
+                            '2d6 ': ['rats', 'wolves', 'coyotes', 'beavers', 'owls', 'hawks', 'alpacas', 'ostriches', 'peacocks']
+                        }
+
+                        return `Call ${quantity}${animal[quantity].choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
+                    })
+                ]
+            }, {
+                themes: {
+                    any: ['nature']
+                },
+                rarity: {
+                    gte: 'epic'
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('immovable-bc-earth',
+                {
+                    desc: 'Immovable',
+                    cost: 1,
+                    additionalNotes: [
+                        "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
+                    ]
+                },
+                {
+                    themes: { any: ['earth'] },
+                    UUIDs: {
+                        none: ['immovable-bc-weapon-shape']
+                    }
+                }
+            ),
+            new ProviderElement<ActivePower, WeaponPowerCond>('immovable-bc-weapon-shape',
+                {
+                    desc: 'Immovable',
+                    cost: 1,
+                    additionalNotes: [
+                        "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
+                    ]
+                },
+                {
+                    shapeFamily: {
+                        any: ['greatsword', 'greatsword']
+                    },
+                    UUIDs: {
+                        none: ['immovable-bc-earth']
+                    }
+                }
+            ),
+            new ProviderElement<ActivePower, WeaponPowerCond>('detachable-gems', {
+                desc: 'Gem of Greed',
+                cost: 'you choose the number of charges to expend',
+                additionalNotes: [
+                    'The weapon has gems embedded throughout. You can expend charges to pry one off.',
+                    'NPCs that see the gem must save or be magically compelled to take it.',
+                    'Affects a number of characters equal to the charges expended.'
+                ]
+            }, {
+                themes: { any: ['earth'] },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('ultimate-attack', {
+                desc: 'Ultimate Anime Attack',
+                cost: 'all charges',
+                additionalNotes: [
+                    "This attack always hits. It deals damage = weapon damage × number of charges remaining.",
+                    'Afterwards, the weapon explodes and is destroyed.'
+                ]
+            }, {
+                rarity: {
+                    lte: 'rare'
+                },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('instant-door', {
+                desc: 'Instant Door',
+                cost: 6,
+                additionalNotes: [
+                    "Trace the outline of the doorway on a surface using the weapon. A moment later, it's magically created.",
+                    "The door can punch through a thin sheet of metal (except lead), or 10-ft of any other material."
+                ]
+            }, {
+                rarity: {
+                    gte: 'rare'
+                },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('acid-etch', {
+                desc: 'Spray',
+                cost: 1,
+                additionalNotes: [
+                    "The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",
+                ]
+            }, {
+                themes: {
+                    any: ['sour']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('radial-slam', {
+                desc: 'Slam',
+                cost: 3,
+                additionalNotes: [
+                    "Slam the weapon into the ground, emitting a circular shockwave.",
+                    new StringGenerator(["Characters within 20-ft must save, or be knocked down & take ", mkGen((_rng, weapon) => {
+                        // it deals damage equal to 3 * the weapon's 
+                        const { as, d6, ...rest } = weapon.damage;
+                        const slamDamage = _.mapValues(
+                            {
+                                d6: 1 + (d6 ?? 0),
+                                ...rest
+                            },
+                            x => x === undefined ? undefined : x * 3
+                        );
+
+                        return textForDamage(slamDamage)
+                    }), " damage"])
+
+                ]
+            }, {
+                themes: {
+                    any: ['earth']
+                },
+                UUIDs: {
+                    none: ['linear-slam']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('linear-slam', {
+                desc: 'Slam',
+                cost: 3,
+                additionalNotes: [
+                    "Slam the weapon into the ground, emitting a shockwave that travels straight ahead for 60-ft.",
+                    new StringGenerator(["Characters hit by the wave must save, or be knocked down & take ", mkGen((_rng, weapon) => {
+                        // it deals damage equal to 3 * the weapon's 
+                        const { as, d6, ...rest } = weapon.damage;
+                        const slamDamage = _.mapValues(
+                            {
+                                d6: 1 + (d6 ?? 0),
+                                ...rest
+                            },
+                            x => x === undefined ? undefined : x * 3
+                        );
+                        return textForDamage(slamDamage)
+                    }), " damage"])
+                ]
+            }, {
+                themes: {
+                    any: ['earth']
+                },
+                UUIDs: {
+                    none: ['radial-slam']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('metaphysical-edit', {
+                desc: 'Edit',
+                cost: 3,
+                additionalNotes: [
+                    "Strike at the platonic form of an object, removing a letter from its name.",
+                    "It physically transforms into the new object."
+                ]
+            }, {
+                themes: {
+                    any: ['wizard']
+                },
+                shapeFamily: {
+                    any: edgedWeaponShapeFamilies
+                },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('gravity-gun', {
+                desc: 'Kinesis',
+                cost: 1,
+                additionalNotes: [
+                    mkGen((rng, weapon) => {
+                        const effects = {
+                            light: 'The weapon emits a tether of luminous energy.',
+                            fire: 'The weapon emit a fiery whip.',
+                            nature: "A sturdy vine grows from the weapon's tip.",
+                            cloud: "The weapon emits a vortex of air."
+                        } satisfies Partial<Record<Theme, string>>;
+
+                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
+
+                        const tetherTheme = effects[supportedThemesOfWeapon.choice(rng)];
+                        //const tetherTheme = typeof chosen === "string" ? chosen : chosen(rng)
+
+                        return `${tetherTheme} It can lift and throw object an weighing up to 500 lbs.`;
+                    })
+                ]
+            }, {
+                themes: {
+                    any: ['light', 'fire', 'nature', 'cloud']
+                },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('frostbound', {
+                desc: 'Bind',
+                cost: 1,
+                additionalNotes: [
+                    'Lock a mechanism in place with magical ice as strong as steel.',
+                    'It stays frozen for 2d6 × 10 minutes.'
+                ]
+            }, {
+                themes: {
+                    any: ['ice']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('rally-person', {
+                desc: 'Rally',
+                cost: 1,
+                additionalNotes: [
+                    'Targets one non-hostile character.',
+                    'For the rest of the day, their morale cannot break.'
+                ]
+            }, {
+                themes: {
+                    any: ['light', 'steampunk']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('homing-shot', {
+                desc: 'Homing Shot',
+                cost: 1,
+                additionalNotes: [
+                    'Fire an enchanted shot, which always hits.'
+                ]
+            }, {
+                shapeFamily: {
+                    any: ['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('binding-shot', {
+                desc: 'Binding Shot',
+                cost: 2,
+                additionalNotes: [
+                    'Fire an enchanted shot, which anchors the target to a nearby surface.',
+                    'They are stuck in place until they use their turn to successfully save and escape.'
+                ]
+            }, {
+                themes: { any: ['nature', 'ice'] },
+                shapeFamily: {
+                    any: ['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('black-flame-blast', {
+                desc: 'Black Flame Blast',
+                cost: 3,
+                additionalNotes: [
+                    'Summon a 20-ft cone of black flame, which deals 4d6 damage.',
+                    'Damage inflicted by black flames can only be healed by magic.'
+                ]
+            }, {
+                themes: { all: ['dark', 'fire'] }
+            })
         ]
     },
     passives: {
@@ -2164,6 +2774,35 @@ export default {
                     themes: { any: ["earth"] },
                 }
             ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('weapon-permanently-invisible',
+                {
+                    miscPower: true,
+                    desc: 'The weapon is completely invisible, except to its wielder.'
+                },
+                {
+                    themes: {
+                        any: ['light']
+                    },
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    isSentient: true // If it can't call out to you, how will you know it's there?
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('instant-recall',
+                {
+                    miscPower: true,
+                    desc: "The wielder can summon the weapon into their hand at will, so long as it's on the same plane."
+                },
+                {
+                    rarity: {
+                        gte: 'uncommon'
+                    },
+                    UUIDs: {
+                        none: ['magic-pocket']
+                    }
+                }
+            ),
             new ProviderElement<PassivePower, WeaponPowerCond>("petrify-on-hit",
                 {
 
@@ -2182,6 +2821,267 @@ export default {
                     }
                 }
             ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('antimagic-aura',
+                {
+                    miscPower: true,
+                    desc: "Magical effects will not function within 10-ft of the weapon, except those generated by it. The aura is inactive while the weapon is sheathed."
+                },
+                {
+                    rarity: {
+                        gte: 'legendary'
+                    },
+                    themes: { none: ['wizard'] },
+                    UUIDs: {
+                        none: ['silence-aura', 'fire-aura', 'mist-aura', 'ice-aura']
+                    }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('silence-aura',
+                {
+                    miscPower: true,
+                    desc: "All sound is erased within 10-ft of the weapon. The aura is inactive while the weapon is sheathed."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    themes: { none: ['wizard', 'fire'] },
+                    UUIDs: {
+                        none: ['antimagic-aura', 'fire-aura', 'mist-aura', 'ice-aura']
+                    }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('fire-aura',
+                {
+                    miscPower: true,
+                    desc: "The weapon emits a 10-ft aura of flames, which sets foes and objects alight. The aura is inactive while the weapon is sheathed."
+                },
+                {
+                    rarity: {
+                        gte: 'legendary'
+                    },
+                    themes: { any: ['fire'] },
+                    UUIDs: {
+                        none: ['silence-aura', 'antimagic-aura', 'mist-aura', 'ice-aura']
+                    }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('mist-aura',
+                {
+                    miscPower: true,
+                    desc: "The weapon emits a 30-ft cloud of magical mist, which the wielder can see through clearly. When the weapon is sheathed, the mist is sucked inside."
+                },
+                {
+                    rarity: {
+                        gte: 'legendary'
+                    },
+                    themes: { any: ['cloud'] },
+                    UUIDs: {
+                        none: ['silence-aura', 'antimagic-aura', 'fire-aura', 'ice-aura']
+                    }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('ice-aura',
+                {
+                    miscPower: true,
+                    desc: "The weapon emits a 30-ft aura of frost. It freezes objects, and foes move half as fast within it. The aura is inactive while the weapon is sheathed."
+                },
+                {
+                    rarity: {
+                        gte: 'legendary'
+                    },
+                    themes: { any: ['ice'] },
+                    UUIDs: {
+                        none: ['silence-aura', 'antimagic-aura', 'fire-aura', 'mist-aura']
+                    }
+                }
+            ),
+            new ProviderElement<TGenerator<PassivePower, [Weapon]>, WeaponPowerCond>(
+                "death-blast",
+                mkGen<PassivePower, [Weapon]>((rng, weapon) => {
+                    type WeaponEnergyEffect = {
+                        /**
+                         * Text for the effect.
+                         */
+                        desc: string,
+                        /**
+                         * UUID of the feature that should be added to the weapon, if any.
+                         */
+                        featureUUID?: string,
+                    };
+                    const weaponEnergyEffect = mkGen((rng, weapon: Weapon): WeaponEnergyEffect => {
+                        const fallBack = {
+                            desc: 'void energy',
+                            featureUUID: 'energy-core-void'
+                        } satisfies WeaponEnergyEffect;
+
+                        const effects = {
+                            fire: {
+                                desc: 'fire',
+                                featureUUID: 'energy-core-fire'
+                            },
+                            ice: {
+                                desc: 'icy wind',
+                                featureUUID: 'energy-core-ice'
+                            },
+                            light: mkGen<WeaponEnergyEffect>((rng) => (([
+                                {
+                                    desc: 'ultraviolet energy',
+                                    featureUUID: 'energy-core-ultraviolet'
+                                },
+                                {
+                                    desc: 'azure energy',
+                                    featureUUID: 'energy-core-azure'
+                                },
+                                {
+                                    desc: 'crimson energy',
+                                    featureUUID: 'energy-core-crimson'
+                                },
+                                {
+                                    desc: 'verdant energy',
+                                    featureUUID: 'energy-core-verdant'
+                                },
+                                {
+                                    desc: 'atomic energy',
+                                    featureUUID: 'energy-core-atomic'
+                                },
+                                {
+                                    desc: 'golden energy',
+                                    featureUUID: 'energy-core-gold'
+                                },
+                            ] satisfies WeaponEnergyEffect[])).choice(rng)),
+                            dark: {
+                                desc: 'dark energy',
+                                featureUUID: 'energy-core-dark'
+                            },
+                            cloud: {
+                                desc: 'lightning',
+                                featureUUID: 'energy-core-aether'
+                            },
+                            steampunk: {
+                                desc: 'lightning',
+                                featureUUID: 'energy-core-steampunk'
+                            },
+                        } satisfies Partial<Record<Theme, WeaponEnergyEffect | TGenerator<WeaponEnergyEffect, [Weapon]>>>;
+
+                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
+                        return genMaybeGen(effects[supportedThemesOfWeapon.choice(rng)], rng) ?? fallBack;
+                    });
+
+                    const { desc, featureUUID } = weaponEnergyEffect.generate(rng, weapon);
+
+                    const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
+                        common: "1d6",
+                        uncommon: "1d6",
+                        rare: "1d6",
+                        epic: "1d6",
+                        legendary: "2d6"
+                    }
+
+                    return {
+                        miscPower: true,
+
+                        desc: `Anything killed by the weapon explodes in a blast of ${desc}. The blast deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft. It does not harm the wielder.`,
+                        descriptorPartGenerator: featureUUID
+                    }
+                }),
+                {
+                    themes: { any: ['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk'] },
+                    rarity: { gte: 'epic' }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('warm-to-touch',
+                {
+                    miscPower: true,
+                    desc: "The weapon is always warm to the touch."
+                },
+                {
+                    rarity: {
+                        eq: 'common'
+                    },
+                    themes: { any: ['fire'] }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('cold-to-touch',
+                {
+                    miscPower: true,
+                    desc: "The weapon is always cold to the touch."
+                },
+                {
+                    rarity: {
+                        eq: 'common'
+                    },
+                    themes: { any: ['ice'] }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
+                {
+                    miscPower: true,
+                    desc: "Can transform into a smoking pipe."
+                },
+                {
+                    rarity: {
+                        eq: 'common'
+                    },
+                    themes: { any: ['nature'] }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('shrink-or-grow',
+                {
+                    miscPower: true,
+                    desc: "Can transform into a 10-ft pole, or shrink to the size of a toothpick."
+                },
+                {
+                    shapeFamily: {
+                        any: ['club', 'staff']
+                    }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('magic-pocket',
+                {
+                    miscPower: true,
+                    desc: "The wielder can banish the weapon to a pocket plane, then withdraw it at will."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    shapeFamily: {
+                        none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)']
+                    },
+                    UUIDs: {
+                        none: ['instant-recall']
+                    }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('the-axe',
+                {
+                    miscPower: true,
+                    desc: "The weapon is also a guitar. Your musical skill is doubled when you play it."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    shapeFamily: {
+                        any: ['axe', 'greataxe']
+                    },
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('the-horn',
+                {
+                    miscPower: true,
+                    desc: "The weapon is also a horn. Your musical skill is doubled when you play it."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    shapeFamily: {
+                        any: ['club']
+                    },
+                }
+            )
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
             //     {
 
