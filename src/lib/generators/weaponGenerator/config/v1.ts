@@ -1,9 +1,9 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pointedWeaponShapes, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, mkWepToGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { type DamageDice, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -20,7 +20,7 @@ const agentOfExtractivism = mkGen((rng) =>
 
 export default {
     themes: {
-        add: [
+        add: ([
             "fire" as const,
             "ice" as const,
             "cloud" as const,
@@ -31,7 +31,7 @@ export default {
             "wizard" as const,
             "steampunk" as const,
             "nature" as const
-        ].map(theme => new PrimitiveContainer(theme))
+        ] satisfies Theme[]).map(theme => new PrimitiveContainer(theme))
     },
     descriptors: {
         add: [
@@ -140,6 +140,22 @@ export default {
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
                     }
+                }
+            ),
+            new ProviderElement('descriptor-fire-coating',
+                {
+                    generate: (rng, weapon) => genMaybeGen<Descriptor, [Weapon]>([
+                        MISC_DESC_FEATURES.coating.oil,
+                        MISC_DESC_FEATURES.coating.flames,
+                    ].choice(rng), rng, weapon),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    themes: {
+                        any: ['fire']
+                    },
                 }
             ),
 
@@ -263,6 +279,21 @@ export default {
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
                     }
+                }
+            ),
+            new ProviderElement('descriptor-cloud-coating',
+                {
+                    generate: (rng, weapon) => genMaybeGen<Descriptor, [Weapon]>([
+                        MISC_DESC_FEATURES.coating.pearlescent,
+                    ].choice(rng), rng, weapon),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    themes: {
+                        any: ['cloud']
+                    },
                 }
             ),
 
@@ -490,6 +521,23 @@ export default {
                     never: true
                 }
             ),
+            new ProviderElement('injector-module-forced', {
+                generate: () => (
+                    {
+                        descriptor: {
+                            descType: 'possession',
+                            singular: "a small glass vial built into it",
+                            plural: 'a small glass vial built into it',
+                        },
+                        ephitet: { pre: 'Headhunter' }
+                    }),
+                applicableTo: {
+                    any: ['grip']
+                }
+            }, {
+
+                never: true
+            }),
 
             new ProviderElement('material-sweet-hard',
                 {
@@ -840,10 +888,29 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('frutiger-blade',
+                {
+                    generate: () => ({
+                        material: "a glass tank containing an aquarium, the contents seem unaffected by any movement",
+                        ephitet: { pre: 'Steamy' }
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    themes: {
+                        all: ['cloud', 'light']
+                    }
+                }
+            ),
             new ProviderElement('steam-blade',
                 {
                     generate: () => ({
-                        material: "a roiling mix of magical fire and water (which emits thick clouds of steam)",
+                        material: "hollow glass, filled with a roiling mix of magical fire and water",
                         ephitet: { pre: 'Steamy' }
                     }),
                     applicableTo: {
@@ -1395,10 +1462,14 @@ export default {
                 additionalNotes: [
                     mkGen((rng, weapon) => {
                         const effects = {
-                            light: 'The weapon emits a tether of luminous energy.',
                             fire: 'The weapon emit a fiery whip.',
+
+                            cloud: "The weapon emits a vortex of air.",
+
+                            light: 'The weapon emits a tether of luminous energy.',
+
                             nature: "A sturdy vine grows from the weapon's tip.",
-                            cloud: "The weapon emits a vortex of air."
+
                         } satisfies Partial<Record<Theme, string>>;
 
                         const tetherTheme = pickForTheme(weapon, effects, rng);
@@ -1423,6 +1494,12 @@ export default {
                 {
                     themes: {
                         any: ["nature"],
+                    },
+                    rarity: {
+                        lte: 'rare'
+                    },
+                    UUIDs: {
+                        none: ['summon-animal-weak', 'summon-animal-strong']
                     }
                 }
             ),
@@ -1927,10 +2004,10 @@ export default {
                             ice: ['a leopard seal', 'a white tiger'],
                             fire: ['a kangaroo', 'a lion', "a camel"],
 
-                            light: ['a sun bear'],
-
                             cloud: ['an eagle'],
-                            earth: ['a horse-sized earthworm']
+                            earth: ['a horse-sized earthworm'],
+
+                            light: ['a sun bear'],
                         },
                         '1d6 ': {
                             ice: ['arctic foxes', 'rockhopper penguins'],
@@ -1943,8 +2020,8 @@ export default {
                             dark: ['murder hornets'],
                         },
                         '2d6 ': {
-                            fire: ['salamanders', "elephant shrews"],
                             ice: ['arctic hares'],
+                            fire: ['salamanders', "elephant shrews"],
 
                             cloud: ['butterflies'],
                             earth: ['olms', 'moles'],
@@ -1956,8 +2033,6 @@ export default {
                     const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
 
                     const allAnimals = [...sharedAnimals[quantity], ...themeSpecificAnimals];
-
-                    console.log('weak');
 
                     return {
                         desc: 'Summon Animal',
@@ -1973,6 +2048,9 @@ export default {
                     },
                     rarity: {
                         lte: 'rare'
+                    },
+                    UUIDs: {
+                        none: ['weapon-animal-transformation']
                     }
                 }),
             new ProviderElement('summon-animal-strong',
@@ -2031,8 +2109,6 @@ export default {
                         }
                     } as const satisfies Record<typeof quantity, Partial<Record<Theme, string[]>>>;
 
-                    console.log('strong');
-
                     const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
 
                     const allAnimals = [...sharedAnimals[quantity], ...themeSpecificAnimals];
@@ -2051,6 +2127,9 @@ export default {
                 },
                 rarity: {
                     gte: 'epic'
+                },
+                UUIDs: {
+                    none: ['weapon-animal-transformation']
                 }
             }),
             new ProviderElement('immovable-bc-earth', {
@@ -2204,10 +2283,13 @@ export default {
                 additionalNotes: [
                     mkGen((rng, weapon) => {
                         const effects = {
-                            light: 'The weapon emits a tether of luminous energy.',
                             fire: 'The weapon emit a fiery whip.',
+
+                            light: 'The weapon emits a tether of luminous energy.',
+
+                            cloud: "The weapon emits a vortex of air.",
+
                             nature: "A sturdy vine grows from the weapon's tip.",
-                            cloud: "The weapon emits a vortex of air."
                         } satisfies Partial<Record<Theme, string>>;
 
                         const tetherTheme = pickForTheme(weapon, effects, rng);
@@ -2283,12 +2365,15 @@ export default {
             new ProviderElement("summon-structure0",
                 mkGen((rng, weapon) => {
                     const effects = {
-                        fire: ['Pile of Glass', 'Molten glass bursts from the weapon, levitating into place to form', 'entirely of glass'],
                         ice: ['Ice maker', 'Call forth a tempest of frigid air, which freezes into', 'of solid ice'],
-                        dark: ['Dark Reflection', 'Rivers of shadow burst from the weapon, forming into', 'of pure darkness'],
+                        fire: ['Pile of Glass', 'Molten glass bursts from the weapon, levitating into place to form', 'entirely of glass'],
+
                         light: ['Fantasy Form', 'Light emanates from the weapon, forming', 'of hard-light'],
+                        dark: ['Dark Reflection', 'Rivers of shadow burst from the weapon, forming into', 'of pure darkness'],
+
                         wizard: ['Creation', 'Magically summon', 'of partially opaque magical force'],
-                        sweet: ['Caramel Creation', 'Threads of molten sugar burst from the weapon, spining into', 'of solid sugar'],
+
+                        sweet: ['Caramel Creation', 'Threads of molten sugar burst from the weapon, spinning into', 'of solid sugar'],
                     } as const satisfies Partial<Record<Theme, [string, string, string]>>;
                     const [desc, howItsMade, madeOf] = pickForTheme(weapon, effects, rng);
                     return {
@@ -2571,7 +2656,10 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: ["dark"] }
+                    themes: { any: ["dark"] },
+                    rarity: {
+                        gte: 'rare'
+                    }
                 }
             ),
             new ProviderElement("damage-bonus-dark-flame",
@@ -2799,8 +2887,19 @@ export default {
                             ].choice(rng)),
                             ", as fast as you can walk."
                         ]),
+
                         cloud: "The weapon can magically summon a small cloud. You can use it to fly, as fast as you can walk.",
                         earth: "The weapon contains a lodestone. You can its magnetism to fly, as fast as you can walk.",
+
+                        light: new StringGenerator([
+                            "While using the weapon, you can summon ",
+                            mkGen((rng) => [
+                                "wings of light",
+                                "a pair of angel wings",
+                            ].choice(rng)),
+                            ". They allow you to fly, as fast as you can walk."
+                        ]),
+
                         dark: new StringGenerator([
                             "While using the weapon, you can summon ",
                             mkGen((rng) => [
@@ -2812,15 +2911,8 @@ export default {
                             ].choice(rng)),
                             ". They allow you to fly, as fast as you can walk."
                         ]),
-                        light: new StringGenerator([
-                            "While using the weapon, you can summon ",
-                            mkGen((rng) => [
-                                "wings of light",
-                                "a pair of angel wings",
-                            ].choice(rng)),
-                            ". They allow you to fly, as fast as you can walk."
-                        ]),
                         wizard: "You can magically levitate, as fast as you can walk.",
+
                         steampunk: "The weapon can detach a series of jet-powered widgets. You can use them to fly, as fast as you can walk.",
                         nature: new StringGenerator([
                             "While using the weapon, you can summon a pair of ",
@@ -3023,14 +3115,20 @@ export default {
                     } satisfies WeaponEnergyEffect;
 
                     const effects = {
-                        fire: {
-                            desc: 'fire',
-                            featureUUID: 'energy-core-fire'
-                        },
                         ice: {
                             desc: 'icy wind',
                             featureUUID: 'energy-core-ice'
                         },
+                        fire: {
+                            desc: 'fire',
+                            featureUUID: 'energy-core-fire'
+                        },
+
+                        cloud: {
+                            desc: 'lightning',
+                            featureUUID: 'energy-core-aether'
+                        },
+
                         light: mkGen<WeaponEnergyEffect>((rng) => (([
                             {
                                 desc: 'ultraviolet energy',
@@ -3061,10 +3159,7 @@ export default {
                             desc: 'dark energy',
                             featureUUID: 'energy-core-dark'
                         },
-                        cloud: {
-                            desc: 'lightning',
-                            featureUUID: 'energy-core-aether'
-                        },
+
                         steampunk: {
                             desc: 'lightning',
                             featureUUID: 'energy-core-steampunk'
@@ -3190,12 +3285,17 @@ export default {
                     const toolType = {
                         ice: ['a set of ice picks', isRare ? 'a snowboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a snowboard'],
                         fire: ['a lighter', 'an empty brass brazier'],
+
                         cloud: [isRare ? 'a surfboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a surfboard', 'an umbrella'],
                         earth: [isRare ? 'a diamond pickaxe' : 'a pickaxe', isRare ? 'a diamond shovel' : 'a shovel'],
-                        nature: ['a smoking pipe', 'a bouquet of flowers'],
-                        steampunk: ['a pocket watch', isRare ? 'a skateboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a skateboard'],
+
+                        sweet: ['a whisk', 'an empty biscuit tin'],
+
                         wizard: ['a quill'],
-                        sweet: ['a whisk', 'an empty biscuit tin']
+
+                        steampunk: ['a pocket watch', isRare ? 'a skateboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a skateboard'],
+                        nature: ['a smoking pipe', 'a bouquet of flowers'],
+
                     } satisfies Partial<Record<Theme, string[]>>;
 
                     const chosenTool = choice(pickForTheme(weapon, toolType, rng), rng);
@@ -3207,7 +3307,19 @@ export default {
                 {
                     themes: { any: ["ice", "fire", "cloud", "earth", "nature", "steampunk", "wizard", "sweet"] },
                 }
-            )
+            ),
+            new ProviderElement('injector-module', {
+                miscPower: true,
+                desc: 'Has a small vial embedded in the grip, which can be filled with fluid. When you land a hit with the weapon, you may expend the liquid, injecting it into the target.',
+                descriptorPartGenerator: 'injector-module-forced'
+            }, {
+                themes: {
+                    any: ['sour'],
+                },
+                shapeParticular: {
+                    any: pointedWeaponShapes
+                }
+            })
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
             //     {
 
@@ -3264,7 +3376,6 @@ export default {
                         "Tanto",
                         "Khanjar",
                         "Kukri",
-                        "Shortsword"
                     ],
 
                     "sword": [
