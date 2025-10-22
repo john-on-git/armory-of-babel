@@ -10,7 +10,7 @@ describe('Weapon Generator', () => {
 
     beforeAll(() => {
         weaponFeaturesByVersion = new Array(weaponFeatureVersionController.getLatestVersionNum() + 1).fill(null).map((_, i) => weaponFeatureVersionController.getVersion(i));
-    })
+    });
 
     it('1. Always generates a weapon with a number of active abilities matching its params.', () => {
         for (let i = 0; i < nRuns; i++) {
@@ -55,7 +55,7 @@ describe('Weapon Generator', () => {
 
             expect((Object.values(weapon.damage) as (string | number)[]).some((x) => typeof (x) === 'string' || x > 0)).toBe(true);
         }
-    })
+    });
 
     it('6. The weapon that corresponds to a particular set of args is fixed and never changes, even when the software is updated.', () => {
         expect(mkWeapon('test1', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
@@ -67,7 +67,7 @@ describe('Weapon Generator', () => {
         expect(mkWeapon('test3', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
             { id: "test3", themes: ["ice", "light", "dark"], rarity: "legendary", name: "Moronius, Lumensteel Flail", shape: { particular: "Flail", group: "mace", UUID: "mace-Flail" }, damage: { as: "mace", const: 3 }, toHit: 3, active: { maxCharges: 6, rechargeMethod: "one charge each time you defeat a an orc", powers: [{ desc: "Summon Ice Elemental", cost: 6, additionalNotes: ["Dissipates after 1 hour."] }, { desc: "Commune With Divinity", cost: 4 }, { desc: "Commune With Demon", cost: "at will" }] }, passivePowers: [{ desc: "Wielder is immune to the harmful effects of rays & beams." }, { desc: "1-in-2 chance to sense icy weather before it hits, giving just enough time to escape." }, { desc: "Menacing aura. Bonus to saves to frighten & intimidate." }], sentient: { personality: ["Pitiless.", "Tries to act mysterious."], languages: ["Common."], chanceOfMakingDemands: 8 } }
         );
-    })
+    });
 
     // it('Manual utility / find a weapon with a particular feature', () => {
     //     function cond(weapon: WeaponViewModel): boolean {
