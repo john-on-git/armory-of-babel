@@ -7,7 +7,7 @@ import objectAdjectives from './config/objectAdjectives.json';
 import passivePowers from './config/passivePowers.json';
 import shapes from './config/shapes.json';
 import { GLOBAL_UUID_ISSUER, type ProviderElement, type WithUUID } from "./provider";
-import type { ActivePower, ChargedPower, MiscPower, PassivePower, Personality, RechargeMethod, Theme, WeaponPowerCond, WeaponRarity, WeaponRarityConfig, WeaponShape } from "./weaponGeneratorTypes";
+import type { ActivePower, ChargedPower, PassivePower, Personality, RechargeMethod, Theme, WeaponPowerCond, WeaponRarity, WeaponRarityConfig, WeaponShape } from "./weaponGeneratorTypes";
 
 function toProviderSource<T1, T2>(x: Record<string, T1[]>, map: (k: string, x: T1) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
     return Object.entries(x).map(([k, v]) => v.map(x => map(k, x))).flat();
@@ -207,7 +207,7 @@ const mixinPassivePowers = ([
             themes: { any: ['light'] }
         }
     }
-] satisfies ProviderElement<(MiscPower), WeaponPowerCond>[] as ProviderElement<(MiscPower), WeaponPowerCond>[]);
+] satisfies ProviderElement<(PassivePower), WeaponPowerCond>[] as ProviderElement<(PassivePower), WeaponPowerCond>[]);
 
 export const POSSIBLE_PASSIVE_POWERS = [...mixinPassivePowers, ...toProviderSource(passivePowers as Record<
     Theme | string,
