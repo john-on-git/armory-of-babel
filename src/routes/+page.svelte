@@ -58,13 +58,15 @@
     });
 </script>
 
-<h1>Generator Test</h1>
 <WeaponGenerator />
 <ConfigSidebar {config} {configWritable} />
 
 <style>
+    :global(body, html) {
+        overflow-x: hidden;
+    }
     @media (orientation: portrait) {
-        :global(h1, h2) {
+        :global(h2) {
             padding-top: 3rem;
         }
     }
@@ -108,8 +110,6 @@
         flex-direction: column;
         align-items: center;
 
-        margin-bottom: 10pt;
-
         position: relative;
     }
 
@@ -143,14 +143,10 @@
         width: 100%;
     }
 
-    :global(h1) {
-        font-size: 3.2em;
-        line-height: 1.1;
-    }
     :global(h2) {
         text-align: center;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 
     :global(#app) {
@@ -219,11 +215,6 @@
         :global(button:hover) {
             border-color: #00000047 !important;
         }
-    }
-    :global(h1) {
-        height: 7.5vh;
-        margin: 0;
-        margin-top: 1.5vh;
     }
 
     :global(.fade-in-1) {

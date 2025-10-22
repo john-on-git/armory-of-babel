@@ -232,7 +232,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                             const chosen = effects[supportedThemesOfWeapon.choice(rng)];
                             const effect = typeof chosen === "string" ? chosen : chosen(rng)
 
-                            return `Whenever the weapon kills a foe, they explode in a blast of ${effect}. It deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`;
+                            return `Anything killed by the weapon explodes in a blast of ${effect}. The blast deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`;
                         })
                     },
                     {
