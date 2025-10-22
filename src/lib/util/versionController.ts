@@ -55,21 +55,36 @@ export interface Delta<T extends Patchable> {
     modify?: Record<string, RecursivePartial<T>>;
 }
 
-export type DeltaCollection<T2 extends Record<string | number | symbol, Patchable>> = {
-    [k in keyof T2]?: Delta<T2[k]>
+export type DeltaCollection<T extends object> = {
+    [k in keyof T]: T[k] extends Patchable ? Delta<T[k]> : never
 }
 
+export type ToPatchableArray<T extends object> = {
+    [k in keyof T]: T[k] extends Patchable ? (T[k])[] : never;
+}
 
+// ^^^
+// export type WrapPatchables<T extends object, TWrap<~>> = {
+//     [k in keyof T]: T[k] extends Patchable ? TWrap<T[k]> : never;
+// }
+
+/**
+ * This is an absolute disaster of a type. I think, to get it to work type-safely you'd need the higher-order type above ^,
+ * So that Typescript would know that the two types have the same keys. I'm not 100% if that would even work, though.
+ * This DOES seem to work, in some cases at least, though it may be possible to break it by using a complicated class heirarchy in the generic args.
+ */
 export class VersionController<
-    TTarget extends Patchable,
-    TDelta extends Record<string | number | symbol, TTarget>,
+    TDelta extends object,
     TCollection extends DeltaCollection<TDelta> = DeltaCollection<TDelta>,
-    TOut extends Record<keyof TCollection, TTarget[]>
+    TOut extends ToPatchableArray<DeltaCollection<TDelta>> = ToPatchableArray<DeltaCollection<TDelta>>,
+    TPost = TOut
 > {
     protected deltaCollections: [TCollection, ...TCollection[]];
+    protected postGeneration: (x: TOut) => TPost;
 
-    constructor(deltas: [TCollection, ...TCollection[]]) {
+    constructor(deltas: [TCollection, ...TCollection[]], postGeneration: (x: TOut) => TPost) {
         this.deltaCollections = deltas;
+        this.postGeneration = postGeneration;
     }
 
     /**
@@ -77,14 +92,14 @@ export class VersionController<
      * @param v 
      * @returns the things for this version, or undefined if this version does not exist
      */
-    getVersion(v: number): TOut | undefined {
+    getVersion(v: number): TPost | undefined {
 
         if (v >= 0 && v < this.deltaCollections.length) {
             // build the base object
-            const head = (Object.keys(this.deltaCollections[0]) as (keyof TCollection)[]).reduce<Record<keyof TCollection, TTarget[]>>((acc, k) => {
-                acc[k] = [];
+            const head = (Object.keys(this.deltaCollections[0]) as (keyof TOut)[]).reduce<TOut>((acc, k) => {
+                acc[k] = [] as unknown as TOut[keyof TOut];
                 return acc;
-            }, {} as Record<keyof TCollection, TTarget[]>);
+            }, {} as TOut);
 
 
             // apply all the deltas in sequence
@@ -95,7 +110,8 @@ export class VersionController<
 
                         // apply all the additions
                         if (deltaCollection[k].add !== undefined) {
-                            head[k].push(...deltaCollection[k].add);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            head[k as unknown as keyof TOut].push(...deltaCollection[k].add as any);
                         }
 
                         // apply all the removals
@@ -103,15 +119,17 @@ export class VersionController<
                             // remove will be flagged as possibly undefined
                             // in the filter unless take a copy. odd
                             const remove = deltaCollection[k].remove;
-                            head[k] = head[k].filter(x => !(remove.has(x.UUID)));
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            head[k as unknown as keyof TOut] = (head[k as unknown as keyof TOut] as any).filter((x: { UUID: string; }) => !(remove.has(x.UUID))) as any;
                         }
 
                         // apply all the updates
                         // check each object for modifications, and apply each one if it exists
                         if (deltaCollection[k].modify !== undefined) {
-                            for (const x of head[k]) {
+                            for (const x of head[k as unknown as keyof TOut]) {
                                 if (x.UUID in deltaCollection[k].modify) {
-                                    x.patch(deltaCollection[k].modify[x.UUID]);
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    x.patch(deltaCollection[k as unknown as keyof TOut].modify?.[x.UUID] as any);
                                 }
                             }
                         }
@@ -119,7 +137,7 @@ export class VersionController<
                 }
             }
 
-            return head;
+            return this.postGeneration(head);
         }
         else {
             return undefined;

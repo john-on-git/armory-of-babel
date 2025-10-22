@@ -32,9 +32,13 @@ describe('VersionController', () => {
         type DeltaType = {
             plants: Plant;
             animals: Animal;
+        } | {
+            plants: Plant;
+        } | {
+            animals: Animal;
         }
 
-        const myVersionController = new VersionController<Plant | Animal, DeltaType>([{
+        const myVersionController = new VersionController<DeltaType>([{
             plants: {
                 add: [
                     new Plant('sea-plant', 'sponge')
@@ -76,7 +80,7 @@ describe('VersionController', () => {
                     'sea-herbivore': { stats: null }
                 }
             }
-        }]);
+        }], (x) => x);
 
         expect(myVersionController.getVersion(0)).toEqual({
             plants: [
