@@ -35,7 +35,7 @@ describe('Weapon Generator', () => {
         for (let i = 0; i < nRuns; i++) {
             const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
-            const expected = weapon.active.powers.reduce<number>((acc, x) => Math.max(acc, typeof x.cost === 'string' ? 0 : x.cost), params.nCharges);
+            const expected = weapon.active.powers.reduce<number>((acc, x) => Math.max(acc, typeof x.cost === 'string' ? 1 : x.cost), params.nCharges);
 
             expect(weapon.active.maxCharges).toBe(expected);
         }
