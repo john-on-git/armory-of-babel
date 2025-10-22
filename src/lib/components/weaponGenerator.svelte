@@ -1,4 +1,6 @@
 <script lang="ts">
+    import LoadingGear from "$lib/components/loadingGear.svelte";
+    import WeaponDisplay from "$lib/components/weaponDisplay.svelte";
     import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
     import { type WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -14,7 +16,6 @@
         GenerateWeaponRequest,
         GenerateWeaponResponse,
     } from "../../routes/api/generate-weapon/+server";
-    import WeaponDisplay from "./weaponDisplay.svelte";
 
     let version = $state(getVersionFromURL());
     let weaponID = $state(getIDFromURL());
@@ -202,13 +203,19 @@
     }
 
     /**
+     * Remove all the UI state related to the current weapon, in preparation for the UI binding to a new weapon.
+     */
+    function invalidateCurrentWeapon() {
+        weaponState = null;
+        // switch animations
+        fadeLock = !fadeLock;
+    }
+
+    /**
      * Generate a new weapon, called when the page is loaded without an ID in the URL, and when the 'generate' button is clicked.
      */
     function generateWeapon() {
-        weaponState = null;
-
-        // switch animations
-        fadeLock = !fadeLock;
+        invalidateCurrentWeapon();
 
         syncIdToURL(getNewId());
     }
@@ -217,8 +224,7 @@
      * go back in history and perform any necessary Svelte state changes
      */
     function goBack() {
-        // switch animations
-        fadeLock = !fadeLock;
+        invalidateCurrentWeapon();
 
         history.back();
     }
@@ -227,8 +233,7 @@
      * go forward in history and perform any necessary Svelte state changes
      */
     function goForward() {
-        // switch animations
-        fadeLock = !fadeLock;
+        invalidateCurrentWeapon();
 
         history.forward();
     }
@@ -242,6 +247,8 @@
         <div class="weapon-display-container">
             {#if weapon !== null}
                 <WeaponDisplay {weapon} {fadeLock} />
+            {:else}
+                <LoadingGear />
             {/if}
         </div>
     </div>
@@ -286,6 +293,9 @@
 
 <style>
     .weapon-generator {
+        display: flex;
+        flex-direction: column;
+
         flex-grow: 1;
         width: 100vw;
     }
@@ -323,8 +333,8 @@
 
     @media (orientation: landscape) {
         .body {
-            margin-left: 10vw;
-            margin-right: 10vw;
+            margin-left: 15vw;
+            margin-right: 15vw;
         }
     }
     @media (orientation: portrait) {
@@ -349,6 +359,7 @@
     .weapon-display-container {
         display: flex;
         flex-grow: 1;
+        width: 100%;
     }
 
     .action-button {
@@ -376,7 +387,7 @@
 
     .back-button,
     .forward-button {
-        bottom: 5vh;
+        top: 75vh;
         font-size: 10rem;
     }
 
@@ -389,7 +400,7 @@
 
     .generate-button {
         right: 1vw;
-        top: 5vh;
+        top: 2.5vh;
 
         font-size: 10rem;
     }
