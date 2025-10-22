@@ -5,13 +5,33 @@
     import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
     import { getOddsFromURL } from "$lib/util/getFromURL";
-    import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
+    import {
+        getIsFirstInHistory,
+        getIsLastInHistory,
+        syncLocationWithURLSearchParams,
+    } from "$lib/util/queryString";
     import _ from "lodash";
     import { writable } from "svelte/store";
 
     import { dev } from "$app/environment";
+    import { replaceState } from "$app/navigation";
     import { injectAnalytics } from "@vercel/analytics/sveltekit";
+    import { onMount, tick } from "svelte";
     injectAnalytics({ mode: dev ? "development" : "production" });
+
+    onMount(() => {
+        tick().then(() => {
+            /**
+             * If the user is arriving at the website for the first time, store some data in the history state.
+             * This is used to disable the back & forward buttons on the first/last page the user navigated to, where clicking it would do nothing
+             * (or worse, navigate away).
+             */
+            replaceState("", {
+                isFirstInHistory: getIsFirstInHistory(),
+                isLastInHistory: getIsLastInHistory(),
+            });
+        });
+    });
 
     function getConfigFromURL(): WeaponRarityConfig {
         let config = defaultWeaponRarityConfigFactory();

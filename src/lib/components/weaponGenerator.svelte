@@ -5,6 +5,7 @@
     import { calcOdds } from "$lib/util/configUtils";
     import { getOddsFromURL } from "$lib/util/getFromURL";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
+    import "@fortawesome/fontawesome-free/css/all.min.css";
     import { StatusCodes } from "http-status-codes";
     import _ from "lodash";
     import { onMount, tick } from "svelte";
@@ -55,10 +56,19 @@
         }
     });
 
+    // this is linked to a value stored in history state, see popState listener below. We can't use this value directly / inline, or the UI won't be reactive.
+    let canGoBack = $state(false);
+    let canGoForward = $state(false);
+
     // set up event listeners
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", async () => {
+            canGoBack =
+                history.state["sveltekit:states"].isFirstInHistory === false;
+            canGoForward =
+                history.state["sveltekit:states"].isLastInHistory === false;
+
             weaponID = getIDFromURL();
             version = getVersionFromURL();
             odds =
@@ -204,10 +214,23 @@
     }
 
     /**
-     * go back in history
+     * go back in history and perform any necessary Svelte state changes
      */
     function goBack() {
+        // switch animations
+        fadeLock = !fadeLock;
+
         history.back();
+    }
+
+    /**
+     * go forward in history and perform any necessary Svelte state changes
+     */
+    function goForward() {
+        // switch animations
+        fadeLock = !fadeLock;
+
+        history.forward();
     }
 </script>
 
@@ -218,32 +241,46 @@
     <div class="body">
         <div class="weapon-display-container">
             {#if weapon !== null}
-                <WeaponDisplay
-                    {weapon}
-                    classes={`fade-in-${fadeLock ? "1" : "2"}`}
-                />
+                <WeaponDisplay {weapon} {fadeLock} />
             {/if}
         </div>
     </div>
     {#if isPortrait.current}
         <button
-            class="portrait-generate-button"
+            class="action-button portrait-generate-button"
             data-testid="portrait-generate-button"
             onclick={generateWeapon}>Generate</button
         >
     {:else}
         <button
-            class="generate-button"
-            data-testid="generate-button"
+            class="action-button generate-button"
+            data-testid="weapon-generator-generate-button"
             onclick={generateWeapon}
             aria-label="generate new weapon button"
-        ></button>
+            disabled={weapon === null}
+        >
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </button>
+
         <button
-            class="back-button"
+            class="action-button back-button"
             data-testid="go-back-button"
             onclick={goBack}
             aria-label="go back button"
-        ></button>
+            disabled={!canGoBack}
+        >
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <button
+            class="action-button forward-button"
+            data-testid="forward-button"
+            onclick={goForward}
+            aria-label="go forward button"
+            disabled={!canGoForward}
+        >
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
     {/if}
 </div>
 
@@ -314,39 +351,46 @@
         flex-grow: 1;
     }
 
-    .portrait-generate-button {
-        display: absolute;
-    }
-
-    .generate-button,
-    .back-button {
+    .action-button {
         position: absolute;
-        top: 45vh;
 
         aspect-ratio: 1;
 
         background-color: transparent;
         border: 0 solid transparent;
 
-        font-size: 10rem;
         padding: 0;
-    }
-    .generate-button:after,
-    .back-button:after {
-        color: gray;
-        content: "⌵";
-    }
-    .generate-button:hover:after,
-    .back-button:hover:after {
+
         color: white;
+        opacity: 33%;
     }
-    .generate-button {
-        right: 5vw;
-        rotate: -90deg;
+
+    .action-button:disabled {
+        opacity: 5%;
+        cursor: auto;
+    }
+
+    .action-button:not(:disabled):hover {
+        opacity: 1;
+    }
+
+    .back-button,
+    .forward-button {
+        bottom: 5vh;
+        font-size: 10rem;
     }
 
     .back-button {
-        left: 5vw;
-        rotate: 90deg;
+        left: 1vw;
+    }
+    .forward-button {
+        right: 1vw;
+    }
+
+    .generate-button {
+        right: 1vw;
+        top: 5vh;
+
+        font-size: 10rem;
     }
 </style>
