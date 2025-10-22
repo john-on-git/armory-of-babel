@@ -5,9 +5,9 @@ import { ProviderElement, type Comp, type Cond, type Quant } from "./provider";
 import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
-    "fire", "cloud",
-    "ice", "earth",
-    "dark", "light",
+    "fire", "ice",
+    "cloud", "earth",
+    "light", "dark",
     "sweet", "sour",
     "wizard",
     "steampunk", "nature"

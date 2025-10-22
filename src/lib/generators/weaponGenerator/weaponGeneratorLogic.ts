@@ -8,7 +8,14 @@ import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, ProviderElement
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, linkingIsOrPossessionFor, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
-
+/**
+ * Draw a theme from a record of things organised by theme, based on a weapon with THemes.
+ * Records used by this function should have their keys ordered in the same order as the Theme union type, or the behaviour is undefined.
+ * @param weapon pick an option based on the themes of this weapon
+ * @param mapsTo options to pick from
+ * @param rng rng source to use
+ * @returns an option of mapsTo that matches one of the Themes of weapon
+ */
 export function pickForTheme<TKey extends Theme, TRes>(weapon: Weapon, mapsTo: Record<TKey, TRes>, rng: PRNG): TRes {
     return mapsTo[(weapon.themes.filter(theme => theme in mapsTo) as (keyof typeof mapsTo)[]).choice(rng)];
 }

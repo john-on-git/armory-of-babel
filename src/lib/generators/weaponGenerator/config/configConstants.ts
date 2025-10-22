@@ -1,6 +1,6 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { capWords } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
@@ -10,13 +10,15 @@ import type { PRNG } from "seedrandom";
 export const edgedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[];
 export const bluntWeaponShapeFamilies = ['club', 'mace', 'staff'] as const satisfies WeaponShapeGroup[];
 export const pointedWeaponShapeFamilies = ['spear', 'lance'] as const satisfies WeaponShapeGroup[];
-export const sharpWeaponShapeFamilies = [...edgedWeaponShapeFamilies, ...pointedWeaponShapeFamilies] as const satisfies WeaponShapeGroup[];
 
 export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)'] as const satisfies WeaponShapeGroup[];
 export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)', 'club', 'mace'] as const satisfies WeaponShapeGroup[];
 export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
 
 export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"] as const;
+
+export const pointedWeaponShapes = ['Stiletto', 'Dirk', 'Rapier', 'Foil', 'Epee', 'Spear', 'Trident', 'Bident', 'Pike', 'Lance'] as const;
+
 
 // reused descriptors and materials
 const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
@@ -408,7 +410,6 @@ const eyeAnimalsArr = [
     "a fox's",
     "a bear's",
     "a snake's",
-    "a lizard's",
     "a hawk's",
     "an owl's",
     "an eagle's",
@@ -489,8 +490,8 @@ export const MISC_DESC_FEATURES = {
         caseHardened: {
             descriptor: {
                 descType: 'property',
-                singular: "'s split into multicolored regions with psychedelic shapes",
-                plural: "'re split into multicolored regions with psychedelic shapes",
+                singular: "split into multicolored regions with psychedelic shapes",
+                plural: "split into multicolored regions with psychedelic shapes",
             },
             ephitet: { pre: 'Case Hardened' }
         },
@@ -502,14 +503,44 @@ export const MISC_DESC_FEATURES = {
             },
             ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
         },
-        pearlescent: {
-            descriptor: {
-                descType: 'property',
-                singular: ' changes between pink and blue depending on the viewing angle',
-                plural: ' change between pink and blue depending on the viewing angle'
-            },
-            ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
-        }
+        flames: mkGen((_, weapon) => {
+            const colorByRarity = {
+                common: "yellow",
+                uncommon: "orange",
+                rare: "red",
+                epic: "purple",
+                legendary: "cyan"
+            } satisfies Record<WeaponRarity, string>;
+            return {
+                descriptor: {
+                    descType: 'possession',
+                    singular: `patterns on its surface depicting ${colorByRarity[weapon.rarity]} flames radiating outwards from the base`,
+                    plural: `patterns on their surface depicting ${colorByRarity[weapon.rarity]} flames radiating outwards from the base`
+                }
+                ,
+                ephitet: mkGen(rng => ephHot.choice(rng)),
+            };
+        }),
+        pearlescent: mkGen((rng, weapon) => {
+            const gradients = {
+                common: ['pink and white', 'blue and white', 'yellow and white'],
+                uncommon: ['green and blue', 'red and yellow', 'pink and purple'],
+                rare: ['pink and blue', 'green and pink'],
+                epic: ['purple and orange', 'cyan and orange', 'yellow and blue'],
+                legendary: ['pink, yellow, and blue', 'cyan, blue, and purple', 'purple, green, and blue']
+            } satisfies Record<WeaponRarity, string[]>;
+
+            const gradient = gradients[weapon.rarity].choice(rng);
+
+            return {
+                descriptor: {
+                    descType: 'property',
+                    singular: ` has a sheen that changes between ${gradient} depending on the viewing angle`,
+                    plural: ` have a sheen that changes between ${gradient} depending on the viewing angle`
+                },
+                ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
+            }
+        })
     },
     wrap: {
         bannerWrap: {
