@@ -716,30 +716,6 @@ export default {
     },
     descriptors: {
         add: [
-            // new ProviderElement('material-extravagant-hard',
-            //     {
-            //         generate: (rng) => {
-            //             return [
-            //                 MATERIALS.silver,
-            //                 MATERIALS.gold,
-            //                 MATERIALS["rose gold"],
-            //                 MATERIALS['white gold'],
-            //                 MATERIALS['purple gold'],
-            //                 MATERIALS['blue gold'],
-            //                 MATERIALS.platinum,
-            //                 MATERIALS.palladium,
-            //             ].choice(rng);
-            //         },
-            //         applicableTo: {
-            //             any: importantPart
-            //         }
-            //     },
-            //     {
-            //         themes: {
-            //             none: ['nature']
-            //         }
-            //     }
-            // ),
             new ProviderElement('descriptor-pommel-embed',
                 {
                     yields: 'feature',
@@ -1839,6 +1815,10 @@ export default {
                 {
                     desc: 'Banishment',
                     cost: 4,
+                    additionalNotes: [
+                        "You empower an attack to banish a foe.",
+                        "The target must save or be magically transported back to their home."
+                    ]
                 },
                 { themes: { any: ['light', 'dark', 'wizard'] } }
             ),
@@ -4126,7 +4106,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("can-fly",
+            new ProviderElement("flight",
                 mkGen((rng, weapon) => {
 
                     /** Note, these all say "using the weapon" instead of "wielding the weapon", to clarify that you can use the ability
@@ -4393,15 +4373,24 @@ export default {
                     rarity: { gte: 'epic' }
                 }
             ),
+            new ProviderElement('super-light',
+                {
+                    miscPower: true,
+                    desc: "The weapon is extremely light, almost weightless."
+                },
+                {
+                    rarity: { lte: 'uncommon' },
+                    shapeFamily: { none: bluntWeaponShapeFamilies },
+                    themes: { any: ['cloud'] }
+                }
+            ),
             new ProviderElement('warm-to-touch',
                 {
                     miscPower: true,
                     desc: "The weapon is always warm to the touch."
                 },
                 {
-                    rarity: {
-                        eq: 'common'
-                    },
+                    rarity: { lte: 'uncommon' },
                     themes: { any: ['fire'] }
                 }
             ),
@@ -4411,9 +4400,7 @@ export default {
                     desc: "The weapon is always cold to the touch."
                 },
                 {
-                    rarity: {
-                        eq: 'common'
-                    },
+                    rarity: { lte: 'uncommon' },
                     themes: { any: ['ice'] }
                 }
             ),

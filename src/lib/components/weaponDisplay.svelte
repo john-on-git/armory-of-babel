@@ -52,7 +52,7 @@
 </script>
 
 <svelte:head>
-    <title>Library of Babel - {weapon.name}</title>
+    <title>Armory of Babel - {weapon.name}</title>
 </svelte:head>
 
 <div

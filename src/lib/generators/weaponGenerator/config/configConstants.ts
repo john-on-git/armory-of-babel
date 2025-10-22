@@ -668,10 +668,10 @@ export const MISC_DESC_FEATURES = {
         flames: mkGen((_, weapon) => {
             const colorByRarity = {
                 common: "yellow",
-                uncommon: "orange",
-                rare: "red",
-                epic: "purple",
-                legendary: "cyan"
+                uncommon: weapon.isNegative ? "green" : "orange",
+                rare: weapon.isNegative ? "blue" : "red",
+                epic: weapon.isNegative ? "pink" : "purple",
+                legendary: weapon.isNegative ? "white" : "cyan"
             } satisfies Record<WeaponRarity, string>;
             return {
                 descriptor: {
