@@ -71,6 +71,7 @@ export interface Weapon {
 
 
     rarity: WeaponRarity;
+    pronouns: Pronouns;
     name: string;
     description: StructuredDescription | null;
     shape: WeaponShape;
