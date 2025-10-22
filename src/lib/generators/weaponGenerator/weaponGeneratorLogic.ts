@@ -139,6 +139,13 @@ function hasUUIDs(weapon: Weapon, expectedUUIDs: readonly string[]) {
 
 function hasEyes(weapon: Weapon) { return hasUUIDs(weapon, allEyeProviders); }
 
+/**
+ * Given a record of lists of values that correspond to abilities, organised by theme.
+ * Construct a list of abilities, each of which require the theme that was their key in the input.
+ * @param x record to transform
+ * @param map mapping function that takes in an element in one of the record arrays, and outputs an ability
+ * @returns list of abilities
+ */
 export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
     return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
 }

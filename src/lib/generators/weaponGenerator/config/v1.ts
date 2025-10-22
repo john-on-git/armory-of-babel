@@ -1715,13 +1715,10 @@ export default {
                         mkGen(rng => `all charges when its wielder drives ${agentOfExtractivism.generate(rng)} to bankruptcy`)
                     ]
                 },
-                (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCond>(`${theme}-recharge-${i}`,
-                    {
-                        desc: x
-                    },
-                    {
-                        themes: { any: [theme as Theme] }
-                    }
+                (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCond>(
+                    `${theme}-recharge-${i}`,
+                    { desc: x },
+                    { themes: { any: [theme as Theme] } }
                 ))
         ]
     },
@@ -1789,19 +1786,6 @@ export default {
                     ]
                 },
                 { shapeFamily: { any: edgedWeaponShapeFamilies } }
-            ),
-            new ProviderElement("mist-mode",
-                {
-                    cost: '1 charge to activate, and 1 charge every 10s to maintain',
-                    desc: 'Mist Mode',
-                    additionalNotes: [
-                        'You transform into incorporeal mist.',
-                        'Mist Mode can be activated in response to being targeted by an attack, causing it to miss.'
-                    ]
-                },
-                {
-                    themes: { any: ['cloud', 'wizard', 'dark'] }
-                }
             ),
             new ProviderElement("standard-projectile",
                 mkGen((rng, weapon) => {
@@ -3294,18 +3278,6 @@ export default {
                     themes: { any: ["light"], }
                 }
             ),
-            new ProviderElement("make-zombie",
-                mkGen(rng => ({
-                    miscPower: true,
-                    desc: `Characters killed by the weapon rise immediately as ${['skeletons', 'zombies'].choice(rng)} under the wielder's control.`,
-                    descriptorPartGenerator: 'necromantic-runes'
-                })),
-                {
-                    themes: { any: ["dark"] },
-                    rarity: { gte: 'rare' },
-                    UUIDs: { none: ['traps-souls'] }
-                }
-            ),
             new ProviderElement("command-critters",
                 {
                     miscPower: true,
@@ -4156,14 +4128,6 @@ export default {
                     themes: { any: ["sour"], },
                 }
             ),
-            // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
-            //     {
-
-            //     },
-            //     {
-            //         themes: { any: ["TODO"] },
-            //     }
-            // ),
         ]
     },
     languages: {
