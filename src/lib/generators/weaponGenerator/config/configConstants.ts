@@ -593,7 +593,7 @@ export const MISC_DESC_FEATURES = {
                 descriptor: {
                     descType: 'possession',
                     singular: new StringGenerator([eyeStructureGen, ' and shaped like ', mkGen((rng) => [...eyeAnimalsArr].choice(rng))]),
-                    plural: new StringGenerator([eyeStructureGen, mkGen((rng) => [...eyeAnimalsArr].choice(rng))]),
+                    plural: new StringGenerator([eyeStructureGen, ' and shaped like ', mkGen((rng) => [...eyeAnimalsArr].choice(rng))]),
                 },
             },
             deepSet: {
