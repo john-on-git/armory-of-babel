@@ -12,10 +12,18 @@
     injectAnalytics({ mode: dev ? "development" : "production" });
 
     function resetToDefault() {
-        odds = DEFAULT_RARITY_ODDS;
+        oddsWritable.set([...DEFAULT_RARITY_ODDS] as [
+            number,
+            number,
+            number,
+            number,
+        ]);
     }
 
-    let odds = $state(getOddsFromURL() ?? DEFAULT_RARITY_ODDS);
+    let odds = $state(
+        getOddsFromURL() ??
+            ([...DEFAULT_RARITY_ODDS] as [number, number, number, number]),
+    );
 
     const oddsWritable = writable((() => odds)());
     oddsWritable.subscribe((newVal) => {

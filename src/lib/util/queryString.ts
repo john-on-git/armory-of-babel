@@ -8,8 +8,6 @@ export async function syncLocationWithURLSearchParams(searchParams: URLSearchPar
     const newQuery =
         queryNoQuestion.length > 0 ? `?${queryNoQuestion}` : "";
 
-    console.log(page.url.search, newQuery, page.url.search !== newQuery)
-
     if (page.url.search !== newQuery) {
         // and update the URL params to point to its ID
         switch (mode) {
