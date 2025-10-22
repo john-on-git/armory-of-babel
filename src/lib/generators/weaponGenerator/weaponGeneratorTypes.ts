@@ -394,6 +394,11 @@ export const weaponStructures = {
         holding: ['grip'],
         other: ['chain', 'pommel']
     },
+    meteorHammerLike: {
+        business: ['maceHeads'],
+        holding: ['grip'],
+        other: ['chain', 'pommel']
+    },
     multiFlailLike: {
         business: ['maceHeads'],
         holding: ['grip'],
@@ -423,7 +428,7 @@ export const shapeToStructure = {
 
     "Macuahuitl": "multiSwordLike",
     "Nunchuks": "multiClubLike",
-    "Meteor Hammer": "multiFlailLike",
+    "Meteor Hammer": "meteorHammerLike",
     "Double Flail": "multiFlailLike",
     "Triple Flail": "multiFlailLike",
     "Quadruple Flail": "multiFlailLike",

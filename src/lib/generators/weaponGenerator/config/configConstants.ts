@@ -1,5 +1,6 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { titleCase } from "$lib/util/string";
@@ -431,13 +432,26 @@ const embeddedArr = [
     ['toxic pearl', ephAcid],
 ] as const;
 
-const eyeStructureGen = mkGen((rng, weapon: Weapon) => [
+const eyeStructureGenSingular = mkGen((rng, weapon: Weapon) => [
     `one large eye: it's ${eyeColorGen.generate(rng, weapon)}`,
     `a pair of eyes: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `three eyes mounted in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `four eyes mounted in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `a cluster of eyes: they're ${eyeColorGen.generate(rng, weapon)}`,
-    `eyes dotted randomly across: they're ${eyeColorGen.generate(rng, weapon)}`,
+    `three eyes mounted on it in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
+    `four eyes mounted on it, in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
+    ...(weapon.themes.includes('dark') ? [
+        `a cluster of eyes on it: they're ${eyeColorGen.generate(rng, weapon)}`,
+        `eyes dotted randomly across it: they're ${eyeColorGen.generate(rng, weapon)}`,
+    ] : []),
+].choice(rng));
+
+const eyeStructureGenPlural = mkGen((rng, weapon: Weapon) => [
+    `one large eye mounted on them: it's ${eyeColorGen.generate(rng, weapon)}`,
+    `a pair of eyes mounted on them: they're ${eyeColorGen.generate(rng, weapon)}`,
+    `three eyes mounted on them a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
+    `four eyes mounted on them in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
+    ...(weapon.themes.includes('dark') ? [
+        `a cluster of eyes on them: they're ${eyeColorGen.generate(rng, weapon)}`,
+        `eyes dotted randomly across them: they're ${eyeColorGen.generate(rng, weapon)}`
+    ] : []),
 ].choice(rng));
 
 const eyeColorGen = mkGen((rng, weapon: Weapon) => {
@@ -458,22 +472,32 @@ const eyeColorGen = mkGen((rng, weapon: Weapon) => {
     return effects[weapon.themes.choice(rng)].choice(rng);
 });
 
-const eyeAnimalsArr = [
-    "a mountain goat's",
-    "a cuttlefish's",
-    "an octopus'",
-    "a wolf's",
-    "a fox's",
-    "a bear's",
-    "a snake's",
-    "a hawk's",
-    "an owl's",
-    "an eagle's",
-    "a seal's",
-    "a tiger's",
-    "a lion's",
-    "a crow's"
-] as const;
+
+const themedAnimal = mkGen((rng, weapon: Weapon) => {
+
+    const sharedAnimals = [
+        "a wolf's",
+        "a fox's",
+        "a bear's",
+    ] as const;
+
+    const themedAnimals = {
+        fire: ["a tiger's", "a lion's"],
+        ice: ["a seal's"],
+        cloud: [
+            "a cuttlefish's",
+            "an octopus'",
+            "a hawk's",
+            "an owl's",
+            "an eagle's",
+        ],
+        earth: ["a mountain goat's"],
+        dark: ["a snake's"],
+        sweet: ["a cat's"],
+    } satisfies Partial<Record<Theme, string[]>>;
+
+    return [...pickForTheme(weapon, themedAnimals, rng) ?? [], ...sharedAnimals].choice(rng);
+})
 
 export const MISC_DESC_FEATURES = {
     embedded: {
@@ -693,22 +717,22 @@ export const MISC_DESC_FEATURES = {
             animalistic: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGen, ' and shaped like ', mkGen((rng) => [...eyeAnimalsArr].choice(rng))]),
-                    plural: new StringGenerator([eyeStructureGen, ' and shaped like ', mkGen((rng) => [...eyeAnimalsArr].choice(rng))]),
+                    singular: new StringGenerator([eyeStructureGenSingular, ' and shaped like ', themedAnimal]),
+                    plural: new StringGenerator([eyeStructureGenPlural, ' and shaped like ', themedAnimal]),
                 },
             },
             deepSet: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGen, ", and idented slightly into the surface",]),
-                    plural: new StringGenerator([eyeStructureGen, ", and idented slightly into the surface"])
+                    singular: new StringGenerator([eyeStructureGenSingular, ", and idented slightly into the surface",]),
+                    plural: new StringGenerator([eyeStructureGenPlural, ", and idented slightly into the surface"])
                 },
             },
             beady: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGen, ', round and beady']),
-                    plural: new StringGenerator([eyeStructureGen, ', round and beady']),
+                    singular: new StringGenerator([eyeStructureGenSingular, ', round and beady']),
+                    plural: new StringGenerator([eyeStructureGenPlural, ', round and beady']),
                 },
             },
         }
