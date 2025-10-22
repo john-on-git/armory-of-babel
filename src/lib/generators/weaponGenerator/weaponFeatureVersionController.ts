@@ -1989,7 +1989,42 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 )
             ]
         }
+    },
+    {
+        themes: {},
+        adjectives: {},
+        personalities: {},
+        rechargeMethods: {},
+        actives: {
+            add: [
+                new ProviderElement<ActivePower, WeaponPowerCond>('rally-person', {
+                    desc: 'Rally',
+                    cost: 1,
+                    additionalNotes: [
+                        'Targets one non-hostile character.',
+                        'For the rest of the day, their morale cannot break.'
+                    ]
+                }, {
+                    themes: {
+                        any: ['light', 'steampunk']
+                    }
+                })
+            ]
+        },
+        passives: {},
+        languages: {},
+        shapes: {}
     }
+    // ,{
+    //     themes: {},
+    //     adjectives: {},
+    //     personalities: {},
+    //     rechargeMethods: {},
+    //     actives: {},
+    //     passives: {},
+    //     languages: {},
+    //     shapes: {}
+    // }
 ], (x) => {
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),

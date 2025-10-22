@@ -5,7 +5,7 @@
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
-    import { pushURLSearchParamsToLocation } from "$lib/util/queryString";
+    import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import { onMount, tick } from "svelte";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
@@ -70,7 +70,7 @@
             // push it to the URL
             const searchParams = new URLSearchParams(window.location.search);
             searchParams.set("v", latest.toString());
-            pushURLSearchParamsToLocation(searchParams);
+            syncLocationWithURLSearchParams(searchParams, "replace");
 
             // return it
             return latest;
@@ -82,7 +82,7 @@
         searchParams.set("v", id.toString());
 
         // and update the URL params to point to its ID
-        pushURLSearchParamsToLocation(searchParams);
+        syncLocationWithURLSearchParams(searchParams, "replace");
     }
 
     /**
@@ -105,7 +105,7 @@
         searchParams.set("id", id);
 
         // and update the URL params to point to its ID
-        pushURLSearchParamsToLocation(searchParams);
+        syncLocationWithURLSearchParams(searchParams, "push");
     }
 
     /**
