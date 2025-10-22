@@ -57,6 +57,13 @@ describe('Weapon Generator', () => {
         }
     });
 
+    it('5. TODO Weapons never contain two components with the same UUID, unless that component is marked non-unique.', () => {
+        // for (let i = 0; i < nRuns; i++) {
+        //     const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
+
+        // }
+    });
+
     it('6. The weapon that corresponds to a particular set of parameters is fixed and never changes, even when the software is updated.', () => {
         // expect(mkWeapon('test1', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
         //     { id: "test1", themes: ["nature"], rarity: "uncommon", name: "Oak Epee", damage: { as: "sword", const: 1 }, toHit: 1, active: { maxCharges: 4, rechargeMethod: "all charges when its wielder drives a poacher to bankruptcy", powers: [] }, passivePowers: [{ desc: "Can transform into a bouquet of flowers." }], sentient: false }
