@@ -11,9 +11,10 @@
 
     interface Props {
         config?: WeaponRarityConfig;
+        logging?: boolean;
     }
 
-    const { config }: Props = $props();
+    const { config, logging = false }: Props = $props();
 
     let weapon: Weapon = $derived(mkWeapon(getIDFromURL(), config));
     const weaponID = writable<string>(getIDFromURL());
@@ -67,7 +68,9 @@
             pushState(newQuery, {});
         }
 
-        console.log("generated weapon", weapon);
+        if (logging) {
+            console.log("generated weapon", weapon);
+        }
 
         dispatchEvent(new PopStateEvent("popstate", { state: null }));
     }
