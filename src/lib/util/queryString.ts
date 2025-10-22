@@ -20,7 +20,6 @@ export function syncLocationWithURLSearchParams(searchParams: URLSearchParams, m
                 default:
                     mode satisfies never;
             }
-
             tick().then(() => dispatchEvent(new PopStateEvent("popstate")));
         });
     }
