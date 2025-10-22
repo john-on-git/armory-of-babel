@@ -295,7 +295,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["sour", "dark"] satisfies Theme[]
+                all: ["sour", "dark"] satisfies Theme[],
             }
         }
     ),
