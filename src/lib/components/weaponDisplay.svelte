@@ -55,11 +55,14 @@
     }
 </script>
 
-<div class="weapon-display">
-    <h2 class={`weapon-class weapon-rarity-${weapon.rarity}`}>
+<div class="weapon-display" data-testid="weapon-display">
+    <h2
+        class={`weapon-class weapon-rarity-${weapon.rarity}`}
+        data-testid="weapon-display-title"
+    >
         {weapon?.name ?? ""}
     </h2>
-    <div class="weapon-display-body">
+    <div class="weapon-display-body" data-test>
         <div class="weapon-display-powers">
             <div class="weapon-generator-row-flex">
                 <p>
