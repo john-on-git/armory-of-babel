@@ -8,7 +8,7 @@ export interface LeafGenerator<T> {
     generate: (rng: seedrandom.PRNG) => T;
 }
 export function mkGen<T>(x: T | ((rng: seedrandom.PRNG) => T)): LeafGenerator<T> {
-    return x instanceof Function ? {generate: x} : {generate: () => x};
+    return x instanceof Function ? { generate: x } : { generate: () => x };
 }
 export type TGenerator<T> = LeafGenerator<T> | RecursiveGenerator<T>;
 
@@ -16,7 +16,7 @@ export abstract class RecursiveGenerator<T> {
     children: (TGenerator<T>)[];
 
     constructor(children: (T | TGenerator<T>)[]) {
-        this.children = children.map(x => typeof x === 'object' && x!==null && 'generate' in x ? x : mkGen(x));
+        this.children = children.map(x => typeof x === 'object' && x !== null && 'generate' in x ? x : mkGen(x));
     }
 
     /**
@@ -27,6 +27,6 @@ export abstract class RecursiveGenerator<T> {
 }
 
 export class StringGenerator extends RecursiveGenerator<string> {
-    generate: (rng: seedrandom.PRNG) => string = (rng) => this.children.reduce((acc, x) => acc+x.generate(rng), "");
+    generate: (rng: seedrandom.PRNG) => string = (rng) => this.children.reduce((acc, x) => acc + x.generate(rng), "");
 }
 

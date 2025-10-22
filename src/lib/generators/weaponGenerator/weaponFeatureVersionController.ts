@@ -51,20 +51,22 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
             add: [
                 ...(
                     [
+                        "Silver-Plated"
+                    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, {}))
+                ),
+                ...(
+                    [
                         "bronze",
                         "iron",
                         "steel",
-                        "Silver-Plated"
-                    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, {}))
+                    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, {}))
                 ),
                 ...(
                     [
                         "fiery",
                         "blazing",
                         "roaring",
-                        "crackling",
-                        "ruby",
-                        "opal"
+                        "crackling"
                     ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['fire'] } }))
                 ),
                 ...(
@@ -117,16 +119,20 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 ...(
                     [
-                        "crystal",
                         "Silk-Wrapped",
-                        "amethyst"
                     ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['wizard'] } }))
+                ),
+                ...(
+                    [
+                        "crystal",
+                        "amethyst"
+                    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ['wizard'] } }))
                 ),
                 ...(
                     [
                         "brass",
                         "clockwork"
-                    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['steampunk'] } }))
+                    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ['steampunk'] } }))
                 ),
                 ...(
                     [
@@ -139,13 +145,12 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     [
                         "gossamer",
                         "rusted",
-                        "silver"
                     ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ['cloud'] } }))
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('tin',
 
                     {
-                        desc: "tin"
+                        desc: "tin",
                     },
                     {
 
@@ -157,7 +162,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('copper',
 
                     {
-                        desc: "copper"
+                        desc: "copper",
                     },
                     {
 
@@ -169,7 +174,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('oak',
 
                     {
-                        desc: "oak"
+                        desc: "oak",
                     },
                     {
 
@@ -180,7 +185,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('pine',
 
                     {
-                        desc: "pine"
+                        desc: "pine",
                     },
                     {
 
@@ -192,7 +197,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('sandstone',
 
                     {
-                        desc: "sandstone"
+                        desc: "sandstone",
                     },
                     {
 
@@ -210,7 +215,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('granite',
 
                     {
-                        desc: "granite"
+                        desc: "granite",
                     },
                     {
 
@@ -222,7 +227,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('alabaster',
 
                     {
-                        desc: "alabaster"
+                        desc: "alabaster",
                     },
                     {
 
@@ -234,7 +239,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('marble',
 
                     {
-                        desc: "marble"
+                        desc: "marble",
                     },
                     {
 
@@ -246,7 +251,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('silver',
 
                     {
-                        desc: "silver"
+                        desc: "silver",
                     },
                     {
 
@@ -258,7 +263,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('gold',
 
                     {
-                        desc: "gold"
+                        desc: "gold",
                     },
                     {
 
@@ -270,7 +275,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('black-iron',
 
                     {
-                        desc: "black iron"
+                        desc: "black iron",
                     },
                     {
 
@@ -282,7 +287,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('silver',
 
                     {
-                        desc: "silver"
+                        desc: "silver",
                     },
                     {
 
@@ -294,7 +299,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('mythril',
 
                     {
-                        desc: "mythril"
+                        desc: "mythril",
                     },
                     {
 
@@ -318,7 +323,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('cobalt',
 
                     {
-                        desc: "cobalt"
+                        desc: "cobalt",
                     },
                     {
 
@@ -341,7 +346,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('diamond',
                     {
-                        desc: "diamond"
+                        desc: "diamond",
                     },
                     {
 
@@ -355,6 +360,23 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                             ]
                         }
                     },
+                ),
+                new ProviderElement<WeaponAdjective, WeaponPowerCond>('opal',
+                    {
+                        desc: "opal",
+                    },
+                    {
+
+                        rarity: {
+                            gte: "epic"
+                        },
+                        themes: {
+                            any: [
+                                "fire",
+                                "earth"
+                            ]
+                        },
+                    }
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('ruby',
                     {
@@ -375,7 +397,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('emerald',
                     {
-                        desc: "emerald"
+                        desc: "emerald",
                     },
                     {
 
@@ -393,7 +415,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('sapphire',
                     {
-                        desc: "sapphire"
+                        desc: "sapphire",
                     },
                     {
 
@@ -411,7 +433,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('flint',
                     {
-                        desc: "flint"
+                        desc: "flint",
                     },
                     {
 
@@ -429,7 +451,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('onyx',
                     {
-                        desc: "onyx"
+                        desc: "onyx",
                     },
                     {
 
@@ -447,7 +469,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('quartz',
                     {
-                        desc: "quartz"
+                        desc: "quartz",
                     },
                     {
 
@@ -458,7 +480,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('glass',
                     {
-                        desc: "glass"
+                        desc: "glass",
                     },
                     {
 
@@ -477,10 +499,9 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 ),
                 new ProviderElement<WeaponAdjective, WeaponPowerCond>('lumensteel',
                     {
-                        desc: "lumensteel"
+                        desc: "lumensteel",
                     },
                     {
-
                         rarity: {
                             gte: "epic"
                         }
@@ -1910,7 +1931,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                             }
                         ],
 
-                        "great-axe": [
+                        "greataxe": [
                             "Great-Axe",
                             {
                                 particular: "Great-Scythe",
@@ -1976,7 +1997,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                                 }
                             }
                         ],
-                        "sword (or musket)": [
+                        "greatsword (or musket)": [
                             {
                                 particular: "Gunblade",
                                 rarity: {
@@ -2030,7 +2051,12 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
     },
     {
         themes: {},
-        adjectives: {},
+        adjectives: {
+            add: [
+                new ProviderElement<WeaponAdjective, WeaponPowerCond>('light-white', { desc: 'white' }, { themes: { any: ['light'] } }),
+                new ProviderElement<WeaponAdjective, WeaponPowerCond>('dark-black', { desc: 'black' }, { themes: { any: ['dark'] } }),
+            ]
+        },
         personalities: {},
         rechargeMethods: {},
         actives: {

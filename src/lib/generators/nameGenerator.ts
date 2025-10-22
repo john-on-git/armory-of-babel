@@ -132,4 +132,49 @@ export const grecoRomanFirstNameGenerator = new StringGenerator([
         "ina",
         "ira"
     ].choice(rng))
-])
+]);
+
+// const swordLikeObjectifyingNameGenerator = (weapon: Weapon, adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>) => mkGen((rng) =>
+//     [
+//         new StringGenerator([
+//             mkGen((rng) =>
+//                 genStr(rng, ((rng: PRNG) => [
+//                     mkGen(rng => genStr(rng, Array.from(adjectiveProvider.available(weapon)).map(x => genStr(rng, x.desc)).filter(x => x.length <= 6).choice(rng))),
+//                 ].choice(rng))(rng))
+//             ),
+//             mkGen([
+//                 'slayer',
+//                 'edge',
+//                 'brandt',
+//                 'tongue',
+//                 'fang',
+//                 'hammer',
+//             ].choice(rng))
+//         ])
+//     ].choice(rng).generate(rng)
+// );
+
+// export const objectifyingNameFor: Record<string, (weapon: Weapon, adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>) => TGenerator<string>> = {
+//     // "club": TODO,
+//     // "staff": TODO,
+
+//     "dagger": swordLikeObjectifyingNameGenerator,
+//     "sword": swordLikeObjectifyingNameGenerator,
+//     "greatsword": swordLikeObjectifyingNameGenerator,
+//     "sword (or bow)": swordLikeObjectifyingNameGenerator,
+
+//     // "axe": TODO,
+//     // "greataxe": TODO,
+
+//     // "mace": TODO,
+
+//     // "spear": TODO,
+
+//     // "polearm": TODO,
+
+//     // "lance": TODO,
+//     // "dagger (or pistol)": TODO
+//     // "greatsword (or musket)": TODO
+// }
+
+// export const mkObjectifyingNameGenerator = (weapon: Weapon, adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>) => objectifyingNameFor[weapon.shape.group](weapon, adjectiveProvider);

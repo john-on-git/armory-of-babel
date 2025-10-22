@@ -13,9 +13,10 @@
         - UX.                                           EASY LONG   6
             - Link to this weapon button.
             - Warning countdown for breaking updates.
+            - Prefetching queue for weapons             EASY SHORT  8
 
         - More themes & abilities.
-            - 'pets'                                    EASY LONG   8
+            - 'pets'                                    EASY LONG   6
         
         - ~~Names / Namelist~~                          EASY LONG   7
         - Descriptions.                                 HARD LONG   4
