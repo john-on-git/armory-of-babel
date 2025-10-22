@@ -1,4 +1,8 @@
 
+type NestedPartial<T extends object> = {
+    [k in keyof T]?: T[k] extends object ? NestedPartial<T[k]> : T[k];
+}
+
 export abstract class Patchable {
     UUID: string;
 
@@ -6,19 +10,33 @@ export abstract class Patchable {
         this.UUID = UUID;
     }
 
-    patch(other: Partial<typeof this>) {
-        for (const k of Object.keys(other) as (keyof this)[]) {
-            if (other[k] !== undefined) {
-                this[k] = structuredClone(other[k]);
+    patch(other: NestedPartial<typeof this>) {
+        function f<T extends object>(target: T, other: NestedPartial<T>): T {
+            for (const k of Object.keys(other) as (keyof typeof target)[]) {
+                if (other[k] !== undefined) {
+                    if (typeof target[k] === 'object' && target[k] !== null && other[k] !== null) {
+                        // is object
+                        target[k] = f(target[k], other[k]);
+                    }
+                    else if (typeof target[k] === typeof other[k]) {
+                        // is primitive
+                        target[k] = other[k] as never;
+                    }
+                    else {
+                        throw new Error(`can't patch ${JSON.stringify(other)} onto ${JSON.stringify(target)}, type error`)
+                    }
+                }
             }
+            return target;
         }
+        f(this, other);
     };
 }
 
 export interface Delta<T extends Patchable> {
     add?: Iterable<T>;
     remove?: Set<string>;
-    modify?: Record<string, Partial<T>>;
+    modify?: Record<string, NestedPartial<T>>;
 }
 
 export type DeltaCollection<T2 extends Record<string | number | symbol, Patchable>> = {
