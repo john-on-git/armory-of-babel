@@ -349,7 +349,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -372,7 +372,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -395,7 +395,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -418,7 +418,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -441,7 +441,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -464,7 +464,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -487,7 +487,30 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-nature',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'luminous vines emerging from a crack in its centre, spreading outwards and wrapping around it',
+                                plural: 'luminous vines emerging from a crack in their centre, spreading outwards and wrapping around them'
+                            },
+                            ephitet: mkGen(rng => ephGreen.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -514,7 +537,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -537,7 +560,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -560,7 +583,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -583,7 +606,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -606,7 +629,7 @@ export default {
                 },
                 {
                     /**
-                     * Can only be added by the passive power "death blast"
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
                      */
                     never: true
                 }
@@ -2957,31 +2980,31 @@ export default {
                     any: edgedWeaponShapeFamilies
                 },
             }),
-            new ProviderElement('gravity-gun', {
-                desc: 'Kinesis',
-                cost: 1,
-                additionalNotes: [
-                    mkGen((rng, weapon) => {
-                        const effects = {
-                            fire: 'The weapon emit a fiery whip.',
+            new ProviderElement('gravity-gun',
+                mkGen((rng, weapon) => {
 
-                            cloud: "The weapon emits a vortex of air.",
+                    const coreChoice = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['light' | 'fire' | 'nature' | 'cloud']>, rng);
 
-                            light: 'The weapon emits a tether of luminous energy.',
+                    const effects = {
+                        light: `The weapon emits a tether of ${coreChoice.desc}.`,
 
-                            nature: "A sturdy vine grows from the weapon's tip.",
+                        fire: 'The weapon emit a fiery whip.',
 
-                            void: 'The weapon emits a tether of void energy.'
+                        nature: "A sturdy vine grows from the weapon's tip.",
 
-                        } as const satisfies Partial<Record<Theme | 'void', string>>;
+                        cloud: "The weapon emits a vortex of air.",
 
-                        const coreChoice = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['light' | 'fire' | 'nature' | 'cloud']>, rng);
+                        void: 'The weapon emits a tether of void energy.'
 
+                    } as const satisfies Partial<Record<Theme | 'void', string>>;
 
-                        return `${effects[coreChoice.theme]} It can lift and throw an object weighing up to 500 lbs.`;
-                    })
-                ]
-            }, {
+                    return {
+                        desc: 'Kinesis',
+                        cost: 1,
+                        additionalNotes: [`${effects[coreChoice.theme]} It can lift and throw an object weighing up to 500 lbs.`],
+                        descriptorPartGenerator: coreChoice.featureUUID
+                    }
+                }), {
                 themes: {
                     any: ['light', 'fire', 'nature', 'cloud']
                 },
