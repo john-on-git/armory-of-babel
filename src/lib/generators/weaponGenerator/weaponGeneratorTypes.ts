@@ -72,7 +72,7 @@ export interface Weapon {
 
     rarity: WeaponRarity;
     name: string;
-    description: string;
+    description: StructuredDescription | null;
     shape: WeaponShape;
 
     damage: DamageDice & { as: string };
@@ -246,13 +246,19 @@ export interface WeaponPart {
      * @example
      * swordLike.blade.material = 'steel';
      */
-    material?: string;
+    material?: {
+        desc: string;
+        UUID: string;
+    };
     /**
      * A list of facts about the physical properties of this part, which could be combined into a sentence.
      * @example
      * swordLike.blade.desc = ['spiky', 'encrusted with jewels'];
      */
-    descriptors: string[];
+    descriptors: {
+        desc: string;
+        UUID: string;
+    }[];
 }
 
 
@@ -329,6 +335,11 @@ const shapeToStructure = {
 } as const satisfies Record<WeaponShapeGroup, keyof typeof weaponStructures>
 
 export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
+export type StructuredDescription = {
+    business: Record<WeaponPartName, WeaponPart>;
+    holding: Record<WeaponPartName, WeaponPart>;
+    other: Record<WeaponPartName, WeaponPart>;
+};
 
 export type DescriptorGenerator = TGenerator<({ material: string } | { descriptor: string })> & {
     applicableTo?: Quant<WeaponPartName>;
@@ -341,26 +352,26 @@ export function structureFor<T extends WeaponShapeGroup>(shape: T) {
     const structuredDesc = {
         business: structure.business.reduce((acc, partName) => {
             acc[partName] = {
-                descriptors: [] as string[]
+                descriptors: []
             } satisfies WeaponPart;
             return acc;
         }, {} as Record<WeaponPartName, WeaponPart>),
         holding: structure.holding.reduce((acc, partName) => {
             acc[partName] = {
-                descriptors: [] as string[]
+                descriptors: []
             } satisfies WeaponPart;
             return acc;
         }, {} as Record<WeaponPartName, WeaponPart>),
         other: structure.other.reduce((acc, partName) => {
             acc[partName] = {
-                descriptors: [] as string[]
+                descriptors: []
             } satisfies WeaponPart;
             return acc;
         }, {} as Record<WeaponPartName, WeaponPart>),
 
     };
 
-    return [structure, structuredDesc] as const;
+    return [structure, structuredDesc as StructuredDescription] as const;
 }
 
 
@@ -387,7 +398,7 @@ export interface FeatureProviderCollection {
     /**
      * Descriptor generator indexed by UUID. This allows features to apply specific descriptors, ignoring the usual conditions.
      */
-    descriptorIndex: Record<string, DescriptorGenerator>;
+    descriptorIndex: Record<string, DescriptorGenerator & { UUID: string }>;
     personalityProvider: WeaponFeatureProvider<Personality>;
     shapeProvider: WeaponFeatureProvider<WeaponShape>;
 

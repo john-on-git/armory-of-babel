@@ -57,10 +57,10 @@ export default {
                     }
                 }
             ),
-            ...(new Array(10).fill(null).map((_, i) =>
-                new ProviderElement(`test-${i}`,
+            ...(['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].map((x) =>
+                new ProviderElement(`test-${x}`,
                     {
-                        generate: () => ({ descriptor: `test${i}` })
+                        generate: () => ({ descriptor: x })
                     },
                     {}
                 )))
