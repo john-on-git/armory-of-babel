@@ -76,7 +76,7 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
                     ? `${descriptors[0]}`
                     : '';
 
-            usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
+            usedAndThisSentence = usedAndThisSentence || usesAnd(parts[i][1]);
 
             const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
 
@@ -89,7 +89,7 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
                 usedAndThisSentence = true;
             }
             else {
-                sentence = `${partStr}. `;
+                sentence = `${partStr}.${i === parts.length - 1 ? '' : ' '}`;
                 usedAndThisSentence = false;
             }
 
