@@ -174,7 +174,7 @@ export const grecoRomanFirstNameGenerator = new StringGenerator([
 
 //     // "lance": TODO,
 //     // "dagger (or pistol)": TODO
-//     // "greatsword (or musket)": TODO
+//     // "sword (or musket)": TODO
 // }
 
 // export const mkObjectifyingNameGenerator = (weapon: Weapon, adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>) => objectifyingNameFor[weapon.shape.group](weapon, adjectiveProvider);

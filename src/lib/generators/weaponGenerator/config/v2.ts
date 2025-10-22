@@ -1,13 +1,10 @@
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import type { ActivePower, PassivePower, WeaponAdjective, WeaponFeaturesTypes, WeaponPowerCond } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { type ActivePower, type PassivePower, type WeaponFeaturesTypes, type WeaponPowerCond } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import type { DeltaCollection } from "$lib/util/versionController";
 
 export default {
     shapes: {},
-    adjectives: {
-        add: [
-            new ProviderElement<WeaponAdjective, WeaponPowerCond>('pale', { desc: 'pale' }, { themes: { any: ['light'] } }),
-        ]
+    descriptors: {
     },
     actives: {
         add: [
@@ -43,7 +40,7 @@ export default {
                 ]
             }, {
                 shapeFamily: {
-                    any: ['sword (or bow)', 'dagger (or pistol)', 'greatsword (or musket)']
+                    any: ['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('binding-shot', {
@@ -56,7 +53,7 @@ export default {
             }, {
                 themes: { any: ['nature', 'ice'] },
                 shapeFamily: {
-                    any: ['sword (or bow)', 'dagger (or pistol)', 'greatsword (or musket)']
+                    any: ['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('black-flame-blast', {
