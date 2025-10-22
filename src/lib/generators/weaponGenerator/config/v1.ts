@@ -732,7 +732,7 @@ export const v1 = {
                         new StringGenerator([
                             mkGen("The weapon transforms into "),
                             singularWildAnimal,
-                            mkGen(" until the end of the scene.")
+                            mkGen(" until the end of the scene, or until it dies.")
                         ]),
                         "You can command it to turn back into its regular form early."
                     ]

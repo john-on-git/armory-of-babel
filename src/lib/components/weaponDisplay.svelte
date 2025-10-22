@@ -194,6 +194,7 @@
         .weapon-display-sentient-info-top-half {
             display: flex;
             justify-content: space-around;
+            gap: 1rem;
         }
     }
 

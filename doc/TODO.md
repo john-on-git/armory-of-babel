@@ -1,5 +1,8 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
     - Bugs.
+        - API blasting
+            - local caching for weapons
+            - sort out the bad performance on providers
 
     - Generator setup.
         - Configuration.

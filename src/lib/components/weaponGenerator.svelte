@@ -27,11 +27,11 @@
                 calcOdds(defaultWeaponRarityConfigFactory());
 
             const searchParams = new URLSearchParams(window.location.search);
-            if (searchParams.get("rarityOdds") === null) {
-                searchParams.set("rarityOdds", odds[0].toFixed(2));
-                searchParams.append("rarityOdds", odds[1].toFixed(2));
-                searchParams.append("rarityOdds", odds[2].toFixed(2));
-                searchParams.append("rarityOdds", odds[3].toFixed(2));
+            if (searchParams.get("o") === null) {
+                searchParams.set("o", odds[0].toFixed(2));
+                for (let i = 1; i < odds.length; i++) {
+                    searchParams.append("o", odds[i].toFixed(2));
+                }
             }
             const { res, forParams } = await (async () => {
                 // take a copy of the parts of the UI state that determine the weapon at the time the request was made
