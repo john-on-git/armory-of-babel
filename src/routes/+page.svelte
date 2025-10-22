@@ -285,8 +285,15 @@
         }
     }
 
-    :global(.weapon-rarity-common) {
-        color: white;
+    @media (prefers-color-scheme: dark) {
+        :global(.weapon-rarity-common) {
+            color: white;
+        }
+    }
+    @media (prefers-color-scheme: light) {
+        :global(.weapon-rarity-common) {
+            color: black;
+        }
     }
     :global(.weapon-rarity-uncommon) {
         color: var(--color-uncommon);

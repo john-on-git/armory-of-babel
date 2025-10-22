@@ -43,6 +43,7 @@
 
 - Done
     - Bugs
+        - Doesn't work on android 8 samsung galaxy tab chrome 1.37.0
         - ~~API blasting~~
             - Main culprit is that it makes a call every time the odds (and other config) change, and this is kind of unavoidable
                 - The generate-weapon API should not be parameterised on rarity,
