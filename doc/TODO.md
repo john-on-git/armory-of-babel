@@ -1,6 +1,11 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
     - Bugs.
         - API blasting
+            - Main culprit is that it makes a call every time the odds (and other config) change, and this is kind of unavoidable
+                - The generate-weapon API should not be parameterised on rarity,
+                  instead it should just return a dict of weapons with these parameters, keyed by rarity.
+                  And then the UI holds this and just displays the active one.
+                - We could also have it only call when you stop adjusting the rarity but the UX on that is worse IMO
             - local caching for weapons
             - sort out the bad performance on providers
 

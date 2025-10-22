@@ -117,7 +117,7 @@ describe("Weapon Generator Main Page", () => {
 
 
 
-    it("The app should replace the current entry in the user's browser history if (and only if) this is the first time it is loaded.", () => {
+    it("The app should replace the current entry in the user's browser history if (and only if) this is the first time it is loaded. Otherwise, it should push to history.", () => {
         // keep track of the initial location for assertions later
         cy.location().then((initialLocation) => {
 
@@ -128,7 +128,7 @@ describe("Weapon Generator Main Page", () => {
             // keep track of that location too
             cy.location().then((firstWeaponLoc) => {
 
-                // generate a new weapon, then wait for that to load
+                // generate a new weapon, then wait for that to load. this should add another history entry
                 cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
                 cy.getByTestId('weapon-display').should('be.visible');
 
