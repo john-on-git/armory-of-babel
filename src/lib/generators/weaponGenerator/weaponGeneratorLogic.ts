@@ -641,9 +641,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         }
     }
     else {
-        const personalName = [
-            grecoRomanFirstNameGenerator, angloFirstNameGenerator,
-        ].choice(rng).generate(rng, weapon.pronouns);
+        const personalName = [grecoRomanFirstNameGenerator, angloFirstNameGenerator].choice(rng).generate(rng, weapon.pronouns);
 
         if (ephitet === undefined) {
             weapon.name = `${personalName}, the ${weapon.shape.particular}`;
@@ -661,7 +659,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         themes: weapon.themes,
         rarity: weapon.rarity,
         name: weapon.name,
-        description: structuredDescToString('en-GB', weapon),
+        description: structuredDescToString(weapon),
         damage: weapon.damage,
         toHit: weapon.toHit,
         active: {
