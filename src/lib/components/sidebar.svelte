@@ -61,8 +61,18 @@
 </div>
 
 <style>
+    @media (orientation: landscape) {
+        :root {
+            --sidebar-width: 20vw;
+        }
+    }
+    @media (orientation: portrait) {
+        :root {
+            --sidebar-width: 75vw;
+        }
+    }
+
     :root {
-        --sidebar-width: 20vw;
         --sidebar-color: #4e4e4ecc;
     }
 
