@@ -252,15 +252,15 @@
         color: white;
     }
     .weapon-rarity-uncommon {
-        color: hsl(108, 74%, 50%);
+        color: var(--color-uncommon);
     }
     .weapon-rarity-rare {
-        color: hsl(212, 74%, 55%);
+        color: var(--color-rare);
     }
     .weapon-rarity-epic {
-        color: hsl(273, 74%, 60%);
+        color: var(--color-epic);
     }
     .weapon-rarity-legendary {
-        color: hsl(51, 84%, 50%);
+        color: var(--color-legendary);
     }
 </style>

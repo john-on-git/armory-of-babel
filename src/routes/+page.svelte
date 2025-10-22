@@ -5,7 +5,7 @@
     import { writable } from "svelte/store";
 
     let config = $state(defaultWeaponRarityConfigFactory());
-    const configWritable = writable((() => config)());
+    const configWritable = writable(config);
 
     configWritable.subscribe((newVal) => {
         config = newVal;
@@ -18,6 +18,14 @@
 <ConfigSidebar {configWritable} />
 
 <style>
+    :global(:root) {
+        --color-common: white;
+        --color-uncommon: hsl(108, 74%, 50%);
+        --color-rare: hsl(212, 74%, 55%);
+        --color-epic: hsl(273, 74%, 60%);
+        --color-legendary: hsl(51, 84%, 50%);
+    }
+
     :global(h1, h2) {
         text-align: center;
     }
