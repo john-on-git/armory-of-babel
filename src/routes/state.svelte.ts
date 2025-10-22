@@ -3,4 +3,5 @@ import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerato
 import { calcOdds } from "$lib/util/configUtils";
 
 export const FEATURE_PROVIDERS_BY_VERSION = $state(new Array(weaponFeatureVersionController.getLatestVersionNum() + 1).fill(null).map((_, i) => weaponFeatureVersionController.getVersion(i)));
-export const DEFAULT_RARITY_ODDS = $state(calcOdds(defaultWeaponRarityConfigFactory()))
+
+export const DEFAULT_RARITY_ODDS = $state(calcOdds(defaultWeaponRarityConfigFactory()));

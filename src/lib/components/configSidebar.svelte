@@ -1,34 +1,22 @@
 <script lang="ts">
-    import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
-    import { type WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-    import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
     import _ from "lodash";
-    import { type Writable } from "svelte/store";
+    import type { Writable } from "svelte/store";
+    import { DEFAULT_RARITY_ODDS } from "../../routes/state.svelte";
     import RaritySlider from "./raritySlider.svelte";
     import Sidebar from "./sidebar.svelte";
 
     interface Props {
-        config: WeaponRarityConfig;
-        configWritable: Writable<WeaponRarityConfig>;
+        odds: [number, number, number, number];
+        oddsWritable: Writable<[number, number, number, number]>;
+        resetToDefault: () => void;
     }
 
-    const { config, configWritable }: Props = $props();
+    let { odds, oddsWritable, resetToDefault }: Props = $props();
 
-    const defaultConfig = defaultWeaponRarityConfigFactory();
-    const currentConfigIsDefault = $derived(
-        _.isEqual(calcOdds(config), calcOdds(defaultConfig)),
-    );
-    let odds = $state(calcOdds((() => config)()));
+    const oddsAreDefault = $derived(_.isEqual(odds, DEFAULT_RARITY_ODDS));
 
-    function onOddsChanged(odds: [number, number, number, number]) {
-        configWritable.update((prevValue) =>
-            applyOddsToConfig(prevValue, odds),
-        );
-    }
-
-    function resetToDefault() {
-        configWritable.set(defaultWeaponRarityConfigFactory());
-        odds = calcOdds(config);
+    function onOddsChanged(newOdds: [number, number, number, number]) {
+        oddsWritable.update(() => newOdds);
     }
 </script>
 
@@ -40,7 +28,7 @@
                 class="inline-button reset-button"
                 onclick={resetToDefault}
                 aria-label="reset custom generation parameters to default"
-                disabled={currentConfigIsDefault}
+                disabled={oddsAreDefault}
             >
                 <i class="fa-solid fa-rotate"></i>
             </button>

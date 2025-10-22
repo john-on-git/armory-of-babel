@@ -2,7 +2,7 @@ import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/
 import { mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { WeaponRarity, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { StatusCodes } from "http-status-codes";
-import { FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
+import { FEATURE_PROVIDERS_BY_VERSION } from "../../state.svelte";
 
 export interface GenerateWeaponRequest {
     id: string;
