@@ -245,12 +245,22 @@
         margin-left: auto;
         margin-right: auto;
     }
+
     .weapon-display-sentient-info {
         padding: 10pt;
         flex-grow: 1;
         border-radius: 8px;
+    }
+    @media (prefers-color-scheme: light) {
+        .weapon-display-sentient-info {
+            background-color: #d6d6d621;
+        }
+    }
 
-        background-color: hsla(0, 0%, 100%, 1.5%);
+    @media (prefers-color-scheme: dark) {
+        .weapon-display-sentient-info {
+            background-color: #31313586;
+        }
     }
 
     .weapon-generator-list-item {
