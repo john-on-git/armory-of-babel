@@ -16,7 +16,7 @@
         "blazing",
         "roaring",
         "crackling"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["fire"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["fire"]) } }))
 ),
             ...(
     [
@@ -26,7 +26,7 @@
         "polar",
         "Frostbound",
         "Icebound"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["ice"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["ice"]) } }))
 ),
             ...(
     [
@@ -35,7 +35,7 @@
         "abyssal",
         "spiked",
         "Blood-Stained"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["dark"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["dark"]) } }))
 ),
             ...(
     [
@@ -48,7 +48,7 @@
         "solar",
         "lunar",
         "prismatic",
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["light"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["light"]) } }))
 ),
             ...(
     [
@@ -58,43 +58,43 @@
         "Sugar-Glazed",
         "Honey-Frosted",
         "Sugar-Frosted"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["sweet"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["sweet"]) } }))
 ),
             ...(
     [
         "corroded",
         "corrosive"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["sour"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["sour"]) } }))
 ),
             ...(
     [
         "Silk-Wrapped",
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["wizard"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["wizard"]) } }))
 ),
             ...(
     [
         "crystal",
         "amethyst"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ["wizard"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: {any: new Set(["wizard"]) } }))
 ),
             ...(
     [
         "brass",
         "clockwork"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: { any: ["steampunk"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj, }, { themes: {any: new Set(["steampunk"]) } }))
 ),
             ...(
     [
         "heavy",
         "rough",
         "slag"
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["earth"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["earth"]) } }))
 ),
             ...(
     [
         "gossamer",
         "rusted",
-    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: { any: ["cloud"] } }))
+    ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["cloud"]) } }))
 ),
     new ProviderElement<WeaponAdjective, WeaponPowerCond>("tin",
 

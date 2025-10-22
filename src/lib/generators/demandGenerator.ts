@@ -50,7 +50,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["wizard", "steampunk"] satisfies Theme[]
+                any: new Set(["wizard", "steampunk"] satisfies Theme[])
             }
         }
     ),
@@ -60,7 +60,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["wizard"] satisfies Theme[]
+                any: new Set(["wizard"] satisfies Theme[])
             }
         }
     ),
@@ -70,7 +70,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["steampunk"] satisfies Theme[]
+                any: new Set(["steampunk"] satisfies Theme[])
             }
         }
     ),
@@ -80,7 +80,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["fire"] satisfies Theme[]
+                any: new Set(["fire"] satisfies Theme[])
             }
         }
     ),
@@ -90,7 +90,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["dark", "fire", "sour"] satisfies Theme[]
+                any: new Set(["dark", "fire", "sour"] satisfies Theme[])
             }
         }
     ),
@@ -100,7 +100,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["fire"] satisfies Theme[]
+                any: new Set(["fire"] satisfies Theme[])
             }
         }
     ),
@@ -110,7 +110,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["ice"] satisfies Theme[]
+                any: new Set(["ice"] satisfies Theme[])
             }
         }
     ),
@@ -120,7 +120,7 @@ const demands = [
         },
         {
             themes: {
-                none: ["sweet"] satisfies Theme[]
+                none: new Set(["sweet"] satisfies Theme[])
             }
         }
     ),
@@ -130,7 +130,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["light"] satisfies Theme[]
+                any: new Set(["light"] satisfies Theme[])
             }
         }
     ),
@@ -140,7 +140,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["dark"] satisfies Theme[]
+                any: new Set(["dark"] satisfies Theme[])
             }
         }
     ),
@@ -157,7 +157,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: new Set(["nature"] satisfies Theme[])
             }
         }
     ),
@@ -167,7 +167,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: new Set(["nature"] satisfies Theme[])
             }
         }
     ),
@@ -177,7 +177,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: new Set(["nature"] satisfies Theme[])
             }
         }
     ),
@@ -187,7 +187,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: new Set(["nature"] satisfies Theme[])
             }
         }
     ),
@@ -198,7 +198,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["light"] satisfies Theme[]
+                any: new Set(["light"] satisfies Theme[])
             }
         }
     ),
@@ -208,7 +208,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["light"] satisfies Theme[]
+                any: new Set(["light"] satisfies Theme[])
             }
         }
     ),
@@ -218,7 +218,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["light", "fire"] satisfies Theme[]
+                all: new Set(["light", "fire"] satisfies Theme[])
             }
         }
     ),
@@ -228,7 +228,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["light", "sour"] satisfies Theme[]
+                all: new Set(["light", "sour"] satisfies Theme[])
             }
         }
     ),
@@ -239,7 +239,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["ice", "sweet"] satisfies Theme[]
+                any: new Set(["ice", "sweet"] satisfies Theme[])
             }
         }
     ),
@@ -249,7 +249,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["fire", "sweet"] satisfies Theme[]
+                any: new Set(["fire", "sweet"] satisfies Theme[])
             }
         }
     ),
@@ -259,7 +259,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["sour", "sweet"] satisfies Theme[]
+                any: new Set(["sour", "sweet"] satisfies Theme[])
             }
         }
     ),
@@ -269,7 +269,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["sweet"] satisfies Theme[]
+                any: new Set(["sweet"] satisfies Theme[])
             }
         }
     ),
@@ -279,7 +279,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["dark"] satisfies Theme[]
+                any: new Set(["dark"] satisfies Theme[])
             }
         }
     ),
@@ -295,7 +295,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["sour", "dark"] satisfies Theme[]
+                all: new Set(["sour", "dark"] satisfies Theme[])
             }
         }
     ),
@@ -305,7 +305,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["fire", "dark"] satisfies Theme[]
+                all: new Set(["fire", "dark"] satisfies Theme[])
             }
         }
     ),
@@ -315,7 +315,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["cloud", "dark"] satisfies Theme[]
+                all: new Set(["cloud", "dark"] satisfies Theme[])
             }
         }
     ),
@@ -325,7 +325,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["cloud", "dark"] satisfies Theme[]
+                all: new Set(["cloud", "dark"] satisfies Theme[])
             }
         }
     ),
@@ -335,7 +335,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["ice", "dark"] satisfies Theme[]
+                all: new Set(["ice", "dark"] satisfies Theme[])
             }
         }
     ),

@@ -215,6 +215,7 @@ export type WeaponShapeGroup =
     | "greataxe"
     | "greatsword"
     | "spear"
+    | "lance"
     | "polearm"
     | "sword (or bow)"
     | "dagger (or pistol)"
@@ -253,8 +254,6 @@ export interface WeaponPart {
      */
     descriptors: string[];
 }
-
-export type DescriptorGenerator = TGenerator<{ material: string } | { descriptor: string }>;
 
 
 interface WeaponStructure {
@@ -320,6 +319,7 @@ const shapeToStructure = {
     "greatsword": 'swordLike',
 
     "spear": 'spearLike',
+    "lance": 'spearLike',
     "polearm": 'maceOrAxeLike',
 
     "sword (or bow)": 'bowSwordLike',
@@ -327,6 +327,13 @@ const shapeToStructure = {
     "sword (or musket)": 'gunSwordLike',
     "greataxe (or musket)": "maceOrAxeLike",
 } as const satisfies Record<WeaponShapeGroup, keyof typeof weaponStructures>
+
+type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
+
+export type DescriptorGenerator = TGenerator<({ material: string } | { descriptor: string })> & {
+    applicableTo: Quant<WeaponPartName>;
+};
+
 
 export function structureFor<T extends WeaponShapeGroup>(shape: T) {
     return weaponStructures[shapeToStructure[shape]];
