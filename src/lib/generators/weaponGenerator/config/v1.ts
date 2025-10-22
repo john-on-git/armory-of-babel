@@ -1634,26 +1634,30 @@ export default {
     },
     rechargeMethods: {
         add: [
-            new ProviderElement<Personality, WeaponPowerCond>(`recharge-at-winter-solstice`,
+            new ProviderElement(`recharge-at-winter-solstice`,
                 {
                     desc: `all charges at noon on the winter solstice`
                 },
                 {
-
-                    themes: {
-                        any: [`ice`, `nature`, `light`]
-                    }
+                    themes: { any: [`ice`, `nature`, `light`] }
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>(`recharge-at-summer-solstice`,
+            new ProviderElement(`recharge-at-summer-solstice`,
                 {
                     desc: `all charges at noon on the summer solstice`
                 },
                 {
-
-                    themes: {
-                        any: [`fire`, `nature`, `light`]
-                    }
+                    themes: { any: [`fire`, `nature`, `light`] }
+                }
+            ),
+            new ProviderElement('drive-into-ground-dramatically',
+                {
+                    desc: `2d6 charges when driven into the ground while something important is happening, once per event`
+                },
+                {
+                    themes: { any: [`earth`] },
+                    // has to be straight, fairly long, and sharp
+                    shapeFamily: { none: [...bluntWeaponShapeFamilies, 'dagger', 'axe', 'greataxe', 'greataxe (or musket)', 'sword (or bow)'] }
                 }
             ),
             ...toProviderSource(
@@ -1705,8 +1709,7 @@ export default {
                     ],
                     earth: [
                         mkGen((_, weapon: Weapon) => `one charge when ${pronounLoc[weapon.pronouns].singular.possessive} wielder throws a rock at something important`),
-                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder meditates atop a mountain`),
-                        `2d6 charges when driven into the ground while something important is happening, once per event`
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder meditates atop a mountain`)
                     ],
                     nature: [
                         mkGen(rng => `all charges when its wielder drives ${agentOfExtractivism.generate(rng)} to bankruptcy`)
