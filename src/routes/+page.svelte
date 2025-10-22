@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { replaceState } from "$app/navigation";
     import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
     import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
+    import { pushURLSearchParamsToLocation } from "$lib/util/queryString";
     import _, { isArray } from "lodash";
-    import { tick } from "svelte";
     import { writable } from "svelte/store";
 
     function getConfigFromURL(): WeaponRarityConfig {
@@ -68,14 +67,7 @@
                 searchParams.set("rarityOdds", newRarityOdds);
             }
         }
-
-        const queryNoQuestion = searchParams.toString();
-        const newQuery =
-            queryNoQuestion.length > 0 ? `?${queryNoQuestion}` : "";
-        if (window.location.search !== newQuery) {
-            // and update the URL params to point to its ID
-            tick().then(() => replaceState(newQuery, {}));
-        }
+        pushURLSearchParamsToLocation(searchParams);
     });
 </script>
 
