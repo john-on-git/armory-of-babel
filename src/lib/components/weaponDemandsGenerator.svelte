@@ -1,13 +1,16 @@
 <script lang="ts">
     import mkDemand from "$lib/generators/demandGenerator";
-    import { type Weapon } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import {
+        type Weapon,
+        type WeaponViewModel,
+    } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
     interface Props {
         /**
-         *  A Weapon, which is guaranteed to be sentient.
+         *  A WeaponViewModel, which is guaranteed to be sentient.
          */
-        weapon: Omit<Weapon, "sentient"> & {
-            sentient: Exclude<Weapon["sentient"], false>;
+        weapon: Omit<WeaponViewModel, "sentient"> & {
+            sentient: Exclude<WeaponViewModel["sentient"], false>;
         };
     }
 
@@ -25,7 +28,8 @@
     // TODO button click functionality
     function generateDemand() {
         // generate the new demand
-        demand = mkDemand(weapon);
+        // TODO
+        demand = mkDemand(weapon as unknown as Weapon);
 
         // switch animations
         fadeLock = !fadeLock;

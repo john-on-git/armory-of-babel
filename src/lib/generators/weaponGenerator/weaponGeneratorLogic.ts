@@ -5,7 +5,7 @@ import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGe
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
 import { ConditionalThingProvider, evComp, evQuant, type ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig } from "./weaponGeneratorTypes";
+import { type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
     constructor(source: ProviderElement<T, WeaponPowerCond>[]) {
@@ -77,7 +77,7 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
 
 const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
 
-export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = defaultWeaponRarityConfigFactory()): Weapon {
+export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = defaultWeaponRarityConfigFactory()): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
 
     const rng = seedrandom(rngSeed);
@@ -265,7 +265,31 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
 
 
     // TODO convert to viewmodel
+    const weaponViewModel = {
+        id: weapon.id,
+        themes: weapon.themes,
+        rarity: weapon.rarity,
+        name: weapon.name,
+        description: weapon.description,
+        shape: weapon.shape,
+        damage: weapon.damage,
+        toHit: weapon.toHit,
+        active: {
+            maxCharges: weapon.active.maxCharges,
+            rechargeMethod: genStr(rng, weapon.active.rechargeMethod.desc),
+            powers: weapon.active.powers.map(power => ({
+                desc: genStr(rng, power.desc),
+                cost: power.cost,
+                additionalNotes: power.additionalNotes === undefined ? undefined : power.additionalNotes.map(desc => genStr(rng, desc))
+            }))
+        },
+        passivePowers: weapon.passivePowers.map(power => ({
+            desc: genStr(rng, power.desc),
+            additionalNotes: power.additionalNotes === undefined ? undefined : power.additionalNotes.map(desc => genStr(rng, desc))
+        })),
+        sentient: false
+    } satisfies WeaponViewModel;
 
-    return weapon;
+    return { weaponViewModel, params };
 }
 

@@ -1,9 +1,9 @@
 <script lang="ts">
     import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
-    import { type Weapon } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import type { WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
 
     interface Props {
-        weapon: Weapon;
+        weapon: WeaponViewModel;
     }
 
     let { weapon }: Props = $props();
@@ -77,7 +77,7 @@
                             {#if weapon.sentient}
                                 charges when its demands are fulfilled, and
                             {/if}
-                            {weapon.active.rechargeMethod.desc}.
+                            {weapon.active.rechargeMethod}.
                         </p>
                     </div>
                     <div class="weapon-active-powers-root">
@@ -131,7 +131,7 @@
                             {#each weapon.sentient.personality as personality}
                                 <div class="weapon-generator-list-item">
                                     <p>
-                                        {personality.desc}
+                                        {personality}
                                     </p>
                                 </div>
                             {/each}

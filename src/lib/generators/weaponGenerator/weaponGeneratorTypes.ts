@@ -96,6 +96,18 @@ export interface Weapon {
     params: WeaponGenerationParams
 }
 
+interface PowerView {
+    additionalNotes?: string[];
+}
+
+export interface PassivePowerView extends PowerView {
+    desc: string;
+    bonus?: PassiveBonus;
+}
+export interface ActivePowerView extends PowerView {
+    desc: string;
+    cost: number | string;
+}
 /**
  * Type of a weapon in the frontend. This is the type provided returned by the generate weapon API.
  */
@@ -118,12 +130,16 @@ export interface WeaponViewModel {
     active: {
         maxCharges: number,
         rechargeMethod: string
-        powers: ActivePower[];
+        powers: ActivePowerView[];
     }
-    passivePowers: PassivePower[];
+    passivePowers: PassivePowerView[];
     sentient: false | {
         personality: string[];
         languages: string[];
+        /**
+         * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
+         */
+        chanceOfMakingDemands: number;
     }
 }
 
@@ -157,6 +173,7 @@ export interface UnlimitedChargedPower extends Power {
     cost: "at will";
 }
 export type ActivePower = ChargedPower | UnlimitedChargedPower;
+
 
 /** An adjective that could describe a physical object.
  *  The adjective should be simple and describe its physical state, no vibes/moral/metaphysical descriptors i.e. Just, Terrifying, Gothic.
