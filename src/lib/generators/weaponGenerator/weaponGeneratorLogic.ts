@@ -259,8 +259,6 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
         const ephitets = (maybeEphitets.filter(x => x !== undefined) as Ephitet[]);
         const alliterativeEphitets = (ephitets.filter(x => isAlliterative(x)) as Ephitet[]);
 
-        console.log(weapon.shape.particular, ephitets, alliterativeEphitets, '\n');
-
 
         return alliterativeEphitets.choice(rng) ?? ephitets.choice(rng) ?? fallbackEph(weapon.themes.choice(rng));
     }

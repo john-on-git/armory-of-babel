@@ -60,7 +60,6 @@
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", async () => {
-            console.log("popstate", getIDFromURL());
             weaponID = getIDFromURL();
             version = getVersionFromURL();
 
@@ -181,8 +180,6 @@
     }
 
     function pushIdToURL(id: string, mode: "push" | "replace" = "push") {
-        console.log("will push Id", id);
-
         const searchParams = new URLSearchParams(page.url.search);
         searchParams.set("id", id);
 

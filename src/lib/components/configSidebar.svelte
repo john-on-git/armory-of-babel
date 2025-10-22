@@ -16,7 +16,7 @@
     const oddsAreDefault = $derived(_.isEqual(odds, DEFAULT_RARITY_ODDS));
 
     function onOddsChanged(newOdds: [number, number, number, number]) {
-        oddsWritable.update(() => newOdds);
+        oddsWritable.set(newOdds);
     }
 </script>
 
