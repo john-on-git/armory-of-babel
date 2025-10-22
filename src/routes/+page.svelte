@@ -63,6 +63,12 @@
 <ConfigSidebar {config} {configWritable} />
 
 <style>
+    @media (orientation: portrait) {
+        :global(h1, h2) {
+            padding-top: 3rem;
+        }
+    }
+
     :global(:root) {
         --bg-dark: #242424;
 
