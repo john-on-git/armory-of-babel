@@ -1,6 +1,7 @@
 import { getWeaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
-import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { FeatureProviderCollection } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { mkWeapon, mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { FeatureProviderCollection, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import _ from "lodash";
 
 const nRuns = 1e2;
 
@@ -111,30 +112,30 @@ describe('Weapon Generator', () => {
         // );
     });
 
-    // it('Manual utility / find a weapon with a particular feature', () => {
-    //     function cond(weapon: WeaponViewModel): boolean {
-    //         return weapon.rarity === 'legendary' && weapon.active.powers.some(x => x.desc.includes('Tilt'))
-    //     }
-    //     const start = 52185;
-    //     const attempts = 1000000;
+    it('Manual utility / find a weapon with a particular feature', () => {
+        function cond(weapon: WeaponViewModel): boolean {
+            return weapon.rarity === 'legendary' && weapon.active.powers.some(x => x.desc.includes('Tilt'))
+        }
+        const start = 52185;
+        const attempts = 1000000;
 
-    //     const end = start + attempts;
-    //     let i = start;
-    //     let weapons: WeaponViewModel[];
-    //     let n: number;
+        const end = start + attempts;
+        let i = start;
+        let weapons: WeaponViewModel[];
+        let n: number;
 
-    //     do {
-    //         const { weapons: nextWeapons, n: nextN } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, true);
-    //         weapons = _.toArray(nextWeapons);
-    //         n = nextN;
-    //     } while (i <= end && (!weapons.some(cond) || n <= .3));
+        do {
+            const { weapons: nextWeapons, n: nextN } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, true);
+            weapons = _.toArray(nextWeapons);
+            n = nextN;
+        } while (i <= end && (!weapons.some(cond) || n <= .3));
 
-    //     if (weapons.some(cond)) {
-    //         console.log(`Found weapon @ ${i}`);
-    //     }
-    //     else {
-    //         console.error('\x1b[31mfailed to find weapon');
-    //     }
-    //     expect(weapons.some(cond)).toBe(true);
-    // })
+        if (weapons.some(cond)) {
+            console.log(`Found weapon @ ${i}`);
+        }
+        else {
+            console.error('\x1b[31mfailed to find weapon');
+        }
+        expect(weapons.some(cond)).toBe(true);
+    })
 })

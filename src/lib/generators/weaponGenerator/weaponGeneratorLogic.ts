@@ -551,9 +551,9 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // if it is sentient, also apply eyes and a mouth
     if (weapon.sentient) {
-        // if (!hasMouth(weapon)) {
-        //     applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-mouth'], weapon, silent);
-        // }
+        if (!hasMouth(weapon)) {
+            applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-mouth'], weapon, silent);
+        }
         if (!hasEyes(weapon)) {
             applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-eyes'], weapon, silent);
         }
