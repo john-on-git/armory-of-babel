@@ -7,9 +7,10 @@
 
     interface Props {
         odds: [number, number, number, number];
+        onChange: (newOdds: Props["odds"]) => void;
     }
 
-    let { odds = $bindable() }: Props = $props();
+    let { odds = $bindable(), onChange }: Props = $props();
 
     const raritySliderStyles = $derived.by(() => {
         return `background-image: linear-gradient(
@@ -58,6 +59,7 @@
             prevHandleVal,
             Math.min(e.detail.value, nextHandleVal),
         );
+        onChange(odds);
     }
 
     function chance(rarity: WeaponRarity) {
