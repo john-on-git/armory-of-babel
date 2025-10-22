@@ -3075,6 +3075,15 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("weakness-detector",
+                mkGen((_, weapon) => ({
+                    miscPower: true,
+                    desc: `When the ${getBusinessEndDesc(weapon.shape)} is coated in the blood of a foe that has an elemental weakness, it glows the color of the element they're weak to. It's as bright as a torch.`,
+                })),
+                {
+                    themes: { any: ['fire', 'earth', 'cloud', 'ice'] }
+                }
+            ),
             new ProviderElement("richochet-rounds",
                 {
                     miscPower: true,

@@ -10,7 +10,7 @@
     import type {
         GenerateWeaponRequest,
         GenerateWeaponResponse,
-    } from "../../routes/api/generate-weapon/+server";
+    } from "../../routes/api/weapon/+server";
     import { LATEST_VERSION_NUM } from "../../routes/state.svelte";
 
     interface Props {
@@ -86,9 +86,7 @@
                     !_.isEqual(newReq, weaponState?.req)
                 ) {
                     try {
-                        const res = await fetch(
-                            `/api/generate-weapon?${searchParams}`,
-                        );
+                        const res = await fetch(`/api/weapon?${searchParams}`);
                         if (res.status === StatusCodes.OK) {
                             // if this still matches the UI state
                             if (
