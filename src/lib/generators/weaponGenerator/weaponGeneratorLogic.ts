@@ -1,6 +1,6 @@
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
 import { type TGenerator } from "$lib/generators/recursiveGenerator";
-import { allEyeProviders, allMouthProviders } from "$lib/generators/weaponGenerator/config/configConstants";
+import { allEyeProviders } from "$lib/generators/weaponGenerator/config/configConstants";
 import { structuredDescToString } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import "$lib/util/choice";
 import '$lib/util/string';
@@ -22,7 +22,8 @@ export function maxDamage(damage: DamageDice): number {
 }
 
 /**
- * Apply a function to a weapon's damage, i.e. to multiply it by a given number
+ * Apply a function to a weapon's damage, i.e. to multiply it by a given number.
+ * 
  * 'damage as' will be omitted, and replaced with d6
  * @param damage the weapon's damage. 
  * @param f the function to apply
@@ -112,7 +113,6 @@ function hasUUIDs(weapon: Weapon, expectedUUIDs: readonly string[]) {
 }
 
 function hasEyes(weapon: Weapon) { return hasUUIDs(weapon, allEyeProviders); }
-function hasMouth(weapon: Weapon) { return hasUUIDs(weapon, allMouthProviders); }
 
 export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
     return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
@@ -549,11 +549,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         nDescriptors++;
     }
 
-    // if it is sentient, also apply eyes and a mouth
+    // if it is sentient, also apply eyes
     if (weapon.sentient) {
-        if (!hasMouth(weapon)) {
-            applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-mouth'], weapon, silent);
-        }
         if (!hasEyes(weapon)) {
             applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['generic-eyes'], weapon, silent);
         }

@@ -12,7 +12,6 @@ export const UUIDsOfAllAbilitiesThatProvideResourcelessRangedAttacks = ["fire-ma
 
 // providers
 export const allEyeProviders = ['generic-eyes'] as const;
-export const allMouthProviders = ['generic-mouth', 'vampire-mouth'] as const;
 
 // shapes
 
@@ -718,29 +717,6 @@ export const MISC_DESC_FEATURES = {
         },
     },
     sensorium: {
-        mouth: {
-            eldritch: {
-                descriptor: {
-                    descType: 'possession',
-                    singular: `a mouth with dozens of razor teeth`,
-                    plural: `a mouth with dozens of razor teeth`
-                }
-            },
-            generic: {
-                descriptor: {
-                    descType: 'possession',
-                    singular: `a mouth with sharp teeth`,
-                    plural: `a mouth with sharp teeth`
-                }
-            },
-            vampire: {
-                descriptor: {
-                    descType: 'possession',
-                    singular: `a mouth with two fangs`,
-                    plural: `a mouth with two fangs`
-                }
-            }
-        },
         eyes: {
             animalistic: {
                 descriptor: {
@@ -793,11 +769,6 @@ export const holdingParts = ['body', 'grip', 'limbs', 'spearShaft'] as const sat
  * Parts of a weapon that a sentient weapon's eyes can be placed on.
  */
 export const eyeAcceptingParts = ['crossguard', 'axeHead', 'maceHead', 'maceHeads', 'chain', 'chains', 'tip', 'body', 'base', 'quiver', 'limbs'] as const satisfies WeaponPartName[];
-
-/**
- * Parts of a weapon that a sentient weapon's mouth can be placed on.
- */
-export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'body', 'axeHead', 'maceHead', 'maceHeads', 'tip', 'base', 'quiver'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).
