@@ -35,14 +35,6 @@ const simpleMaterials = [
         material: 'scarlet steel',
         ephitet: 'Scarlet Steel'
     } as const,
-    {
-        material: 'acidium',
-        ephitet: 'Corrosive'
-    } as const,
-    {
-        material: 'ultrahard candy',
-        ephitet: 'Candied'
-    } as const,
     ..._.map([
 
         'sandstone',
@@ -100,120 +92,142 @@ const ephRainbow = ['Prismatic', 'Rainbow', 'Variegated', 'Multicolored', 'Kalei
 
 
 export const MATERIALS = {
-    'lemonWood': {
+    lemonWood: {
         material: 'lemon tree wood',
         ephitet: 'Lemony'
     } as const,
-    'oak': {
+    oak: {
         material: 'oak wood',
         ephitet: 'Oaken'
     } as const,
-    'pine': {
+    pine: {
         material: 'pine wood',
         ephitet: 'Pine'
     } as const,
-    'cherry': {
+    cherry: {
         material: 'redwood',
         ephitet: 'Cherry'
     } as const,
-    'maple': {
+    maple: {
         material: 'maple wood',
         ephitet: mkGen((rng) => ephWhite.choice(rng))
     } as const,
-    'birch': {
+    birch: {
         material: 'birch wood',
         ephitet: mkGen((rng) => ephWhite.choice(rng))
     } as const,
-    'ebonyWood': {
+    ebonyWood: {
         material: 'ebony wood',
         ephitet: mkGen((rng) => ephBlack.choice(rng))
     } as const,
-    'bloodWood': {
+    bloodWood: {
         material: 'bloodwood',
         ephitet: mkGen((rng) => ephRed.choice(rng))
     } as const,
-    'ironWood': {
+    ironWood: {
         material: 'ironwood',
         ephitet: 'Iron'
     } as const,
-    'wiseWood': {
+    wiseWood: {
         material: 'wood that was once part of a wise mystical tree',
         ephitet: 'Wise Mystical'
     } as const,
-    'plyWood': {
+    plyWood: {
         material: 'plywood',
         ephitet: 'Compliant'
     } as const,
 
-    'ivory': {
+    ivory: {
         material: 'ivory',
         ephitet: mkGen((rng) => ephWhite.choice(rng))
     } as const,
 
-    'silver-plated': {
+    silverPlated: {
         material: 'silver-plated steel',
         ephitet: 'Silvery'
     } as const,
-    'gold-plated': {
+    goldPlated: {
         material: 'gold-plated steel',
         ephitet: 'Golden'
     } as const,
-    'glass': {
+    glass: {
         material: 'glass',
         ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
-    'glassLikeSteel': {
+    glassLikeSteel: {
         material: 'glass-like-steel',
         ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
-    'force': {
+    force: {
         material: 'magical force',
         ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
-    'light': {
+    light: {
         material: 'light',
         ephitet: mkGen((rng) => ephGlowy.choice(rng))
     } as const,
-    'darkness': {
+    darkness: {
         material: 'darkness',
         ephitet: mkGen((rng) => ephBlack.choice(rng))
     } as const,
 
-    'razors': {
+    razors: {
         material: 'razor blades',
         ephitet: mkGen((rng) => ephSharp.choice(rng))
     } as const,
 
-    'iceLikeSteel': {
+    iceLikeSteel: {
         material: 'magical ice as strong as steel',
         ephitet: mkGen((rng) => ephCold.choice(rng))
     } as const,
-    'iceBlood': {
+    iceBlood: {
         material: 'frozen blood',
         ephitet: mkGen((rng) => [...ephRed, ...ephCold].choice(rng))
     } as const,
-    'iceSlime': {
+    iceSlime: {
         material: 'frozen slime',
         ephitet: mkGen((rng) => [...ephCold].choice(rng))
     } as const,
 
-    'fossils': {
+    fossils: {
         material: 'various compacted fossils',
         ephitet: mkGen((rng) => ephOld.choice(rng))
     } as const,
-    'recursiveSwords': {
+    recursiveSwords: {
         material: mkGen((_rng, weapon) => `various smaller ${weapon.shape.particular}s, melded together into a single hunk`),
         ephitet: mkGen((rng) => ephOld.choice(rng))
     } as const,
-    'beetleShell': {
+    beetleShell: {
         material: 'beetle shell',
         ephitet: mkGen((rng) => ['Verminous', 'Bug'].choice(rng))
     } as const,
 
-    "clockwork": {
+    clockwork: {
         material: "a complex system of clockwork",
         ephitet: "Clockwork"
     },
+    acidium: {
+        material: 'acidium',
+        ephitet: 'Corrosive'
+    } as const,
+    hardCandy: {
+        material: 'ultra-hard candy',
+        ephitet: 'Candied'
+    } as const,
+    rockCandy: {
+
+        material: 'rock candy',
+        ephitet: 'Candied'
+    } as const,
+    liquoriceRoot: {
+
+        material: 'liquorice root',
+        ephitet: 'Liquorice'
+    } as const,
+    dateWood: {
+        material: 'date tree wood',
+        ephitet: 'Candied'
+    } as const,
 
     ..._.reduce<(typeof golds)[number], Record<(typeof golds)[number], Descriptor>>(golds, (acc, metal) => {
         acc[metal] = ({

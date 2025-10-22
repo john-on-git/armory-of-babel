@@ -64,7 +64,7 @@
         </div>
         <div>
             <button
-                class="weapon-demands-generator-button"
+                class="weapon-demands-generator-button default-button"
                 onclick={generateDemand}>Another!</button
             >
         </div>

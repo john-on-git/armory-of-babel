@@ -51,6 +51,10 @@ export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPower
 export interface Cond {
     allowDuplicates?: true;
     UUIDs?: Quant<string>
+    /**
+     * If present, this will never be chosen.
+     */
+    never?: true;
 }
 
 export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
@@ -61,6 +65,10 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
     }
 
     protected condExecutor(UUID: string, cond: TCond, params: TParams): boolean {
+        if (cond.never === true) {
+            return false;
+        }
+
         function gatherIDs<T extends object>(x: T, acc: Set<string>): Set<string> {
             // get all the UUIDs of all patchables in the subtree
             Object.values(x).forEach((x) => {
