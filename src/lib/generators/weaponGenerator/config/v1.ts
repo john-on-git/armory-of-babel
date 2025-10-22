@@ -46,6 +46,17 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            new ProviderElement('forced-celestial-wizard-coating',
+                {
+                    yields: 'feature',
+                    generate: (...args) => MISC_DESC_FEATURES.coating.celestialEngraving.generate(...args),
+                    applicableTo: { any: wrappableParts }
+                },
+                /**
+                 * Can only be added by the passive power "expertise-astrology"
+                 */
+                { never: true }
+            ),
             ...(wildAnimalArr.map(({ article, singular, plural }) =>
                 new ProviderElement<DescriptorGenerator, { never: true }>(`carved-resembling-${singular.toLowerCase()}`,
                     {
@@ -1154,6 +1165,7 @@ export default {
                                         MATERIALS.glass,
                                         MATERIALS.mythrel,
                                         MATERIALS.diamond,
+                                        MATERIALS.lumensteel
                                     ]
                                     : []
                             )
@@ -1242,9 +1254,7 @@ export default {
                         MISC_DESC_FEATURES.coating.pitted,
                         MISC_DESC_FEATURES.coating.acidBurned,
                     ].choice(rng), rng, weapon),
-                    applicableTo: {
-                        any: [...businessEndParts, ...wrappableParts]
-                    }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     themes: { any: ['sour'] }
@@ -1348,10 +1358,14 @@ export default {
                         MISC_DESC_FEATURES.coating.celestialEngraving,
                         MISC_DESC_FEATURES.coating.wizardEngraving,
                     ].choice(rng), rng, weapon),
-                    applicableTo: { any: wrappableParts }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
-                    themes: { any: ['wizard'] }
+                    themes: { any: ['wizard'] },
+                    /**
+                     * This is a forced descriptor. It may apply the same thing.
+                     */
+                    UUIDs: { none: ['forced-celestial-wizard-coating'] }
                 }
             ),
 
@@ -4009,6 +4023,7 @@ export default {
                 {
                     miscPower: true,
                     desc: "Weapon is an expert astrologer.",
+                    descriptorPartGenerator: 'forced-celestial-wizard-coating'
                 },
                 {
                     themes: { any: ["wizard"] },
@@ -4035,7 +4050,12 @@ export default {
             new ProviderElement("attack-wisps",
                 {
                     miscPower: true,
-                    desc: "Each hit you land with the weapon generates a wisp, which dissipate when combat ends. On your turn, you can launch any number of wisps (instantly / as no action). d4 damage, range as bow.",
+                    desc: "Wisps.",
+                    additionalNotes: [
+                        "Each hit you land with the weapon generates a wisp, which dissipate when combat ends.",
+                        "On your turn, you can launch any number of wisps (instantly / as no action).",
+                        "They deal d4 damage, range as bow."
+                    ]
                 },
                 {
                     themes: { any: ["wizard"] },

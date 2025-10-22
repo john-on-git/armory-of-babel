@@ -114,10 +114,10 @@ describe('Weapon Generator', () => {
 
     it('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
-            return weapon.rarity === 'legendary' && weapon.isNegative && weapon.pronouns === 'enby';
+            return weapon.rarity === 'legendary' && weapon.isNegative;
         }
         const start = 0;
-        const attempts = 1;
+        const attempts = 10_000;
 
         const end = start + attempts;
         let i = start;
