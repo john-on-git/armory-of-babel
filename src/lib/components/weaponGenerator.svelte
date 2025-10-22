@@ -151,7 +151,11 @@
     {#if weapon !== null}
         <WeaponDisplay {weapon} />
     {/if}
-    <button class="generate-button" onclick={generateWeapon}>Generate</button>
+    <button
+        class="generate-button"
+        data-testid="weapon-generator-generate-button"
+        onclick={generateWeapon}>Generate</button
+    >
 </div>
 
 <style>

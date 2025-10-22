@@ -70,4 +70,20 @@ describe("Weapon Generator Main Page", () => {
             cy.getByTestId('weapon-display').should('be.visible').and('have.html', weaponName);
         });
     });
+
+
+    it("Should always generate a different weapon each time the clicks the generate button", () => {
+
+        // visit the page
+        cy.visit("/");
+
+        // wait for the weapon to load for the first time
+        cy.getByTestId('weapon-display').should('be.visible').invoke('html').then((weaponName) => {
+
+            // generate a new weapon, and the HTML representation of the weapon should have changed
+            cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
+
+            cy.getByTestId('weapon-display').should('be.visible').and('not.have.html', weaponName);
+        });
+    });
 });
