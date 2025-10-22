@@ -1,17 +1,24 @@
 <script lang="ts">
     import { type WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import { Slider } from "melt/components";
+    import { type Writable } from "svelte/store";
     import Sidebar from "./sidebar.svelte";
 
     interface Props {
-        config?: WeaponRarityConfig;
+        configWritable: Writable<WeaponRarityConfig>;
     }
 
-    const { config }: Props = $props();
+    const { configWritable: _configWritable }: Props = $props();
 </script>
 
-{#snippet sidebarContent()}
+<Sidebar localStorageKey={"weaponConfigSidebar"}>
     <h2>Generation Parameters</h2>
-    <p>I have config {config?.toString()}</p>
-{/snippet}
 
-<Sidebar {sidebarContent} localStorageKey={"weaponConfigSidebar"} />
+    <Slider min={0} max={1}>
+        {#snippet children(slider)}
+            <div class="slider" {...slider.root}>
+                <div {...slider.thumb}></div>
+            </div>
+        {/snippet}
+    </Slider>
+</Sidebar>

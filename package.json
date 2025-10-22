@@ -37,7 +37,7 @@
 	},
 	"dependencies": {
 		"lodash": "^4.17.21",
-		"seedrandom": "^3.0.5",
-		"smelte": "^1.1.8"
+		"melt": "^0.38.0",
+		"seedrandom": "^3.0.5"
 	}
 }

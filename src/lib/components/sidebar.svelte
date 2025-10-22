@@ -3,7 +3,7 @@
     import { writable } from "svelte/store";
 
     interface Props {
-        sidebarContent: Snippet;
+        children: Snippet;
         localStorageKey: string;
     }
 
@@ -29,7 +29,7 @@
         closed: "open",
     };
 
-    const { sidebarContent, localStorageKey }: Props = $props();
+    const { children, localStorageKey }: Props = $props();
 
     // track the open / closed state of the sidebar, linking it to local storage
     let sidebarState: SideBarState = $state("initClosed");
@@ -55,7 +55,7 @@
 <div class={`sidebar pin-top-left ${ANIM_CLASS_BY_STATE[sidebarState]}`}>
     {#if sidebarState}
         <div class="sidebar-content">
-            {@render sidebarContent?.()}
+            {@render children?.()}
         </div>
     {/if}
     <button class="toggle-sidebar-button" onclick={toggleExpanded}>☰</button>
