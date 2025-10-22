@@ -193,6 +193,7 @@
      */
     function generateWeapon() {
         invalidateCurrentWeapon();
+        replaceVersionInURL(LATEST_VERSION_NUM);
         pushIdToURL(getNewId());
     }
 </script>
