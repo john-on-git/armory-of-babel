@@ -12,6 +12,11 @@ import { commonDieSizes, type DamageDice, type DescriptorCondParams, type Descri
 
 
 /**
+ * Weapons have a 1/NEGATIVE_CHANCE chance of being negative.
+ */
+const NEGATIVE_CHANCE = 8192;
+
+/**
  * Flatten a weapon description into the parts and their names.
  * @param description description to flatten. if it is null, return the empty list
  * @returns a list of all the weapon parts in the description, with their names
@@ -691,7 +696,13 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     const weaponViewModel = {
         id: weapon.id,
         themes: weapon.themes,
-        rarity: weapon.rarity,
+        ...(weapon.rarity === 'common' ? {
+            rarity: weapon.rarity,
+            isNegative: false
+        } : {
+            rarity: weapon.rarity,
+            isNegative: (Math.ceil(rng() * 1_000_000) % NEGATIVE_CHANCE === 0),
+        }),
         name: weapon.name,
         pronouns: weapon.pronouns,
         description: structuredDescToString(weapon),

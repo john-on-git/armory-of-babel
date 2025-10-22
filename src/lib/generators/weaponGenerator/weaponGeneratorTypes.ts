@@ -124,7 +124,7 @@ export interface ActivePowerView extends PowerView {
 /**
  * Type of a weapon in the frontend. This is the type provided returned by the generate weapon API.
  */
-export interface WeaponViewModel {
+export type WeaponViewModel = {
     /**
      * The RNG seed that produces this weapon.
      */
@@ -132,7 +132,7 @@ export interface WeaponViewModel {
 
     themes: Theme[],
 
-    rarity: WeaponRarity;
+
     name: string;
     pronouns: Pronouns;
     description: string;
@@ -154,7 +154,23 @@ export interface WeaponViewModel {
          */
         chanceOfMakingDemands: CommonDieSize;
     }
-}
+} & ({
+    rarity: Exclude<WeaponRarity, 'common'>;
+    /**
+     * True if the weapon is a negative. Negative weapons are very rare weapons that have a different rarity color. This is purely cosmetic.
+     * 
+     * Common weapons cannot be negative.
+     */
+    isNegative: boolean;
+} | {
+    rarity: "common";
+    /**
+     * True if the weapon is a negative. Negative weapons are very rare weapons that have a different rarity color. This is purely cosmetic.
+     * 
+     * Common weapons cannot be negative.
+     */
+    isNegative: false;
+});
 
 export interface Power {
     additionalNotes?: (string | (Generator<string, [Weapon]>))[];
