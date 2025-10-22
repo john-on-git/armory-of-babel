@@ -112,6 +112,8 @@ export function structuredDescToString(_locale: string, weapon: Weapon) {
                 return 'head';
             case 'maceHeads':
                 return 'heads'
+            case 'spearShaft':
+                return 'shaft';
             default:
                 return weaponPart;
         }

@@ -7,6 +7,8 @@ import { titleCase } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
 
+export const UUIDsOfAllAbilitiesThatProvideResourcelessRangedAttacks = ["fire-magic-projectile"] as const satisfies string[];
+
 // providers
 export const allEyeProviders = ['generic-eyes'] as const;
 export const allMouthProviders = ['generic-mouth', 'vampire-mouth'] as const;
@@ -20,6 +22,7 @@ export const pointedWeaponShapeFamilies = ['spear', 'lance'] as const satisfies 
 export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)'] as const satisfies WeaponShapeGroup[];
 export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)', 'club', 'mace'] as const satisfies WeaponShapeGroup[];
 export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
+export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)", "sword (or musket)", "greataxe (or musket)"] as const satisfies WeaponShapeGroup[];
 
 export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies WeaponShapeGroup[];
 
@@ -261,8 +264,8 @@ export const MATERIALS = {
             ephitet: { post: ` of the ${creature}`, alliteratesWith: creature[0].toUpperCase() }
         } as Descriptor;
     }),
-    magicHorn: mkGen((rng) => {
-        const [creature, protrusionName] = magicAnimalHorn.generate(rng);
+    magicHorn: mkGen((rng, weapon) => {
+        const [creature, protrusionName] = magicAnimalHorn.generate(rng, weapon);
 
         return {
             material: `${creature} ${protrusionName}`,
@@ -726,8 +729,8 @@ export const MISC_DESC_FEATURES = {
             deepSet: {
                 descriptor: {
                     descType: 'possession',
-                    singular: new StringGenerator([eyeStructureGenSingular, ", and idented slightly into the surface",]),
-                    plural: new StringGenerator([eyeStructureGenPlural, ", and idented slightly into the surface"])
+                    singular: new StringGenerator([eyeStructureGenSingular, ", and indented slightly into the surface",]),
+                    plural: new StringGenerator([eyeStructureGenPlural, ", and indented slightly into the surface"])
                 },
             },
             beady: {
@@ -760,7 +763,7 @@ export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'axeHead', 'maceHe
 /**
  * Parts of a weapon that are used to hold it. Usually made of wood.
  */
-export const holdingParts = ['body', 'grip', 'limbs'] as const satisfies WeaponPartName[];
+export const holdingParts = ['body', 'grip', 'limbs', 'spearShaft'] as const satisfies WeaponPartName[];
 
 
 /**
@@ -776,9 +779,9 @@ export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'orb', 'axeHead
 /**
  * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).
  */
-export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver', 'body'] as const satisfies WeaponPartName[];
+export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver', 'body', 'spearShaft'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that a small object such as a gem could be embedded in.
  */
-export const embeddableParts = ['crossguard', 'pommel', 'base', 'quiver', 'maceHead', 'maceHeads', 'chain'] as const satisfies WeaponPartName[];
+export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'quiver', 'maceHead', 'maceHeads', 'chain'] as const satisfies WeaponPartName[];
