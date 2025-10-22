@@ -1,26 +1,54 @@
 <script lang="ts">
     import { type Snippet } from "svelte";
+    import { writable } from "svelte/store";
 
     interface Props {
         sidebarContent: Snippet;
+        localStorageKey: string;
     }
 
-    // there's a third state for when the sidebar has never been interacted with.
+    // there are initial states for when the sidebar has not yet been interacted with.
     // this prevents it from animating on mount
-    type SideBarState = "initial" | "open" | "closed";
+    type SideBarState = "initOpen" | "initClosed" | "open" | "closed";
     const ANIM_CLASS_BY_STATE: Record<SideBarState, string> = {
-        initial: "out-initial",
+        initOpen: "in-initial",
+        initClosed: "out-initial",
         open: "slide-in-left",
         closed: "slide-out-left",
     };
+    const ADD_INITIAL: Record<SideBarState, SideBarState> = {
+        initOpen: "initOpen",
+        initClosed: "initClosed",
+        open: "initOpen",
+        closed: "initClosed",
+    };
+    const INVERT: Record<SideBarState, SideBarState> = {
+        initOpen: "closed",
+        initClosed: "open",
+        open: "closed",
+        closed: "open",
+    };
 
-    const { sidebarContent }: Props = $props();
+    const { sidebarContent, localStorageKey }: Props = $props();
 
-    let sidebarState: SideBarState = $state("initial");
+    // track the open / closed state of the sidebar, linking it to local storage
+    let sidebarState: SideBarState = $state("initClosed");
+    const sidebarStorage = writable<SideBarState>(
+        localStorage.getItem(localStorageKey) === "initOpen"
+            ? "initOpen"
+            : "initClosed",
+    );
+
+    sidebarStorage.subscribe((newVal) => {
+        // update the value in state and local storage
+        localStorage.setItem(localStorageKey, ADD_INITIAL[newVal]);
+        sidebarState = newVal;
+        console.log(newVal);
+    });
 
     function toggleExpanded() {
         // open the sidebar if it's 'initial' or 'closed';
-        sidebarState = sidebarState === "open" ? "closed" : "open";
+        sidebarStorage.update((prevVal) => INVERT[prevVal]);
     }
 </script>
 
@@ -36,7 +64,7 @@
 <style>
     :root {
         --sidebar-width: 20vw;
-        --sidebar-color: #ffffff66;
+        --sidebar-color: #ffffff1a;
     }
     .sidebar-content {
         background-color: var(--sidebar-color);

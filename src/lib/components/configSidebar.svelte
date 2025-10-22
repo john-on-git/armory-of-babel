@@ -10,7 +10,8 @@
 </script>
 
 {#snippet sidebarContent()}
+    <h2>Generation Parameters</h2>
     <p>I have config {config?.toString()}</p>
 {/snippet}
 
-<Sidebar {sidebarContent} />
+<Sidebar {sidebarContent} localStorageKey={"weaponConfigSidebar"} />
