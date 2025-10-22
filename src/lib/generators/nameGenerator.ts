@@ -1,7 +1,7 @@
 import type { Pronouns } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import "$lib/util/choice";
 import type { PRNG } from "seedrandom";
-import { mkGen, StringGenerator } from "./recursiveGenerator";
+import { mkGen } from "./recursiveGenerator";
 
 function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object' | 'enby'>, femmNames: string[], mascNames: string[]): string;
 function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object'>, femmNames: string[], mascNames: string[], enbyNames: string[]): string;
@@ -36,25 +36,25 @@ const angloNamesByPartShortSuffixGenerator = mkGen<string, [Exclude<Pronouns, 'o
         "sh",
     ]));
 
-const angloNamesByPartLongSuffixGenerator = new StringGenerator<[Exclude<Pronouns, 'object' | 'enby'>]>([
-    mkGen(rng => ["t", "y", "rr", "nn", "s", "sh"].choice(rng)),
-    mkGen((...args) => genderedChoice(...args,
-        [
-            "ah",
-            "ley",
-            "leigh",
-            "cy",
-            "cey",
-        ],
-        [
-            "on",
-            "in",
-        ]))
-]);
+const angloNamesByPartLongSuffixGenerator = mkGen<string, [Exclude<Pronouns, 'object' | 'enby'>]>((rng, ...args) => `
+    ${["t", "y", "rr", "nn", "s", "sh"].choice(rng)}
+    ${genderedChoice(rng, ...args,
+    [
+        "ah",
+        "ley",
+        "leigh",
+        "cy",
+        "cey",
+    ],
+    [
+        "on",
+        "in",
+    ])}`
+);
 
 
-export const angloNamesByPartGenerator = new StringGenerator<[Exclude<Pronouns, 'object' | 'enby'>]>([
-    mkGen(rng => [
+export const angloNamesByPartGenerator = mkGen<string, [Exclude<Pronouns, 'object' | 'enby'>]>((rng, ...args) =>
+    `${[
         "A",
         "Cha",
         "Ba",
@@ -66,9 +66,8 @@ export const angloNamesByPartGenerator = new StringGenerator<[Exclude<Pronouns, 
         "Le",
         "La",
         "Cla",
-    ].choice(rng)),
-    mkGen((rng, ...args) => [angloNamesByPartShortSuffixGenerator, angloNamesByPartLongSuffixGenerator].choice(rng).generate(rng, ...args)),
-]);
+    ].choice(rng)}${[angloNamesByPartShortSuffixGenerator, angloNamesByPartLongSuffixGenerator].choice(rng).generate(rng, ...args)}`
+);
 
 const angloFixedNamedGenerator = mkGen((...args: [PRNG, Exclude<Pronouns, 'object'>]) => genderedChoice(...args,
     [
@@ -131,8 +130,8 @@ export const angloFirstNameGenerator = mkGen((rng, pronouns: Exclude<Pronouns, '
     angloNamesByPartGenerator
 ].choice(rng).generate(rng, pronouns));
 
-export const grecoRomanFirstNameGenerator = new StringGenerator<[Exclude<Pronouns, 'object'>]>([
-    mkGen((rng) => [
+export const grecoRomanFirstNameGenerator = mkGen<string, [Exclude<Pronouns, 'object'>]>(
+    (rng, pronouns) => `${[
         "Lacri",
         "Lace",
         "Moro",
@@ -142,8 +141,7 @@ export const grecoRomanFirstNameGenerator = new StringGenerator<[Exclude<Pronoun
         "Di",
         "Ma",
         "Pe",
-    ].choice(rng)),
-    mkGen((rng) => [
+    ].choice(rng)}${[
         "mer",
         "v",
         "t",
@@ -152,14 +150,12 @@ export const grecoRomanFirstNameGenerator = new StringGenerator<[Exclude<Pronoun
         "n",
         "l",
         "s"
-    ].choice(rng)),
-
-    mkGen((rng, pronouns) => genderedChoice(rng, pronouns,
+    ].choice(rng)}${genderedChoice(rng, pronouns,
         ["a", "ia", "ina", "ira"],
         ["ius", "us", "ion", "or"],
-        ['as', "er"],
-    ))
-]);
+        ['as', "er"]
+    )}`
+);
 
 // const swordLikeObjectifyingNameGenerator = (weapon: Weapon, adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>) => mkGen((rng) =>
 //     [

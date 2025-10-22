@@ -2,6 +2,7 @@ import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/gen
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
 import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
+import { getBusinessEndDesc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
@@ -44,6 +45,24 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            new ProviderElement('necromantic-runes',
+                {
+                    yields: 'feature',
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: " is incribed with jagged runes of necromancy",
+                            plural: " are incribed with jagged runes of necromancy"
+                        }
+                    }),
+                    ephitet: mkGen((rng) => ephBlack.choice(rng)),
+                    applicableTo: { any: importantPart }
+                },
+                /**
+                 * Can only be added by the passive powers "trap-souls", "make-zombie"
+                 */
+                { never: true }
+            ),
             new ProviderElement('mirror-finish-forced',
                 {
                     yields: 'feature',
@@ -72,9 +91,7 @@ export default {
                         }
                     }),
                     ephitet: mkGen((rng) => ephHot.choice(rng)),
-                    applicableTo: {
-                        any: ['pommel']
-                    }
+                    applicableTo: { any: ['pommel'] }
                 },
                 /**
                  * Can only be added by the passive power "stats-as-mirror"
@@ -92,9 +109,7 @@ export default {
                         }
                     }),
                     ephitet: mkGen((rng) => ephCold.choice(rng)),
-                    applicableTo: {
-                        any: ['pommel']
-                    }
+                    applicableTo: { any: ['pommel'] }
                 },
                 /**
                  * Can only be added by the passive power "mounted-dismount-resist"
@@ -112,9 +127,7 @@ export default {
                         }
                     }),
                     ephitet: mkGen((rng) => ephBlack.choice(rng)),
-                    applicableTo: {
-                        any: ['pommel']
-                    }
+                    applicableTo: { any: ['pommel'] }
                 },
                 /**
                  * Can only be added by the passive power "mounted-dismount-resist"
@@ -132,9 +145,7 @@ export default {
                         }
                     }),
                     ephitet: { pre: 'Ivy' },
-                    applicableTo: {
-                        any: ['pommel']
-                    }
+                    applicableTo: { any: ['pommel'] }
                 },
                 /**
                  * Can only be added by the passive power "mounted-dismount-resist"
@@ -152,9 +163,7 @@ export default {
                         }
                     }),
                     ephitet: { pre: 'Tendrilous' },
-                    applicableTo: {
-                        any: ['pommel']
-                    }
+                    applicableTo: { any: ['pommel'] }
                 },
                 /**
                  * Can only be added by the passive power "mounted-dismount-resist"
@@ -170,9 +179,7 @@ export default {
                             MISC_DESC_FEATURES.sensorium.eyes.deepSet,
                             MISC_DESC_FEATURES.sensorium.eyes.animalistic,
                         ].choice(rng), rng),
-                    applicableTo: {
-                        any: eyeAcceptingParts
-                    }
+                    applicableTo: { any: eyeAcceptingParts }
                 }, { never: true }
             ),
             new ProviderElement('material-telekill',
@@ -220,9 +227,7 @@ export default {
                         },
                         ephitet: mkGen((rng) => ephHot.choice(rng))
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -241,9 +246,7 @@ export default {
                         },
                         ephitet: mkGen(rng => ephCold.choice(rng))
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -263,9 +266,7 @@ export default {
                         },
                         ephitet: { pre: "Timekeeper's" }
                     }),
-                    applicableTo: {
-                        any: embeddableParts
-                    }
+                    applicableTo: { any: embeddableParts }
                 },
                 {
                     /**
@@ -285,9 +286,7 @@ export default {
                         },
                         ephitet: mkGen(rng => ephExplorer.choice(rng))
                     }),
-                    applicableTo: {
-                        any: embeddableParts
-                    }
+                    applicableTo: { any: embeddableParts }
                 },
                 {
                     /**
@@ -305,9 +304,7 @@ export default {
                         MATERIALS.gingerbread,
                     ].choice(rng);
                 },
-                applicableTo: {
-                    any: importantPart
-                }
+                applicableTo: { any: importantPart }
             }, {
                 /**
                  * Can only be added by the passive power "eat-to-heal"
@@ -327,9 +324,7 @@ export default {
                         },
                         ephitet: { pre: 'Headhunter' }
                     }),
-                applicableTo: {
-                    any: holdingParts
-                }
+                applicableTo: { any: holdingParts }
             }, {
                 /**
                  * Can only be added by the passive power "injector-module"
@@ -350,9 +345,7 @@ export default {
                             ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -374,9 +367,7 @@ export default {
                             ephitet: mkGen(rng => ephHot.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -398,9 +389,7 @@ export default {
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -422,9 +411,7 @@ export default {
                             ephitet: mkGen(rng => ephPurple.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -446,9 +433,7 @@ export default {
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -470,9 +455,7 @@ export default {
                             ephitet: mkGen(rng => ephRed.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -494,9 +477,7 @@ export default {
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -518,9 +499,7 @@ export default {
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -546,9 +525,7 @@ export default {
                             ].choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -570,9 +547,7 @@ export default {
                             ephitet: mkGen(rng => ephGold.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -594,9 +569,7 @@ export default {
                             ephitet: mkGen(rng => ephBlack.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -618,9 +591,7 @@ export default {
                             ephitet: mkGen(rng => ephSky.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -642,9 +613,7 @@ export default {
                             ephitet: mkGen(rng => ephSteampunk.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -666,9 +635,7 @@ export default {
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -774,14 +741,10 @@ export default {
 
                         return pickForTheme(weapon as WeaponGivenThemes<['ice' | 'fire' | 'cloud' | 'earth' | 'light' | 'dark' | 'wizard']>, embedsByTheme, rng).chosen.choice(rng);
                     },
-                    applicableTo: {
-                        any: embeddableParts
-                    }
+                    applicableTo: { any: embeddableParts }
                 },
                 {
-                    shapeFamily: {
-                        none: shapeFamiliesWithoutPommels
-                    },
+                    shapeFamily: { none: shapeFamiliesWithoutPommels },
                     themes: {
                         any: ['ice', 'fire', 'cloud', 'earth', 'light', 'dark', 'wizard']
                     }
@@ -798,9 +761,7 @@ export default {
                             MATERIALS.flint,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
@@ -827,15 +788,11 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['fire']
-                    }
+                    themes: { any: ['fire'] }
                 }
             ),
             new ProviderElement('material-fire-holding',
@@ -848,17 +805,11 @@ export default {
                         MATERIALS.porcelain,
                         MATERIALS.hotHorn
                     ].choice(rng), rng),
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
-                    themes: {
-                        any: ['fire']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['fire'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement('descriptor-fire-coating',
@@ -868,14 +819,10 @@ export default {
                         MISC_DESC_FEATURES.coating.oil,
                         MISC_DESC_FEATURES.coating.flames,
                     ].choice(rng), rng, weapon),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
-                    themes: {
-                        any: ['fire']
-                    }
+                    themes: { any: ['fire'] }
                 }
             ),
 
@@ -897,15 +844,11 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['ice']
-                    }
+                    themes: { any: ['ice'] }
                 }
             ),
 
@@ -919,18 +862,12 @@ export default {
                             MATERIALS.coldHorn
                         ].choice(rng), rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['ice']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['ice'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
 
@@ -944,15 +881,11 @@ export default {
                             MATERIALS.glassLikeSteel
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['cloud']
-                    }
+                    themes: { any: ['cloud'] }
                 }
             ),
             new ProviderElement('material-cloud-holding',
@@ -968,18 +901,12 @@ export default {
                             gte(weapon.rarity, 'legendary') ? MATERIALS.heavenlyPeachWood : MATERIALS.peachWood,
                         ].choice(rng), rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['cloud']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['cloud'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement('descriptor-cloud-coating',
@@ -988,14 +915,10 @@ export default {
                     generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
                         MISC_DESC_FEATURES.coating.pearlescent,
                     ].choice(rng), rng, weapon),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
-                    themes: {
-                        any: ['cloud']
-                    }
+                    themes: { any: ['cloud'] }
                 }
             ),
 
@@ -1024,15 +947,11 @@ export default {
                             MATERIALS.sapphire,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['earth']
-                    }
+                    themes: { any: ['earth'] }
                 }
             ),
             new ProviderElement('material-earth-holding',
@@ -1049,18 +968,12 @@ export default {
                             MATERIALS.sandstone,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['earth']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['earth'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
 
@@ -1082,15 +995,11 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['dark']
-                    }
+                    themes: { any: ['dark'] }
                 }
             ),
 
@@ -1104,18 +1013,12 @@ export default {
                             MATERIALS.darkLeather,
                         ].choice(rng), rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['dark']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['dark'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
 
@@ -1136,18 +1039,12 @@ export default {
                             gte(weapon.rarity, 'legendary') ? MATERIALS.heavenlyPeachWood : MATERIALS.peachWood,
                         ].choice(rng), rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['light']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['light'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
 
@@ -1159,9 +1056,7 @@ export default {
                             MATERIALS.iceBlood
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
@@ -1193,15 +1088,11 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['light']
-                    }
+                    themes: { any: ['light'] }
                 }
             ),
 
@@ -1215,15 +1106,11 @@ export default {
                             MATERIALS.gingerbread,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['sweet']
-                    },
+                    themes: { any: ['sweet'] },
                 }
             ),
             new ProviderElement('material-sweet-holding',
@@ -1236,18 +1123,12 @@ export default {
                             MATERIALS.dateWood
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['sweet']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    },
+                    themes: { any: ['sweet'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies },
                 }
             ),
 
@@ -1260,15 +1141,11 @@ export default {
                             MATERIALS.acidium
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['sour']
-                    }
+                    themes: { any: ['sour'] }
                 }
             ),
             new ProviderElement('material-sour-holding',
@@ -1279,18 +1156,12 @@ export default {
                             MATERIALS.lemonWood,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['sour']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['sour'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement('misc-sour-coating',
@@ -1305,9 +1176,7 @@ export default {
                     }
                 },
                 {
-                    themes: {
-                        any: ['sour']
-                    }
+                    themes: { any: ['sour'] }
                 }
             ),
 
@@ -1339,15 +1208,11 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['wizard']
-                    }
+                    themes: { any: ['wizard'] }
                 }
             ),
 
@@ -1363,18 +1228,12 @@ export default {
                             MATERIALS.magicHorn,
                         ].choice(rng), rng, weapon);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['wizard']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['wizard'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
 
@@ -1386,9 +1245,7 @@ export default {
                             MATERIALS.wiseWood,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: false,
@@ -1406,14 +1263,10 @@ export default {
                         MISC_DESC_FEATURES.charm.beadsWrap,
                         MISC_DESC_FEATURES.charm.peacockFeather,
                     ].choice(rng),
-                    applicableTo: {
-                        any: wrappableParts
-                    }
+                    applicableTo: { any: wrappableParts }
                 },
                 {
-                    themes: {
-                        any: ['wizard']
-                    }
+                    themes: { any: ['wizard'] }
                 }
             ),
             new ProviderElement('misc-wizard-coating',
@@ -1424,14 +1277,10 @@ export default {
                         MISC_DESC_FEATURES.coating.celestialEngraving,
                         MISC_DESC_FEATURES.coating.wizardEngraving,
                     ].choice(rng), rng, weapon),
-                    applicableTo: {
-                        any: wrappableParts
-                    }
+                    applicableTo: { any: wrappableParts }
                 },
                 {
-                    themes: {
-                        any: ['wizard']
-                    }
+                    themes: { any: ['wizard'] }
                 }
             ),
 
@@ -1446,15 +1295,11 @@ export default {
                             MATERIALS.brass,
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['steampunk']
-                    }
+                    themes: { any: ['steampunk'] }
                 }
             ),
 
@@ -1470,18 +1315,12 @@ export default {
                             MATERIALS.porcelain
                         ].choice(rng), rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['steampunk']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['steampunk'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement('material-nature-hard',
@@ -1499,15 +1338,11 @@ export default {
                             MATERIALS.ironWood
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['nature']
-                    }
+                    themes: { any: ['nature'] }
                 }
             ),
 
@@ -1526,18 +1361,12 @@ export default {
                             MATERIALS.ironWood
                         ].choice(rng), rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
-                    themes: {
-                        any: ['nature']
-                    },
-                    shapeFamily: {
-                        any: grippedWeaponShapeFamilies
-                    }
+                    themes: { any: ['nature'] },
+                    shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
 
@@ -1545,9 +1374,7 @@ export default {
                 {
                     yields: 'feature',
                     generate: () => MISC_DESC_FEATURES.charm.emojis,
-                    applicableTo: {
-                        any: wrappableParts
-                    }
+                    applicableTo: { any: wrappableParts }
                 },
                 {
                     // remove me when more abilities are added. this is just really over-represented at the moment & messing with the vibe
@@ -1577,9 +1404,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    }
+                    applicableTo: { any: holdingParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1598,9 +1423,7 @@ export default {
                         material: "two separate blades (adamant and mythrel), they're intertwined in a spiral pattern",
                         ephitet: { pre: 'Binary' }
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     rarity: {
@@ -1618,9 +1441,7 @@ export default {
                         material: "two separate parts, split down the middle: one half is boreal steel, the other scarlet steel",
                         ephitet: { pre: 'Bifurcated' }
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     rarity: {
@@ -1638,9 +1459,7 @@ export default {
                         material: "a glass tank containing an aquarium, the contents seem unaffected by movement",
                         ephitet: { pre: 'Steamy' }
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     rarity: {
@@ -1658,9 +1477,7 @@ export default {
                         material: "hollow glass, filled with a roiling mix of magical fire and water",
                         ephitet: { pre: 'Steamy' }
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     rarity: {
@@ -1677,9 +1494,7 @@ export default {
                     material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
                     ephitet: { post: ' of the Elemental Lord' }
                 }),
-                applicableTo: {
-                    any: importantPart
-                }
+                applicableTo: { any: importantPart }
             }, {
                 rarity: {
                     gte: 'legendary'
@@ -1687,9 +1502,7 @@ export default {
                 themes: {
                     all: ['earth', 'cloud', 'fire']
                 },
-                applicableTo: {
-                    any: importantPart
-                },
+                applicableTo: { any: importantPart },
                 isMaterial: true
             }
             ),
@@ -1702,10 +1515,7 @@ export default {
                     desc: "Vengeful."
                 },
                 {
-                    themes: {
-                        any: ["fire", "ice", "dark", "sweet"]
-                    },
-
+                    themes: { any: ["fire", "ice", "dark", "sweet"] },
                 }
             ),
             new ProviderElement<Personality, WeaponPowerCond>("cruel",
@@ -1713,10 +1523,7 @@ export default {
                     desc: "Cruel."
                 },
                 {
-                    themes: {
-                        any: ["sour", "dark"]
-                    },
-
+                    themes: { any: ["sour", "dark"] },
                 }
             ),
             new ProviderElement<Personality, WeaponPowerCond>("curious",
@@ -1920,12 +1727,25 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("mist-mode",
+                {
+                    cost: '1 charge to activate, and 1 charge every 10s to maintain',
+                    desc: 'Mist Mode',
+                    additionalNotes: [
+                        'You transform into incorporeal mist.',
+                        'Mist Mode can be activated in response to being targeted by an attack, causing it to miss.'
+                    ]
+                },
+                {
+                    themes: { any: ['cloud', 'wizard', 'dark'] }
+                }
+            ),
             new ProviderElement('roulette-shot', {
                 desc: 'Roulette',
                 cost: 1,
                 additionalNotes: [
                     `
-                    Fire an enchanted shot, then roll on the table below to decide on the effect.
+                    You fire an enchanted shot. Roll on the table below to decide the effect.
                     \n1. Target is set on fire.
                     \n2. Explosive, everyone within melee range of the target takes equal damage.
                     \n3.
@@ -2140,9 +1960,7 @@ export default {
                     ],
                 },
                 {
-                    themes: {
-                        any: ['dark']
-                    },
+                    themes: { any: ['dark'] },
                     rarity: {
                         gte: 'rare'
                     }
@@ -2238,9 +2056,7 @@ export default {
                     ]
                 },
                 {
-                    themes: {
-                        any: ['earth']
-                    },
+                    themes: { any: ['earth'] },
                     rarity: {
                         gte: 'legendary'
                     }
@@ -2256,9 +2072,7 @@ export default {
                     ]
                 },
                 {
-                    themes: {
-                        any: ['cloud']
-                    }
+                    themes: { any: ['cloud'] }
                 }
             ),
             new ProviderElement("icy-terrain",
@@ -2295,9 +2109,7 @@ export default {
                     ]
                 })),
                 {
-                    themes: {
-                        any: ["nature"],
-                    },
+                    themes: { any: ["nature"], },
                     rarity: {
                         lte: 'rare'
                     },
@@ -2418,9 +2230,7 @@ export default {
                     rarity: {
                         gte: "uncommon"
                     },
-                    UUIDs: {
-                        none: ['summon-demon']
-                    }
+                    UUIDs: { none: ['summon-demon'] }
                 }
             ),
             new ProviderElement("turn-holy",
@@ -2457,9 +2267,7 @@ export default {
                     rarity: {
                         gte: "epic"
                     },
-                    UUIDs: {
-                        none: ['commune-demon']
-                    }
+                    UUIDs: { none: ['commune-demon'] }
                 }
             ),
             new ProviderElement("commune-divinity",
@@ -2815,9 +2623,7 @@ export default {
                     'Jump up to 5× as far as you are naturally capable of.'
                 ]
             }, {
-                themes: {
-                    any: ['nature']
-                }
+                themes: { any: ['nature'] }
             }),
             new ProviderElement('summon-animal-weak',
                 mkGen((rng, weapon) => {
@@ -2874,15 +2680,11 @@ export default {
                     }
                 }),
                 {
-                    themes: {
-                        any: ['nature']
-                    },
+                    themes: { any: ['nature'] },
                     rarity: {
                         lte: 'rare'
                     },
-                    UUIDs: {
-                        none: ['weapon-animal-transformation']
-                    }
+                    UUIDs: { none: ['weapon-animal-transformation'] }
                 }),
             new ProviderElement('summon-animal-strong',
                 mkGen((rng, weapon) => {
@@ -2951,15 +2753,11 @@ export default {
                         additionalNotes: [`Call ${quantity}${allAnimals.choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`]
                     }
                 }), {
-                themes: {
-                    any: ['nature']
-                },
+                themes: { any: ['nature'] },
                 rarity: {
                     gte: 'epic'
                 },
-                UUIDs: {
-                    none: ['weapon-animal-transformation']
-                }
+                UUIDs: { none: ['weapon-animal-transformation'] }
             }),
             new ProviderElement('immovable-bc-earth', {
                 desc: 'Immovable',
@@ -2968,9 +2766,7 @@ export default {
             },
                 {
                     themes: { any: ['earth'] },
-                    UUIDs: {
-                        none: ['immovable-bc-weapon-shape']
-                    }
+                    UUIDs: { none: ['immovable-bc-weapon-shape'] }
                 }
             ),
             new ProviderElement('immovable-bc-weapon-shape', {
@@ -2982,9 +2778,7 @@ export default {
                     shapeFamily: {
                         any: ['greatsword', 'greataxe']
                     },
-                    UUIDs: {
-                        none: ['immovable-bc-earth']
-                    }
+                    UUIDs: { none: ['immovable-bc-earth'] }
                 }
             ),
             new ProviderElement("assassinate-lethal",
@@ -2995,9 +2789,7 @@ export default {
                 })),
                 {
 
-                    shapeFamily: {
-                        any: ['dagger']
-                    },
+                    shapeFamily: { any: ['dagger'] },
                 }
             ),
             new ProviderElement("assassinate-nonlethal",
@@ -3008,9 +2800,7 @@ export default {
                 })),
                 {
 
-                    shapeFamily: {
-                        any: ['club']
-                    },
+                    shapeFamily: { any: ['club'] },
                 }
             ),
             new ProviderElement("lance-charge",
@@ -3021,9 +2811,7 @@ export default {
                 })),
                 {
 
-                    shapeFamily: {
-                        any: ['lance']
-                    },
+                    shapeFamily: { any: ['lance'] },
                 }
             ),
             new ProviderElement("spin-attack",
@@ -3064,9 +2852,7 @@ export default {
                 rarity: {
                     lte: 'rare'
                 },
-                shapeParticular: {
-                    any: animeWeaponShapes
-                }
+                shapeParticular: { any: animeWeaponShapes }
             }),
             new ProviderElement('instant-door',
                 mkGen((rng, weapon) => {
@@ -3112,9 +2898,7 @@ export default {
                 cost: 1,
                 additionalNotes: ["The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",]
             }, {
-                themes: {
-                    any: ['sour']
-                }
+                themes: { any: ['sour'] }
             }),
             new ProviderElement('radial-slam', {
                 desc: 'Slam',
@@ -3129,12 +2913,8 @@ export default {
                     ])
                 ]
             }, {
-                themes: {
-                    any: ['earth']
-                },
-                UUIDs: {
-                    none: ['linear-slam']
-                }
+                themes: { any: ['earth'] },
+                UUIDs: { none: ['linear-slam'] }
             }),
             new ProviderElement('linear-slam', {
                 desc: 'Slam',
@@ -3149,12 +2929,8 @@ export default {
                     ])
                 ]
             }, {
-                themes: {
-                    any: ['earth']
-                },
-                UUIDs: {
-                    none: ['radial-slam']
-                }
+                themes: { any: ['earth'] },
+                UUIDs: { none: ['radial-slam'] }
             }),
             new ProviderElement('metaphysical-edit', {
                 desc: 'Edit',
@@ -3164,12 +2940,8 @@ export default {
                     "It physically transforms into the new object."
                 ]
             }, {
-                themes: {
-                    any: ['wizard']
-                },
-                shapeFamily: {
-                    any: edgedWeaponShapeFamilies
-                },
+                themes: { any: ['wizard'] },
+                shapeFamily: { any: edgedWeaponShapeFamilies },
             }),
             new ProviderElement('gravity-gun',
                 mkGen((rng, weapon) => {
@@ -3209,9 +2981,7 @@ export default {
                     'It stays frozen for 2d6 × 10 minutes.'
                 ]
             }, {
-                themes: {
-                    any: ['ice']
-                }
+                themes: { any: ['ice'] }
             }),
             new ProviderElement('rally-person', {
                 desc: 'Rally',
@@ -3365,22 +3135,40 @@ export default {
                 }
             ),
             new ProviderElement("kneecapper",
-                mkGen((__, weapon) => {
+                {
+                    miscPower: true,
+                    desc: `When a character larger than the wielder is struck by the weapon, they must save or be knocked down.`
+                },
+                {
+                    shapeFamily: { any: ["axe"] },
+                }
+            ),
+            new ProviderElement("of-x-slaying",
+                mkGen((rng, weapon) => {
                     const bonusByRarity = {
-                        common: 'double',
-                        uncommon: 'double',
-                        rare: 'double',
-                        epic: 'triple',
-                        legendary: 'triple'
-                    } as const satisfies Record<WeaponRarity, string>;
+                        common: '1d4',
+                        uncommon: '1d6',
+                        rare: '1d8',
+                        epic: '2d8',
+                        legendary: '2d8'
+                    } as const satisfies Record<WeaponRarity, `${number}d${CommonDieSize}`>;
 
                     return {
                         miscPower: true,
-                        desc: `Deals ${bonusByRarity[weapon.rarity]} damage vs giants.`
+                        desc: `Deals ${bonusByRarity[weapon.rarity]} additional damage vs ${[
+                            'dragons',
+                            'giants',
+                            'shapeshifters',
+                            'fae',
+                            'extradimensional creatures',
+                            'demons',
+                            ...((weapon.themes.includes('light')) ? ['undead'] : []),
+                            ...((weapon.themes.includes('dark')) ? ['angels & gods'] : []),
+                        ].choice(rng)}.`
                     };
                 }),
                 {
-                    shapeFamily: { any: ["axe"] },
+                    shapeFamily: { none: rangedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement("bonus-vs-stronger",
@@ -3395,7 +3183,7 @@ export default {
 
                     return {
                         miscPower: true,
-                        desc: `+${bonusByRarity[weapon.rarity]} to hit and damage vs foes stronger than the wielder.`
+                        desc: `+${bonusByRarity[weapon.rarity]} to hit and damage vs foes more powerful than the wielder.`
                     };
                 }),
                 {
@@ -3414,11 +3202,10 @@ export default {
 
                     return {
                         miscPower: true,
-                        desc: `+${bonusByRarity[weapon.rarity]} to hit and damage vs foes weaker than the wielder.`
+                        desc: `+${bonusByRarity[weapon.rarity]} to hit and damage vs foes less powerful than the wielder.`
                     };
                 }),
                 {
-                    themes: { none: ["light"], },
                     UUIDs: { none: ['bonus-vs-stronger'] }
                 }
             ),
@@ -3431,6 +3218,21 @@ export default {
                 rarity: { gte: 'epic' }
             }
             ),
+            new ProviderElement("detect-imposter-among-us",
+                mkGen((_, weapon) => weapon.sentient === false
+                    ? {
+                        miscPower: true,
+                        desc: `Touching the ${getBusinessEndDesc(weapon.shape)} dispels magical disguises, and causes shapeshifters to return to their normal form.`
+                    }
+                    : {
+                        miscPower: true,
+                        desc: "The weapon can see through magical disguises, and determine whether someone is a shapeshifter."
+                    }
+                ),
+                {
+                    themes: { any: ["light"], }
+                }
+            ),
             new ProviderElement("psi-immune",
                 {
                     miscPower: true,
@@ -3438,27 +3240,39 @@ export default {
                     descriptorPartGenerator: 'material-telekill'
                 },
                 {
-                    themes: {
-                        any: ["earth"],
-                    },
+                    themes: { any: ["earth"], },
                 }
             ),
             new ProviderElement("detect-unholy",
                 mkGen(rng => {
                     return {
                         miscPower: true,
-                        desc: new StringGenerator([
-                            mkGen("Glows like a torch when "),
-                            pluralUnholyFoe,
-                            mkGen(" are near")
-                        ]).generate(rng)
+                        desc: `Glows like a torch when ${pluralUnholyFoe.generate(rng)} are near.`
                     }
                 }),
                 {
-
-                    themes: {
-                        any: ["light"],
-                    },
+                    themes: { any: ["light"], },
+                }
+            ),
+            new ProviderElement("destroy-undead",
+                {
+                    miscPower: true,
+                    desc: `Undead (and other evil creatures) defeated by the blade are consumed by divine light, and reduced to ash. If they can normally regenerate, they can't.`
+                },
+                {
+                    themes: { any: ["light"], }
+                }
+            ),
+            new ProviderElement("make-zombie",
+                mkGen(rng => ({
+                    miscPower: true,
+                    desc: `Characters killed by the weapon rise immediately as ${['skeletons', 'zombies'].choice(rng)} under the wielder's control.`,
+                    descriptorPartGenerator: 'necromantic-runes'
+                })),
+                {
+                    themes: { any: ["dark"] },
+                    rarity: { gte: 'rare' },
+                    UUIDs: { none: ['traps-souls'] }
                 }
             ),
             new ProviderElement("command-critters",
@@ -3674,13 +3488,25 @@ export default {
                     additionalNotes: [
                         "Their ghosts are bound to the weapon, and obey the wielder's commands.",
                         "Can store up to 4 ghosts, and starts with 1d4 already inside."
-                    ]
+                    ],
+                    descriptorPartGenerator: 'necromantic-runes'
                 },
                 {
                     themes: { any: ["dark"] },
-                    rarity: {
-                        gte: 'rare'
-                    }
+                    rarity: { gte: 'rare' },
+                    UUIDs: { none: ['make-zombie'] }
+                }
+            ),
+            new ProviderElement("make-zombie",
+                mkGen(rng => ({
+                    miscPower: true,
+                    desc: `Characters killed by the weapon rise immediately as ${['skeletons', 'zombies'].choice(rng)} under the wielder's control.`,
+                    descriptorPartGenerator: 'necromantic-runes'
+                })),
+                {
+                    themes: { any: ["dark"] },
+                    rarity: { gte: 'rare' },
+                    UUIDs: { none: ['traps-souls'] }
                 }
             ),
             new ProviderElement("damage-bonus-dark-fire",
@@ -3873,12 +3699,8 @@ export default {
                 },
                 {
                     themes: { any: ["steampunk"] },
-                    shapeFamily: {
-                        none: shapeFamiliesWithoutPommels
-                    },
-                    UUIDs: {
-                        none: ['integrated-clock']
-                    }
+                    shapeFamily: { none: shapeFamiliesWithoutPommels },
+                    UUIDs: { none: ['integrated-clock'] }
                 }
             ),
             new ProviderElement("integrated-clock",
@@ -3889,12 +3711,8 @@ export default {
                 },
                 {
                     themes: { any: ["steampunk"] },
-                    shapeFamily: {
-                        none: shapeFamiliesWithoutPommels
-                    },
-                    UUIDs: {
-                        none: ['integrated-compass']
-                    }
+                    shapeFamily: { none: shapeFamiliesWithoutPommels },
+                    UUIDs: { none: ['integrated-compass'] }
                 }
             ),
             new ProviderElement("shoot-water",
@@ -4034,9 +3852,7 @@ export default {
                     desc: 'The weapon is completely invisible, except to its wielder.'
                 },
                 {
-                    themes: {
-                        any: ['light']
-                    },
+                    themes: { any: ['light'] },
                     rarity: {
                         gte: 'epic'
                     },
@@ -4052,9 +3868,7 @@ export default {
                     rarity: {
                         gte: 'rare'
                     },
-                    UUIDs: {
-                        none: ['magic-pocket']
-                    }
+                    UUIDs: { none: ['magic-pocket'] }
                 }
             ),
             new ProviderElement('magic-pocket',
@@ -4066,12 +3880,8 @@ export default {
                     rarity: {
                         gte: 'epic'
                     },
-                    shapeFamily: {
-                        none: twoHandedWeaponShapeFamilies
-                    },
-                    UUIDs: {
-                        none: ['instant-recall']
-                    }
+                    shapeFamily: { none: twoHandedWeaponShapeFamilies },
+                    UUIDs: { none: ['instant-recall'] }
                 }
             ),
             new ProviderElement("petrify-on-hit",
@@ -4237,7 +4047,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        any: ['axe', 'greataxe']
+                        any: ['greataxe', 'greataxe (or musket)']
                     },
                 }
             ),
@@ -4250,9 +4060,7 @@ export default {
                     rarity: {
                         gte: 'epic'
                     },
-                    shapeFamily: {
-                        any: ['club']
-                    },
+                    shapeFamily: { any: ['club'] },
                 }
             ),
             new ProviderElement('slenderblade',
@@ -4261,9 +4069,7 @@ export default {
                     desc: "A mass of shadowy tentacles form around the wielder's shoulders. They function as an additional pair of arms."
                 },
                 {
-                    themes: {
-                        any: ['dark']
-                    }
+                    themes: { any: ['dark'] }
                 }
             ),
             new ProviderElement("transform-tool",
@@ -4301,12 +4107,8 @@ export default {
                 desc: 'Has a small vial built into it, which can be filled with fluid. When you land a blow with the weapon, you may expend the liquid, injecting it into the target.',
                 descriptorPartGenerator: 'injector-module-forced'
             }, {
-                themes: {
-                    any: ['sour'],
-                },
-                shapeParticular: {
-                    any: pointedWeaponShapes
-                }
+                themes: { any: ['sour'], },
+                shapeParticular: { any: pointedWeaponShapes }
             }),
             new ProviderElement("potion-resistant",
                 {
@@ -4314,9 +4116,7 @@ export default {
                     desc: "Poisons (and potions) that are delivered using the weapon have their effects doubled.",
                 },
                 {
-                    themes: {
-                        any: ["sour"],
-                    },
+                    themes: { any: ["sour"], },
                 }
             ),
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",

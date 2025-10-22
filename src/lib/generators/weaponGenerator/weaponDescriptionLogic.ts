@@ -1,6 +1,30 @@
 import { getPlurality } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { type DescriptorAtom, type DescriptorType, type Pronouns, type PronounsLoc, type Weapon, type WeaponPart, type WeaponPartName } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { type DescriptorAtom, type DescriptorType, type Pronouns, type PronounsLoc, type Weapon, type WeaponPart, type WeaponPartName, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
+export function getBusinessEndDesc(shape: WeaponShape, _locale: string = 'en-GB') {
+    switch (shape.group) {
+        case "dagger":
+        case "sword":
+        case "greatsword":
+        case "greataxe":
+        case "sword (or bow)":
+        case "dagger (or pistol)":
+        case "sword (or musket)":
+        case "greataxe (or musket)":
+        case "axe":
+        case "polearm":
+            return "weapon's blade" as const;
+        case "club":
+        case "mace":
+        case "greatclub":
+            return "weapon's head" as const;
+        case "spear":
+        case "lance":
+            return "weapon's tip" as const;
+        case "staff":
+            return "weapon" as const;
+    }
+}
 
 function isAre(name: WeaponPartName) {
     switch (getPlurality(name)) {
@@ -103,7 +127,7 @@ export const pronounLoc = {
  * @param _locale locale to generator the weapon for (not currently implemented)
  * @param weapon A weapon that has a description. If its description is null the behaviour is undefined. 
  */
-export function structuredDescToString(_locale: string, weapon: Weapon) {
+export function structuredDescToString(weapon: Weapon, _locale: string = 'en-GB') {
 
     function locWeaponPartName(weaponPart: WeaponPartName) {
         switch (weaponPart) {

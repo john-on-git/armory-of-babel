@@ -1,5 +1,5 @@
 import seedrandom from "seedrandom";
-import { mkGen, StringGenerator, type Generator } from "./recursiveGenerator";
+import { mkGen, type Generator } from "./recursiveGenerator";
 import { ProviderElement } from "./weaponGenerator/provider";
 import { WeaponFeatureProvider } from "./weaponGenerator/weaponGeneratorLogic";
 import type { Theme, Weapon, WeaponPowerCond } from "./weaponGenerator/weaponGeneratorTypes";
@@ -23,9 +23,8 @@ const demands = [
     ),
     new ProviderElement<Demand, WeaponPowerCond>('TODO',
         {
-            desc: new StringGenerator([
-                "To be Polished With ",
-                mkGen(rng => [
+            desc: mkGen((rng) =>
+                `To be Polished With ${[
                     "a White Whale's Wax (all charges)",
                     "Giant Bees' Wax (d10 charges)",
                     'Clove Oil (d8 charges)',
@@ -38,9 +37,8 @@ const demands = [
                     'Palm Wax (d6 charges)',
                     'Oil (d4 charges)',
                     'Wax (d4 charges)'
-                ].choice(rng)),
-                '.'
-            ])
+                ].choice(rng)}.`
+            )
         },
         {}
     ),
