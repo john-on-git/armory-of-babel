@@ -263,7 +263,7 @@ export const MISC_DESC_FEATURES = {
                     case 2:
                         return `has a pair of miniature busts affixed to it, depicting ${chosenOptions[0]} and ${chosenOptions[1]}`;
                     case 3:
-                        return `has a cluster of miniature busts affixed to it: ${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]},`;
+                        return `has a cluster of miniature busts affixed to it: ${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]}`;
                 }
             }),
             ephitet: 'Charming'
