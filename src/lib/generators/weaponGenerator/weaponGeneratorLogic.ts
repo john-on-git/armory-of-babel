@@ -216,9 +216,40 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator:
     }
 }
 
-function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>): Ephitet | undefined {
-    const maybeEphitets = Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
-    return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng);
+function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined {
+    function fallbackEph(theme: Theme): Ephitet {
+        switch (theme) {
+            case "fire":
+                return { pre: 'Fiery' };
+            case "ice":
+                return { pre: 'Icy' };
+            case "cloud":
+                return { post: 'of the Sky' };
+            case "earth":
+                return { post: 'of the Earth' };
+            case "light":
+                return { pre: 'Divine' };
+            case "dark":
+                return { pre: 'Evil' };
+            case "sweet":
+                return { pre: 'Sugar' };
+            case "sour":
+                return { pre: 'Acid' };
+            case "wizard":
+                return { pre: 'Magic' };
+            case "steampunk":
+                return { pre: 'Clockwork' };
+            case "nature":
+                return { pre: "Treehugger's" };
+            default:
+                return { pre: theme };
+        }
+    }
+
+    if (weapon.description !== null) {
+        const maybeEphitets = Object.values(weapon.description).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
+        return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng) ?? fallbackEph(weapon.themes.choice(rng));
+    }
 }
 
 //export function genMaybeGen<T, TArgs extends Array<unknown>, TUnion extends T | ((TGenerator<T, TArgs>)) = T | ((TGenerator<T, TArgs>))>(x: TUnion, rng: seedrandom.PRNG, ...args: TArgs): T;
@@ -465,11 +496,9 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         }
     }
 
-    // convert the structured description to a text block
-    const description = structuredDescToString('en-GB', weapon);
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
-    const ephitet = pickEphitet(rng, weapon.description);
+    const ephitet = pickEphitet(rng, weapon);
     if (weapon.pronouns == 'object') {
         if (ephitet === undefined) {
             weapon.name = weapon.shape.particular;
@@ -501,7 +530,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         themes: weapon.themes,
         rarity: weapon.rarity,
         name: weapon.name,
-        description,
+        description: structuredDescToString('en-GB', weapon),
         damage: weapon.damage,
         toHit: weapon.toHit,
         active: {
