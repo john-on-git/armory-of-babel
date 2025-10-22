@@ -81,6 +81,13 @@ export interface Weapon {
 
 
     rarity: WeaponRarity;
+    /**
+     * True if the weapon is a negative. Negative weapons are very rare weapons that have a different rarity color. This is purely cosmetic.
+     * 
+     * Common weapons cannot be negative, but enforcing this with the type threw a numer of issues, so we're only doing it for the viewmodel.
+     */
+    isNegative: boolean;
+
     pronouns: Pronouns;
     name: string;
     description: StructuredDescription | null;
@@ -532,7 +539,7 @@ export type DescriptorGenerator<TArgs extends [Weapon, ...unknown[]] = [Weapon]>
     };
 
 /**
- * Woke up mxsterr Freethem. woke u and smell the pronouns.
+ * Woke up mxster Freethem. Woke up and smell the pronouns.
  */
 export type Pronouns = 'object' | 'enby' | 'masc' | 'femm';
 export type PronounsLoc = {

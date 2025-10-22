@@ -16,17 +16,17 @@ describe('Weapon Generator', () => {
 
     it('1. Always generates a weapon with a number of active abilities matching its params.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             expect(weapon.active.powers.length).toBe(params.nActive + params.nUnlimitedActive);
         }
     });
 
     // Passives don't always create a bullepoint in the viewmodel, and sometimes increase the ability cap, 
-    // but it shouldn't be wildly different. That might indicate
+    // but it shouldn't be wildly different. That might indicate a gracefully handled crash, or an infinite loop in the generation state space 
     it('2. Always generates a weapon with a number of passive abilities approximately equal to its params.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             // number of languages (excluding the standard option, common). languages are a kind of passive powers
             const nAdditionalLanguages = (weapon.sentient ? weapon.sentient.languages.length - 1 : 0);
@@ -38,7 +38,7 @@ describe('Weapon Generator', () => {
 
     it('3. Always generates a weapon with a number of charges matching its params, or its most expensive ability, whichever is higher.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             const expected = weapon.active.powers.reduce<number>((acc, x) => Math.max(acc, typeof x.cost === 'string' ? 1 : x.cost), params.nCharges);
 
@@ -48,7 +48,7 @@ describe('Weapon Generator', () => {
 
     it('4. Always generates a weapon with enough charges to use any of its actives at least once.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             weapon.active.powers.map(x => expect(typeof x.cost === 'string' ? 0 : x.cost).toBeLessThanOrEqual(weapon.active.maxCharges));
         }
@@ -56,7 +56,7 @@ describe('Weapon Generator', () => {
 
     it('5. Always generates a weapon that deals damage.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             expect((Object.values(weapon.damage) as (string | number)[]).some((x) => typeof (x) === 'string' || x > 0)).toBe(true);
         }
@@ -64,7 +64,7 @@ describe('Weapon Generator', () => {
 
     it('6. Always generates a weapon with a non-empty description.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             expect(weapon.description.length).toBeGreaterThan(0);
         }
@@ -75,7 +75,7 @@ describe('Weapon Generator', () => {
         const notJustWhitespace = /\S+/;
 
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, undefined, true);
 
             weapon.active.powers.forEach((active) => {
                 expect(active.desc).toMatch(notJustWhitespace);
@@ -114,10 +114,10 @@ describe('Weapon Generator', () => {
 
     it('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
-            return weapon.active.powers.some(x => x.desc.includes('Stone Prison'))
+            return weapon.rarity === 'legendary' && weapon.isNegative && weapon.pronouns === 'enby';
         }
         const start = 0;
-        const attempts = 1000;
+        const attempts = 1;
 
         const end = start + attempts;
         let i = start;
@@ -125,7 +125,7 @@ describe('Weapon Generator', () => {
         let n: number;
 
         do {
-            const { weapons: nextWeapons, n: nextN } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, true);
+            const { weapons: nextWeapons, n: nextN } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
             weapons = _.toArray(nextWeapons);
             n = nextN;
         } while (i <= end && (!weapons.some(cond) || n <= .3));

@@ -8,6 +8,7 @@
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import { injectAnalytics } from "@vercel/analytics/sveltekit";
     import _ from "lodash";
+    import { tick } from "svelte";
     import { DEFAULT_RARITY_ODDS } from "./state.svelte";
     injectAnalytics({ mode: dev ? "development" : "production" });
 
@@ -26,24 +27,26 @@
     );
 
     const oddsWritable = writable((() => odds)());
-    oddsWritable.subscribe((newVal) => {
-        odds = newVal;
+    tick().then(() =>
+        oddsWritable.subscribe((newVal) => {
+            odds = newVal;
 
-        // if a section of the config is not default, also update the URL
+            // if a section of the config is not default, also update the URL
 
-        // only add the id param if it wasn't added already
-        const searchParams = new URLSearchParams(window.location.search);
+            // only add the id param if it wasn't added already
+            const searchParams = new URLSearchParams(window.location.search);
 
-        if (_.isEqual(odds, DEFAULT_RARITY_ODDS)) {
-            searchParams.delete("o");
-        } else {
-            searchParams.set("o", odds[0].toFixed(2));
-            for (let i = 1; i < odds.length; i++) {
-                searchParams.append("o", odds[i].toFixed(2));
+            if (_.isEqual(odds, DEFAULT_RARITY_ODDS)) {
+                searchParams.delete("o");
+            } else {
+                searchParams.set("o", odds[0].toFixed(2));
+                for (let i = 1; i < odds.length; i++) {
+                    searchParams.append("o", odds[i].toFixed(2));
+                }
             }
-        }
-        syncLocationWithURLSearchParams(searchParams, "replace");
-    });
+            syncLocationWithURLSearchParams(searchParams, "replace");
+        }),
+    );
 </script>
 
 <WeaponGenerator {odds} />

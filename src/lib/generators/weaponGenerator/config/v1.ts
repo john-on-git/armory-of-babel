@@ -53,7 +53,7 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: ` has ${streakCapacityByRarity[weapon.rarity]} magical gems embedded along it`,
-                            plural: ` have ${streakCapacityByRarity[weapon.rarity]} magical gems embedded along them`
+                            plural: ` have ${streakCapacityByRarity[weapon.rarity]} magical gems embedded in them`
                         }
                     }),
                     ephitet: mkGen({ pre: "Bejewelled" }),
@@ -421,7 +421,7 @@ export default {
                             descriptor: {
                                 descType: 'possession',
                                 singular: 'a large crystal orb embedded in it, containing a howling blizzard',
-                                plural: 'a set of large crystal orbs embedded in them, containing a welter of winter weather'
+                                plural: 'a large crystal orb embedded in them, containing a welter of winter weather'
                             },
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
@@ -1798,7 +1798,7 @@ export default {
                         ]
                     }),
                 {
-                    themes: { any: ["light", "wizard", "fire"] },
+                    themes: { any: ["light", "fire", "wizard", "steampunk"] },
                 }
             ),
             new ProviderElement('banishment',
@@ -1865,7 +1865,7 @@ export default {
                     \r2. Explosive. Everyone within melee range of the target takes equal damage.
                     \r3. Flash Powder. Target must save or be stunned during their next turn.
                     \r4. Hammer Shot. Shatters every bone in a random limb of the target.
-                    \r5. Wither Shot. Target takes double damage until your next turn.
+                    \r5. Wither Shot. Target takes double damage until the start of your next turn.
                     \r6. Wormhole. You swap places with the target.`,
                 ]
             }, {
@@ -2037,14 +2037,14 @@ export default {
                         desc: "Spectral Shot",
                         cost: 2,
                         additionalNotes: [
-                            "You empower an attack to bypass defenses. During the attack, the weapon (or projectile) can pass through terrain, and bypasses the effects of the target's armor."
+                            "You empower an attack to bypass defenses. The projectile can phase through terrain and ignores the effects of armor."
                         ]
                     }
                     : {
                         desc: "Spectral Strike",
                         cost: 2,
                         additionalNotes: [
-                            "You empower an attack to bypass defenses. During the attack the weapon can pass through terrain, and bypasses the effects of the target's armor."
+                            "You empower an attack to bypass defenses. During the attack the weapon can phase through terrain, and ignores the effects of armor."
                         ]
                     }),
                 {
@@ -2081,20 +2081,20 @@ export default {
             new ProviderElement("extra-damage-attack",
                 mkGen((rng, weapon) => {
                     const reasonsByTheme = {
-                        fire: ["a burst of fire explodes from the weapon", `the ${getBusinessEndDesc(weapon.shape)} is momentarily superheated`],
+                        fire: ["a burst of fire explodes from the weapon", `the ${getBusinessEndDesc(weapon.shape)} is momentarily superheated`, ...(weapon.themes.includes('cloud') ? ["the weapon produces a blast of steam"] : [])],
                         ice: [`the ${getBusinessEndDesc(weapon.shape)} momentarily drops to absolute zero`],
-                        cloud: [`lightning sparks from ${getBusinessEndDesc(weapon.shape)}`],
+                        cloud: [`lightning sparks from ${getBusinessEndDesc(weapon.shape)}`, ...(weapon.themes.includes('fire') ? ["the weapon produces a blast of steam"] : [])],
                         earth: [`magma erupts from ${getBusinessEndDesc(weapon.shape)}`],
                         light: [`light surrounds ${getBusinessEndDesc(weapon.shape)}`],
                         dark: [`shadowy tentacles burst from ${getBusinessEndDesc(weapon.shape)}`, `shadows coil around ${getBusinessEndDesc(weapon.shape)}`],
                         sweet: ["the power of friendship surges within you", `molten caramel whips around ${getBusinessEndDesc(weapon.shape)}`, `magical hearts whip around ${getBusinessEndDesc(weapon.shape)}`, `magical stars whip around ${getBusinessEndDesc(weapon.shape)}`],
                         sour: [pointedWeaponShapes.includes(weapon.shape.particular as (typeof pointedWeaponShapes)[number]) ? "the weapon injects acid into the target" : "acid oozes from the weapon's surface"],
                         wizard: ["arcane power surges through the weapon"],
-                        steampunk: ["the weapon produces an explosive blast"],
-                        nature: [`the weapon projects ${(() => {
+                        steampunk: ["the weapon produces an explosive blast", "the weapon produces a blast of steam"],
+                        nature: [(() => {
                             const { animal } = singularWildAnimalStructured.generate(rng);
-                            return `a spectral ${animal}`;
-                        })()} to attack the target`]
+                            return `the weapon projects a spectral ${animal} that attacks the target`;
+                        })()]
                     } as const satisfies Record<Theme, string[]>;
 
                     const numDieByRarity = {

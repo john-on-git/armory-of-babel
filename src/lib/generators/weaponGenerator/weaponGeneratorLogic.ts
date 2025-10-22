@@ -14,7 +14,7 @@ import { commonDieSizes, type DamageDice, type DescriptorCondParams, type Descri
 /**
  * Weapons have a 1/NEGATIVE_CHANCE chance of being negative.
  */
-const NEGATIVE_CHANCE = 8192;
+const DEFAULT_NEGATIVE_CHANCE = 8192;
 
 /**
  * Flatten a weapon description into the parts and their names.
@@ -220,6 +220,14 @@ export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerato
     }
 }
 
+/**
+ * Generate a pseudorandom weapon.
+ * 
+ * Post-conditions: rng will be called once / advanced once.
+ * @param weaponRarityConfig Configuration object that decides the chance of generating each rarity.
+ * @param rng Source of randomness to use. Will be called once.
+ * @returns A pseudorandom rarity.
+ */
 function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.PRNG): WeaponRarity {
     const n = rng();
     // sort the rarities into descending order
@@ -425,7 +433,18 @@ export function genMaybeGen<T, TArgs extends Array<unknown>>(x: T | ((Generator<
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
-export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity, silent = false): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
+/**
+ * Generate a pseudorandom weapon.
+ * 
+ * @param rngSeed Random seed to use to generate the weapon. A given set of paramaters will always generate the same weapon. Varying this parameter allows different weapons to be generated.
+ * @param featureProviders Configuration object for the weapon, provides the abilities etc that the weapons are made up of
+ * @param weaponRarityConfig Configuration object for weapon raritiesw. It provides the odds of generating each rarity, and decides the power level of each weapon rarity.
+ * @param negativeChance Weapons have a 1/negativeChance chance of being negative, this gives them a different name color. defaults to 8192.
+ * @param maybeRarity If provided, the weapon will have this rarity. Otherwise its rarity will be chosen randomly according to the chances defined in weaponRarityConfig.
+ * @param silent If false the function will write error logs to the console.
+ * @returns The WeaponViewModel for the weapon for the given params.
+ */
+export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, negativeChance: number = DEFAULT_NEGATIVE_CHANCE, maybeRarity?: WeaponRarity, silent = false): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
     let nDescriptors = 0;
 
@@ -460,8 +479,16 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     const weapon: Weapon = {
         id: rngSeed,
         description: null,
-        rarity,
-        pronouns: isSentient ? (['enby', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm'] satisfies Pronouns[]).choice(rng) : 'object',
+        ...(rarity === 'common' ? {
+            rarity,
+            isNegative: false
+        } : {
+            rarity,
+            isNegative: (Math.ceil(rng() * 1_000_000) % negativeChance === 0),
+        }),
+        pronouns: isSentient
+            ? (['enby', 'masc', 'masc', 'masc', 'masc', 'masc', 'femm', 'femm', 'femm', 'femm', 'femm'] satisfies Pronouns[]).choice(rng)
+            : 'object',
         name: '',
         shape: {
             particular: "",
@@ -693,15 +720,17 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         }
     }
 
+    // convert to the viewmodel
+    // then we're done
     const weaponViewModel = {
         id: weapon.id,
         themes: weapon.themes,
         ...(weapon.rarity === 'common' ? {
-            rarity: weapon.rarity,
+            rarity: 'common',
             isNegative: false
         } : {
             rarity: weapon.rarity,
-            isNegative: (Math.ceil(rng() * 1_000_000) % NEGATIVE_CHANCE === 0),
+            isNegative: weapon.isNegative
         }),
         name: weapon.name,
         pronouns: weapon.pronouns,
@@ -728,14 +757,15 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         } : false,
     } satisfies WeaponViewModel;
 
+    // also return the params, as the sentience chance is used by the UI
     return { weaponViewModel, params };
 }
 
 
-export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig, silent = false) {
+export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig, negativeChance?: number, silent = false) {
     return {
         weapons: weaponRarities.reduce((acc, rarity) => {
-            acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, rarity, silent).weaponViewModel
+            acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, negativeChance, rarity, silent).weaponViewModel
             return acc;
         }, {} as Record<WeaponRarity, WeaponViewModel>),
         n: seedrandom(rngSeed)()

@@ -2,7 +2,7 @@ import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAn
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
 import { gatherUUIDs } from "$lib/generators/weaponGenerator/provider";
 import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { DescriptorText, Ephitet, PartFeature, PartMaterial, Theme, Weapon, WeaponGivenThemes, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, type DescriptorText, type Ephitet, type PartFeature, type PartMaterial, type Theme, type Weapon, type WeaponGivenThemes, type WeaponPartName, type WeaponRarity, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { titleCase } from "$lib/util/string";
 import _ from "lodash";
@@ -444,7 +444,7 @@ const embeddedArr = [
 ] as const satisfies [string, Ephitet[]][];
 
 const eyeStructureGen = mkGen((rng, weapon: Weapon, plurality: 'singular' | 'plural') => choice([
-    ["one large ", "eye", ""],
+    ["a single ", "eye", ""],
     ["a pair of ", "eyes", ""],
     ["three ", "eyes", " mounted in a triangle"],
     ["four ", "eyes", " mounted in two sets"],
@@ -459,10 +459,10 @@ const eyeColorGen = mkGen((rng, weapon: Weapon) => {
     const effects = {
         fire: ['orange', 'red', 'yellow'],
         ice: ['blue', 'cyan', 'white'],
-        cloud: ['blue', 'cyan', 'entirely white'],
+        cloud: ['blue', 'cyan', 'white'],
         earth: ['orange', 'brown'],
-        dark: ['jet black', 'red', 'black with a red spiral'],
-        light: ['entirely white', 'blue', 'yellow', 'grey'],
+        dark: ['jet black', 'red', 'black & red'],
+        light: ['white', 'blue', 'yellow', 'grey'],
         sweet: ['white', 'red', 'pink'],
         sour: ['yellow', 'green', 'lime'],
         wizard: ['purple', 'blue', 'gold'],
@@ -710,14 +710,18 @@ export const MISC_DESC_FEATURES = {
                 ephitet: { pre: 'Byzantine' } as Ephitet
             }
         }),
-        celestialEngraving: mkGen(rng => ({
-            descriptor: {
-                descType: 'property',
-                singular: ` is engraved with depictions of the stars`,
-                plural: ` are engraved with depictions of the stars`
-            },
-            ephitet: choice(ephWizard, rng) as Ephitet
-        })),
+        celestialEngraving: mkGen((rng, weapon) => {
+            const glows = gte(weapon.rarity, 'rare') || weapon.themes.includes('light');
+
+            return ({
+                descriptor: {
+                    descType: 'property',
+                    singular: ` is engraved with ${glows ? "luminous " : ""}depictions of the constellations`,
+                    plural: ` are engraved with ${glows ? "luminous " : ""}depictions of the constellations`
+                },
+                ephitet: choice(ephWizard, rng) as Ephitet
+            });
+        }),
         wizardEngraving: mkGen((rng, weapon) => {
             const magi = choice([
                 'a wizard', 'a sorcerer', 'an enchantress', 'a magi',
@@ -887,7 +891,7 @@ export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'q
 /**
  * Parts of a weapon that visual indicators of a resource can go on.
  */
-export const counterAcceptingParts = ['blade', 'blades', 'body', 'shaft', 'spearShaft', 'maceHead', 'limbs'] as const satisfies WeaponPartName[];
+export const counterAcceptingParts = ['blade', 'body', 'shaft', 'spearShaft', 'maceHead', 'maceHeads', 'blades', 'limbs'] as const satisfies WeaponPartName[];
 
 export const counterCapacityByRarity = {
     common: 2,
