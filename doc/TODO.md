@@ -13,6 +13,23 @@
         - Generators should have a UUID and transfer it to the things they generate.  
 
     - Basic Functionality
+        - Version control for features.
+            - There should be a piece of state: v or version
+            - Every weapon has an associated version.
+            - Whenever features are modified, v++
+            - There's a stack of deltas that are applied in order up to the current version.
+                - add / replace delete
+            - At this point, probably replace the UUID setup & just manually assign everything an ID,
+              so they can be targeted for replacement / removal later. 
+        
+            - It'll be best to prioritize this, as the app can't really be used without it.
+              And once it's implemented, all the powers will have to be converted over, so the fewer powers the better
+
+        - Configuration.
+            - ~~Power level.~~
+            - 5e mode.
+        
+
         - ~~Color-coded rarities.~~
         - ~~Weapon shape type based damage.~~
         - ~~Support for conditionally available abilities, beyond themes.~~
@@ -31,9 +48,6 @@
 
         - ~~Implement bonuses for passive abilities.~~
 
-        - Configuration.
-            - Power level.
-            - 5e mode.
         - UX.                                           EASY LONG   6
             - Link to github.
             - Link to this weapon button.
