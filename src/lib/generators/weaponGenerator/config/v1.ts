@@ -328,7 +328,7 @@ export default {
                         ephitet: { pre: 'Headhunter' }
                     }),
                 applicableTo: {
-                    any: ['grip']
+                    any: holdingParts
                 }
             }, {
                 /**
@@ -1290,6 +1290,23 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
+                    }
+                }
+            ),
+            new ProviderElement('misc-sour-coating',
+                {
+                    yields: 'feature',
+                    generate: (rng, weapon) => genMaybeGen([
+                        MISC_DESC_FEATURES.coating.pitted,
+                        MISC_DESC_FEATURES.coating.acidBurned,
+                    ].choice(rng), rng, weapon),
+                    applicableTo: {
+                        any: [...importantPart, ...wrappableParts]
+                    }
+                },
+                {
+                    themes: {
+                        any: ['sour']
                     }
                 }
             ),
@@ -4267,7 +4284,7 @@ export default {
             ),
             new ProviderElement('injector-module', {
                 miscPower: true,
-                desc: 'Has a small vial embedded in the grip, which can be filled with fluid. When you land a blow with the weapon, you may expend the liquid, injecting it into the target.',
+                desc: 'Has a small vial built into it, which can be filled with fluid. When you land a blow with the weapon, you may expend the liquid, injecting it into the target.',
                 descriptorPartGenerator: 'injector-module-forced'
             }, {
                 themes: {
