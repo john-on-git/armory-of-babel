@@ -1,5 +1,4 @@
 <script lang="ts">
-    import LoadingGear from "$lib/components/loadingGear.svelte";
     import WeaponDisplay from "$lib/components/weaponDisplay.svelte";
     import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
@@ -247,8 +246,6 @@
         <div class="weapon-display-container">
             {#if weapon !== null}
                 <WeaponDisplay {weapon} {fadeLock} />
-            {:else}
-                <LoadingGear />
             {/if}
         </div>
     </div>
@@ -260,7 +257,11 @@
         aria-label="generate new weapon button"
         disabled={weapon === null}
     >
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        {#if weapon === null}
+            <i class="loading fa-solid fa-gear"></i>
+        {:else}
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+        {/if}
     </button>
 
     {#if isLandscape.current}
@@ -387,8 +388,8 @@
 
     .back-button,
     .forward-button {
-        top: 75vh;
-        font-size: 10rem;
+        top: 70vh;
+        font-size: 7.5vw;
     }
 
     .back-button {
@@ -400,10 +401,10 @@
 
     @media (orientation: landscape) {
         .generate-button {
-            right: 1vw;
+            right: 2.5vw;
             top: 2.5vh;
 
-            font-size: 10rem;
+            font-size: 5vw;
         }
     }
     @media (orientation: portrait) {
@@ -412,6 +413,24 @@
             right: 1rem;
 
             font-size: 5rem;
+        }
+
+        .body {
+            padding-bottom: 7.5rem;
+        }
+    }
+
+    .loading {
+        animation: spin 3s infinite linear;
+    }
+
+    @keyframes spin {
+        0% {
+            rotate: 0deg;
+        }
+
+        100% {
+            rotate: 360deg;
         }
     }
 </style>
