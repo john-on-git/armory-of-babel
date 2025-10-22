@@ -5,14 +5,14 @@ declare global {
   interface Array<T> {
     /**
      * Choose a (psuedo)random element from the Array.
-     * @returns a random element from the Array.
+     * @returns a random element from the Array. If the array is empty, the behaviour is undefined.
      */
     choice: (rng: seedrandom.PRNG) => T;
   }
   interface Set<T> {
     /**
      * Choose a (psuedo)random element from the Set.
-     * @returns a random element from the Set.
+     * @returns a random element from the Set. If the Set is empty, the behaviour is undefined.
      */
     choice: (rng: seedrandom.PRNG) => T;
   }

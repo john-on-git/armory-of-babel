@@ -6,7 +6,7 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isRarity, itTheyFor, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
@@ -45,8 +45,9 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
 
         // if we fail to get a part, try to handle it gracefully
         if (targetPart !== undefined) {
+            const desc = genMaybeGen(descriptor.descriptor, rng, weapon);
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
-                desc: genMaybeGen(descriptor.descriptor, rng, weapon),
+                desc: 'quantityless' in desc ? genMaybeGen(desc.quantityless, rng, weapon) : genMaybeGen(desc[getPlurality(targetPart[1])], rng, weapon),
                 ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
             });
@@ -154,7 +155,10 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     throw new Error('failed to generate rarity');
 }
 
-export const genMaybeGen = <TOut, TArgs extends Array<unknown>>(x: TOut | ((TGenerator<TOut, TArgs>)), rng: seedrandom.PRNG, ...args: TArgs): TOut => typeof x === 'object' && x !== null && 'generate' in x ? x.generate(rng, ...args) : x;
+//export function genMaybeGen<T, TArgs extends Array<unknown>, TUnion extends T | ((TGenerator<T, TArgs>)) = T | ((TGenerator<T, TArgs>))>(x: TUnion, rng: seedrandom.PRNG, ...args: TArgs): T;
+export function genMaybeGen<T, TArgs extends Array<unknown>>(x: T | ((TGenerator<T, TArgs>)), rng: seedrandom.PRNG, ...args: TArgs): T {
+    return typeof x === 'object' && x !== null && 'generate' in x ? x.generate(rng, ...args) : x;
+}
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
@@ -273,7 +277,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // draw passive powers
     for (let i = 0; i < params.nPassive; i++) {
-        const choice = featureProviders.passivePowerOrLanguageProvider.draw(rng, weapon);
+        const choice = genMaybeGen(featureProviders.passivePowerOrLanguageProvider.draw(rng, weapon), rng, weapon);
         if (choice != undefined) {
             if ('language' in choice && weapon.sentient) {
                 weapon.sentient.languages.push(choice.desc);
@@ -320,7 +324,13 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
 
             if (choice.descriptorPartGenerator) {
-                featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
+                if (choice.descriptorPartGenerator in featureProviders.descriptorIndex) {
+
+                    featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
+                }
+                else {
+                    console.error(`feature requested the non-existent descriptor "${choice.descriptorPartGenerator}": implement this descriptor.`)
+                }
             }
         }
     }
@@ -401,9 +411,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // then, apply theme-based descriptors, up to the cap
     while (nDescriptors < MAX_DESCRIPTORS) {
-        if (weapon.rarity === 'legendary') {
-            console.log(weapon);
-        }
 
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
         applyDescriptionPartProvider(rng, descriptorProvider, weapon, structure, weapon.description);
@@ -444,7 +451,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 : pronouns === 'object' ? 'The' : pronounLoc[pronouns].singular.possessive.capFirst();
 
 
-        // get all the descriptors, merging together any chains of 'has'
+        // get all the descriptors, merging together any chains of 'has' TODO this would need to take into account has/have
         let hasChain = false;
         const descriptors: string[] = [];
         for (const descriptor of part.descriptors) {
@@ -461,7 +468,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         const materialStr = part.material === undefined ? '' : ` made of ${part.material.desc}${descriptors.length > 1
             ? ','
             : descriptors.length > 0
-                ? `, and`
+                ? `, and ${itTheyFor(partName)}`
                 : ''
             }`
 
@@ -474,24 +481,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
         usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
 
-        /**
-         * Determines whether a weapon name is singular or plural.
-         * @param name weaponpart to get name for
-         * @returns the next word in the sentence after the weapon part
-         */
-        function nextFor(name: WeaponPartName) {
-            switch (name) {
-                case 'blades':
-                case 'limbs':
-                case 'heads':
-                case 'chains':
-                    return 'are';
-                default:
-                    return 'is';
-            }
-        }
-
-        const partStr = `${start} ${partName} ${nextFor(partName)} ${materialStr}${descriptorsStr}`;
+        const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
 
         // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
         // but don't merge more than two
@@ -551,7 +541,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }))
         },
         passivePowers: weapon.passivePowers.map(power => ({
-            desc: genMaybeGen(power.desc, rng, weapon),
+            desc: power.desc,
             ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
         })),
         sentient: weapon.sentient ? {

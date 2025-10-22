@@ -175,10 +175,11 @@ export default {
             new ProviderElement('material-ice-holding',
                 {
                     generate: (rng) => {
-                        return [
+                        return genMaybeGen([
                             MATERIALS.ivory,
-                            MATERIALS.pine
-                        ].choice(rng);
+                            MATERIALS.pine,
+                            MATERIALS.coldHorn
+                        ].choice(rng), rng);
                     },
                     applicableTo: {
                         any: holdingParts
@@ -213,6 +214,33 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('material-cloud-holding',
+                {
+                    generate: (rng, weapon) => {
+                        return genMaybeGen([
+                            MATERIALS.alabaster,
+                            MATERIALS.ivory,
+                            MATERIALS.silver,
+                            MATERIALS.silverPlated,
+                            MATERIALS.aetherWood,
+                            weapon.rarity === 'legendary' ? MATERIALS.heavenlyPeachWood : MATERIALS.alabaster,
+                        ].choice(rng), rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['cloud']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
+                    }
+                }
+            ),
+
+
             new ProviderElement('material-earth-hard',
                 {
                     generate: (rng) => {
@@ -319,6 +347,30 @@ export default {
                     }
                 }
             ),
+
+            new ProviderElement('material-dark-holding',
+                {
+                    generate: (rng) => {
+                        return genMaybeGen([
+                            MATERIALS.ebonyWood,
+                            MATERIALS.darkLeather,
+                            MATERIALS.darkLeather,
+                        ].choice(rng), rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['dark']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
+                    }
+                }
+            ),
+
             new ProviderElement('material-dark-ice',
                 {
                     generate: (rng) => {
@@ -754,7 +806,7 @@ export default {
                         all: ['earth', 'cloud', 'fire']
                     }
                 }
-            )
+            ),
         ]
     },
     personalities: {
@@ -1522,15 +1574,17 @@ export default {
     },
     passives: {
         add: [
-            new ProviderElement<PassivePower, WeaponPowerCond>("detect-unholy",
-                {
-                    miscPower: true,
-                    desc: new StringGenerator([
-                        mkGen("Glows like a torch when "),
-                        pluralUnholyFoe,
-                        mkGen(" are near")
-                    ])
-                },
+            new ProviderElement("detect-unholy",
+                mkGen((rng) => {
+                    return {
+                        miscPower: true,
+                        desc: new StringGenerator([
+                            mkGen("Glows like a torch when "),
+                            pluralUnholyFoe,
+                            mkGen(" are near")
+                        ]).generate(rng)
+                    }
+                }),
                 {
 
                     themes: {
@@ -1562,11 +1616,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("focus-light-beam",
-                {
+            new ProviderElement("focus-light-beam",
+                mkGen((rng) => ({
                     miscPower: true,
-                    desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."])
-                },
+                    desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."]).generate(rng)
+                })),
                 {
 
                     themes: { any: ["light"] }
@@ -2007,63 +2061,65 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("can-fly",
-                {
-                    miscPower: true,
-                    desc: mkGen((rng, weapon) => {
-                        const reasonsToFly = {
-                            fire: new StringGenerator([
-                                "While using the weapon, you can ",
-                                mkGen((rng) => [
-                                    "use the weapon to wreathe yourself in flames. This allows you to fly for some reason",
-                                    "summon a pair of fiery wings. They allows you to fly",
-                                ].choice(rng)),
-                                ", as fast as you can walk."
-                            ]),
-                            cloud: "The weapon can magically summon a small cloud. You can use it to fly, as fast as you can walk.",
-                            earth: "The weapon contains a lodestone. You can its magnetism to fly, as fast as you can walk.",
-                            dark: new StringGenerator([
-                                "While using the weapon, you can summon ",
-                                mkGen((rng) => [
-                                    "wings of black-light",
-                                    "a pair of skeletal wings",
-                                    "a pair of demonic wings",
-                                    "a pair of dark & blood-stained angel wings",
-                                    "wings made from pure darkness"
-                                ].choice(rng)),
-                                ". They allow you to fly, as fast as you can walk."
-                            ]),
-                            light: new StringGenerator([
-                                "While using the weapon, you can summon ",
-                                mkGen((rng) => [
-                                    "wings of light",
-                                    "a pair of angel wings",
-                                ].choice(rng)),
-                                ". They allow you to fly, as fast as you can walk."
-                            ]),
-                            wizard: "You can magically levitate, as fast as you can walk.",
-                            steampunk: "The weapon can detach a series of jet-powered widgets. You can use them to fly, as fast as you can walk.",
-                            nature: new StringGenerator([
-                                "While using the weapon, you can summon a pair of ",
-                                mkGen((rng) => [
-                                    "bird",
-                                    "bat",
-                                    "butterfly",
-                                    "fairy",
-                                    "moth",
-                                    "bee",
-                                    "dragonfly",
-                                    "pterodactyl"
-                                ].choice(rng)),
-                                " wings. They allow you to fly, as fast as you can walk."
-                            ])
-                        };
-                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in reasonsToFly) as (keyof typeof reasonsToFly)[];
+            new ProviderElement("can-fly",
+                mkGen((rng, weapon) => {
+                    const reasonsToFly = {
+                        fire: new StringGenerator([
+                            "While using the weapon, you can ",
+                            mkGen((rng) => [
+                                "use the weapon to wreathe yourself in flames. This allows you to fly for some reason",
+                                "summon a pair of fiery wings. They allows you to fly",
+                            ].choice(rng)),
+                            ", as fast as you can walk."
+                        ]),
+                        cloud: "The weapon can magically summon a small cloud. You can use it to fly, as fast as you can walk.",
+                        earth: "The weapon contains a lodestone. You can its magnetism to fly, as fast as you can walk.",
+                        dark: new StringGenerator([
+                            "While using the weapon, you can summon ",
+                            mkGen((rng) => [
+                                "wings of black-light",
+                                "a pair of skeletal wings",
+                                "a pair of demonic wings",
+                                "a pair of dark & blood-stained angel wings",
+                                "wings made from pure darkness"
+                            ].choice(rng)),
+                            ". They allow you to fly, as fast as you can walk."
+                        ]),
+                        light: new StringGenerator([
+                            "While using the weapon, you can summon ",
+                            mkGen((rng) => [
+                                "wings of light",
+                                "a pair of angel wings",
+                            ].choice(rng)),
+                            ". They allow you to fly, as fast as you can walk."
+                        ]),
+                        wizard: "You can magically levitate, as fast as you can walk.",
+                        steampunk: "The weapon can detach a series of jet-powered widgets. You can use them to fly, as fast as you can walk.",
+                        nature: new StringGenerator([
+                            "While using the weapon, you can summon a pair of ",
+                            mkGen((rng) => [
+                                "bird",
+                                "bat",
+                                "butterfly",
+                                "fairy",
+                                "moth",
+                                "bee",
+                                "dragonfly",
+                                "pterodactyl"
+                            ].choice(rng)),
+                            " wings. They allow you to fly, as fast as you can walk."
+                        ])
+                    } as const;
+                    const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in reasonsToFly) as (keyof typeof reasonsToFly)[];
 
-                        const chosen = reasonsToFly[supportedThemesOfWeapon.choice(rng)];
-                        return typeof chosen === "string" ? chosen : chosen.generate(rng);
-                    }),
-                },
+                    const desc = genMaybeGen(reasonsToFly[supportedThemesOfWeapon.choice(rng)], rng);
+
+                    return {
+                        miscPower: true,
+                        desc,
+                    }
+                }
+                ),
                 {
                     themes: { any: ["cloud", "wizard"] },
                     rarity: {

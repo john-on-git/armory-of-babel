@@ -81,7 +81,7 @@ export type DeltaCollection<T extends object> = {
 }
 
 export type ToPatchableArray<T extends object> = {
-    [k in keyof T]: T[k] extends Patchable ? (T[k])[] : never;
+    [k in keyof T]: T[k] extends Delta<Patchable> ? Exclude<T[k]['add'], undefined>[number][] : never;
 }
 
 // ^^^
@@ -97,7 +97,7 @@ export type ToPatchableArray<T extends object> = {
 export class VersionController<
     TDelta extends object,
     TCollection extends DeltaCollection<TDelta> = DeltaCollection<TDelta>,
-    TOut extends ToPatchableArray<DeltaCollection<TDelta>> = ToPatchableArray<DeltaCollection<TDelta>>,
+    TOut extends ToPatchableArray<TDelta> = ToPatchableArray<TDelta>,
     TPost = TOut
 > {
     protected deltaCollections: [TCollection, ...TCollection[]];

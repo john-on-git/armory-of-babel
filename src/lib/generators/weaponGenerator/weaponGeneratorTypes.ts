@@ -195,7 +195,7 @@ export interface RechargeMethod {
 
 export interface PassivePower extends Power {
     miscPower: true;
-    desc: string | (TGenerator<string, [Weapon]>);
+    desc: string;
     bonus?: PassiveBonus;
 }
 export interface Language extends Power {
@@ -341,6 +341,11 @@ const weaponStructures = {
         holding: ['grip'],
         other: ['shaft', 'pommel']
     },
+    forkLike: {
+        business: ['prongs'],
+        holding: ['grip'],
+        other: ['shaft', 'pommel']
+    },
     bowSwordLike: {
         business: ['blades'],
         holding: ['grip'],
@@ -373,7 +378,6 @@ const weaponStructures = {
     },
 } as const satisfies Record<string, WeaponStructure>;
 
-
 const shapeToStructure = {
     "dagger": "swordLike",
     "club": 'clubLike',
@@ -402,27 +406,54 @@ const shapeToStructure = {
     "Quadruple Flail": "multiFlailLike",
     "Quintuple Flail": "multiFlailLike",
 
-} as const satisfies Record<WeaponShapeGroup | string, keyof typeof weaponStructures>
+    "Bident": "forkLike",
+    "Trident": "forkLike"
+} as const satisfies Record<WeaponShapeGroup | string, keyof typeof weaponStructures>;
 
-export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
-export type StructuredDescription = {
-    business: Record<WeaponPartName, WeaponPart>;
-    holding: Record<WeaponPartName, WeaponPart>;
-    other: Record<WeaponPartName, WeaponPart>;
-};
+/**
+ * Determines whether a weapon part is one or many.
+ * @param name weaponpart to get name for
+ * @returns the next word in the sentence after the weapon part
+ */
+export function getPlurality(name: WeaponPartName) {
+    switch (name) {
+        case 'blades':
+        case 'limbs':
+        case 'heads':
+        case 'chains':
+        case 'prongs':
+            return 'plural';
+        default:
+            return 'singular';
+    }
+}
 
-export type Ephitet = {
-    pre: string;
-} | {
-    post: string;
-};
+export function isAre(name: WeaponPartName) {
+    switch (getPlurality(name)) {
+        case 'singular':
+            return 'are';
+        case 'plural':
+            return 'is';
+    }
+}
+export function hasHave(name: WeaponPartName) {
+    switch (getPlurality(name)) {
+        case 'singular':
+            return 'has';
+        case 'plural':
+            return 'have';
+    }
+}
 
-export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & {
-    ephitet: Ephitet | TGenerator<Ephitet, [Weapon]>;
-};
-export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGenerator<Descriptor, TArgs> & {
-    applicableTo?: Quant<WeaponPartName>;
-};
+export function itTheyFor(name: WeaponPartName) {
+    switch (getPlurality(name)) {
+        case 'singular':
+            return 'they';
+        case 'plural':
+            return 'it';
+    }
+}
+
 
 
 export function structureDescFor(shape: WeaponShape) {
@@ -436,6 +467,8 @@ export function structureDescFor(shape: WeaponShape) {
             case 'Triple Flail':
             case 'Quadruple Flail':
             case 'Quintuple Flail':
+            case "Bident":
+            case "Trident":
                 return weaponStructures[shapeToStructure[shape.particular]];
             default:
                 return weaponStructures[shapeToStructure[shape.group]];
@@ -467,7 +500,40 @@ export function structureDescFor(shape: WeaponShape) {
     return [structure, structuredDesc as StructuredDescription] as const;
 }
 
-// woke up mr Freeman. woke u and smell the pronouns
+export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
+export type StructuredDescription = {
+    business: Record<WeaponPartName, WeaponPart>;
+    holding: Record<WeaponPartName, WeaponPart>;
+    other: Record<WeaponPartName, WeaponPart>;
+};
+
+export type Ephitet = {
+    pre: string;
+} | {
+    post: string;
+};
+
+/**
+ * Union type representing different kinds of description. Used to prefix the description with varying plurality.
+ * classification: claims some kind of property. It is red. It is covered in paint.
+ * possession: usually a sub-part. It has jewels in it.
+ * quantityless: singular and plural are both the same
+ */
+export type DescriptorText = {
+    singular: string | TGenerator<string, [Weapon]>;
+    plural: string | TGenerator<string, [Weapon]>;
+} | {
+    quantityless: string | TGenerator<string, [Weapon]>;
+};
+
+export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: DescriptorText }) & {
+    ephitet: Ephitet | TGenerator<Ephitet, [Weapon]>;
+};
+export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGenerator<Descriptor, TArgs> & {
+    applicableTo?: Quant<WeaponPartName>;
+};
+
+// woke up mxsterr Freethem. woke u and smell the pronouns
 export type Pronouns = 'object' | 'enby' | 'masc' | 'femm';
 type PronounsLoc = {
     singular: {
@@ -532,7 +598,7 @@ export interface FeatureProviderCollection {
     rechargeMethodProvider: WeaponFeatureProvider<RechargeMethod>;
     activePowerProvider: WeaponFeatureProvider<ActivePower>;
 
-    passivePowerOrLanguageProvider: WeaponFeatureProvider<PassivePower | Language>;
+    passivePowerOrLanguageProvider: WeaponFeatureProvider<PassivePower | TGenerator<PassivePower, [Weapon]>>;
     languageProvider: WeaponFeatureProvider<Language>;
 }
 
@@ -545,7 +611,7 @@ export interface WeaponFeaturesTypes {
     rechargeMethods: ProviderElement<RechargeMethod>;
     actives: ProviderElement<ActivePower>;
 
-    passives: ProviderElement<PassivePower>;
+    passives: ProviderElement<PassivePower | TGenerator<PassivePower, [Weapon]>>;
     languages: ProviderElement<Language>;
     shapes: ProviderElement<WeaponShape>;
 }

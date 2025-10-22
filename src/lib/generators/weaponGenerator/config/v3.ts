@@ -1,15 +1,266 @@
-import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { edgedWeaponShapeFamilies } from "$lib/generators/weaponGenerator/config/configConstants";
+import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { edgedWeaponShapeFamilies, importantPart } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { mkWepToGen, textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { ActivePower, DamageDice, PassivePower, Theme, WeaponFeaturesTypes, WeaponPowerCond, WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { genMaybeGen, mkWepToGen, textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { ActivePower, DamageDice, PassivePower, Theme, Weapon, WeaponFeaturesTypes, WeaponPowerCond, WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import type { DeltaCollection } from "$lib/util/versionController";
 import _ from "lodash";
-import type seedrandom from "seedrandom";
 
 export default {
     themes: {},
-    descriptors: {},
+    descriptors: {
+
+        /*TODO
+ 
+            energy-core-void
+            energy-core-fire
+            energy-core-ice
+            energy-core-ultraviolet
+
+            energy-core-azure
+            energy-core-crimson
+            energy-core-verdant
+            energy-core-atomic
+
+            energy-core-gold
+            energy-core-dark
+            energy-core-aether
+            energy-core-steampunk
+        */
+        add: [
+            new ProviderElement('energy-core-void',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-fire',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-ice',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-ultraviolet',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-azure',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-crimson',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-verdant',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-atomic',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-gold',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-dark',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-aether',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: { singular: '', plural: '' },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-steampunk',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                singular: 'has a glass section running down the center, which crackles with electrical energy',
+                                plural: 'each have glass sections running down their center, which crackles with electrical energ'
+                            },
+                            ephitet: { pre: '' },
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by passive power "death blast"
+                     */
+                    never: true
+                }
+            ),
+        ]
+    },
     personalities: {},
     rechargeMethods: {},
     actives: {
@@ -324,62 +575,95 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>(
-                `death-blast`,
-                {
-                    miscPower: true,
+            new ProviderElement<TGenerator<PassivePower, [Weapon]>, WeaponPowerCond>(
+                "death-blast",
+                mkGen<PassivePower, [Weapon]>((rng, weapon) => {
+                    type WeaponEnergyEffect = {
+                        /**
+                         * Text for the effect.
+                         */
+                        desc: string,
+                        /**
+                         * UUID of the feature that should be added to the weapon, if any.
+                         */
+                        featureUUID?: string,
+                    };
+                    const weaponEnergyEffect = mkGen((rng, weapon: Weapon): WeaponEnergyEffect => {
+                        const fallBack = {
+                            desc: 'void energy',
+                            featureUUID: 'energy-core-void'
+                        } satisfies WeaponEnergyEffect;
 
-                    desc: mkGen((rng, weapon) => {
-                        const cloudOrSteampunkEffect = () => ['lightning', 'steam'].choice(rng)
                         const effects = {
-                            fire: 'fire',
-                            ice: 'icy wind',
-                            light: (rng: seedrandom.PRNG) => ([
+                            fire: {
+                                desc: 'fire',
+                                featureUUID: 'energy-core-fire'
+                            },
+                            ice: {
+                                desc: 'icy wind',
+                                featureUUID: 'energy-core-ice'
+                            },
+                            light: mkGen<WeaponEnergyEffect>((rng) => (([
                                 {
-                                    pred: () => weapon.name.includes('Amethyst'),
-                                    str: 'ultraviolet energy'
+                                    desc: 'ultraviolet energy',
+                                    featureUUID: 'energy-core-ultraviolet'
                                 },
                                 {
-                                    pred: () => weapon.name.includes('Sapphire') || weapon.name.includes('Cobalt'),
-                                    str: 'azure energy'
+                                    desc: 'azure energy',
+                                    featureUUID: 'energy-core-azure'
                                 },
                                 {
-                                    pred: () => weapon.name.includes('Ruby'),
-                                    str: 'crimson energy'
+                                    desc: 'crimson energy',
+                                    featureUUID: 'energy-core-crimson'
                                 },
                                 {
-                                    pred: () => weapon.name.includes('Emerald'),
-                                    str: 'verdant energy'
+                                    desc: 'verdant energy',
+                                    featureUUID: 'energy-core-verdant'
                                 },
                                 {
-                                    pred: () => weapon.name.includes('Radium'),
-                                    str: 'atomic energy'
+                                    desc: 'atomic energy',
+                                    featureUUID: 'energy-core-atomic'
                                 },
                                 {
-                                    pred: () => weapon.name.includes('Gold'),
-                                    str: 'golden energy'
+                                    desc: 'golden energy',
+                                    featureUUID: 'energy-core-gold'
                                 },
-                            ] as { pred: () => boolean, str: string }[]).filter(x => x.pred()).map(x => x.str).choice(rng),
-                            dark: 'dark energy',
-                            cloud: cloudOrSteampunkEffect,
-                            steampunk: cloudOrSteampunkEffect
-                        }
-                        const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
-                            common: "1d6",
-                            uncommon: "1d6",
-                            rare: "1d6",
-                            epic: "1d6",
-                            legendary: "2d6"
-                        }
+                            ] satisfies WeaponEnergyEffect[])).choice(rng)),
+                            dark: {
+                                desc: 'dark energy',
+                                featureUUID: 'energy-core-dark'
+                            },
+                            cloud: {
+                                desc: 'lightning',
+                                featureUUID: 'energy-core-aether'
+                            },
+                            steampunk: {
+                                desc: 'lightning',
+                                featureUUID: 'energy-core-steampunk'
+                            },
+                        } satisfies Partial<Record<Theme, WeaponEnergyEffect | TGenerator<WeaponEnergyEffect, [Weapon]>>>;
 
                         const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
+                        return genMaybeGen(effects[supportedThemesOfWeapon.choice(rng)], rng) ?? fallBack;
+                    });
 
-                        const chosen = effects[supportedThemesOfWeapon.choice(rng)];
-                        const effect = typeof chosen === "string" ? chosen : chosen(rng)
+                    const { desc, featureUUID } = weaponEnergyEffect.generate(rng, weapon);
 
-                        return `Anything killed by the weapon explodes in a blast of ${effect}. The blast deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`;
-                    })
-                },
+                    const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
+                        common: "1d6",
+                        uncommon: "1d6",
+                        rare: "1d6",
+                        epic: "1d6",
+                        legendary: "2d6"
+                    }
+
+                    return {
+                        miscPower: true,
+
+                        desc: `Anything killed by the weapon explodes in a blast of ${desc}.The blast deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`,
+                        descriptorPartGenerator: featureUUID
+                    }
+                }),
                 {
                     themes: { any: ['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk'] },
                     rarity: { gte: 'epic' }
