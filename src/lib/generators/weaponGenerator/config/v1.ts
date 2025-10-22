@@ -1,10 +1,10 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type DescriptorGenerator, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type DescriptorGenerator, type DescriptorType, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -46,6 +46,149 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            new ProviderElement('descriptor-damage-bonus-wizard',
+                {
+                    yields: 'feature',
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` glows with arcane energy`,
+                            plural: ` glows with arcane energy`,
+                            ephitet: mkGen((rng) => ephWizard.choice(rng)),
+                        }
+                    }),
+                    applicableTo: { any: counterAcceptingParts }
+                },
+                /**
+                 * Can only be added by the passive power "damage-bonus-wizard"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('descriptor-damage-bonus-dark',
+                {
+                    yields: 'feature',
+                    generate: (rng, weapon) => {
+                        const both = [
+                            {
+                                descType: 'property',
+                                singular: ` leaves a wake of pure darkness behind it`,
+                                plural: ` leave a wake of pure darkness behind them`,
+                            } as const
+                        ];
+
+                        const edged = [
+                            ...both
+                        ];
+
+                        const blunt = [
+                            ...both
+                        ];
+
+                        const chosen = edgedWeaponShapeFamilies.includes(weapon.shape.particular as (typeof edgedWeaponShapeFamilies)[number])
+                            ? edged.choice(rng)
+                            : blunt.choice(rng);
+
+                        return {
+                            descriptor: {
+                                ...chosen,
+                                ephitet: mkGen((rng) => ephBlack.choice(rng)),
+                            }
+                        }
+                    },
+                    applicableTo: { any: businessEndParts }
+                },
+                /**
+                 * Can only be added by the passive power "damage-bonus-dark"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('descriptor-damage-bonus-light',
+                {
+                    yields: 'feature',
+                    generate: (rng, weapon) => {
+
+                        // attempt to link up with the weapon's energy core to get a more specific descriptor.
+                        // only use the core type if it's a kind of energy, otherwise default to an unspecified kind of energy
+                        const core = linkWithEnergyCore(rng, weapon);
+                        const energyType = core?.desc.endsWith("energy") ? core.desc : "pure energy";
+
+                        const both = [
+                            {
+                                descType: 'property',
+                                singular: ` leaves a wake of ${energyType} behind it`,
+                                plural: ` leave a wake of ${energyType} behind them`,
+                            } as const
+                        ];
+
+                        const edged = [
+                            {
+                                descType: 'possession',
+                                singular: ` a ribbon of ${energyType} running along the edge`,
+                                plural: ` ribbons of ${energyType} running along the edges`,
+                            } as const,
+                            ...both
+                        ];
+
+                        const blunt = [
+                            {
+                                descType: 'property',
+                                singular: ` is circled by rings of ${energyType}`,
+                                plural: ` are circled by rings of ${energyType}`,
+                            } as const,
+                            ...both
+                        ];
+
+                        const chosen = edgedWeaponShapeFamilies.includes(weapon.shape.particular as (typeof edgedWeaponShapeFamilies)[number])
+                            ? edged.choice(rng)
+                            : blunt.choice(rng);
+
+                        return {
+                            descriptor: {
+                                ...chosen,
+                                ephitet: mkGen((rng) => ephBlack.choice(rng)),
+                            }
+                        }
+                    },
+                    applicableTo: { any: businessEndParts }
+                },
+                /**
+                 * Can only be added by the passive power "damage-bonus-light"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('defender-part',
+                {
+                    yields: 'feature',
+                    generate: (rng) => {
+                        const partials = [
+                            {
+                                descType: 'property',
+                                singular: " is surronded by a subtle field of shimmering air",
+                                plural: " are surrounded by a subtle field of shimmering air"
+                            },
+                            {
+                                descType: 'possession',
+                                singular: " a spectral shield hovering just above it",
+                                plural: " small spectral shields hovering just above them"
+                            }
+                        ] as const satisfies { descType: DescriptorType; singular: string; plural: string; }[];
+
+                        const choice = partials.choice(rng);
+
+                        return {
+                            descriptor: {
+                                ...choice,
+                                ephitet: mkGen((rng) => [{ pre: `Aegis` }, { pre: `Defender's` }, { post: `of the Watchtower`, alliteratesWith: 'W' }].choice(rng)),
+                            }
+                        };
+                    },
+                    applicableTo: { any: [...holdingParts, 'crossguard', 'maceHeads'] }
+                },
+                /**
+                 * Can only be added by the passive power "defender"
+                 */
+                { never: true }
+            ),
             new ProviderElement('forced-celestial-wizard-coating',
                 {
                     yields: 'feature',
@@ -408,7 +551,7 @@ export default {
                             descriptor: {
                                 descType: 'property',
                                 singular: " hurts to look at. When it moves it leaves behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles",
-                                plural: " hurt to look at. When they move it leaves  behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles"
+                                plural: " hurt to look at. When they move it leaves behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles"
                             },
                             ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
                         }
@@ -1789,6 +1932,21 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("pin-to-wall",
+                mkGen((_, weapon) => ({
+                    desc: "Wrap",
+                    cost: 1,
+                    additionalNotes: [
+                        `Upon a hit, you ${weapon.sentient ? "signal" : "will"} the weapon to bind the target.`,
+                        `Its shaft coils around the target${weapon.themes.includes('nature') ? " like a snake, binding" : "'s body to bind"} them in place.`,
+                        "They may save at the end of each of their turns to break free of the weapon."
+                    ],
+                    ...(weapon.themes.includes('nature') ? { descriptorPartGenerator: 'carved-resembling-python' } : {})
+                })),
+                {
+                    shapeFamily: { any: ['spear'] },
+                }
+            ),
             new ProviderElement("chaos-cast",
                 {
                     desc: "Chaos Cast",
@@ -1928,7 +2086,7 @@ export default {
                 mkGen((rng, weapon) => {
 
                     const damage = textForDamage(modDamage(weapon.damage, x => 2 * x));
-                    const core = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire' | 'ice' | 'light' | 'dark' | 'wizard' | 'cloud' | 'steampunk']>, rng);
+                    const core = pickOrLinkWithEnergyCore(rng, weapon);
 
                     const projectileByTheme = {
                         ice: "a snowflake shuriken",
@@ -2129,7 +2287,16 @@ export default {
                         light: [`light surrounds ${getBusinessEndDesc(weapon.shape)}`],
                         dark: [`shadowy tentacles burst from ${getBusinessEndDesc(weapon.shape)}`, `shadows coil around ${getBusinessEndDesc(weapon.shape)}`],
                         sweet: ["the power of friendship surges within you", `molten caramel whips around ${getBusinessEndDesc(weapon.shape)}`, `magical hearts whip around ${getBusinessEndDesc(weapon.shape)}`, `magical stars whip around ${getBusinessEndDesc(weapon.shape)}`],
-                        sour: [pointedWeaponShapes.includes(weapon.shape.particular as (typeof pointedWeaponShapes)[number]) ? "the weapon injects acid into the target" : "acid oozes from the weapon's surface"],
+                        sour: [(() => {
+                            switch (get5eDamageType(weapon.shape)) {
+                                case "bludgeoning":
+                                    return "acid oozes from the weapon's surface";
+                                case "piercing":
+                                    return "the weapon injects acid into the target";
+                                case "slashing":
+                                    return "acid flows around the weapon's edge";
+                            }
+                        })()],
                         wizard: ["arcane power surges through the weapon"],
                         steampunk: ["the weapon produces an explosive blast", "the weapon produces a blast of steam"],
                         nature: [(() => {
@@ -2926,7 +3093,7 @@ export default {
                         cost: 1,
                         additionalNotes: [
                             `${chosen.hookAct}. It can stay attached to the weapon at one end, or detach to link two objects together.`,
-                            `${chosen.hookPluralCap} can be up to 50-ft long and are as strong as steel.`,
+                            `${chosen.hookPluralCap} can be up to 50-ft long${chosen.hookPluralCap === "Hooks" ? "" : " and are as strong as steel"}.`,
                             "Hitting a moving target such as a foe is difficult, it requires an attack at -10 to hit."
                         ]
                     };
@@ -3212,12 +3379,22 @@ export default {
                 }
             }
             ),
-            new ProviderElement('acid-etch', {
-                desc: 'Spray',
-                cost: 1,
-                additionalNotes: ["The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",]
-            }, {
-                themes: { any: ['sour'] }
+            new ProviderElement('source-spray',
+                mkGen((rng, weapon) => {
+                    const notesByTheme = {
+                        sour: ["The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface."],
+                        earth: ["The weapon sprays colored chalk powder in a precise pattern, painting an image of your choice onto a surface."],
+                        light: ["The weapon projects magical rays, which impress an image of your choice onto a surface. It remains in place until it's wiped off."]
+                    } as const satisfies Partial<Record<Theme, string[]>>;
+                    const additionalNotes = pickForTheme(weapon, notesByTheme, rng)?.chosen ?? notesByTheme['sour'];
+
+                    return {
+                        desc: 'Spray',
+                        cost: 1,
+                        additionalNotes
+                    }
+                }), {
+                themes: { any: ['sour', 'earth', 'light'] }
             }),
             new ProviderElement('radial-slam', {
                 desc: 'Slam',
@@ -3262,7 +3439,7 @@ export default {
             new ProviderElement('gravity-gun',
                 mkGen((rng, weapon) => {
 
-                    const coreChoice = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['light' | 'fire' | 'nature' | 'cloud']>, rng);
+                    const coreChoice = pickOrLinkWithEnergyCore(rng, weapon);
 
                     const effects = {
                         ice: `The weapon emits a vortex of ${coreChoice.desc}`,
@@ -3304,7 +3481,7 @@ export default {
                 cost: 1,
                 additionalNotes: [
                     'Targets one non-hostile character.',
-                    'For the rest of the day, their morale cannot break.'
+                    'For the rest of the day they cannot feel fear, and their morale cannot break.'
                 ]
             }, {
                 themes: {
@@ -3388,6 +3565,111 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("damage-bonus-wizard",
+                {
+                    miscPower: true,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-damage-bonus-wizard'
+                },
+                {
+                    themes: { any: ["wizard"] },
+                }
+            ),
+            new ProviderElement("damage-bonus-lightning",
+                {
+                    miscPower: true,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                },
+                {
+                    themes: { any: ["cloud"] },
+                }
+            ),
+            new ProviderElement("damage-bonus-dark",
+                {
+                    miscPower: true,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-damage-bonus-dark'
+                },
+                {
+                    themes: { any: ["dark"] },
+                    UUIDs: { none: ['damage-bonus-dark-fire'] }
+                }
+            ),
+            new ProviderElement("damage-bonus-light",
+                {
+                    miscPower: true,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-damage-bonus-light'
+                },
+                {
+                    themes: { any: ["light"] },
+                }
+            ),
+            new ProviderElement("damage-bonus-fire",
+                {
+                    miscPower: true,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-wreathed-fire'
+                },
+                {
+
+                    themes: { any: ["fire"] },
+                    UUIDs: { none: ['damage-bonus-dark-fire', 'damage-bonus-ice-sharp', 'damage-bonus-ice-blunt'] }
+                }
+            ),
+            new ProviderElement("damage-bonus-dark-fire",
+                {
+                    miscPower: true,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-wreathed-dark-fire'
+                },
+                {
+                    themes: { any: ["dark"] },
+                    UUIDs: { none: ['damage-bonus-fire', 'damage-bonus-ice-sharp', 'damage-bonus-ice-blunt', 'damage-bonus-dark'] }
+                }
+            ),
+            new ProviderElement("damage-bonus-ice-blunt",
+                {
+                    miscPower: true,
+                    desc: undefined,
+                    bonus: {
+                        addDamageDie: { d6: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-wreathed-ice'
+                },
+                {
+                    themes: { any: ["ice"] },
+                    shapeFamily: { none: swordlikeWeaponShapeFamilies },
+                    UUIDs: { none: ['damage-bonus-fire', 'damage-bonus-dark-fire', 'damage-bonus-ice-sharp'] }
+                }
+            ),
+            new ProviderElement("damage-bonus-ice-sharp",
+                {
+                    miscPower: true,
+                    desc: "Wreathed in ice, always frozen into its sheath. It requires a strength save to draw.",
+                    bonus: {
+                        addDamageDie: { d10: 1 }
+                    },
+                    descriptorPartGenerator: 'descriptor-wreathed-ice'
+                },
+                {
+                    themes: { any: ["ice"] },
+                    shapeFamily: { any: swordlikeWeaponShapeFamilies },
+                    UUIDs: { none: ['damage-bonus-fire', 'damage-bonus-dark-fire', 'damage-bonus-ice-blunt'] }
+                }
+            ),
             new ProviderElement("acrobatic-tool",
                 mkGen((_, weapon) => {
                     const bonusByRarity = {
@@ -3533,7 +3815,7 @@ export default {
                 mkGen((_rng) => {
                     return {
                         miscPower: true,
-                        desc: `If you are within melee range of an ally wielding a polearm, both of you gain an effective bonus to your armor equivalent to using a shield.`,
+                        desc: `If you are within melee range of an ally wielding a polearm, both of you gain the same benefits as you would from wielding a shield.`,
                     }
                 }),
                 {
@@ -3794,24 +4076,6 @@ export default {
                     rarity: { gte: "rare" }
                 }
             ),
-            new ProviderElement("damage-bonus-fire",
-                {
-                    miscPower: true,
-                    bonus: {
-                        addDamageDie: {
-                            d6: 1
-                        }
-                    },
-                    descriptorPartGenerator: 'descriptor-wreathed-fire'
-                },
-                {
-
-                    themes: { any: ["fire"] },
-                    UUIDs: {
-                        none: ['damage-bonus-dark-fire', 'damage-bonus-ice-sharp', 'damage-bonus-ice-blunt']
-                    }
-                }
-            ),
             new ProviderElement("expertise-blacksmithing",
                 {
 
@@ -3846,58 +4110,6 @@ export default {
                 {
 
                     themes: { any: ["ice"] }
-                }
-            ),
-            new ProviderElement("damage-bonus-ice-blunt",
-                {
-                    miscPower: true,
-                    desc: undefined,
-                    bonus: {
-                        addDamageDie: {
-                            d6: 1
-                        }
-                    },
-                    descriptorPartGenerator: 'descriptor-wreathed-ice'
-                },
-                {
-
-                    themes: { any: ["ice"] },
-                    shapeFamily: {
-                        none: [
-                            "dagger",
-                            "sword",
-                            "greatsword"
-                        ]
-                    },
-                    UUIDs: {
-                        none: ['damage-bonus-fire', 'damage-bonus-dark-fire', 'damage-bonus-ice-sharp']
-                    }
-                }
-            ),
-            new ProviderElement("damage-bonus-ice-sharp",
-                {
-                    miscPower: true,
-                    desc: "Wreathed in ice, always frozen into its sheath. Requires a strength save to draw.",
-                    bonus: {
-                        addDamageDie: {
-                            d10: 1
-                        }
-                    },
-                    descriptorPartGenerator: 'descriptor-wreathed-ice'
-                },
-                {
-
-                    themes: { any: ["ice"] },
-                    shapeFamily: {
-                        any: [
-                            "dagger",
-                            "sword",
-                            "greatsword"
-                        ]
-                    },
-                    UUIDs: {
-                        none: ['damage-bonus-fire', 'damage-bonus-dark-fire', 'damage-bonus-ice-blunt']
-                    }
                 }
             ),
             new ProviderElement("sense-cold-weather",
@@ -3958,23 +4170,6 @@ export default {
                     themes: { any: ["dark"] },
                     rarity: { gte: 'rare' },
                     UUIDs: { none: ['traps-souls'] }
-                }
-            ),
-            new ProviderElement("damage-bonus-dark-fire",
-                {
-                    miscPower: true,
-                    bonus: {
-                        addDamageDie: {
-                            d6: 1
-                        }
-                    },
-                    descriptorPartGenerator: 'descriptor-wreathed-dark-fire'
-                },
-                {
-                    themes: { any: ["dark"] },
-                    UUIDs: {
-                        none: ['damage-bonus-fire', 'damage-bonus-ice-sharp', 'damage-bonus-ice-blunt']
-                    }
                 }
             ),
             new ProviderElement("resistance-radiant",
@@ -4302,7 +4497,8 @@ export default {
 
                     return {
                         miscPower: true,
-                        desc: `Wielding the weapon confers the same benefits as wielding a ${qualityByRarity[weapon.rarity]}shield.`
+                        desc: `Wielding the weapon confers the same benefits as wielding a ${qualityByRarity[weapon.rarity]}shield.`,
+                        descriptorPartGenerator: 'defender-part'
                     };
                 }),
                 {
@@ -4443,7 +4639,7 @@ export default {
             new ProviderElement<Generator<PassivePower, [Weapon]>, WeaponPowerCond>(
                 "death-blast",
                 mkGen<PassivePower, [Weapon]>((rng, weapon) => {
-                    const { desc, featureUUID: featureUUID } = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk']>, rng);
+                    const { desc, featureUUID: featureUUID } = pickOrLinkWithEnergyCore(rng, weapon);
 
                     const damageByRarity = {
                         common: "1d6",

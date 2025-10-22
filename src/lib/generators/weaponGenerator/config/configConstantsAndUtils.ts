@@ -895,7 +895,7 @@ export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'q
 /**
  * Parts of a weapon that visual indicators of a resource can go on.
  */
-export const counterAcceptingParts = ['blade', 'body', 'shaft', 'spearShaft', 'maceHead', 'maceHeads', 'blades', 'limbs'] as const satisfies WeaponPartName[];
+export const counterAcceptingParts = ['blade', 'body', 'shaft', 'spearShaft', 'maceHead', 'maceHeads', 'blades', 'limbs', 'base'] as const satisfies WeaponPartName[];
 
 export const counterCapacityByRarity = {
     common: 2,
@@ -919,15 +919,8 @@ type GroupElement = {
      */
     featureUUID: string;
 };
-/**
- * This function that enables descriptors to coordinate with other similar descriptors that may already be on a weapon.
- * @param source 
- * @parma maxInGroup ther
- * @param weapon 
- * @param rng 
- * @returns 
- */
-export function pickOrLinkWithElement<TElem extends GroupElement = { featureUUID: string }, TTheme extends Theme = Theme, TSource extends Record<TTheme, TElem | TElem[]> = Record<TTheme, TElem | TElem[]>,>(source: TSource, maxInGroup: number, fallback: TElem, weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): TElem & { theme: keyof TSource | 'void' } {
+
+export function linkWithElement<TElem extends GroupElement = { featureUUID: string }, TTheme extends Theme = Theme, TSource extends Record<TTheme, TElem | TElem[]> = Record<TTheme, TElem | TElem[]>,>(source: TSource, maxInGroup: number, weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (TElem & { theme: keyof TSource | 'void' }) | undefined {
 
     function tryGetExisting(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>): (TElem & { theme: TTheme })[] {
         const flatElem = [];
@@ -946,6 +939,21 @@ export function pickOrLinkWithElement<TElem extends GroupElement = { featureUUID
 
         return flatElem.filter(x => weaponUUIDs.has(x.featureUUID));
     }
+    const existing = tryGetExisting(weapon);
+
+    return existing.length >= maxInGroup ? existing.choice(rng) : undefined;
+}
+
+
+/**
+ * This function that enables descriptors to coordinate with other similar descriptors that may already be on a weapon.
+ * @param source 
+ * @parma maxInGroup ther
+ * @param weapon 
+ * @param rng 
+ * @returns 
+ */
+export function pickOrLinkWithElement<TElem extends GroupElement = { featureUUID: string }, TTheme extends Theme = Theme, TSource extends Record<TTheme, TElem | TElem[]> = Record<TTheme, TElem | TElem[]>,>(source: TSource, maxInGroup: number, fallback: TElem, weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): TElem & { theme: keyof TSource | 'void' } {
 
     function getNewCore(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (TElem & { theme: TTheme | 'void' }) {
         const { chosen, theme } = pickForTheme(weapon, source, rng);
@@ -953,13 +961,10 @@ export function pickOrLinkWithElement<TElem extends GroupElement = { featureUUID
         return { ...(chosenOrFallBack instanceof Array ? chosenOrFallBack.choice(rng) : chosenOrFallBack), theme: theme ?? 'void' };
     }
 
-    // get all the existing elements
-    const existing = tryGetExisting(weapon);
-
     /* If the number of elements in this group that are already present on the weapon is at-or-over the maximum, pick one of the existing ones.
      * Otherwise generate a new one.
      */
-    return existing.length >= maxInGroup ? existing.choice(rng) : getNewCore(weapon, rng);
+    return linkWithElement<TElem, TTheme>(source, maxInGroup, weapon, rng) ?? getNewCore(weapon, rng);
 }
 
 
@@ -971,7 +976,7 @@ interface WeaponEnergyCore extends GroupElement {
     /**
      * Descriptor for the effect, for power descriptions.
      * @example
-     * "ultraviolet energy", "ice wind", "fire"
+     * "ultraviolet energy", "icy wind", "fire"
      */
     desc: string;
 };
@@ -1060,7 +1065,7 @@ export type PossibleCoreThemes = keyof typeof cores;
 /**
  * If the weapon already has an energy core, get that one. Otherwise roll one at random.
  */
-export function pickOrLinkWithEnergyCore(weapon: WeaponGivenThemes<[keyof typeof cores, ...(keyof typeof cores)[]]>, rng: PRNG) {
+export function pickOrLinkWithEnergyCore(rng: PRNG, weapon: Weapon) {
     const fallback = {
         adj: 'Void',
         desc: 'void energy',
@@ -1068,5 +1073,40 @@ export function pickOrLinkWithEnergyCore(weapon: WeaponGivenThemes<[keyof typeof
     } as const satisfies WeaponEnergyCore;
 
 
-    return pickOrLinkWithElement<WeaponEnergyCore, keyof typeof cores>(cores, 1, fallback, weapon, rng)
+    return pickOrLinkWithElement<WeaponEnergyCore, keyof typeof cores>(cores, 1, fallback, weapon as WeaponGivenThemes<[keyof typeof cores, ...(keyof typeof cores)[]]>, rng)
+}
+/**
+ * If the weapon already has an energy core, get that one. Otherwise return undefined.
+ */
+export function linkWithEnergyCore(rng: PRNG, weapon: Weapon) {
+    return linkWithElement<WeaponEnergyCore, keyof typeof cores>(cores, 1, weapon as WeaponGivenThemes<[keyof typeof cores, ...(keyof typeof cores)[]]>, rng)
+}
+
+/**
+ * Get the damage type of a weapon in 5e, since I seem to do this a lot.
+ * @param weaponShape shape of the weapon to get the damage type for
+ * @returns string for the damage type the weapon would have in 5e
+ */
+export function get5eDamageType(weaponShape: Weapon['shape']) {
+    switch (weaponShape.group) {
+        case "staff":
+        case "club":
+        case "greatclub":
+        case "mace":
+            return 'bludgeoning';
+        case "spear":
+        case "lance":
+            return 'piercing';
+        case "dagger":
+        case "dagger (or pistol)":
+        case "sword":
+        case "sword (or bow)":
+        case "sword (or musket)":
+        case "greatsword":
+        case "axe":
+        case "greataxe":
+        case "greataxe (or musket)":
+        case "polearm":
+            return "slashing";
+    }
 }
