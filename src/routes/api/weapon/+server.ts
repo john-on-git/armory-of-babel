@@ -23,19 +23,19 @@ export interface GenerateWeaponResponse {
     n: number;
 }
 
-function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponRequest {
-    const asReq = maybeReq as GenerateWeaponRequest;
-
+function isGenerateWeaponRequest(x: unknown): x is GenerateWeaponRequest {
     return (
+        // not null object
+        typeof x === 'object' && x !== null &&
         // only expected keys
-        'id' in asReq && 'v' in asReq && Object.keys(asReq).length === 2 &&
+        'id' in x && 'v' in x && Object.keys(x).length === 2 &&
         // type of id is correct
-        typeof (asReq.id) === 'string' && asReq.id !== '' &&
+        typeof (x.id) === 'string' && x.id !== '' &&
         // type of v is correct
-        typeof asReq.v === 'number' &&
-        !Number.isNaN(asReq.v) && Number.isFinite(asReq.v) &&
+        typeof x.v === 'number' &&
+        !Number.isNaN(x.v) && Number.isFinite(x.v) &&
         // v is a supported version
-        asReq.v >= 0 && asReq.v <= LATEST_VERSION_NUM
+        x.v >= 0 && x.v <= LATEST_VERSION_NUM
     );
 }
 
@@ -52,7 +52,7 @@ export async function GET({ request }: { request: Request, }) {
     }
 
     // respond to the request if it's valid under the type-guard, otherwise respond bad req
-    if (isGenerateWeaponRequest(weaponRequest)) {
+    if (params.size === 2 && isGenerateWeaponRequest(weaponRequest)) {
 
         // generate the weapon, and silence logging if we are not in dev
         const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, getFeatureProviderForVersion(weaponRequest.v), undefined, !dev);
