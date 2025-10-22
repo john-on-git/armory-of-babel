@@ -4,7 +4,7 @@ import '$lib/util/string';
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
     function textForDamageKey(k: string, v: string | number | undefined): string {
@@ -48,7 +48,7 @@ export function toLang(theme: Theme, lang: string): ProviderElement<Language, We
         lang.replaceAll(/\s/g, '-').toLowerCase(),
         { language: true, desc: lang }, {
         themes: {
-            any: new Set([theme])
+            any: [theme]
         }
     });
 }
@@ -311,7 +311,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 0 : x.cost, acc), weapon.active.maxCharges);
 
     // generate the weapon's parts
-    //const structure = structureFor(weapon.shape.group);
+    const structure = structureFor(weapon.shape.group);
     /** 
         Generate the weapon's description based on its parts.
         Ideas (???)
@@ -325,7 +325,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         • Each part should be guaranteed at least one feature & material. Nah, kinda too much going on.
     */
 
-    //const MAX_DESCRIPTORS = 5;
+    const MAX_DESCRIPTORS = 5;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
 

@@ -17,7 +17,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['ice'])
+                    any: ['ice']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('rally-person', {
@@ -29,7 +29,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['light', 'steampunk'])
+                    any: ['light', 'steampunk']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('homing-shot', {
@@ -40,7 +40,7 @@ export default {
                 ]
             }, {
                 shapeFamily: {
-                    any: new Set(['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)'])
+                    any: ['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('binding-shot', {
@@ -51,9 +51,9 @@ export default {
                     'They are stuck in place until they use their turn to successfully save and escape.'
                 ]
             }, {
-                themes: { any: new Set(['nature', 'ice']) },
+                themes: { any: ['nature', 'ice'] },
                 shapeFamily: {
-                    any: new Set(['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)'])
+                    any: ['sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('black-flame-blast', {
@@ -64,7 +64,7 @@ export default {
                     'Damage inflicted by black flames can only be healed by magic.'
                 ]
             }, {
-                themes: { all: new Set(['dark', 'fire']) }
+                themes: { all: ['dark', 'fire'] }
             })
         ]
     },
@@ -77,7 +77,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: new Set(['light'])
+                        any: ['light']
                     },
                     rarity: {
                         gte: 'epic'

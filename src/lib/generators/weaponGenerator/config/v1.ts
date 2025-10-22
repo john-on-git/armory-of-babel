@@ -1,6 +1,5 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { sharpWeaponShapeFamilies } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -68,7 +67,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: new Set(["fire", "ice", "dark", "sweet"])
+                        any: ["fire", "ice", "dark", "sweet"]
                     },
 
                 }
@@ -79,7 +78,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: new Set(["sour", "dark"])
+                        any: ["sour", "dark"]
                     },
 
                 }
@@ -90,7 +89,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: new Set(["wizard", "steampunk", "cloud"])
+                        any: ["wizard", "steampunk", "cloud"]
                     },
 
                 }
@@ -101,7 +100,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: new Set(["wizard", "steampunk"])
+                        any: ["wizard", "steampunk"]
                     },
 
                 }
@@ -185,7 +184,7 @@ export default {
                         desc: formatted
                     },
                     {
-                        themes: { all: new Set([theme as Theme]) },
+                        themes: { all: [theme as Theme] },
                     }
                 )
             })
@@ -200,7 +199,7 @@ export default {
                 {
 
                     themes: {
-                        any: new Set(["ice", "nature"])
+                        any: ["ice", "nature"]
                     }
                 }
             ),
@@ -211,7 +210,7 @@ export default {
                 {
 
                     themes: {
-                        any: new Set(["fire", "nature"])
+                        any: ["fire", "nature"]
                     }
                 }
             ),
@@ -280,7 +279,7 @@ export default {
                         desc: () => x
                     },
                     {
-                        themes: { any: new Set([theme as Theme]) }
+                        themes: { any: [theme as Theme] }
                     }
                 ))
         ]
@@ -302,7 +301,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: new Set(["nature"]),
+                        any: ["nature"],
                     }
                 }
             ),
@@ -310,7 +309,7 @@ export default {
                 "fireball",
                 { desc: "Fire Ball", cost: 4 },
                 {
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
@@ -322,7 +321,7 @@ export default {
                     cost: 4
                 },
                 {
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
@@ -336,7 +335,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
@@ -350,7 +349,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
@@ -364,7 +363,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -375,7 +374,7 @@ export default {
                     cost: 4,
                 },
                 {
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     rarity: {
                         gte: "rare"
                     }
@@ -389,7 +388,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     rarity: {
                         lte: "rare"
                     }
@@ -403,7 +402,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     rarity: {
                         lte: "rare"
                     }
@@ -417,7 +416,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -429,7 +428,7 @@ export default {
                     cost: 2,
                 },
                 {
-                    themes: { any: new Set(["dark"]) },
+                    themes: { any: ["dark"] },
                     rarity: {
                         gte: "uncommon"
                     }
@@ -441,7 +440,7 @@ export default {
                     cost: 2,
                 },
                 {
-                    themes: { any: new Set(["dark"]) },
+                    themes: { any: ["dark"] },
                     rarity: {
                         gte: "uncommon"
                     }
@@ -453,7 +452,7 @@ export default {
                     cost: 1
                 },
                 {
-                    themes: { any: new Set(["dark"]) },
+                    themes: { any: ["dark"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-demon",
@@ -465,7 +464,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["dark"]) },
+                    themes: { any: ["dark"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -477,7 +476,7 @@ export default {
                     cost: 4,
                 },
                 {
-                    themes: { any: new Set(["light"]) },
+                    themes: { any: ["light"] },
                     rarity: {
                         gte: "uncommon"
                     }
@@ -489,7 +488,7 @@ export default {
                     cost: 2
                 },
                 {
-                    themes: { any: new Set(["light"]) },
+                    themes: { any: ["light"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("light",
@@ -498,7 +497,7 @@ export default {
                     cost: 1
                 },
                 {
-                    themes: { any: new Set(["light"]) },
+                    themes: { any: ["light"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-angel",
@@ -510,7 +509,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["light"]) },
+                    themes: { any: ["light"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -522,7 +521,7 @@ export default {
                     cost: 2
                 },
                 {
-                    themes: { any: new Set(["sweet"]) },
+                    themes: { any: ["sweet"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("sweetberry",
@@ -534,7 +533,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["sweet"]) },
+                    themes: { any: ["sweet"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("sugar-spray",
@@ -546,7 +545,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["sweet"]) },
+                    themes: { any: ["sweet"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("caustic-strike",
@@ -558,7 +557,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["sour"]) },
+                    themes: { any: ["sour"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("locate-lemon",
@@ -570,7 +569,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["sour"]) },
+                    themes: { any: ["sour"] },
                     rarity: {
                         lte: "uncommon"
                     }
@@ -585,7 +584,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["sour"]) },
+                    themes: { any: ["sour"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-acid-elemental",
@@ -597,7 +596,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["sour"]) },
+                    themes: { any: ["sour"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -609,7 +608,7 @@ export default {
                     cost: 2
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("magic-shield",
@@ -618,7 +617,7 @@ export default {
                     cost: 2
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("magic-parry",
@@ -632,7 +631,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("instant-message",
@@ -644,7 +643,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("create-wizard-servant",
@@ -656,7 +655,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-steam-elemental",
@@ -668,7 +667,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["steampunk"]) },
+                    themes: { any: ["steampunk"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -683,7 +682,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["steampunk"]) },
+                    themes: { any: ["steampunk"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-water-elemental",
@@ -695,7 +694,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -711,7 +710,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("wind-blast",
@@ -723,7 +722,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-lightning",
@@ -735,7 +734,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("wall-of-stone",
@@ -744,7 +743,7 @@ export default {
                     cost: 4,
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "rare"
                     }
@@ -756,7 +755,7 @@ export default {
                     cost: 5,
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "rare"
                     }
@@ -768,7 +767,7 @@ export default {
                     cost: 2
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-earth-elemental",
@@ -780,7 +779,7 @@ export default {
                     ],
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -792,7 +791,7 @@ export default {
                     cost: 1
                 },
                 {
-                    themes: { any: new Set(["nature"]) },
+                    themes: { any: ["nature"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("summon-chomp-flower",
@@ -804,7 +803,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["nature"]) },
+                    themes: { any: ["nature"] },
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>("vine-hook",
@@ -817,7 +816,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["nature"]) },
+                    themes: { any: ["nature"] },
                 }
             ),
         ]
@@ -836,7 +835,7 @@ export default {
                 {
 
                     themes: {
-                        any: new Set(["light"]),
+                        any: ["light"],
                     },
                 }
             ),
@@ -848,7 +847,7 @@ export default {
                 {
 
                     themes: {
-                        any: new Set(["nature", "sweet"])
+                        any: ["nature", "sweet"]
                     }
                 }
             ),
@@ -860,7 +859,7 @@ export default {
                 {
 
                     themes: {
-                        any: new Set(["nature", "sweet"])
+                        any: ["nature", "sweet"]
                     }
                 }
             ),
@@ -871,7 +870,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["light"]) }
+                    themes: { any: ["light"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("move-silently",
@@ -882,10 +881,10 @@ export default {
                 {
 
                     shapeFamily: {
-                        any: new Set([
+                        any: [
                             "dagger",
                             "club"
-                        ])
+                        ]
                     },
                     rarity: {
                         gte: "epic"
@@ -903,7 +902,10 @@ export default {
                         gte: "rare"
                     },
                     themes: {
-                        any: new Set(["cloud", "wizard"])
+                        any: [
+                            "cloud",
+                            "wizard"
+                        ]
                     }
                 }
             ),
@@ -914,7 +916,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         lte: "uncommon"
                     }
@@ -928,7 +930,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
@@ -946,7 +948,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["fire"]) }
+                    themes: { any: ["fire"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("expertise-blacksmithing",
@@ -957,7 +959,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["fire"]) },
+                    themes: { any: ["fire"] },
                     isSentient: true
                 }
             ),
@@ -969,7 +971,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     rarity: {
                         lte: "uncommon"
                     }
@@ -982,7 +984,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["ice"]) }
+                    themes: { any: ["ice"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-ice-blunt",
@@ -997,13 +999,13 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     shapeFamily: {
-                        none: new Set([
+                        none: [
                             "dagger",
                             "sword",
                             "greatsword"
-                        ])
+                        ]
                     }
                 }
             ),
@@ -1019,13 +1021,13 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["ice"]) },
+                    themes: { any: ["ice"] },
                     shapeFamily: {
-                        any: new Set([
+                        any: [
                             "dagger",
                             "sword",
                             "greatsword"
-                        ])
+                        ]
                     }
                 }
             ),
@@ -1036,7 +1038,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["ice"]) }
+                    themes: { any: ["ice"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("walk-on-ice",
@@ -1047,7 +1049,7 @@ export default {
                 },
                 {
 
-                    themes: { any: new Set(["ice"]) }
+                    themes: { any: ["ice"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("vibe-menacing",
@@ -1057,7 +1059,7 @@ export default {
                     desc: "Menacing aura. Bonus to saves to frighten & intimidate."
                 },
                 {
-                    themes: { any: new Set(["dark"]) }
+                    themes: { any: ["dark"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("trap-souls",
@@ -1071,7 +1073,7 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(["dark"]) }
+                    themes: { any: ["dark"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-dark-flame",
@@ -1085,7 +1087,7 @@ export default {
                     }
                 },
                 {
-                    themes: { any: new Set(["dark"]) }
+                    themes: { any: ["dark"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("resistance-radiant",
@@ -1095,7 +1097,7 @@ export default {
 
                 },
                 {
-                    themes: { any: new Set(["light"]) },
+                    themes: { any: ["light"] },
                     rarity: {
                         lte: "uncommon"
                     }
@@ -1108,7 +1110,7 @@ export default {
                     desc: "Wielder is immune to the harmful effects of rays & beams."
                 },
                 {
-                    themes: { any: new Set(["light"]) }
+                    themes: { any: ["light"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("stats-as-mirror",
@@ -1117,7 +1119,7 @@ export default {
                     desc: "Extremely shiny, functions as a mirror."
                 },
                 {
-                    themes: { any: new Set(["light"]) }
+                    themes: { any: ["light"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("vibe-wholesome",
@@ -1126,7 +1128,7 @@ export default {
                     desc: "Wielder has a wholesome aura. Bonus to saves to spread cheer and/or appear nonthreatening."
                 },
                 {
-                    themes: { any: new Set(["light", "sweet"]) }
+                    themes: { any: ["light", "sweet"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("TODO",
@@ -1135,7 +1137,7 @@ export default {
                     desc: "Weapon is an expert chef.",
                 },
                 {
-                    themes: { any: new Set(["sweet"]) },
+                    themes: { any: ["sweet"] },
                     isSentient: true
                 }
             ),
@@ -1145,7 +1147,7 @@ export default {
                     desc: "The wielder magically knows the recipe of any dessert they taste."
                 },
                 {
-                    themes: { any: new Set(["sweet"]) }
+                    themes: { any: ["sweet"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("eat-to-heal",
@@ -1155,7 +1157,7 @@ export default {
                     desc: "Eat business end to heal HP equal to damage roll. Renders weapon unusable until it reforms, 24 hours later."
                 },
                 {
-                    themes: { any: new Set(["sweet"]) }
+                    themes: { any: ["sweet"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("expertise-alchemy",
@@ -1165,7 +1167,7 @@ export default {
                     desc: "Weapon is an expert alchemist.",
                 },
                 {
-                    themes: { any: new Set(["sour"]) },
+                    themes: { any: ["sour"] },
                     isSentient: true
                 }
             ),
@@ -1176,7 +1178,7 @@ export default {
 
                 },
                 {
-                    themes: { any: new Set(["sour"]) },
+                    themes: { any: ["sour"] },
                     rarity: {
                         lte: "uncommon"
                     }
@@ -1188,7 +1190,7 @@ export default {
                     desc: "Wielder is immune to the harmful effects of corrosive chemicals."
                 },
                 {
-                    themes: { any: new Set(["sour"]) }
+                    themes: { any: ["sour"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("tastes-sour",
@@ -1197,7 +1199,7 @@ export default {
                     desc: "Licking the weapon cures scurvy. It tastes sour."
                 },
                 {
-                    themes: { any: new Set(["sour"]) }
+                    themes: { any: ["sour"] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("expertise-astrology",
@@ -1206,7 +1208,7 @@ export default {
                     desc: "Weapon is an expert astrologer.",
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                     isSentient: true
                 }
             ),
@@ -1216,7 +1218,7 @@ export default {
                     desc: "If you are not wounded, the weapon can also fire a spectral copy of itself as a projectile attack. Damage as weapon, range as bow.",
                 },
                 {
-                    themes: { any: new Set(["wizard"]), },
+                    themes: { any: ["wizard"], },
                     rarity: {
                         gte: "rare"
                     }
@@ -1228,7 +1230,7 @@ export default {
                     desc: "Each hit you land with the weapon generates a wisp. On your turn, you can launch any number of wisps at no cost. d4 damage, range as bow.",
                 },
                 {
-                    themes: { any: new Set(["wizard"]) },
+                    themes: { any: ["wizard"] },
                     rarity: {
                         gte: "epic"
                     }
@@ -1241,7 +1243,7 @@ export default {
                 },
                 {
                     isSentient: true,
-                    themes: { any: new Set(["steampunk"]) },
+                    themes: { any: ["steampunk"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("integrated-compass",
@@ -1251,7 +1253,7 @@ export default {
                     desc: "Wielder always knows which way is north."
                 },
                 {
-                    themes: { any: new Set(["steampunk"]) },
+                    themes: { any: ["steampunk"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("integrated-clock",
@@ -1260,7 +1262,7 @@ export default {
                     desc: "A widget on the weapon displays the time."
                 },
                 {
-                    themes: { any: new Set(["steampunk"]) },
+                    themes: { any: ["steampunk"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("transform-bouquet",
@@ -1269,7 +1271,7 @@ export default {
                     desc: "Can transform into a bouquet of flowers."
                 },
                 {
-                    themes: { any: new Set(["nature"]) },
+                    themes: { any: ["nature"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("shoot-water",
@@ -1278,7 +1280,7 @@ export default {
                     desc: "Can shoot an endless stream of water from its tip, pressure as garden hose."
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("transform-umbrella",
@@ -1287,7 +1289,7 @@ export default {
                     desc: "Can transform into an umbrella."
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("stealth-in-rough-weather",
@@ -1296,12 +1298,12 @@ export default {
                     desc: "Wielder gains a stealth bonus during rain & snow, as if invisible.",
                 },
                 {
-                    themes: { any: new Set(["cloud"]) },
+                    themes: { any: ["cloud"] },
                     shapeFamily: {
-                        any: new Set([
+                        any: [
                             "dagger",
                             "club"
-                        ])
+                        ]
                     }
                 }
             ),
@@ -1363,7 +1365,7 @@ export default {
                     }),
                 },
                 {
-                    themes: { any: new Set(["cloud", "wizard"]) },
+                    themes: { any: ["cloud", "wizard"] },
                     rarity: {
                         gte: "legendary"
                     }
@@ -1376,7 +1378,7 @@ export default {
                     desc: "Wielder cannot be petrified."
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("transform-pickaxe",
@@ -1385,7 +1387,7 @@ export default {
                     desc: "Can transform into a pickaxe."
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("expertise-jeweller",
@@ -1394,7 +1396,7 @@ export default {
                     desc: "Weapon is an expert jeweller. It can identify any gemstone.",
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("stats-as-shield",
@@ -1403,7 +1405,7 @@ export default {
                     desc: "Stats as (function as) a shield."
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>("petrify-on-hit",
@@ -1413,14 +1415,14 @@ export default {
                     desc: "Unaware targets that are hit by the weapon must save or be petrified.",
                 },
                 {
-                    themes: { any: new Set(["earth"]) },
+                    themes: { any: ["earth"] },
                     rarity: {
                         gte: "rare"
                     },
                     shapeFamily: {
-                        any: new Set([
+                        any: [
                             "dagger"
-                        ])
+                        ]
                     }
                 }
             ),
@@ -1429,7 +1431,7 @@ export default {
 
             //     },
             //     {
-            //         themes: {any: new Set(["TODO"]) },
+            //         themes: { any: ["TODO"] },
             //     }
             // ),
         ]

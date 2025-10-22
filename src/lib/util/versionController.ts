@@ -19,6 +19,9 @@ export abstract class Patchable {
     patch(other: RecursivePartial<typeof this>) {
         function f(target: unknown, other: unknown): unknown {
             if (typeof target === 'object' && target !== null && target !== undefined && typeof other === 'object' && other !== null && other !== undefined) {
+                if (target instanceof Set && other instanceof Set) {
+                    return other;
+                }
                 const targetIsArr = Array.isArray(target);
                 const otherIsArr = Array.isArray(other);
 
