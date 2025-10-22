@@ -249,6 +249,12 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // generate the structure for the weapon's parts
     const [structure, structuredDesc] = structureDescFor(weapon.shape);
+    /**
+     * It's important that we attach it to the weapon.
+     * When drawing descriptions, providers will check that the UUIDs of the previously drawn abilities are on the weapon. 
+     * So missing this step will allow duplicate descriptors.  
+    */
+    weapon.description = structuredDesc;
 
     if (weapon.sentient) {
         const nPersonalities = 2;
@@ -384,7 +390,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
     for (const featureDescriptorProvider of featureDescriptorProviders) {
-        applyDescriptionPartProvider(rng, featureDescriptorProvider, weapon, structure, structuredDesc);
+        applyDescriptionPartProvider(rng, featureDescriptorProvider, weapon, structure, weapon.description);
 
         nDescriptors++;
         if (nDescriptors >= MAX_DESCRIPTORS) {
@@ -394,8 +400,12 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // then, apply theme-based descriptors, up to the cap
     while (nDescriptors < MAX_DESCRIPTORS) {
+        if (weapon.rarity === 'legendary') {
+            console.log(weapon);
+        }
+
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
-        applyDescriptionPartProvider(rng, descriptorProvider, weapon, structure, structuredDesc);
+        applyDescriptionPartProvider(rng, descriptorProvider, weapon, structure, weapon.description);
         nDescriptors++;
     }
 
@@ -416,7 +426,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     }
 
     // convert the structured description to a text block
-    const parts = Object.values(structuredDesc).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
+    const parts = Object.values(weapon.description).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
 
     function usesAnd(desc: WeaponPart) {
         return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
@@ -499,7 +509,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     }
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
-    const ephitet = pickEphitet(rng, structuredDesc);
+    const ephitet = pickEphitet(rng, weapon.description);
     if (ephitet === undefined) {
         weapon.name = weapon.shape.particular;
     }
