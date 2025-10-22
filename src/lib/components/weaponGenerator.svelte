@@ -5,6 +5,7 @@
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
     import { onMount } from "svelte";
+    import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
     interface Props {
@@ -14,15 +15,22 @@
     const { config }: Props = $props();
 
     let weapon: Weapon = $state(mkWeapon(getIDFromURL(), config));
+    const weaponID = writable<string>(getIDFromURL());
+    weaponID.subscribe((newId) => {
+        // update the view with the new weapon
+        weapon = mkWeapon(newId);
+    });
 
     // set up event listeners
     onMount(() => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", () => {
-            weapon = mkWeapon(getIDFromURL());
+            weaponID.set(getIDFromURL());
         });
     });
 
+    /** Generate a new weapon ID / seed.
+     */
     function getNewId() {
         return Math.floor(Math.random() * 10e19).toString();
     }
@@ -32,28 +40,25 @@
      * If the URL has no 'id' param, its associated with a random ID.
      */
     function getIDFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentId = urlParams.get("id");
-        return currentId ?? getNewId();
+        return (
+            new URLSearchParams(window.location.search).get("id") ?? getNewId()
+        );
     }
 
     /**
      * Generate a new weapon, called when the 'generate' button is clicked.
      */
     function generateWeapon() {
-        const newId = getNewId();
-
-        // update the view with the new weapon
-        weapon = mkWeapon(newId);
-
         // and update the URL params to point to its ID
-        // note this doesn't trigger popstate, which is why we also have to set the weapon ^above
+        // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
         window.history.pushState(
             //navigate back to main
             null,
             "",
-            `?id=${newId}`,
+            `?id=${getNewId()}`,
         );
+
+        dispatchEvent(new PopStateEvent("popstate", { state: null }));
     }
 </script>
 
