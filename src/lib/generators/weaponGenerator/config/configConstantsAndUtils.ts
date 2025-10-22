@@ -2,7 +2,7 @@ import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAn
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
 import { gatherUUIDs } from "$lib/generators/weaponGenerator/provider";
 import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, type DescriptorText, type Ephitet, type PartFeature, type PartMaterial, type Theme, type Weapon, type WeaponGivenThemes, type WeaponPartName, type WeaponRarity, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, type CapitalLetter, type DescriptorText, type Ephitet, type PartFeature, type PartMaterial, type Theme, type Weapon, type WeaponGivenThemes, type WeaponPartName, type WeaponRarity, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { titleCase } from "$lib/util/string";
 import _ from "lodash";
@@ -146,7 +146,7 @@ const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as
 
 export const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
 export const ephCold = [{ pre: "Icebound" }, { pre: "Frostbound" }, { pre: "Frigid" }, { pre: "Silent" }, { post: " of the North Star", alliteratesWith: 'N' }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
-export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: ' of the Bonfire Keeper', alliteratesWith: 'B' }, { post: ' of the Scorchlands', alliteratesWith: 'S' }, { pre: 'Burning' }] satisfies Ephitet[];
+export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: ' of the Bonfire Keeper', alliteratesWith: 'B' }, { post: ' of the Scorchlands', alliteratesWith: 'S' }, { post: ' of the Core', alliteratesWith: 'C' }, { pre: 'Burning' }] satisfies Ephitet[];
 export const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
 export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: ' of the Zephyr', alliteratesWith: 'Z' }, { post: ' of the Skylands', alliteratesWith: 'S' }, { post: ' of the Cloud Giants', alliteratesWith: 'C' }, { post: ' of the Butterfly Lords', alliteratesWith: 'B' }, { post: ' of the Valkyrie Queen', alliteratesWith: 'V' }] satisfies Ephitet[];
 export const ephWizard = [{ post: ' of the Wizard', alliteratesWith: 'W' }, { post: ' of the Stars', alliteratesWith: 'S' }, { post: ' of the Cosmos', alliteratesWith: 'C' }] satisfies Ephitet[];
@@ -158,7 +158,7 @@ export const ephBug = [{ pre: 'Verminous' }, { post: " of the Isopod", alliterat
 
 export const ephTransparent = [{ pre: 'Glass' }, { post: ' of Glass', alliteratesWith: 'G' }, { pre: 'Translucent' }] satisfies Ephitet[];
 export const adjLight = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { pre: 'Sunlit' }, { post: 'of Dawn', alliteratesWith: 'D' }] satisfies Ephitet[];
-
+export const ephDemon = [{ pre: "Demonic" }, { pre: "Demonologist's" }, { pre: "Satanic" }, { pre: "Satanist's" }] as const satisfies Ephitet[];
 export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { post: ' of Selene', alliteratesWith: 'S' }] satisfies Ephitet[];
 export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }, { post: ' of Dusk', alliteratesWith: 'D' }] satisfies Ephitet[];
 export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows', alliteratesWith: 'R' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
@@ -633,6 +633,54 @@ export const MISC_DESC_FEATURES = {
         }
     },
     coating: {
+        edgyPhrase: mkGen(rng => {
+            const { phrase, ephitets } = choice([
+                { phrase: `word "Darkness"`, ephitets: ephBlack },
+                { phrase: `word "Pain"`, ephitets: [{ pre: "Cenobite's" }] as Ephitet[] },
+                { phrase: `word "Blood"`, ephitets: [{ pre: "Cenobite's" }] },
+                { phrase: `word "Drugs"`, ephitets: [{ pre: "Party" }] },
+                { phrase: `phrase "Like for Satan"`, ephitets: ephDemon },
+                { phrase: `phrase "Hail Satan"`, ephitets: ephDemon },
+                { phrase: `number "666"`, ephitets: ephDemon },
+                { phrase: `word "Chaos"`, ephitets: ephBlack },
+                { phrase: `phrase "ANARCHY 4EVR"`, ephitets: [{ post: "of Anarchy", alliteratesWith: "A" }] },
+                { phrase: `phrase "Forged to Kill"`, ephitets: [{ post: " of War" }] },
+                // bit too silly
+                // { phrase: `phrase "Emo Vibes Only"`, ephitets: [{ pre: "Emo" }] },
+                // { phrase: `phrase "Another Cog in the Murder Machine"`, ephitets: [{ pre: "Rebel's Own" }] },
+                // { phrase: `phrase "Dying on the Inside"`, ephitets: [{ pre: "Raven" }]  },
+            ] as const satisfies { phrase: `number "${number}"` | `word "${CapitalLetter}${string}"` | `phrase "${CapitalLetter}${string}"`, ephitets: Ephitet[] }[], rng);
+
+            return {
+                descriptor: {
+                    descType: 'property',
+                    singular: ` inscribed with the ${phrase}`,
+                    plural: ` inscribed with the ${phrase}`,
+                },
+                ephitet: mkGen((rng) => choice(ephitets, rng))
+            }
+        }),
+        edgyImage: mkGen(rng => {
+            const { singular, plural, ephitets } = choice([
+                { singular: `a skull`, plural: `skulls`, ephitets: ephBlack },
+                { singular: `a razor blade`, plural: `razor blades`, ephitets: [{ pre: "Cenobite's" }] },
+                { singular: `a scary face`, plural: `scary faces`, ephitets: [{ pre: "Cenobite's" }] },
+                { singular: `a pill`, plural: ``, ephitets: [{ pre: "Party" }] },
+                { singular: `a demon`, plural: `demons`, ephitets: ephDemon },
+                { singular: `an inverted religious symbol`, plural: `inverted religious symbols`, ephitets: ephDemon },
+                { singular: `a raised fist`, plural: `raised fists`, ephitets: [{ pre: "Rebel's Own" }] },
+                { singular: `a raven`, plural: `ravens`, ephitets: [{ pre: "Raven" }] as Ephitet[] },
+            ] as const satisfies { singular: `a ${string}` | `an ${string}`, plural: string; ephitets: Ephitet[] }[], rng);
+
+            return {
+                descriptor: {
+                    descType: 'property',
+                    singular: ` is engraved with ${singular}`,
+                    plural: ` are engraved with ${plural}`,
+                },
+                ephitet: mkGen((rng) => choice(ephitets, rng))
+            }
+        }),
         volcanoCracks: {
             descriptor: {
                 descType: 'property',
