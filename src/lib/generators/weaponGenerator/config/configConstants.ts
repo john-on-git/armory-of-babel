@@ -1,6 +1,7 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { choice } from "$lib/util/choice";
 import { capWords } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
@@ -15,10 +16,10 @@ export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 's
 export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)', 'club', 'mace'] as const satisfies WeaponShapeGroup[];
 export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
 
+export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies WeaponShapeGroup[];
+
 export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"] as const;
-
 export const pointedWeaponShapes = ['Stiletto', 'Dirk', 'Rapier', 'Foil', 'Epee', 'Spear', 'Trident', 'Bident', 'Pike', 'Lance'] as const;
-
 
 // reused descriptors and materials
 const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
@@ -79,6 +80,7 @@ const simpleMaterials = [
         'sandstone',
         'flint',
         'obsidian',
+        'basalt',
 
         'terracotta',
         'porcelain',
@@ -131,20 +133,24 @@ export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: 'of the Bon
 const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
 export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: 'of the Zephyr' }, { post: 'of the Skylands' }, { post: 'of the Cloud Giants' }, { post: 'of the Butterfly Lords' }, { post: 'of the Valkyrie Queen' }] satisfies Ephitet[];
 export const ephWizard = [{ post: 'of the Wizard' }, { post: 'of Stars' }, { post: 'of the Cosmos' }] satisfies Ephitet[];
-export const ephSteampunk = [{ post: 'of the Empire' }, { pre: 'Cloudborn' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
+export const ephExplorer = [{ pre: "Explorer's" }, { pre: "Navigator's" }, { pre: "Pathfinder's" }, { post: 'of the Explorer' }, { post: 'of the Navigator' }] satisfies Ephitet[];
+export const ephSteampunk = [...ephExplorer, { post: 'of the Empire' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
+
+const ephAcid = [{ pre: 'Toxic' }, { pre: 'Corrosive' }] satisfies Ephitet[];
+const ephBug = [{ pre: 'Verminous' }, { post: "of the Isopod" }, { post: "of the Beetle" }, { post: "of the Queen Bee" }, { post: "of the Swarm" }, { post: "of the Hive" }] satisfies Ephitet[];
 
 export const ephTransparent = [{ pre: 'Glass' }, { post: 'of Glass' }, { pre: 'Translucent' }] satisfies Ephitet[];
 export const ephGlowy = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }];
 
 export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { post: 'of Selene' }] satisfies Ephitet[];
 export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: 'of Chaos' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: 'of Shadows' }];
-export const ephRainbow = ['Prismatic', 'Rainbow', 'Variegated', 'Multicolored', 'Kaleidosopic', 'Polychromatic']
+export const ephRainbow = [{ pre: 'Prismatic' }, { post: 'of Rainbows' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }]
 
 export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ', Herald of the King in Red' }] satisfies Ephitet[];
 // TODO these need more stuff
 export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] satisfies Ephitet[];
-export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }] satisfies Ephitet[];
-export const ephGreen = [{ pre: 'Green' }, { post: 'of Val Verde' }] satisfies Ephitet[];
+export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }, { pre: 'Sapphire' }] satisfies Ephitet[];
+export const ephGreen = [{ pre: 'Green' }, { pre: 'Emerald' }, { post: 'of Val Verde' }] satisfies Ephitet[];
 export const ephGold = [{ pre: 'Golden' }, { pre: 'Auric' }, { post: 'of the Sun' }, { post: 'of Ra' }] satisfies Ephitet[];
 
 
@@ -275,6 +281,11 @@ export const MATERIALS = {
         } as Descriptor;
     }),
 
+    vitStone: {
+        material: 'vitrified stone',
+        ephitet: mkGen(rng => ephHot.choice(rng)),
+    },
+
     silverPlated: {
         material: 'silver-plated steel',
         ephitet: { pre: 'Silvery' }
@@ -302,6 +313,10 @@ export const MATERIALS = {
     darkness: {
         material: 'pure darkness',
         ephitet: mkGen((rng) => ephBlack.choice(rng))
+    } as const,
+    darkSteel: {
+        material: 'shadow steel',
+        ephitet: { post: 'of Shadows' }
     } as const,
 
     razors: {
@@ -332,7 +347,7 @@ export const MATERIALS = {
     } as const,
     beetleShell: {
         material: 'beetle shell',
-        ephitet: mkGen((rng) => ({ pre: ['Verminous', 'Bug'].choice(rng) }))
+        ephitet: mkGen((rng) => ephBug.choice(rng))
     } as const,
 
     clockwork: {
@@ -374,7 +389,39 @@ export const MATERIALS = {
 } as const satisfies Record<string, Descriptor | TGenerator<Descriptor, [Weapon]>>;
 
 const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'crustacean', 'lizard', 'dragonfly', 'hummingbird'].choice(rng))]);
-const embeddedArr = [['a ruby', ephRed], ['an emerald', 'Emerald'], ['a sapphire', 'Sapphire'], ['an amethyst', 'Amethyst'], ['a pearl', 'Empearled']] as const;
+const embeddedArr = [
+    ['a ruby', ephRed],
+    ['a garnet', ephRed],
+    ["a tiger's eye stone", ephRed],
+    ['an opal', ephHot],
+    ['a piece of carnelian', ephRed],
+
+    ["a citrine", ephGold],
+    ["a topaz", ephGold],
+
+    ['an emerald', ephGreen],
+    ['a piece of green jade', ephGreen],
+
+    ['a sapphire', ephBlue],
+    ['a piece of lapis lazuli', ephBlue],
+    ['a piece of blue jade', ephBlue],
+
+    ['an amethyst', ephPurple],
+    ['a piece of porphyry', ephPurple],
+
+    ['a diamond', ephWhite],
+    ['a piece of selenite', ephWhite],
+    ['a tourmaline', ephRainbow],
+    ['a pearl', [{ pre: 'Empearled' }]],
+
+    ['a piece of eternal ice', ephCold],
+    ['an onyx', ephBlack],
+    ['a black pearl', [{ post: 'of the Oyster King' }]],
+    ['a dark sapphire', ephBlack],
+
+    ['acid diamond', ephAcid],
+    ['toxic pearl', ephAcid],
+] as const;
 
 const eyeStructureGen = mkGen((rng, weapon: Weapon) => [
     `one large eye: it's ${eyeColorGen.generate(rng, weapon)}`,
@@ -421,25 +468,15 @@ const eyeAnimalsArr = [
 
 export const MISC_DESC_FEATURES = {
     embedded: {
-        ..._.reduce<(typeof embeddedArr)[number], Record<(typeof embeddedArr)[number][0], Descriptor>>(embeddedArr, (acc, [thing, ephitet]) => {
-            acc[thing] = (
-                typeof ephitet === 'string'
-                    ? ({
-                        descriptor: {
-                            descType: 'possession',
-                            singular: `${thing} embedded in it`,
-                            plural: `each have ${thing} embedded in them`
-                        },
-                        ephitet: { pre: ephitet }
-                    })
-                    : ({
-                        descriptor: {
-                            descType: 'possession',
-                            singular: `${thing} embedded in it`,
-                            plural: `each have ${thing} embedded in them`
-                        },
-                        ephitet: mkGen((rng) => ephitet.choice(rng))
-                    })) satisfies Descriptor;
+        ..._.reduce<(typeof embeddedArr)[number], Record<(typeof embeddedArr)[number][0], Descriptor>>(embeddedArr, (acc, [thing, ephArr]) => {
+            acc[thing] = ({
+                descriptor: {
+                    descType: 'possession',
+                    singular: `${thing} embedded in it`,
+                    plural: `${thing} embedded in them`
+                },
+                ephitet: mkGen((rng) => choice(ephArr, rng))
+            }) satisfies Descriptor;
             return acc;
         }, {} as Record<(typeof embeddedArr)[number][0], Descriptor>),
         amber: {
@@ -501,7 +538,7 @@ export const MISC_DESC_FEATURES = {
                 singular: " shines like a rainbow when viewed from the right angle",
                 plural: ' shine like a rainbow when viewed from the right angle',
             },
-            ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
+            ephitet: mkGen((rng) => ephRainbow.choice(rng))
         },
         flames: mkGen((_, weapon) => {
             const colorByRarity = {
@@ -538,7 +575,7 @@ export const MISC_DESC_FEATURES = {
                     singular: ` has a sheen that changes between ${gradient} depending on the viewing angle`,
                     plural: ` have a sheen that changes between ${gradient} depending on the viewing angle`
                 },
-                ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
+                ephitet: mkGen((rng) => ephRainbow.choice(rng))
             }
         })
     },
@@ -675,11 +712,6 @@ export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'head', 'heads', '
  */
 export const holdingParts = ['body', 'grip', 'limbs'] as const satisfies WeaponPartName[];
 
-/**
- * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).
- */
-export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver', 'body'] as const satisfies WeaponPartName[];
-
 
 /**
  * Parts of a weapon that a sentient weapon's eyes can be placed on.
@@ -690,3 +722,13 @@ export const eyeAcceptingParts = ['crossguard', 'head', 'heads', 'chain', 'chain
  * Parts of a weapon that a sentient weapon's mouth can be placed on.
  */
 export const mouthAcceptingParts = ['blade', 'blades', 'barrel', 'orb', 'head', 'heads', 'tip', 'base', 'quiver'] as const satisfies WeaponPartName[];
+
+/**
+ * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).
+ */
+export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver', 'body'] as const satisfies WeaponPartName[];
+
+/**
+ * Parts of a weapon that a small object such as a gem could be embedded in.
+ */
+export const embeddableParts = ['crossguard', 'pommel', 'base', 'quiver', 'head', 'chain'] as const satisfies WeaponPartName[];

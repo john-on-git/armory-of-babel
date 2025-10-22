@@ -1,7 +1,7 @@
 import { type TGenerator } from "$lib/generators/recursiveGenerator";
 import { type PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
-import { ProviderElement, type Comp, type Cond, type Quant } from "./provider";
+import { ProviderElement, type Comp, type Cond, type Quant, type WithUUID } from "./provider";
 import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
@@ -81,12 +81,12 @@ export interface Weapon {
 
     active: {
         maxCharges: number,
-        rechargeMethod: RechargeMethod
-        powers: ActivePower[];
+        rechargeMethod: WithUUID<RechargeMethod>
+        powers: WithUUID<ActivePower>[];
     }
-    passivePowers: PassivePower[];
+    passivePowers: WithUUID<PassivePower>[];
     sentient: false | {
-        personality: Personality[];
+        personality: WithUUID<Personality>[];
         languages: string[];
         /**
          * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
@@ -100,11 +100,11 @@ export interface Weapon {
 
 interface PowerView {
     additionalNotes?: string[];
+    bonus?: PassiveBonus;
 }
 
 export interface PassivePowerView extends PowerView {
     desc: string;
-    bonus?: PassiveBonus;
 }
 export interface ActivePowerView extends PowerView {
     desc: string;
@@ -151,6 +151,8 @@ export interface Power {
      * UUID of the description provider that is applied to weapons with this power
      */
     descriptorPartGenerator?: string;
+
+    bonus?: PassiveBonus;
 }
 
 export interface DamageDice {
@@ -168,6 +170,13 @@ export interface PassiveBonus {
      * Plus this many to attack and damage
      */
     plus?: number;
+
+    /**
+     * Add this many additional charged powers.
+     * If this is added to a non-unique power, the behaviour of the generators using it is undefined (because it can cause infinite loops).
+     */
+    addChargedPowers?: number;
+
 } // TODO
 
 export interface ChargedPower extends Power {
@@ -197,7 +206,6 @@ export interface RechargeMethod {
 export interface PassivePower extends Power {
     miscPower: true;
     desc: string;
-    bonus?: PassiveBonus;
 }
 export interface Language extends Power {
     language: true;
@@ -266,7 +274,6 @@ interface SharedAtom {
     } | {
         post: string;
     };
-    UUID: string;
 }
 
 export type MaterialAtom = SharedAtom;
@@ -278,11 +285,11 @@ export interface WeaponPart {
     /**
      * Main material of the part, if it's notable.
      */
-    material?: MaterialAtom;
+    material?: WithUUID<MaterialAtom>;
     /**
      * A list of facts about the physical properties of this part, which could be combined into a sentence.
      */
-    descriptors: DescriptorAtom[];
+    descriptors: WithUUID<DescriptorAtom>[];
 }
 
 

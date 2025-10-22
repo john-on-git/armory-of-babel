@@ -20,6 +20,39 @@ export function pickForTheme<TKey extends Theme, TRes>(weapon: Weapon, mapsTo: R
     return mapsTo[(weapon.themes.filter(theme => theme in mapsTo) as (keyof typeof mapsTo)[]).choice(rng)];
 }
 
+function applyBonuses(weapon: Weapon, bonus: PassiveBonus) {
+    for (const k in bonus) {
+        const bonusKind = k as keyof PassiveBonus
+        switch (bonusKind) {
+            case 'addDamageDie':
+                // apply all damage dice to the weapon
+                for (const k in bonus.addDamageDie) {
+                    const die = k as keyof DamageDice;
+                    if (typeof bonus.addDamageDie[die] === 'number') {
+                        if (weapon.damage[die] === undefined) {
+                            weapon.damage[die] = 0;
+                        }
+                        weapon.damage[die] += bonus.addDamageDie[die];
+                    }
+                }
+                break;
+            case "plus":
+                weapon.toHit += bonus.plus ?? 0;
+
+                if (weapon.damage.const === undefined) {
+                    weapon.damage.const = 0;
+                }
+                weapon.damage.const += 1;
+                break;
+            case "addChargedPowers":
+                weapon.params.nActive++;
+                break;
+            default:
+                return bonusKind satisfies never;
+        }
+    }
+}
+
 /**
  * 
  * @param _locale locale to generator the weapon for (not currently implemented)
@@ -318,6 +351,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         active: {
             maxCharges: params.nCharges,
             rechargeMethod: {
+                UUID: '',
                 desc: '',
             },
             powers: []
@@ -384,47 +418,21 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         }
     }
 
-
     // draw passive powers
     for (let i = 0; i < params.nPassive; i++) {
-        const choice = genMaybeGen(featureProviders.passivePowerOrLanguageProvider.draw(rng, weapon), rng, weapon);
-        if (choice != undefined) {
-            if ('language' in choice && weapon.sentient) {
-                weapon.sentient.languages.push(choice.desc);
+        const choice = featureProviders.passivePowerOrLanguageProvider.draw(rng, weapon);
+        const gennedChoice = genMaybeGen(choice, rng, weapon);
+        if (gennedChoice != undefined) {
+            if ('language' in gennedChoice && weapon.sentient) {
+                weapon.sentient.languages.push(gennedChoice.desc);
             }
-            else if ('miscPower' in choice) {
-                if (choice.desc !== null) {
+            else if ('miscPower' in gennedChoice) {
+                if (gennedChoice.desc !== null) {
                     weapon.passivePowers.push({
-                        ...choice,
-                        desc: genMaybeGen(choice.desc, rng, weapon)
+                        UUID: choice.UUID,
+                        ...gennedChoice,
+                        desc: genMaybeGen(gennedChoice.desc, rng, weapon)
                     });
-                }
-                for (const k in choice.bonus) {
-                    const bonus = k as keyof PassiveBonus
-                    switch (bonus) {
-                        case 'addDamageDie':
-                            // apply all damage dice to the weapon
-                            for (const k in choice.bonus.addDamageDie) {
-                                const die = k as keyof DamageDice;
-                                if (typeof choice.bonus.addDamageDie[die] === 'number') {
-                                    if (weapon.damage[die] === undefined) {
-                                        weapon.damage[die] = 0;
-                                    }
-                                    weapon.damage[die] += choice.bonus.addDamageDie[die];
-                                }
-                            }
-                            break;
-                        case "plus":
-                            weapon.toHit += choice.bonus.plus ?? 0;
-
-                            if (weapon.damage.const === undefined) {
-                                weapon.damage.const = 0;
-                            }
-                            weapon.damage.const += 1;
-                            break;
-                        default:
-                            return bonus satisfies never;
-                    }
                 }
             }
             else {
@@ -433,14 +441,17 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 throw new Error('Could not assign passive power, config was invalid.');
             }
 
-            if (choice.descriptorPartGenerator) {
-                if (choice.descriptorPartGenerator in featureProviders.descriptorIndex) {
+            if (gennedChoice.descriptorPartGenerator) {
+                if (gennedChoice.descriptorPartGenerator in featureProviders.descriptorIndex) {
 
-                    featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
+                    featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator]);
                 }
                 else {
-                    console.error(`\x1b[31mfeature requested the non-existent descriptor "${choice.descriptorPartGenerator}": implement this descriptor.`)
+                    console.error(`\x1b[31mfeature requested the non-existent descriptor "${gennedChoice.descriptorPartGenerator}": implement this descriptor.`)
                 }
+            }
+            if (gennedChoice.bonus) {
+                applyBonuses(weapon, gennedChoice.bonus);
             }
         }
     }
@@ -455,10 +466,17 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
             const gennedChoice = genMaybeGen(choice, rng, weapon);
-            weapon.active.powers.push(gennedChoice);
+            weapon.active.powers.push({
+                UUID: choice.UUID,
+                ...gennedChoice
+            });
 
             if (gennedChoice.descriptorPartGenerator) {
                 featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator])
+            }
+
+            if (gennedChoice.bonus) {
+                applyBonuses(weapon, gennedChoice.bonus);
             }
         }
     }
@@ -468,12 +486,17 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         if (choice != undefined) {
             const gennedChoice = genMaybeGen(choice, rng, weapon)
             weapon.active.powers.push({
+                UUID: choice.UUID,
                 ...gennedChoice,
                 cost: 'at will',
             });
 
             if (gennedChoice.descriptorPartGenerator) {
                 featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator])
+            }
+
+            if (gennedChoice.bonus) {
+                applyBonuses(weapon, gennedChoice.bonus);
             }
         }
     }
@@ -502,7 +525,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             2. why are Jest tests crashing?
     */
 
-    const MAX_DESCRIPTORS = 3 + Math.floor(rng() * 2);
+    const MAX_DESCRIPTORS = weapon.themes.length * (1 + Math.floor(rng() * 2));
     let nDescriptors = 0;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
@@ -560,6 +583,9 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         }
     }
 
+    if (weapon.rarity === 'rare') {
+        console.log(JSON.stringify(weapon.description, undefined, 2))
+    }
 
     const weaponViewModel = {
         id: weapon.id,
