@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -1924,10 +1924,18 @@ export default {
                 desc: 'Roulette',
                 cost: 1,
                 additionalNotes: [
-                    'Fire an enchanted shot, then roll on the table below to decide on the effect.',
-                    '1. ',
+                    `
+                    Fire an enchanted shot, then roll on the table below to decide on the effect.
+                    \n1. Target is set on fire.
+                    \n2. Explosive, everyone within melee range of the target takes equal damage.
+                    \n3.
+                    \n4.
+                    \n5.
+                    \n6.
+                    `,
                 ]
             }, {
+                never: true,
                 shapeFamily: {
                     any: ['dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
@@ -3294,22 +3302,24 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("richochet-rounds",
+                {
+                    miscPower: true,
+                    desc: "Shots can richochet off of objects and characters, aiming at something else. Each richochet imposes -10 to hit against the next target.",
+                },
+                {
+                    rarity: { gte: 'rare' },
+                    shapeFamily: { any: rangedWeaponShapeFamilies }
+                }
+            ),
             new ProviderElement("move-silently",
                 {
                     miscPower: true,
                     desc: "Wielder is able to move completely silently.",
                 },
                 {
-
-                    shapeFamily: {
-                        any: [
-                            "dagger",
-                            "club"
-                        ]
-                    },
-                    rarity: {
-                        gte: "epic"
-                    }
+                    shapeFamily: { any: ["dagger", "club"] },
+                    rarity: { gte: "epic" }
                 }
             ),
             new ProviderElement("formation-fighting",
@@ -3732,7 +3742,7 @@ export default {
                     themes: { any: ["light", "sweet"] }
                 }
             ),
-            new ProviderElement("TODO",
+            new ProviderElement("expertise-cooking",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert chef.",

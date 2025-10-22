@@ -148,10 +148,10 @@ export const ephAcid = [{ pre: 'Toxic' }, { pre: 'Corrosive' }] satisfies Ephite
 export const ephBug = [{ pre: 'Verminous' }, { post: " of the Isopod", alliteratesWith: 'I' }, { post: " of the Beetle", alliteratesWith: 'B' }, { post: " of the Queen Bee", alliteratesWith: 'Q' }, { post: " of the Swarm", alliteratesWith: 'S' }, { post: " of the Hive", alliteratesWith: 'H' }] satisfies Ephitet[];
 
 export const ephTransparent = [{ pre: 'Glass' }, { post: ' of Glass', alliteratesWith: 'G' }, { pre: 'Translucent' }] satisfies Ephitet[];
-export const ephGlowy = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }];
+export const adjLight = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { pre: 'Sunlit' }, { post: 'of Dawn', alliteratesWith: 'D' }] satisfies Ephitet[];
 
-export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { post: ' of Selene', alliteratesWith: 'S' }] satisfies Ephitet[];
-export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }] satisfies Ephitet[];
+export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { post: ' of Selene', alliteratesWith: 'S' }] satisfies Ephitet[];
+export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }, { post: 'of Dusk', alliteratesWith: 'D' }] satisfies Ephitet[];
 export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows', alliteratesWith: 'R' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
 
 export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
@@ -323,7 +323,7 @@ export const MATERIALS = {
     } as const,
     light: {
         material: 'pure light',
-        ephitet: mkGen((rng) => ephGlowy.choice(rng))
+        ephitet: mkGen((rng) => adjLight.choice(rng))
     } as const,
     darkness: {
         material: 'pure darkness',
