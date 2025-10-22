@@ -86,6 +86,13 @@ const demands = [
     ),
     new ProviderElement<Demand, WeaponPowerCond>('TODO',
         {
+            desc: mkGen("Interact With Specific Dungeon Object (d6 charges).")
+        },
+        {}
+    ),
+
+    new ProviderElement<Demand, WeaponPowerCond>('TODO',
+        {
             desc: mkGen("Destroy Specific Object (d4 charges).")
         },
         {
@@ -143,12 +150,6 @@ const demands = [
                 any: ["dark"] satisfies Theme[]
             }
         }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('TODO',
-        {
-            desc: mkGen("Interact With Specific Dungeon Object (d6 charges).")
-        },
-        {}
     ),
 
     new ProviderElement<Demand, WeaponPowerCond>('TODO',
@@ -235,57 +236,7 @@ const demands = [
 
     new ProviderElement<Demand, WeaponPowerCond>('TODO',
         {
-            desc: mkGen("Food, Something Cold (d4 charges).")
-        },
-        {
-            themes: {
-                any: ["ice", "sweet"] satisfies Theme[]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('TODO',
-        {
-            desc: mkGen("Food, Something Spicy (d4 charges).")
-        },
-        {
-            themes: {
-                any: ["fire", "sweet"] satisfies Theme[]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('TODO',
-        {
-            desc: mkGen("Food, Something Sour (d4 charges).")
-        },
-        {
-            themes: {
-                any: ["sour", "sweet"] satisfies Theme[]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('TODO',
-        {
-            desc: mkGen("Food, Something Sweet (d4 charges).")
-        },
-        {
-            themes: {
-                any: ["sweet"] satisfies Theme[]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('TODO',
-        {
-            desc: mkGen("Food, Something Still Wriggling (d4 charges).")
-        },
-        {
-            themes: {
-                any: ["dark"] satisfies Theme[]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('TODO',
-        {
-            desc: mkGen("Beverage Worth At Least 100 GP (d4 charges).")
+            desc: mkGen("Dipped in Beverage Worth At Least 100 GP (d4 charges).")
         },
         {}
     ),

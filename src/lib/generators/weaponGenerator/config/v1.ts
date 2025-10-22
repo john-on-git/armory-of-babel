@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -155,15 +155,6 @@ export default {
                  */
                 { never: true }
             ),
-            new ProviderElement('vampire-mouth',
-                {
-                    generate: () => MISC_DESC_FEATURES.sensorium.mouth.vampire,
-                    ephitet: { pre: 'Vampiric' },
-                    applicableTo: {
-                        any: mouthAcceptingParts
-                    }
-                }, { never: true }
-            ),
             new ProviderElement('generic-eyes',
                 {
                     generate: (rng) =>
@@ -174,22 +165,6 @@ export default {
                         ].choice(rng), rng),
                     applicableTo: {
                         any: eyeAcceptingParts
-                    }
-                }, { never: true }
-            ),
-            new ProviderElement('generic-mouth',
-                {
-                    generate: (rng, weapon) =>
-                        genMaybeGen([
-                            ...(
-                                weapon.themes.includes('dark')
-                                    ? [MISC_DESC_FEATURES.sensorium.mouth.eldritch]
-                                    : []
-                            ),
-                            MISC_DESC_FEATURES.sensorium.mouth.generic,
-                        ].choice(rng), rng),
-                    applicableTo: {
-                        any: mouthAcceptingParts
                     }
                 }, { never: true }
             ),
@@ -1840,7 +1815,7 @@ export default {
             new ProviderElement("standard-projectile",
                 mkGen((rng, weapon) => {
 
-                    const damage = textForDamage(modDamage(weapon.damage, x => 3 * x));
+                    const damage = textForDamage(modDamage(weapon.damage, x => 2 * x));
                     const core = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire' | 'ice' | 'light' | 'dark' | 'wizard' | 'cloud' | 'steampunk']>, rng);
 
                     const projectileByTheme = {
@@ -1990,7 +1965,6 @@ export default {
                         "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. They expend resources as if the spell was cast.",
                         "The spell is then stored inside the weapon for you to cast later (at no cost), only one spell can be stored at a time.",
                     ],
-                    descriptorPartGenerator: 'vampire-mouth'
                 },
                 {
                     themes: {
@@ -2009,7 +1983,6 @@ export default {
                         "Upon landing a blow, you empower it to drain the target's life force. You regain HP equal to the damage dealt.",
                         "HP gained in this way can heal you over your natural cap, but any HP over the cap is lost at the end of the scene.",
                     ],
-                    descriptorPartGenerator: 'vampire-mouth'
                 },
                 {
                     themes: {
@@ -3225,8 +3198,8 @@ export default {
                     };
                     return {
                         miscPower: true,
-                        desc: `While mounted, ${partialDesc} to wrap around your body and your mount's preventing you from being forcibly dismounted. It has ${hpByRarity} HP, and regrows after feeding the weapon.`,
-                        descriptorPartGenerator: ['mouth-generic', partialDescriptionPartGenerator]
+                        desc: `While mounted, ${partialDesc} to wrap around your body and your mount's preventing you from being forcibly dismounted. It has ${hpByRarity} HP. If destroyed, regrowing it consumes 1 charge.`,
+                        descriptorPartGenerator: [partialDescriptionPartGenerator]
                     }
                 }),
                 {
