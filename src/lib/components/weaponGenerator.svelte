@@ -366,7 +366,7 @@
     }
 
     .action-button {
-        position: absolute;
+        position: fixed;
 
         aspect-ratio: 1;
 
@@ -412,7 +412,7 @@
     @media (orientation: portrait) {
         .generate-button {
             bottom: 1rem;
-            right: 1rem;
+            left: 1rem;
 
             font-size: 5rem;
         }
