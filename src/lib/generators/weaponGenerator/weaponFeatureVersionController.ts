@@ -120,6 +120,17 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         },
                         isSentient: true // If it can't call out to you, how will you know it's there?
                     }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('instant-recall',
+                    {
+                        miscPower: true,
+                        desc: "The wielder can summon the weapon into their hand at will, so long as it's on the same plane."
+                    },
+                    {
+                        rarity: {
+                            gte: 'uncommon'
+                        },
+                    }
                 )
             ]
         },

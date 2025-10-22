@@ -5,7 +5,7 @@ import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGe
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
 import { ConditionalThingProvider, evComp, evQuant, type ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
     constructor(source: ProviderElement<T, WeaponPowerCond>[]) {
@@ -81,13 +81,24 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
 export const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
-export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
+export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
     const rng = seedrandom(rngSeed);
 
     // decide power level
-    const rarity = generateRarity(weaponRarityConfig, rng);
+    const rarity = (() => {
+        if (maybeRarity === undefined) {
+            // generate a random rarity if one wasn't provided
+            return generateRarity(weaponRarityConfig, rng)
+        }
+        else {
+            // otherwise we need to call rng() once to advance it, same as in the other branch.
+            // this ensures that the same weapon will be generated in both branches
+            rng();
+            return maybeRarity;
+        }
+    })();
     const originalParams = weaponRarityConfig[rarity].paramsProvider(rng);
     const params = structuredClone(originalParams)
 
@@ -299,3 +310,13 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
     return { weaponViewModel, params };
 }
 
+
+export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig) {
+    return {
+        weapons: weaponRarities.reduce((acc, rarity) => {
+            acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, rarity).weaponViewModel
+            return acc;
+        }, {} as Record<WeaponRarity, WeaponViewModel>),
+        n: seedrandom(rngSeed)()
+    };
+}

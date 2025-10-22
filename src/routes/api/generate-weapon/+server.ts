@@ -1,15 +1,25 @@
 import { StatusCodes } from "http-status-codes";
 import { weaponFeatureVersionController } from "../../../lib/generators/weaponGenerator/weaponFeatureVersionController";
-import { defaultWeaponRarityConfigFactory } from "../../../lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
-import { mkWeapon } from "../../../lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { applyOddsToConfig } from "../../../lib/util/configUtils";
-import { isValidOdds } from "../../../lib/util/getFromURL";
-import { DEFAULT_RARITY_ODDS, FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
+import { mkWeaponsForAllRarities } from "../../../lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { WeaponRarity, WeaponViewModel } from "../../../lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
 
 export interface GenerateWeaponRequest {
     id: string;
-    version: number;
-    odds: [number, number, number, number];
+    v: number;
+}
+export interface GenerateWeaponResponse {
+    /**
+     * The viewmodel of all weapons with this ID & version, keyed by rarity.
+     */
+    weapons: Record<WeaponRarity, WeaponViewModel>;
+    /**
+     * A number between 0 & 1, representing the weapons' position on the rarity line.
+     * 
+     * Given a set of rarity odds, the active weapon can be recovered
+     * by taking the weapon in this.weapons of the highest rarity that has odds >= n
+     */
+    n: number;
 }
 
 function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponRequest {
@@ -18,12 +28,9 @@ function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponR
     return (
         typeof (asReq.id) === 'string' && asReq.id !== '' &&
 
-        typeof asReq.version === 'number' &&
-        !Number.isNaN(asReq.version) && Number.isFinite(asReq.version) &&
-        asReq.version >= 0 && asReq.version <= weaponFeatureVersionController.getLatestVersionNum() &&
-
-        typeof asReq.odds === 'object' &&
-        isValidOdds(asReq.odds)
+        typeof asReq.v === 'number' &&
+        !Number.isNaN(asReq.v) && Number.isFinite(asReq.v) &&
+        asReq.v >= 0 && asReq.v <= weaponFeatureVersionController.getLatestVersionNum()
     );
 }
 
@@ -33,23 +40,20 @@ export async function GET({ request }: { request: Request, }) {
     const location = request.url.slice(iStartOfQuery);
     const params = new URLSearchParams(location);
 
-    const oddsFromParams = params.getAll('o').map(x => Number.parseFloat(x));
     const v = params.get('v');
-
     const weaponRequest = {
         id: params.get('id'),
-        version: v === null ? NaN : Number.parseInt(v),
-        odds: oddsFromParams.length === 0 ? DEFAULT_RARITY_ODDS : oddsFromParams
+        v: v === null ? NaN : Number.parseInt(v),
     }
+
+    console.log(weaponRequest);
 
     if (isGenerateWeaponRequest(weaponRequest)) {
 
-        const config = applyOddsToConfig(defaultWeaponRarityConfigFactory(), weaponRequest.odds);
-
-        const { weaponViewModel } = mkWeapon(FEATURE_PROVIDERS_BY_VERSION[weaponRequest.version], weaponRequest.id, config);
+        const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, FEATURE_PROVIDERS_BY_VERSION[weaponRequest.v]);
 
         return new Response(
-            JSON.stringify(weaponViewModel),
+            JSON.stringify(weaponViewModels),
             {
                 status: StatusCodes.OK
             }

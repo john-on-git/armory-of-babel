@@ -4,17 +4,46 @@
     import { StatusCodes } from "http-status-codes";
     import _ from "lodash";
     import { onMount, tick } from "svelte";
+    import type {
+        GenerateWeaponRequest,
+        GenerateWeaponResponse,
+    } from "../../routes/api/generate-weapon/+server";
     import { defaultWeaponRarityConfigFactory } from "../generators/weaponGenerator/weaponGeneratorConfigLoader";
-    import type { WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
+    import { type WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
     import { calcOdds } from "../util/configUtils";
-    import { getOddsFromURL, isValidOdds } from "../util/getFromURL";
+    import { getOddsFromURL } from "../util/getFromURL";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
     let version = $state(getVersionFromURL());
     let weaponID = $state(getIDFromURL());
     let odds = $state(getOddsFromURL());
 
-    let weapon = $state<WeaponViewModel | null>(null);
+    let weaponState = $state<{
+        req: GenerateWeaponRequest;
+        res?: GenerateWeaponResponse;
+    } | null>(null);
+
+    const weapon = $derived.by<WeaponViewModel | null>(() => {
+        if (odds === null || !weaponState?.res) {
+            // no response, no weapon
+            return null;
+        } else {
+            // otherwise get the active weapon for this response
+
+            // legendary
+            if (odds[3] < weaponState.res.n) {
+                return weaponState.res.weapons.legendary;
+            } else if (odds[2] < weaponState.res.n) {
+                return weaponState.res.weapons.epic;
+            } else if (odds[1] < weaponState.res.n) {
+                return weaponState.res.weapons.rare;
+            } else if (odds[0] < weaponState.res.n) {
+                return weaponState.res.weapons.uncommon;
+            } else {
+                return weaponState.res.weapons.common;
+            }
+        }
+    });
 
     // set up event listeners
     onMount(async () => {
@@ -35,38 +64,46 @@
             }
             // take a copy of the parts of the UI state that determine the weapon at the time the request was made
             const v = searchParams.get("v");
-            const forParams = {
-                weaponID: searchParams.get("id"),
-                version: v !== null ? Number.parseFloat(v) : v,
-                odds: searchParams.getAll("o").map((x) => Number.parseFloat(x)),
+            const newReq = {
+                id: searchParams.get("id"),
+                v: v === null ? NaN : Number.parseInt(v),
             };
 
-            // if these params correspond to a valid weapon, make the call
+            // if these params correspond to a valid set of weapons, and it isn't the currently held set of weapons, make the call
             if (
-                forParams.weaponID !== null &&
-                forParams.version !== null &&
-                isValidOdds(forParams.odds)
+                newReq.id !== null &&
+                newReq.v !== null &&
+                !_.isEqual(newReq, weaponState?.req)
             ) {
+                console.log(newReq, weaponState?.req);
                 try {
+                    // take just the ID & version from the current searchParams, to post to the API
+                    const filteredParams = new URLSearchParams(
+                        _.pick(Object.fromEntries(searchParams.entries()), [
+                            "id",
+                            "v",
+                        ]),
+                    );
                     const res = await fetch(
-                        `/api/generate-weapon?${searchParams.toString()}`,
+                        `/api/generate-weapon?${filteredParams}`,
                     );
                     if (res.status === StatusCodes.OK) {
                         // if this still matches the UI state
-                        if (
-                            _.isEqual(forParams.odds, odds) &&
-                            forParams.version === version &&
-                            forParams.weaponID === weaponID
-                        ) {
+                        if (newReq.v === version && newReq.id === weaponID) {
                             const resBody = await res.json();
-                            weapon = resBody as unknown as WeaponViewModel;
+                            weaponState = {
+                                req: { id: newReq.id, v: newReq.v },
+                                res: resBody as unknown as GenerateWeaponResponse,
+                            };
                         }
                     }
                 } catch (e) {
                     console.error(e);
+                    weaponState = {
+                        req: { id: newReq.id, v: newReq.v },
+                        res: undefined,
+                    };
                 }
-            } else {
-                weapon = null;
             }
         });
 
