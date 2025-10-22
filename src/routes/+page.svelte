@@ -2,13 +2,20 @@
     import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
+    import { writable } from "svelte/store";
 
     let config = $state(defaultWeaponRarityConfigFactory());
+    const configWritable = writable(config);
+
+    configWritable.subscribe((newVal) => {
+        config = newVal;
+        // TODO also update the URL
+    });
 </script>
 
 <h1>Generator Test</h1>
 <WeaponGenerator {config} />
-<ConfigSidebar configWritable={config} />
+<ConfigSidebar {configWritable} />
 
 <style>
     :global(h1, h2) {
