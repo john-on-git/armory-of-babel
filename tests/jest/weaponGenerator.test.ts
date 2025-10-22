@@ -114,10 +114,10 @@ describe('Weapon Generator', () => {
 
     it('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
-            return weapon.damage.d6 !== undefined && weapon.damage.d6 >= 2 && weapon.description.includes("glows with arcane energy");
+            return weapon.active.powers.filter((x) => x.desc === "Wrap" || x.desc === "Animal Transformation").length === 2;
         }
-        const start = 2000;
-        const attempts = 10_000;
+        const start = 20_000;
+        const attempts = 1;
 
         const end = start + attempts;
         let i = start;

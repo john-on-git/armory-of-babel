@@ -132,7 +132,13 @@ function structureDescFor(shape: WeaponShape) {
     return structuredDesc as StructuredDescription;
 }
 
-function hasUUIDs(weapon: Weapon, expectedUUIDs: readonly string[]) {
+/**
+ * Determine whether a weapon has any of a set of UUIDs.
+ * @param weapon the weapon
+ * @param expectedUUIDs the UUIDs to check for
+ * @returns true if it has any of the UUIDs, otherwise false
+ */
+export function hasUUIDs(weapon: Weapon, expectedUUIDs: readonly string[]) {
     const actualUUIDS = gatherUUIDs(weapon);
     for (const UUID of expectedUUIDs) {
         if (actualUUIDS.has(UUID)) {

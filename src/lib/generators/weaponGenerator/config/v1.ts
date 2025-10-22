@@ -3,7 +3,7 @@ import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiv
 import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
-import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { genMaybeGen, hasUUIDs, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type DescriptorGenerator, type DescriptorType, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
@@ -201,7 +201,7 @@ export default {
                 { never: true }
             ),
             ...(wildAnimalArr.map(({ article, singular, plural }) =>
-                new ProviderElement<DescriptorGenerator, { never: true }>(`carved-resembling-${singular.toLowerCase()}`,
+                new ProviderElement<DescriptorGenerator, { never: true }>(`carved-resembling-${singular.toLowerCase().replaceAll(/\s+/g, '-')}`,
                     {
                         yields: 'feature',
                         generate: () => ({
@@ -1223,6 +1223,19 @@ export default {
                 }
             ),
 
+            new ProviderElement('misc-dark-coating',
+                {
+                    yields: 'feature',
+                    generate: (rng) => genMaybeGen<PartFeature, []>([
+                        MISC_DESC_FEATURES.coating.edgyPhrase,
+                        MISC_DESC_FEATURES.coating.edgyImage,
+                    ].choice(rng), rng),
+                    applicableTo: { any: businessEndParts }
+                },
+                {
+                    themes: { any: ['dark'] },
+                }
+            ),
 
             new ProviderElement('material-light-holding',
                 {
@@ -1710,6 +1723,17 @@ export default {
     },
     personalities: {
         add: [
+            new ProviderElement("pacifist",
+                {
+                    desc: "Pacifist."
+                },
+                {
+                    themes: { none: ["dark"] },
+                    // require some other personalities so that this one is unusually rare
+                    UUIDs: { any: ['kind', 'honest'] }
+
+                }
+            ),
             new ProviderElement("jealous",
                 {
                     desc: "Jealous."
@@ -1756,38 +1780,89 @@ export default {
 
                 }
             ),
+            new ProviderElement<Personality, WeaponPowerCond>("logical",
+                {
+                    desc: "Logical."
+                },
+                {
+                    themes: {
+                        any: ["wizard", "light", "steampunk"]
+                    },
+
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("black-and-white-thinker",
+                {
+                    desc: "Black & White Thinker."
+                },
+                {
+                    themes: {
+                        any: ["ice", "light"]
+                    },
+
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("kind",
+                {
+                    desc: "Kind."
+                },
+                {
+                    themes: {
+                        any: ["fire", "sweet", "nature"]
+                    },
+
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("honest",
+                {
+                    desc: "Honest."
+                },
+                {
+                    themes: {
+                        any: ["fire", "light", "earth", "nature"]
+                    },
+
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("merciless",
+                {
+                    desc: "Merciless."
+                },
+                {
+                    themes: {
+                        any: ["ice", "sour", "dark"]
+                    },
+
+                }
+            ),
+            // if a personality is in here, it must only be present once. If it's in two themes add it as above
+            // otherwise a weapon can have the same personality twice
             ...toProviderSource({
                 fire: [
                     "compassionate",
                     "flirty",
                     "standoffish",
                     "short fuse",
-                    "kind",
-                    "honest",
                 ],
                 ice: [
                     "cold",
                     "formal",
                     "haughty",
-                    "merciless",
                     "reserved",
                     "serious",
                     "stubborn",
-                    "Black & White Thinker"
                 ],
                 cloud: [
                     "easy-going",
                     "acquiescent",
                 ],
                 sweet: [
-                    "kind",
                     "excitable",
                     "manic",
                     "neurotic",
                 ],
                 sour: [
                     "antagonistic",
-                    "merciless",
                     "manic",
                     "sassy"
                 ],
@@ -1801,11 +1876,8 @@ export default {
                     "enjoys provoking others"
                 ],
                 light: [
-                    "logical",
-                    "honest",
                     "pious",
                     "zealous",
-                    "Black & White Thinker"
                 ],
                 wizard: [
                     "overconfident"
@@ -1842,6 +1914,12 @@ export default {
     },
     rechargeMethods: {
         add: [
+            new ProviderElement(`defeat-foe`,
+                {
+                    desc: `a charge when used to defeat a foe`
+                },
+                {}
+            ),
             new ProviderElement(`recharge-at-winter-solstice`,
                 {
                     desc: `all charges at noon on the winter solstice`
@@ -1887,7 +1965,7 @@ export default {
                     light: [
                         `all charges after an hour in a sacred space`,
                         `all charges each day at sunrise`,
-                        mkGen(rng => `one charge each time you defeat ${singularUnholyFoe.generate(rng)}`,)
+                        mkGen(rng => `one charge each time you defeat ${singularUnholyFoe.generate(rng)}`)
                     ],
                     sweet: [
                         mkGen((_, weapon: Weapon) => `all charges each time ${pronounLoc[weapon.pronouns].singular.possessive} wielder hosts a feast`),
@@ -1933,16 +2011,25 @@ export default {
     actives: {
         add: [
             new ProviderElement("pin-to-wall",
-                mkGen((_, weapon) => ({
-                    desc: "Wrap",
-                    cost: 1,
-                    additionalNotes: [
-                        `Upon a hit, you ${weapon.sentient ? "signal" : "will"} the weapon to bind the target.`,
-                        `Its shaft coils around the target${weapon.themes.includes('nature') ? " like a snake, binding" : "'s body to bind"} them in place.`,
-                        "They may save at the end of each of their turns to break free of the weapon."
-                    ],
-                    ...(weapon.themes.includes('nature') ? { descriptorPartGenerator: 'carved-resembling-python' } : {})
-                })),
+                mkGen((_, weapon) => {
+                    // If it has an animal transformation, it must be into a snake.
+                    // Not having one is also fine, because we could roll the transformation later, and that ability will link in with the python desc we add here.
+                    const hasAnimalTransformation = hasUUIDs(weapon, ['weapon-animal-transformation']);
+                    const isSnakelike = !hasUUIDs(weapon, ['carved-resembling-python', 'carved-resembling-cobra', 'carved-resembling-snake']);
+                    const validForSnakeMode = !hasAnimalTransformation || isSnakelike;
+
+                    return {
+                        desc: "Wrap",
+                        cost: 1,
+                        additionalNotes: [
+                            `Upon a hit, you ${weapon.sentient ? "signal" : "will"} the weapon to bind the target.`,
+                            `Its shaft coils around the target${validForSnakeMode ? " like a snake, binding" : "'s body to bind"} them in place.`,
+                            "They may save at the end of each of their turns to break free of the weapon."
+                        ],
+                        // only add the descriptor if it's not snakelike, or it will conflict
+                        ...(!isSnakelike ? { descriptorPartGenerator: 'carved-resembling-python' } : {}),
+                    }
+                }),
                 {
                     shapeFamily: { any: ['spear'] },
                 }
@@ -1967,7 +2054,7 @@ export default {
                     desc: "Compelled Duel",
                     cost: "at will",
                     additionalNotes: [
-                        "You challenge another character to a duel, and the weapon's magic compels them to agree.",
+                        "You challenge another (armed) character to a duel, and the weapon's magic compels them to agree.",
                         "Until one of you is defeated, neither of you can attack any other characters.",
                         "If both duellists' weapons use charges, the winner's weapon absorbs all charges of the loser's weapon."
                     ]
@@ -1980,7 +2067,7 @@ export default {
                         desc: "Revealing Shot",
                         cost: 1,
                         additionalNotes: [
-                            "You empower a shot to reveal the unseen. The target cannot be affected by magical illusions, such as invisibility.",
+                            "You empower a shot to reveal the unseen. The target cannot be affected by magical illusions, such as invisibility,.",
                             "Targets may save to ignore the effect. Once it's applied, they save at the end of each of their turns, ending it upon a success."
                         ]
                     }
@@ -1988,7 +2075,7 @@ export default {
                         desc: "Flare",
                         cost: 3,
                         additionalNotes: [
-                            "You fire a flare from the weapon's tip, which targets everything it illuminates. Target cannot be affected by magical illusions such as invisibility.",
+                            "You fire a flare from the weapon's tip, which targets everything it illuminates. Targets cannot be affected by magical illusions such as invisibility.",
                             "Targets may save to ignore the effect. Once it's applied, they save at the end of each of their turns, ending it upon a success."
                         ]
                     }),
@@ -2261,19 +2348,29 @@ export default {
                         legendary: "1d12"
                     } as const satisfies Record<WeaponRarity, `1d${CommonDieSize}`>;
 
-                    const desc = weapon.shape.group === "greataxe (or musket)"
-                        ? "Hold Breath"
-                        : rangedWeaponShapeFamilies.includes(weapon.shape.group as (typeof rangedWeaponShapeFamilies)[number])
-                            ? "Focus Shot"
-                            : "Focus Strike";
+                    if (weapon.shape.group === "greataxe (or musket)") {
+                        return {
+                            desc: "Hold Breath",
+                            cost: 1,
+                            additionalNotes: [
+                                `You hold your breath to steady your aim, granting +${bonusByRarity[weapon.rarity]} to hit this attack.`
+                            ]
+                        }
+                    }
+                    else {
+                        const desc =
+                            rangedWeaponShapeFamilies.includes(weapon.shape.group as (typeof rangedWeaponShapeFamilies)[number])
+                                ? "Focus Shot"
+                                : "Focus Strike";
 
-                    return {
-                        desc,
-                        cost: 1,
-                        additionalNotes: [
-                            `${weapon.sentient === false ? "The weapon magically sharpens your focus" : "You mentally sync with the weapon"}, granting +${bonusByRarity[weapon.rarity]} to hit this attack.`
-                        ]
-                    };
+                        return {
+                            desc,
+                            cost: 1,
+                            additionalNotes: [
+                                `${weapon.sentient === false ? "The weapon magically sharpens your focus" : "You mentally sync with the weapon"}, granting +${bonusByRarity[weapon.rarity]} to hit this attack.`
+                            ]
+                        };
+                    }
                 }),
                 {}
             ),
@@ -2414,6 +2511,29 @@ export default {
                     }
                 }
             ),
+            new ProviderElement("disease-strike",
+                mkGen((rng, weapon) => {
+                    const [desc, additional] = ([
+                        ['Inflict Scurvy', 'scurvy'], ['Inflict Plague', 'the black death'], ['Inflict Consumption', 'tuberculosis'],
+                        ['Inflict Pox', 'smallpox'], ['Unfortunate News', 'coronavirus'],
+                        ['Inflict Ebola', 'ebola'], ['Inflict Malaria', 'malaria'], ['Inflict Leprosy', 'leprosy'],
+                        ['Inflict Tetanus', 'super-tetanus'], ['Inflict Toxiplasmosis', 'hyper-toxiplasmosis (-15 to social saves against felines)'],
+                        ...(gte(weapon.rarity, 'rare') ? [['Turn Rabid', 'rabies'], ['Inflict Rage', 'the rage virus']] as const : [])
+                    ] as const satisfies ((readonly [string, string])[])).choice(rng);
+
+                    return {
+                        desc,
+                        cost: 2,
+                        additionalNotes: [
+                            `Upon landing a blow, you empower it to inflict disease. The target must save or contract ${additional}.`,
+                        ]
+                    }
+                }),
+                {
+                    themes: { any: ["sour", "nature"] },
+                    UUIDs: { none: ['caustic-strike'] }
+                }
+            ),
             new ProviderElement("caustic-strike",
                 {
                     desc: "Mailleburn",
@@ -2477,6 +2597,7 @@ export default {
                     const effects = {
                         fire: { title: "Lingering Flames", desc: "fire" },
                         sour: { title: "Caustic Chain", desc: "acid" },
+                        nature: { title: "Toxicity", desc: "poison" }
                     } satisfies Partial<Record<Theme, { title: string, desc: string }>>;
 
                     const effect = pickForTheme(weapon as WeaponGivenThemes<['fire' | 'sour']>, effects, rng).chosen;
@@ -2491,7 +2612,7 @@ export default {
                     }
                 }),
                 {
-                    themes: { any: ["fire", "sour"] }
+                    themes: { any: ["fire", "sour", "nature"] }
                 }
             ),
             new ProviderElement("instant-castle",
@@ -2548,8 +2669,9 @@ export default {
                 }
             ),
             new ProviderElement("weapon-animal-transformation",
-                mkGen(rng => {
-                    const { article, singular } = singularWildAnimalStructured.generate(rng);
+                mkGen((rng, weapon) => {
+                    // if we already have the spear snake ability "pin-to-wall", link with that
+                    const { article, singular } = hasUUIDs(weapon, ['carved-resembling-python']) ? { article: 'a', singular: 'python' } as const : singularWildAnimalStructured.generate(rng);
 
                     return {
                         desc: "Animal Transformation",
@@ -2558,17 +2680,13 @@ export default {
                             `The weapon transforms into ${article} ${singular} until the end of the scene, or until it dies.`,
                             "You can command it to turn back into its regular form early."
                         ],
-                        descriptorPartGenerator: `carved-resembling-${singular.toLowerCase()}`
+                        descriptorPartGenerator: `carved-resembling-${singular.toLowerCase().replaceAll(/\s+/g, '-')}`
                     };
                 }),
                 {
                     themes: { any: ["nature"], },
-                    rarity: {
-                        lte: 'rare'
-                    },
-                    UUIDs: {
-                        none: ['summon-animal-weak', 'summon-animal-strong']
-                    }
+                    rarity: { lte: 'rare' },
+                    UUIDs: { none: ['summon-animal-weak', 'summon-animal-strong'] }
                 }
             ),
             new ProviderElement("blast",
@@ -2862,14 +2980,45 @@ export default {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("magic-shield",
-                {
-                    desc: "Magic Shield",
-                    cost: 2
-                },
-                {
-                    themes: { any: ["wizard"] },
-                }
+            new ProviderElement("parry",
+                mkGen((rng, weapon) => {
+                    type ParryPartial = Pick<ActivePower, 'desc'> & { reasons: string[] };
+
+                    const byTheme = {
+                        wizard: {
+                            desc: "Magic Shield",
+                            reasons: ["the weapon projects a magical force-field"]
+                        },
+                        light: {
+                            desc: "Spirit Step",
+                            reasons: ["you briefly duck into the spirit realm"]
+                        },
+                        dark: {
+                            desc: "Shadow Step",
+                            reasons: ["you briefly duck into the shadow realm"]
+                        },
+                        earth: {
+                            desc: "Stoneskin",
+                            reasons: ["you briefly turn as hard as stone"]
+                        },
+                        fire: {
+                            desc: "Steelskin",
+                            reasons: ["you briefly turn as hard as steel"]
+                        }
+                    } as const satisfies Partial<Record<Theme, ParryPartial>>;
+
+                    const partial = pickForTheme(weapon, byTheme, rng)?.chosen ?? {
+                        desc: "Parry",
+                        reasons: ["the weapon magically guides your hand to parry the blow"]
+                    } satisfies ParryPartial;
+
+                    return {
+                        desc: partial.desc,
+                        additionalNotes: [`In response to being attacked, ${partial.reasons.choice(rng)}.`, "The attacker suffers -5 to hit."],
+                        cost: 2
+                    }
+                }),
+                {}
             ),
             new ProviderElement("magic-parry",
                 {
@@ -3541,7 +3690,8 @@ export default {
                         desc,
                         cost: `a charge per month that an expert would need to produce a regular version of the object, rounding up`,
                         additionalNotes: [
-                            `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}. Initially intangible, it finishes solidifying at the start of your next turn.`,
+                            `${howItsMade} a facsimile of an object of your choice.`,
+                            `It's made ${madeOf}. Initially intangible, it finishes solidifying at the start of your next turn.`,
                             "Only replicates the form of the object, not any special functions. Its magical nature is obvious at a glance."
                         ]
                     }
@@ -3565,6 +3715,67 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("attack-on-kill",
+                {
+                    miscPower: true,
+                    desc: `Whenever the wielder defeats a foe, they may immediately make another attack.`,
+                },
+                {
+                    rarity: { gte: 'rare' },
+                    shapeFamily: { none: rangedWeaponShapeFamilies }
+                }
+            ),
+            new ProviderElement("move-on-kill",
+                mkGen((rng, weapon) => {
+                    const distanceByRarity = {
+                        common: [10],
+                        uncommon: [10],
+                        rare: [10],
+                        epic: [10, 10, 10, 10, 20],
+                        legendary: [10, 10, 10, 20]
+                    } satisfies Record<WeaponRarity, number[]>;
+
+                    const distance = distanceByRarity[weapon.rarity].choice(rng);
+
+                    const actions = ["move", "leap"] as const;
+                    const actionByRarity = {
+                        common: [0,],
+                        uncommon: [0, 0, 0, 0, 0, 1],
+                        rare: [0, 0, 0, 1],
+                        epic: [0, 0, 1],
+                        legendary: [0, 1]
+                    } as const satisfies Record<WeaponRarity, (0 | 1)[]>;
+
+                    const action = actions[actionByRarity[weapon.rarity].choice(rng)];
+
+                    const withoutTriggeringOpporunity = gte(weapon.rarity, 'epic') ? ' (without triggering opportunity attacks)' as const : '' as const;
+
+                    return {
+                        miscPower: true,
+                        desc: `Whenever the wielder defeats a foe, they may immediately ${action} up to ${distance}-ft${withoutTriggeringOpporunity}.`,
+                    }
+                }),
+                {}
+            ),
+            new ProviderElement("temp-hp-on-kill",
+                mkGen((rng, weapon) => {
+                    const dieSizeByRarity = {
+                        common: [4, 4, 4, 4, 6, 6],
+                        uncommon: [4, 4, 6, 6, 6, 6],
+                        rare: [4, 6, 6, 6, 8, 8, 10],
+                        epic: [8, 8, 10, 10, 10, 10, 12],
+                        legendary: [8, 10, 10, 10, 10, 12, 12, 12, 12]
+                    } satisfies Record<WeaponRarity, CommonDieSize[]>;
+
+                    const dieSize = dieSizeByRarity[weapon.rarity].choice(rng);
+
+                    return {
+                        miscPower: true,
+                        desc: `Whenever the wielder defeats a foe, they gain 1d${dieSize} temporary hit points.`,
+                    }
+                }),
+                {}
+            ),
             new ProviderElement("damage-bonus-wizard",
                 {
                     miscPower: true,
@@ -3951,6 +4162,7 @@ export default {
                     };
                 }),
                 {
+                    themes: { any: ['dark'] },
                     UUIDs: { none: ['bonus-vs-stronger'] }
                 }
             ),
@@ -4242,6 +4454,28 @@ export default {
                 },
                 {
                     themes: { any: ["sweet"] }
+                }
+            ),
+            new ProviderElement("resistance-poison",
+                {
+                    miscPower: true,
+                    desc: "The effects of poison on the wielder are halved."
+
+                },
+                {
+                    themes: { any: ["nature"] },
+                    rarity: {
+                        lte: "uncommon"
+                    }
+                }
+            ),
+            new ProviderElement("immunity-poison",
+                {
+                    miscPower: true,
+                    desc: "Wielder is immune to poison."
+                },
+                {
+                    themes: { any: ["nature"] }
                 }
             ),
             new ProviderElement("expertise-alchemy",
