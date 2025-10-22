@@ -1,3 +1,4 @@
+// this allows passing null or undefined even when T doesn't allow them
 type RecursivePartial<T> = {
     [k in keyof T]?: T[k] extends object
     ? RecursivePartial<T[k]>
