@@ -5,17 +5,21 @@ describe('VersionController', () => {
         interface Stats {
             atk: number;
             def: number;
+            maxTimeOnLand?: number;
         }
 
         class Animal extends Patchable {
             species: string;
             stats: Stats | null;
 
-            constructor(UUID: string, species: string, stats: Stats | null) {
+            favFoods?: string[]
+
+            constructor(UUID: string, species: string, stats: Stats | null, favFoods?: string[]) {
                 super(UUID);
 
                 this.species = species;
                 this.stats = stats;
+                this.favFoods = favFoods;
             }
         }
 
@@ -71,13 +75,15 @@ describe('VersionController', () => {
             animals: {
                 modify: {
                     'not-a-key': { species: 'seaweed' },
-                    'sea-herbivore': { stats: { def: 30 } }
+                    'sea-herbivore': { stats: { def: 30 } },
+                    'land-carnivore': { favFoods: ['dragonfly', 'fish'] }
                 }
             }
         }, {
             animals: {
                 modify: {
-                    'sea-herbivore': { stats: null }
+                    'sea-herbivore': { stats: null },
+                    'land-carnivore': { stats: { maxTimeOnLand: 10 }, favFoods: ['dragonfly', 'fish', 'mouse'] }
                 }
             }
         }], (x) => x);
@@ -109,7 +115,7 @@ describe('VersionController', () => {
             ],
             animals: [
                 new Animal('sea-herbivore', 'trilobite', { atk: 0, def: 30 }),
-                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
+                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5, }, ['dragonfly', 'fish'])
             ]
         });
 
@@ -120,7 +126,7 @@ describe('VersionController', () => {
             ],
             animals: [
                 new Animal('sea-herbivore', 'trilobite', null),
-                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
+                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5, maxTimeOnLand: 10 }, ['dragonfly', 'fish', 'mouse'])
             ]
         });
 
