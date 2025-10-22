@@ -8,7 +8,7 @@ import _ from "lodash";
 import seedrandom, { type PRNG } from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { commonDieSizes, type DamageDice, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { commonDieSizes, type DamageDice, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, type WeaponShapeGroup, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 
 /**
@@ -452,8 +452,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         pronouns: isSentient ? (['enby', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm'] satisfies Pronouns[]).choice(rng) : 'object',
         name: '',
         shape: {
-            particular: "sword",
-            group: "sword"
+            particular: "",
+            group: "" as WeaponShapeGroup
         },
         damage: {
             as: 'sword',
@@ -481,7 +481,13 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     /*
      * Draw themes for the weapon, until we have enough to cover our target number of powers.
-     * Note, since it's possible for powers to increase the number of powers, this could still theoretically fail, but it's not very likely.
+     * Note, for various reasons, this could still theoretically fail, but it's not very likely.
+     * The whole thing is a Markov process, and we can't look ahead with certainty.
+     * 
+     * i.e. 
+     * it's possible for powers to increase the number of powers,
+     * weapon themes can depend on other factors than just the theme,
+     * abilities can exclude or require each other
      */
     const unusedThemes = new Set<Theme>(featureProviders.themeProvider); // this could be a provider but whatever go my Set<Theme>
     const minThemes =
@@ -495,7 +501,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         featureProviders.passivePowerProvider.available(weapon).size < params.nPassive
     ) {
         const choice = unusedThemes.choice(rng);
-        if (choice != undefined) {
+        if (choice !== undefined) {
             unusedThemes.delete(choice);
             weapon.themes.push(choice);
         }
@@ -542,18 +548,25 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // draw passive powers
     for (let i = 0; i < params.nPassive; i++) {
-        const choice = featureProviders.passivePowerProvider.draw(rng, weapon);
-        const gennedChoice = genMaybeGen(choice, rng, weapon);
-        if (gennedChoice != undefined) {
-            weapon.passivePowers.push({
-                UUID: choice.UUID,
-                ...gennedChoice,
-                desc: genMaybeGen(gennedChoice.desc, rng, weapon)
-            });
+        try {
+            const choice = featureProviders.passivePowerProvider.draw(rng, weapon);
+            const gennedChoice = genMaybeGen(choice, rng, weapon);
+            if (gennedChoice != undefined) {
+                weapon.passivePowers.push({
+                    UUID: choice.UUID,
+                    ...gennedChoice,
+                    desc: genMaybeGen(gennedChoice.desc, rng, weapon)
+                });
 
-            // apply all the update requests that were attached to the power
-            nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
-            applyBonuses(weapon, gennedChoice.bonus);
+                // apply all the update requests that were attached to the power
+                nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+                applyBonuses(weapon, gennedChoice.bonus);
+            }
+        }
+        catch (e) {
+            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more 
+            console.error(e);
+            break;
         }
     }
 
@@ -564,33 +577,47 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         desc: genMaybeGen(rechargeMethodChoice.desc, rng, weapon)
     };
     for (let i = 0; i < params.nActive; i++) {
-        const choice = featureProviders.activePowerProvider.draw(rng, weapon);
-        if (choice != undefined) {
-            const gennedChoice = genMaybeGen(choice, rng, weapon);
-            weapon.active.powers.push({
-                UUID: choice.UUID,
-                ...gennedChoice
-            });
+        try {
+            const choice = featureProviders.activePowerProvider.draw(rng, weapon);
+            if (choice != undefined) {
+                const gennedChoice = genMaybeGen(choice, rng, weapon);
+                weapon.active.powers.push({
+                    UUID: choice.UUID,
+                    ...gennedChoice
+                });
 
-            // apply all the update requests that were attached to the power
-            nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
-            applyBonuses(weapon, gennedChoice.bonus);
+                // apply all the update requests that were attached to the power
+                nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+                applyBonuses(weapon, gennedChoice.bonus);
+            }
+        }
+        catch (e) {
+            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more 
+            console.error(e);
+            break;
         }
     }
 
     for (let i = 0; i < params.nUnlimitedActive; i++) {
-        const choice = featureProviders.activePowerProvider.draw(rng, weapon);
-        if (choice != undefined) {
-            const gennedChoice = genMaybeGen(choice, rng, weapon)
-            weapon.active.powers.push({
-                UUID: choice.UUID,
-                ...gennedChoice,
-                cost: 'at will',
-            });
+        try {
+            const choice = featureProviders.activePowerProvider.draw(rng, weapon);
+            if (choice != undefined) {
+                const gennedChoice = genMaybeGen(choice, rng, weapon)
+                weapon.active.powers.push({
+                    UUID: choice.UUID,
+                    ...gennedChoice,
+                    cost: 'at will',
+                });
 
-            // apply all the update requests that were attached to the power
-            nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
-            applyBonuses(weapon, gennedChoice.bonus);
+                // apply all the update requests that were attached to the power
+                nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+                applyBonuses(weapon, gennedChoice.bonus);
+            }
+        }
+        catch (e) {
+            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more 
+            console.error(e);
+            break;
         }
     }
 
