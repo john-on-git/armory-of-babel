@@ -16,7 +16,7 @@ function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponR
     const asReq = maybeReq as GenerateWeaponRequest;
 
     return (
-        typeof (asReq.id) === 'string' &&
+        typeof (asReq.id) === 'string' && asReq.id !== '' &&
 
         typeof asReq.version === 'number' &&
         !Number.isNaN(asReq.version) && Number.isFinite(asReq.version) &&
