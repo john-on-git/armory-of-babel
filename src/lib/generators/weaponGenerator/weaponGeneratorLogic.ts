@@ -303,10 +303,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         themes: weapon.themes,
         rarity: weapon.rarity,
         name: weapon.name,
-        shape: {
-            group: weapon.shape.group,
-            particular: weapon.shape.particular,
-        },
         damage: weapon.damage,
         toHit: weapon.toHit,
         active: {
