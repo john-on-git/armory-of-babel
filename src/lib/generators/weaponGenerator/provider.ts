@@ -57,11 +57,6 @@ export class UUIDIssuer {
     }
 
     Issue<T extends object>(x: T): WithUUID<T> {
-        // try {
-        //     const genStr = (x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(seedrandom());
-        //     console.log('will issue UUID', this.count, 'for', genStr((x as any)?.thing?.desc));
-        // }
-        // catch(e){}
         return {
             ...x,
             UUID: this.count++,

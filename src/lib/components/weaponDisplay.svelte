@@ -227,7 +227,7 @@
     }
     .weapon-display-sentient-info {
         border: 2pt solid #ffffff47;
-        border-radius: 10pt;
+        border-radius: 8px;
 
         padding: 10pt;
     }
@@ -246,21 +246,5 @@
     .weapon-generator-row-flex > * {
         padding: 0;
         margin: 0;
-    }
-
-    .weapon-rarity-common {
-        color: white;
-    }
-    .weapon-rarity-uncommon {
-        color: var(--color-uncommon);
-    }
-    .weapon-rarity-rare {
-        color: var(--color-rare);
-    }
-    .weapon-rarity-epic {
-        color: var(--color-epic);
-    }
-    .weapon-rarity-legendary {
-        color: var(--color-legendary);
     }
 </style>
