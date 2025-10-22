@@ -239,8 +239,9 @@ function tryPushProvider(UUID: string | undefined, featureDescriptorProviders: S
 
 /**
  * Apply a descriptorPartGenerator to the weapon, if one was requested.
+ * @returns the number of descriptors that were applied to the weapon as a result of calling the function
  */
-function descriptorPartGenerator(weapon: Weapon, rng: PRNG, descriptorPartGenerator: string[] | string | undefined, featureDescriptorProviders: Set<string>, descriptorIndex: Record<string, DescriptorGenerator & { UUID: string }>, silent: boolean = false) {
+function descriptorPartGenerator(weapon: Weapon, rng: PRNG, descriptorPartGenerator: string[] | string | undefined, featureDescriptorProviders: Set<string>, descriptorIndex: Record<string, DescriptorGenerator & { UUID: string }>, silent: boolean = false): 1 | 0 {
 
     const alreadySeenProviders = (UUIDSource: string | string[] = []): boolean => UUIDSource instanceof Array ? UUIDSource.some(x => featureDescriptorProviders.has(x)) : featureDescriptorProviders.has(UUIDSource);
     const pushProviders = (UUIDSource: string | string[] = []): void => UUIDSource instanceof Array ? UUIDSource.forEach(x => tryPushProvider(x, featureDescriptorProviders, descriptorIndex, silent)) : tryPushProvider(UUIDSource, featureDescriptorProviders, descriptorIndex, silent);
@@ -255,6 +256,10 @@ function descriptorPartGenerator(weapon: Weapon, rng: PRNG, descriptorPartGenera
             applyAllDescriptionPartProviders(weapon, rng, descriptorPartGenerator);
         }
         pushProviders(descriptorPartGenerator);
+        return 1;
+    }
+    else {
+        return 0;
     }
 }
 
@@ -410,6 +415,8 @@ const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
 export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity, silent = false): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
+    let nDescriptors = 0;
+
     // features may provide pieces of description. they are stored here so we don't have to gather UUIDs.
     // this doesn't really matter rn because we do this constantly anyway when checking conds, but maybe in the future :(
     const featureDescriptorProviders = new Set<string>();
@@ -545,7 +552,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             });
 
             // apply all the update requests that were attached to the power
-            descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+            nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
             applyBonuses(weapon, gennedChoice.bonus);
         }
     }
@@ -566,7 +573,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             });
 
             // apply all the update requests that were attached to the power
-            descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+            nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
             applyBonuses(weapon, gennedChoice.bonus);
         }
     }
@@ -582,7 +589,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             });
 
             // apply all the update requests that were attached to the power
-            descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+            nDescriptors += descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
             applyBonuses(weapon, gennedChoice.bonus);
         }
     }
@@ -597,8 +604,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
      * Generate the rest of the structured description.
      */
 
-    const maxDescriptors = Math.min(weapon.themes.length, numParts(weapon.description)) * (1 + Math.floor(rng() * 2));
-    let nDescriptors = 0;
+    const maxDescriptors = Math.min(weapon.themes.length, numParts(weapon.description)) * (Math.ceil(rng() * 2));
 
     // first, apply theme-based descriptors, up to the cap
     while (nDescriptors < maxDescriptors) {
