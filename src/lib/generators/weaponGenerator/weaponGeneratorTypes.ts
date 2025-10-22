@@ -266,7 +266,7 @@ interface SharedAtom {
      *      pre: 'Fiery'
      * } 
      * const myOtherEphitet = {
-     *      post: 'of the Volcano'
+     *      post: ' of the Volcano'
      * } 
      */
     ephitet?: {
@@ -400,7 +400,7 @@ const shapeToStructure = {
     "axe": 'axeLike',
     "mace": 'maceLike',
 
-    "greataxe": 'swordLike',
+    "greataxe": 'axeLike',
     "greatsword": 'swordLike',
 
     "spear": 'spearLike',

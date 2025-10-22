@@ -327,7 +327,7 @@ export default {
                         return [
                             MATERIALS["meteoric iron"],
                             MATERIALS.silver,
-                            MATERIALS.iceLikeSteel,
+                            MATERIALS.glassLikeSteel
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -1065,7 +1065,7 @@ export default {
             new ProviderElement('elemental-quadblade', {
                 generate: () => ({
                     material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
-                    ephitet: { post: 'of the Elemental Lord' }
+                    ephitet: { post: ' of the Elemental Lord' }
                 }),
                 applicableTo: {
                     any: importantPart
@@ -1172,7 +1172,7 @@ export default {
                                 singular: " hurts to look at. When it moves it leaves behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles",
                                 plural: " hurt to look at. When they move it leaves  behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles"
                             },
-                            ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: `of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
+                            ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1565,7 +1565,7 @@ export default {
                     "Detail-Oriented"
                 ]
             }, (theme, personality, i) => {
-                const formatted = personality.capWords() + ".";
+                const formatted = personality.toTitleCase() + ".";
                 return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
                     {
                         desc: formatted
@@ -2585,7 +2585,7 @@ export default {
             new ProviderElement("summon-structure0",
                 mkGen((rng, weapon) => {
                     const effects = {
-                        ice: ['Ice maker', 'Call forth a tempest of frigid air, which freezes into', 'of solid ice'],
+                        ice: ['Ice Maker', 'Call forth a tempest of frigid air, which freezes into', 'of solid ice'],
                         fire: ['Pile of Glass', 'Molten glass bursts from the weapon, levitating into place to form', 'entirely of glass'],
 
                         light: ['Fantasy Form', 'Light emanates from the weapon, forming', 'of hard-light'],
@@ -3034,7 +3034,7 @@ export default {
             new ProviderElement("attack-wisps",
                 {
                     miscPower: true,
-                    desc: "Each hit you land with the weapon generates a wisp. On your turn, you can launch any number of wisps at no cost. d4 damage, range as bow.",
+                    desc: "Each hit you land with the weapon generates a wisp, which dissipate when combat ends. On your turn, you can launch any number of wisps (instantly / as no action). d4 damage, range as bow.",
                 },
                 {
                     themes: { any: ["wizard"] },
@@ -3064,6 +3064,9 @@ export default {
                     themes: { any: ["steampunk"] },
                     shapeFamily: {
                         none: shapeFamiliesWithoutPommels
+                    },
+                    UUIDs: {
+                        none: ['integrated-clock']
                     }
                 }
             ),
@@ -3077,6 +3080,9 @@ export default {
                     themes: { any: ["steampunk"] },
                     shapeFamily: {
                         none: shapeFamiliesWithoutPommels
+                    },
+                    UUIDs: {
+                        none: ['integrated-compass']
                     }
                 }
             ),

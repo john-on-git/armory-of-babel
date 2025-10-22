@@ -53,7 +53,7 @@
             class={`weapon-class weapon-display-title weapon-rarity-${weapon.rarity}`}
             data-testid="weapon-display-title"
         >
-            {weapon?.name ?? ""}
+            {weapon?.name?.toTitleCase() ?? ""}
         </h2>
         <div class="link-container">
             <button
@@ -96,7 +96,7 @@
                         {#each weapon.active.powers as power}
                             <div class="weapon-generator-list-item">
                                 <p>
-                                    {`${(power.desc as string).capWords()} (${textForCharges(power.cost)}).`}
+                                    {`${(power.desc as string).toTitleCase()} (${textForCharges(power.cost)}).`}
                                 </p>
                                 {#if power.additionalNotes}
                                     <div>
