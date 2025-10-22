@@ -1,5 +1,6 @@
 <script lang="ts">
     import { pushState } from "$app/navigation";
+    import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
     import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import {
         type Weapon,
@@ -16,11 +17,26 @@
 
     const { config, logging = false }: Props = $props();
 
-    let weapon: Weapon = $derived(mkWeapon(getIDFromURL(), config));
+    const version = $state(
+        weaponFeatureVersionController.getLatestVersionNum(),
+    );
+    const featureProviders = $derived.by(() => {
+        const featureProviders =
+            weaponFeatureVersionController.getVersion(version);
+        if (featureProviders === undefined) {
+            throw new Error("failed to get weapon features");
+        } else {
+            return featureProviders;
+        }
+    });
+
+    let weapon: Weapon = $derived(
+        mkWeapon(featureProviders, getIDFromURL(), config),
+    );
     const weaponID = writable<string>(getIDFromURL());
     weaponID.subscribe((newId) => {
         // update the view with the new weapon. derived doesn't update when the URL is changed
-        weapon = mkWeapon(newId, config);
+        weapon = mkWeapon(featureProviders, newId, config);
     });
 
     // set up event listeners
