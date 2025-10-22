@@ -6,6 +6,10 @@ import { titleCase } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
 
+// providers
+export const allEyeProviders = ['generic-eyes'] as const;
+export const allMouthProviders = ['generic-mouth', 'vampire-mouth'] as const;
+
 // shapes
 
 export const edgedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[];

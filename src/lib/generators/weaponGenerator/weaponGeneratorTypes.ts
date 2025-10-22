@@ -323,7 +323,7 @@ interface WeaponStructure {
     other: string[]
 }
 
-const weaponStructures = {
+export const weaponStructures = {
     swordLike: {
         business: ['blade'],
         holding: ['grip'],
@@ -401,7 +401,7 @@ const weaponStructures = {
     },
 } as const satisfies Record<string, WeaponStructure>;
 
-const shapeToStructure = {
+export const shapeToStructure = {
     "dagger": "swordLike",
     "club": 'clubLike',
     "staff": 'staffLike',
@@ -432,136 +432,6 @@ const shapeToStructure = {
     "Bident": "forkLike",
     "Trident": "forkLike"
 } as const satisfies Record<WeaponShapeGroup | string, keyof typeof weaponStructures>;
-
-/**
- * Determines whether a weapon part is one or many.
- * @param name weaponpart to get name for
- * @returns the next word in the sentence after the weapon part
- */
-export function getPlurality(name: WeaponPartName) {
-    switch (name) {
-        case 'blades':
-        case 'limbs':
-        case 'heads':
-        case 'chains':
-        case 'prongs':
-            return 'plural';
-        default:
-            return 'singular';
-    }
-}
-
-export function isAre(name: WeaponPartName) {
-    switch (getPlurality(name)) {
-        case 'singular':
-            return ' is';
-        case 'plural':
-            return ' are';
-    }
-}
-export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
-    const plurality = getPlurality(name);
-    switch (plurality) {
-        case 'singular':
-            switch (type) {
-                case 'possession':
-                    return ' has ';
-                case 'property':
-                    return "";
-                case undefined:
-                    return '';
-                default:
-                    return type satisfies never;
-            }
-        case 'plural':
-            switch (type) {
-                case 'possession':
-                    return ' have ';
-                case 'property':
-                    return "";
-                case undefined:
-                    return '';
-                default:
-                    return type satisfies never;
-            }
-        default:
-            return plurality satisfies never;
-    }
-}
-
-export function linkingIsOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
-    const plurality = getPlurality(name);
-    switch (plurality) {
-        case 'singular':
-            switch (type) {
-                case 'possession':
-                    return 'it has ';
-                case 'property':
-                    return "it";
-                case undefined:
-                    return '';
-                default:
-                    return type satisfies never;
-            }
-        case 'plural':
-            switch (type) {
-                case 'possession':
-                    return 'they each have ';
-                case 'property':
-                    return "they";
-                case undefined:
-                    return '';
-                default:
-                    return type satisfies never;
-            }
-        default:
-            return plurality satisfies never;
-    }
-}
-
-export function structureDescFor(shape: WeaponShape) {
-    function getStructure(shape: WeaponShape) {
-
-        switch (shape.particular) {
-            case 'Macuahuitl':
-            case 'Nunchuks':
-            case 'Meteor Hammer':
-            case 'Double Flail':
-            case 'Triple Flail':
-            case 'Quadruple Flail':
-            case 'Quintuple Flail':
-            case "Bident":
-            case "Trident":
-                return weaponStructures[shapeToStructure[shape.particular]];
-            default:
-                return weaponStructures[shapeToStructure[shape.group]];
-        }
-    }
-    const structure = getStructure(shape);
-
-    const structuredDesc = {
-        business: structure.business.reduce((acc, partName) => {
-            acc[partName] = {
-                descriptors: []
-            } satisfies WeaponPart;
-            return acc;
-        }, {} as Record<WeaponPartName, WeaponPart>),
-        holding: structure.holding.reduce((acc, partName) => {
-            acc[partName] = {
-                descriptors: []
-            } satisfies WeaponPart;
-            return acc;
-        }, {} as Record<WeaponPartName, WeaponPart>),
-        other: structure.other.reduce((acc, partName) => {
-            acc[partName] = {
-                descriptors: []
-            } satisfies WeaponPart;
-            return acc;
-        }, {} as Record<WeaponPartName, WeaponPart>),
-
-    };
-    return structuredDesc as StructuredDescription;
-}
 
 export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
 export type StructuredDescription = {
@@ -598,38 +468,12 @@ export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGene
 
 // woke up mxsterr Freethem. woke u and smell the pronouns
 export type Pronouns = 'object' | 'enby' | 'masc' | 'femm';
-type PronounsLoc = {
+export type PronounsLoc = {
     singular: {
         subject: string,
         possessive: string
     },
 };
-export const pronounLoc = {
-    object: {
-        singular: {
-            subject: "it",
-            possessive: "its"
-        }
-    },
-    enby: {
-        singular: {
-            subject: "they",
-            possessive: "their"
-        }
-    },
-    masc: {
-        singular: {
-            subject: "he",
-            possessive: "his"
-        }
-    },
-    femm: {
-        singular: {
-            subject: "she",
-            possessive: "her"
-        }
-    }
-} as const satisfies Record<Pronouns, PronounsLoc>;
 
 /**
  * TODO this should really just accept weapon

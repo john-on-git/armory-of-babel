@@ -35,7 +35,7 @@ export default {
     },
     descriptors: {
         add: [
-            new ProviderElement('sentient-eyes',
+            new ProviderElement('generic-eyes',
                 {
                     generate: (rng) =>
                         genMaybeGen([
