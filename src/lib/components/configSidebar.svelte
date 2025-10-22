@@ -19,11 +19,11 @@
     function toPercentile(rarity: Exclude<WeaponRarity, "common">) {
         switch (rarity) {
             case "uncommon":
-                return odds[1] - odds[0];
+                return 1 - odds[0];
             case "rare":
-                return odds[2] - odds[1];
+                return 1 - odds[1];
             case "epic":
-                return odds[3] - odds[2];
+                return 1 - odds[2];
             case "legendary":
                 return 1 - odds[3];
             default:
@@ -32,6 +32,7 @@
     }
 
     let odds = $state(calcOdds((() => config)()));
+
     $effect(() =>
         configWritable.update((prevValue) =>
             _.transform(
@@ -50,12 +51,14 @@
         ),
     );
 
-    function calcOdds(config: WeaponRarityConfig) {
-        return Object.values(config).map((x) => 1 - x.percentile) as [
-            number,
-            number,
-            number,
-            number,
+    function calcOdds(
+        config: WeaponRarityConfig,
+    ): [number, number, number, number] {
+        return [
+            0,
+            1 - config.uncommon.percentile,
+            1 - config.rare.percentile,
+            1 - config.epic.percentile,
         ];
     }
 

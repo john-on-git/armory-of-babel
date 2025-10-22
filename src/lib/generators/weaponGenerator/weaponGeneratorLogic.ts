@@ -261,7 +261,7 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
             .filter(x => x.cost != 'at will')
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 0 : x.cost, acc), weapon.active.maxCharges);
 
-    console.log('generated weapon', weapon, params, weaponRarityConfig);
+    console.log('generated weapon', weapon);
 
     // TODO convert to viewmodel
 
