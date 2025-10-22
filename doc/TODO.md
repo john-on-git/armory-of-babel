@@ -1,5 +1,12 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
 
+    - could add overlapping themes, it wouldn't break anything.
+        - discrete latent space? map it all out
+        - what about descriptors? lot of work...
+        - It's possible to split a theme into multiple themes 
+          with identical options, then chip away gradually, making them different.
+          Though, in the meantime you end up with basically one theme with a higher weight.
+
     - Weapons with shafts should allow both hard & holding materials on it.
 
     - 400 page for invalid weapons

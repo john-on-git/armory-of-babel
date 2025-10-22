@@ -199,6 +199,10 @@ export const MATERIALS = {
         material: 'wood from a sky-land tree',
         ephitet: mkGen((rng) => [{ post: ' of the Skylands' }, { post: ' of the Skies' }].choice(rng))
     } as const,
+    peachWood: {
+        material: 'peach wood',
+        ephitet: mkGen((rng) => [{ pre: "Peach" }].choice(rng))
+    } as const,
     heavenlyPeachWood: {
         material: 'wood from a heavenly peach tree',
         ephitet: mkGen((rng) => [{ pre: "Jade Emperor's" }].choice(rng))
@@ -700,7 +704,7 @@ export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'gri
 /**
  * The main / signature part the weapon
  */
-export const importantPart = ['blade', 'blades', 'tip', 'head', 'heads', 'body'] as const satisfies WeaponPartName[];
+export const importantPart = ['blade', 'blades', 'tip', 'prongs', 'head', 'heads', 'body'] as const satisfies WeaponPartName[];
 
 
 /** Parts of a weapon specialised for striking and clashing, usually made of metal.

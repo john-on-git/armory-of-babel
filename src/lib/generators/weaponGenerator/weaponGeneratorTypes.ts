@@ -9,14 +9,10 @@ export const allThemes = [
     "cloud", "earth",
     "light", "dark",
     "sweet", "sour",
-    "wizard",
-    "steampunk", "nature"
+    "wizard", "steampunk",
+    "nature", // "electric"
     // "poison",
-    // "earth", "cloud",
-    // "psychic", "electric"
-    // "wizard", "thief"
-    // "jungle",
-    // "space"
+
 ] as const;
 export type Theme = typeof allThemes[number];
 
@@ -36,7 +32,21 @@ const weaponRaritiesLookup: Record<WeaponRarity, number> = {
     epic: 3,
     legendary: 4
 }
-export const weaponRaritiesOrd = <T>([r1]: [WeaponRarity, T], [r2]: [WeaponRarity, T]) => weaponRaritiesLookup[r2] - weaponRaritiesLookup[r1];
+
+export const weaponRaritiesOrd = <T>([r1]: [WeaponRarity, T] | [WeaponRarity], [r2]: [WeaponRarity, T] | [WeaponRarity]) => weaponRaritiesLookup[r2] - weaponRaritiesLookup[r1];
+
+export function gt(x: WeaponRarity, y: WeaponRarity) {
+    return weaponRaritiesLookup[x] > weaponRaritiesLookup[y];
+}
+export function lt(x: WeaponRarity, y: WeaponRarity) {
+    return weaponRaritiesLookup[x] < weaponRaritiesLookup[y];
+}
+export function gte(x: WeaponRarity, y: WeaponRarity) {
+    return weaponRaritiesLookup[x] >= weaponRaritiesLookup[y];
+}
+export function lte(x: WeaponRarity, y: WeaponRarity) {
+    return weaponRaritiesLookup[x] <= weaponRaritiesLookup[y];
+}
 
 export type WeaponRarityConfig = {
     common: {
@@ -56,7 +66,7 @@ export interface WeaponGenerationParams {
     nActive: number;
     nUnlimitedActive: number;
     sentienceChance: number;
-    chanceOfMakingDemands: 2 | 4 | 6 | 8 | 10 | 12;
+    chanceOfMakingDemands: Exclude<CommonDieSize, 20>;
 }
 
 
@@ -91,7 +101,7 @@ export interface Weapon {
         /**
          * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
          */
-        chanceOfMakingDemands: number;
+        chanceOfMakingDemands: CommonDieSize;
     }
 
     themes: Theme[],
@@ -140,7 +150,7 @@ export interface WeaponViewModel {
         /**
          * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
          */
-        chanceOfMakingDemands: number;
+        chanceOfMakingDemands: CommonDieSize;
     }
 }
 
@@ -155,15 +165,14 @@ export interface Power {
     bonus?: PassiveBonus;
 }
 
-export interface DamageDice {
+export type CommonDieSize = 4 | 6 | 8 | 10 | 12 | 20;
+export type DamageDice = {
     const?: number;
-    d4?: number;
-    d6?: number;
-    d8?: number;
-    d10?: number;
-    d12?: number;
-    d20?: number;
+} & {
+    [k in CommonDieSize as `d${k}`]?: number;
 }
+
+
 export interface PassiveBonus {
     addDamageDie?: DamageDice;
     /**

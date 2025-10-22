@@ -20,14 +20,17 @@ describe('Weapon Generator', () => {
         }
     });
 
-    it('2. Always generates a weapon with a number of passive abilities matching its params.', () => {
+    // Passives don't always create a bullepoint in the viewmodel, and sometimes increase the ability cap, 
+    // but it shouldn't be wildly different. That might indicate
+    it('2. Always generates a weapon with a number of passive abilities approximately equal to its params.', () => {
         for (let i = 0; i < nRuns; i++) {
             const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             // number of languages (excluding the standard option, common). languages are a kind of passive powers
             const nAdditionalLanguages = (weapon.sentient ? weapon.sentient.languages.length - 1 : 0);
 
-            expect(weapon.passivePowers.length + nAdditionalLanguages).toBe(params.nPassive);
+            const absDifference = Math.abs(params.nPassive - (weapon.passivePowers.length + nAdditionalLanguages))
+            expect(absDifference).toBeLessThanOrEqual(2);
         }
     });
 
@@ -54,6 +57,31 @@ describe('Weapon Generator', () => {
             const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             expect((Object.values(weapon.damage) as (string | number)[]).some((x) => typeof (x) === 'string' || x > 0)).toBe(true);
+        }
+    });
+
+    it('2. Always generates a weapon with a non-empty description.', () => {
+        for (let i = 0; i < nRuns; i++) {
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
+
+            expect(weapon.description.length).toBeGreaterThan(0);
+        }
+    });
+
+
+    it('2. Never generates a weapon with empty description bulletpoints.', () => {
+        const notJustWhitespace = /\S+/;
+
+        for (let i = 0; i < nRuns; i++) {
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
+
+            weapon.active.powers.forEach((active) => {
+                expect(active.desc).toMatch(notJustWhitespace);
+                if (active.additionalNotes !== undefined) {
+                    active.additionalNotes.forEach(note => expect(note).toMatch(notJustWhitespace))
+                }
+            });
+            weapon.passivePowers.forEach((passive) => expect(passive.desc.length).toBeGreaterThan(0));
         }
     });
 
