@@ -24,6 +24,11 @@ export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe
 export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
 export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)", "sword (or musket)", "greataxe (or musket)"] as const satisfies WeaponShapeGroup[];
 
+/**
+ * Weapon shape families that usually have a small damage die, like d4 or d6.
+ */
+export const smallDieWeaponShapeFamilies = ['dagger', 'club'] as const satisfies WeaponShapeGroup[];
+
 export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies WeaponShapeGroup[];
 
 export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Kanabo", "Keyblade", "Transforming Sniper Scythle"] as const;
@@ -154,7 +159,7 @@ export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { p
 export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }, { post: 'of Dusk', alliteratesWith: 'D' }] satisfies Ephitet[];
 export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows', alliteratesWith: 'R' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
 
-export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
+export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood-Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
 
 // TODO these need more stuff
 export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] satisfies Ephitet[];
@@ -204,7 +209,7 @@ export const MATERIALS = {
     } as const,
     ironWood: {
         material: 'ironwood',
-        ephitet: { pre: 'Iron' }
+        ephitet: { pre: 'Ironwood' }
     } as const,
     aetherWood: {
         material: 'wood from a sky-land tree',
@@ -634,6 +639,14 @@ export const MISC_DESC_FEATURES = {
         }
     },
     coating: {
+        volcanoCracks: {
+            descriptor: {
+                descType: 'property',
+                singular: ' is flecked with fiery cracks',
+                plural: ' are flecked with fiery cracks',
+            },
+            ephitet: { pre: 'Volcanic' }
+        },
         glitter: {
             descriptor: {
                 descType: 'possession',
@@ -820,12 +833,12 @@ export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'gri
 /**
  * The main / signature part the weapon
  */
-export const importantPart = ['blade', 'blades', 'tip', 'prongs', 'axeHead', 'maceHead', 'maceHeads', 'body'] as const satisfies WeaponPartName[];
+export const businessEnd = ['blade', 'blades', 'tip', 'prongs', 'axeHead', 'maceHead', 'maceHeads', 'body'] as const satisfies WeaponPartName[];
 
 
 /** Parts of a weapon specialised for striking and clashing, usually made of metal.
 */
-export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'axeHead', 'maceHead', 'maceHeads', 'barrel', 'crossguard', 'pommel', 'chain', 'chains'] as const satisfies WeaponPartName[];
+export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'prongs', 'axeHead', 'maceHead', 'maceHeads', 'barrel', 'crossguard', 'pommel', 'chain', 'chains'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that are used to hold it. Usually made of wood.
@@ -849,6 +862,21 @@ export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver'
 export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'quiver', 'maceHead', 'maceHeads', 'chain'] as const satisfies WeaponPartName[];
 
 
+export const counterCapacityByRarity = {
+    common: 2,
+    uncommon: 2,
+    rare: 3,
+    epic: 4,
+    legendary: 5
+} as const satisfies Record<WeaponRarity, number>;
+
+export const streakCapacityByRarity = {
+    common: 4,
+    uncommon: 4,
+    rare: 4,
+    epic: 6,
+    legendary: 6
+} as const satisfies Record<WeaponRarity, number>;
 
 type GroupElement = {
     /**
