@@ -527,8 +527,8 @@ export const MISC_DESC_FEATURES = {
         caseHardened: {
             descriptor: {
                 descType: 'property',
-                singular: "split into multicolored regions with psychedelic shapes",
-                plural: "split into multicolored regions with psychedelic shapes",
+                singular: " is split into multicolored regions with psychedelic shapes",
+                plural: " are split into multicolored regions with psychedelic shapes",
             },
             ephitet: { pre: 'Case Hardened' }
         },
