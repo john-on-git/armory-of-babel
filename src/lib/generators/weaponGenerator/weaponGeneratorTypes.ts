@@ -205,7 +205,7 @@ export interface RechargeMethod {
 
 export interface PassivePower extends Power {
     miscPower: true;
-    desc: string;
+    desc?: string;
 }
 export interface Language extends Power {
     language: true;
@@ -652,7 +652,7 @@ export interface FeatureProviderCollection {
     rechargeMethodProvider: WeaponFeatureProvider<RechargeMethod>;
     activePowerProvider: WeaponFeatureProvider<ActivePower | TGenerator<ActivePower, [Weapon]>>;
 
-    passivePowerOrLanguageProvider: WeaponFeatureProvider<PassivePower | TGenerator<PassivePower, [Weapon]>>;
+    passivePowerProvider: WeaponFeatureProvider<PassivePower | TGenerator<PassivePower, [Weapon]>>;
     languageProvider: WeaponFeatureProvider<Language>;
 }
 
