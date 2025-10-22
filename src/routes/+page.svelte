@@ -106,10 +106,6 @@
             border-color: #00000047 !important;
         }
     }
-
-    :global(button) {
-        width: 10vw;
-    }
     :global(h1) {
         height: 7.5vh;
         margin: 0;
