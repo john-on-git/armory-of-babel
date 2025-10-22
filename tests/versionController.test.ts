@@ -1,4 +1,4 @@
-import { Patchable, VersionController } from "$lib/util/VersionController";
+import { Patchable, VersionController } from "$lib/util/versionController";
 
 describe('VersionController', () => {
     it('It should correctly apply the updates in this simple example.', () => {

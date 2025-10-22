@@ -8,6 +8,13 @@ export default tseslint.config(
   tseslint.configs.recommended,
   {
     rules: {
+      "quote-props": [
+        "error",
+        "consistent-as-needed",
+        {
+          unnecessary: true,
+        }
+      ],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -17,7 +24,7 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: "^_",
           destructuredArrayIgnorePattern: "^_",
           varsIgnorePattern: "^_",
-          ignoreRestSiblings: true
+          "ignoreRestSiblings": true
         }
       ]
     },

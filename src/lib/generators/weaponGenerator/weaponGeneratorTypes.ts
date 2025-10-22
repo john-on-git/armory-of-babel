@@ -1,7 +1,7 @@
 import seedrandom from "seedrandom";
 import type { TGenerator } from "../recursiveGenerator";
-import shapes from './config/shapes.json';
 import type { Comp, Cond, Quant } from "./provider";
+import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
     "fire", "ice",
@@ -59,6 +59,9 @@ export interface WeaponGenerationParams {
 }
 
 
+/**
+ * Type of a weapon in the backend.
+ */
 export interface Weapon {
     /**
      * The RNG seed that produces this weapon.
@@ -79,7 +82,7 @@ export interface Weapon {
         rechargeMethod: RechargeMethod
         powers: ActivePower[];
     }
-    passivePowers: MiscPower[];
+    passivePowers: PassivePower[];
     sentient: false | {
         personality: Personality[];
         languages: string[];
@@ -93,6 +96,9 @@ export interface Weapon {
     params: WeaponGenerationParams
 }
 
+/**
+ * Type of a weapon in the frontend. This is the type provided returned by the generate weapon API.
+ */
 export interface WeaponViewModel {
     /**
      * The RNG seed that produces this weapon.
@@ -114,7 +120,7 @@ export interface WeaponViewModel {
         rechargeMethod: string
         powers: ActivePower[];
     }
-    passivePowers: MiscPower[];
+    passivePowers: PassivePower[];
     sentient: false | {
         personality: string[];
         languages: string[];
@@ -152,6 +158,12 @@ export interface UnlimitedChargedPower extends Power {
 }
 export type ActivePower = ChargedPower | UnlimitedChargedPower;
 
+/** An adjective that could describe a physical object.
+ *  The adjective should be simple and describe its physical state, no vibes/moral/metaphysical descriptors i.e. Just, Terrifying, Gothic.
+*/
+export interface WeaponAdjective {
+    desc: string;
+}
 export interface Personality {
     desc: string | TGenerator<string>;
 };
@@ -159,7 +171,7 @@ export interface RechargeMethod {
     desc: string | TGenerator<string>;
 }
 
-export interface MiscPower extends Power {
+export interface PassivePower extends Power {
     miscPower: true;
     desc: string | TGenerator<string>;
     bonus?: PassiveBonus;
@@ -169,11 +181,11 @@ export interface Language extends Power {
     desc: string;
 }
 
-export type AnyPower = ActivePower | MiscPower;
+export type AnyPower = ActivePower | PassivePower;
 
 export type WeaponShape = {
     particular: string;
-    group: keyof typeof shapes;
+    group: string;
 }
 
 export interface WeaponPowerCond extends Cond {
@@ -181,7 +193,7 @@ export interface WeaponPowerCond extends Cond {
     personality?: Quant<Personality>;
     languages?: Quant<string>;
     activePowers?: Quant<ActivePower>;
-    passivePowers?: Quant<MiscPower>;
+    passivePowers?: Quant<PassivePower>;
     shapeFamily?: Quant<WeaponShape['group']>;
     rarity?: Comp<WeaponRarity>;
     isSentient?: boolean;
@@ -192,13 +204,26 @@ export interface WeaponPowerCond extends Cond {
  */
 export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 'sentient' | 'rarity' | 'themes' | 'shape'>
 
+// themes: PrimitiveContainer<Theme>;
+// adjectives: ProviderElement<WeaponAdjective, WeaponPowerCond>;
+// personalities: ProviderElement<Personality, WeaponPowerCond>
 
+// rechargeMethods: ProviderElement<RechargeMethod, WeaponPowerCond>;
+// actives: ProviderElement<ActivePower, WeaponPowerCond>;
 
-// TODO make all the features implement patchable
-// interface WeaponFeatureCollectionDelta {
-//     themes: Delta<Theme[]>;
-//     personalities: Delta<Personality[]>;
-//     active: Delta<ActivePower[]>;
-//     passive: Delta<PassivePower[]>;
-//     languages: Delta<Language[]>;
-// }
+// passives: ProviderElement<MiscPower, WeaponPowerCond>;
+// languages: ProviderElement<Language, WeaponPowerCond>;
+// shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
+
+export interface FeatureProviderCollection {
+    themeProvider: WeaponFeatureProvider<Theme>;
+    adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>;
+    personalityProvider: WeaponFeatureProvider<Personality>;
+    shapeProvider: WeaponFeatureProvider<WeaponShape>;
+
+    rechargeMethodProvider: WeaponFeatureProvider<RechargeMethod>;
+    activePowerProvider: WeaponFeatureProvider<ActivePower>;
+
+    passivePowerOrLanguageProvider: WeaponFeatureProvider<PassivePower | Language>;
+    languageProvider: WeaponFeatureProvider<Language>;
+}

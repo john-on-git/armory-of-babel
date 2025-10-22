@@ -1,19 +1,18 @@
 import "$lib/util/choice";
 import '$lib/util/string';
-import type { PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGenerator";
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
-import { ConditionalThingProvider, evComp, evQuant, type ProviderElement, type WithUUID } from "./provider";
-import { defaultWeaponRarityConfigFactory, POSSIBLE_ACTIVE_POWERS, POSSIBLE_OBJECT_ADJECTIVES, POSSIBLE_PASSIVE_POWERS, POSSIBLE_PERSONALITIES, POSSIBLE_RECHARGE_METHODS, POSSIBLE_SHAPES, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type ActivePower, allThemes, type DamageDice, isRarity, type MiscPower, type PassiveBonus, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape } from "./weaponGeneratorTypes";
+import { ConditionalThingProvider, evComp, evQuant, type ProviderElement } from "./provider";
+import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
+import { allThemes, type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig } from "./weaponGeneratorTypes";
 
-export class WeaponFeatureProvider<T extends object> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
-    constructor(source: WithUUID<ProviderElement<T, WeaponPowerCond>>[]) {
+export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
+    constructor(source: ProviderElement<T, WeaponPowerCond>[]) {
         super(source);
     }
 
-    protected override condExecutor(UUID: number, cond: WeaponPowerCond, params: WeaponPowerCondParams): boolean {
+    protected override condExecutor(UUID: string, cond: WeaponPowerCond, params: WeaponPowerCondParams): boolean {
 
         const ord = (x: WeaponRarity) => ({
             common: 0,
@@ -37,55 +36,54 @@ export class WeaponFeatureProvider<T extends object> extends ConditionalThingPro
     }
 }
 
-const personalityProvider = new WeaponFeatureProvider<Personality>(POSSIBLE_PERSONALITIES);
-const rechargeMethodsProvider = new WeaponFeatureProvider<RechargeMethod>(POSSIBLE_RECHARGE_METHODS);
-const activePowersProvider = new WeaponFeatureProvider<ActivePower>(POSSIBLE_ACTIVE_POWERS);
-const passivePowersProvider = new WeaponFeatureProvider<MiscPower | PrimitiveContainer<string>>(POSSIBLE_PASSIVE_POWERS);
-const shapeProvider = new WeaponFeatureProvider<TGenerator<WeaponShape>>(POSSIBLE_SHAPES);
+const articles = new Set(['the', 'a', 'an', 'by', 'of']);
+function mkNonSentientNameGenerator(adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>, weapon: Weapon, shape: string, rng: seedrandom.PRNG) {
+    return mkGen(() => {
+        const string = new StringGenerator([
+            mkGen((x) => adjectiveProvider.draw(x, weapon).desc),
+            mkGen(' '),
+            mkGen(shape)
+        ])?.generate(rng);
+        return string.split(/\s/).map(x => articles.has(x) ? x : x.capFirst()).join(' ');
+    });
+}
 
+function mkSentientNameGenerator(adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>, weapon: Weapon, shape: string, rng: seedrandom.PRNG) {
+    return mkGen(() => {
+        const string = new StringGenerator([
+            mkGen((rng) => [grecoRomanFirstNameGenerator, angloFirstNameGenerator].choice(rng).generate(rng)),
+            mkGen([', ', ', the '].choice(rng)),
+            mkGen((x) => adjectiveProvider.draw(x, weapon).desc),
+            mkGen(' '),
+            mkGen(shape)
+        ])?.generate(rng);
+        return string.split(/\s/).map(x => articles.has(x) ? x : x.capFirst()).join(' ');
+    });
+}
 
-const objectAdjectivesProvider = new WeaponFeatureProvider<TGenerator<string>>(POSSIBLE_OBJECT_ADJECTIVES);
-
-const articles = new Set(['the', 'a', 'an', 'by', 'of'])
-const mkNonSentientNameGenerator = (weapon: Weapon, shape: string, rng: seedrandom.PRNG) => mkGen(() => {
-    const string = new StringGenerator([
-        mkGen((x) => objectAdjectivesProvider.draw(x, weapon).generate(x)),
-        mkGen(' '),
-        mkGen(shape)
-    ])?.generate(rng);
-    return string.split(/\s/).map(x => articles.has(x) ? x : x.capFirst()).join(' ');
-});
-const mkSentientNameGenerator = (weapon: Weapon, shape: string, rng: seedrandom.PRNG) => mkGen(() => {
-    const string = new StringGenerator([
-        mkGen((rng) => [grecoRomanFirstNameGenerator, angloFirstNameGenerator].choice(rng).generate(rng)),
-        mkGen([', ', ', the '].choice(rng)),
-        mkGen((x) => objectAdjectivesProvider.draw(x, weapon).generate(x)),
-        mkGen(' '),
-        mkGen(shape)
-    ])?.generate(rng);
-    return string.split(/\s/).map(x => articles.has(x) ? x : x.capFirst()).join(' ');
-});
-
-export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig = defaultWeaponRarityConfigFactory()): Weapon => {
-    const genStr = (x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
-    const generateRarity: (rng: seedrandom.PRNG) => WeaponRarity = (rng) => {
-        const n = rng();
-        // sort the rarities into descending order
-        const xs = (Object.entries(weaponRarityConfig) as [WeaponRarity, typeof weaponRarityConfig[WeaponRarity]][]).sort(weaponRaritiesOrd);
-        for (const [k, v] of xs) {
-            if (isRarity(k)) {
-                if (n < v.percentile) {
-                    return k;
-                }
+function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.PRNG): WeaponRarity {
+    const n = rng();
+    // sort the rarities into descending order
+    const xs = (Object.entries(weaponRarityConfig) as [WeaponRarity, typeof weaponRarityConfig[WeaponRarity]][]).sort(weaponRaritiesOrd);
+    for (const [k, v] of xs) {
+        if (isRarity(k)) {
+            if (n < v.percentile) {
+                return k;
             }
         }
-        throw new Error('failed to generate rarity');
     }
+    throw new Error('failed to generate rarity');
+}
+
+const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
+
+export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = defaultWeaponRarityConfigFactory()): Weapon {
+
 
     const rng = seedrandom(rngSeed);
 
     // decide power level
-    const rarity = generateRarity(rng);
+    const rarity = generateRarity(weaponRarityConfig, rng);
     const originalParams = weaponRarityConfig[rarity].paramsProvider(rng);
     const params = structuredClone(originalParams)
 
@@ -138,8 +136,8 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     );
     while (
         weapon.themes.length < minThemes ||
-        activePowersProvider.available(weapon).size < params.nActive + params.nUnlimitedActive ||
-        passivePowersProvider.available(weapon).size < params.nPassive
+        featureProviders.activePowerProvider.available(weapon).size < params.nActive + params.nUnlimitedActive ||
+        featureProviders.passivePowerOrLanguageProvider.available(weapon).size < params.nPassive
     ) {
         const choice = unusedThemes.choice(rng);
         if (choice != undefined) {
@@ -153,11 +151,14 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     }
 
     //determine shape
-    weapon.shape = shapeProvider.draw(rng, weapon).generate(rng);
+    weapon.shape = featureProviders.shapeProvider.draw(rng, weapon);
     weapon.damage.as = weapon.shape.group;
 
     // determine name
-    weapon.name = (isSentient ? mkSentientNameGenerator(weapon, weapon.shape.particular, rng) : mkNonSentientNameGenerator(weapon, weapon.shape.particular, rng))?.generate(rng);
+    weapon.name = (isSentient
+        ? mkSentientNameGenerator(featureProviders.adjectiveProvider, weapon, weapon.shape.particular, rng)
+        : mkNonSentientNameGenerator(featureProviders.adjectiveProvider, weapon, weapon.shape.particular, rng)
+    ).generate(rng);
 
 
     // determine description
@@ -166,11 +167,11 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     if (weapon.sentient) {
         const nPersonalities = 2;
         while (weapon.sentient.personality.length < nPersonalities) {
-            const choice = personalityProvider.draw(rng, weapon);
+            const choice = featureProviders.personalityProvider.draw(rng, weapon);
             if (choice != undefined) {
                 weapon.sentient.personality.push({
                     ...choice,
-                    desc: genStr(choice?.desc)
+                    desc: genStr(rng, choice?.desc)
                 });
             }
         }
@@ -179,16 +180,16 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
 
     // draw passive powers
     for (let i = 0; i < params.nPassive; i++) {
-        const choice = passivePowersProvider.draw(rng, weapon);
+        const choice = featureProviders.passivePowerOrLanguageProvider.draw(rng, weapon);
         if (choice != undefined) {
-            if ('value' in choice && weapon.sentient) {
-                weapon.sentient.languages.push(choice.value);
+            if ('language' in choice && weapon.sentient) {
+                weapon.sentient.languages.push(choice.desc);
             }
             else if ('miscPower' in choice) {
                 if (choice.desc !== null) {
                     weapon.passivePowers.push({
                         ...choice,
-                        desc: genStr(choice.desc)
+                        desc: genStr(rng, choice.desc)
                     });
                 }
                 for (const k in choice.bonus) {
@@ -207,7 +208,7 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
                             }
                             break;
                         case "plus":
-                            weapon.toHit += choice.bonus.plus;
+                            weapon.toHit += choice.bonus.plus ?? 0;
 
                             if (weapon.damage.const === undefined) {
                                 weapon.damage.const = 0;
@@ -228,30 +229,30 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     }
 
     // draw active powers
-    const rechargeMethodChoice = rechargeMethodsProvider.draw(rng, weapon);
+    const rechargeMethodChoice = featureProviders.rechargeMethodProvider.draw(rng, weapon);
     weapon.active.rechargeMethod = {
         ...rechargeMethodChoice,
-        desc: genStr(rechargeMethodChoice.desc)
+        desc: genStr(rng, rechargeMethodChoice.desc)
     };
     for (let i = 0; i < params.nActive; i++) {
-        const choice = activePowersProvider.draw(rng, weapon);
+        const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
             weapon.active.powers.push({
                 ...choice,
-                desc: genStr(choice.desc),
-                additionalNotes: choice.additionalNotes?.map(genStr)
+                desc: genStr(rng, choice.desc),
+                additionalNotes: choice.additionalNotes?.map(x => genStr(rng, x))
             });
         }
     }
 
     for (let i = 0; i < params.nUnlimitedActive; i++) {
-        const choice = activePowersProvider.draw(rng, weapon);
+        const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
             weapon.active.powers.push({
                 ...choice,
                 cost: 'at will',
-                desc: genStr(choice.desc),
-                additionalNotes: choice.additionalNotes?.map(genStr)
+                desc: genStr(rng, choice.desc),
+                additionalNotes: choice.additionalNotes?.map(x => genStr(rng, x))
             });
         }
     }
