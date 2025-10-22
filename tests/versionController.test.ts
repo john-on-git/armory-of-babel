@@ -59,7 +59,7 @@ describe('VersionController', () => {
         }, {
             plants: {
                 modify: {
-                    'sea-plant': { species: 'seaweed' }
+                    'land-plant': { species: 'neuropteris' },
                 }
             },
             animals: {
@@ -92,8 +92,8 @@ describe('VersionController', () => {
 
         expect(myVersionController.getVersion(2)).toEqual({
             plants: [
-                new Plant('sea-plant', 'seaweed'),
-                new Plant('land-plant', 'fern')
+                new Plant('sea-plant', 'sponge'),
+                new Plant('land-plant', 'neuropteris')
             ],
             animals: [
                 new Animal('sea-herbivore', 'trilobite', 0, 30),
