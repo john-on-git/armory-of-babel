@@ -1,10 +1,10 @@
-import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal, singularWildAnimalStructured } from "$lib/generators/foes";
+import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEnd, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type DescriptorGenerator, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -46,6 +46,26 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            ...(wildAnimalArr.map(({ article, singular, plural }) =>
+                new ProviderElement<DescriptorGenerator, { never: true }>(`carved-resembling-${singular.toLowerCase()}`,
+                    {
+                        yields: 'feature',
+                        generate: () => ({
+                            descriptor: {
+                                descType: 'property',
+                                singular: ` is carved to resemble ${article} ${singular}`,
+                                plural: ` are carved to resemble ${article} ${plural}`,
+                                ephitet: mkGen({ post: ` of the ${singular.toTitleCase()}`, alliteratesWith: singular[0].toUpperCase() as CapitalLetter }),
+                            }
+                        }),
+                        applicableTo: { any: businessEndParts }
+                    },
+                    /**
+                     * Can only be added by the passive power "weapon-animal-transformation"
+                     */
+                    { never: true }
+                )
+            )),
             new ProviderElement('streak-indicator',
                 {
                     yields: 'feature',
@@ -53,10 +73,10 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: ` has ${streakCapacityByRarity[weapon.rarity]} magical gems embedded along it`,
-                            plural: ` have ${streakCapacityByRarity[weapon.rarity]} magical gems embedded in them`
+                            plural: ` have ${streakCapacityByRarity[weapon.rarity]} magical gems embedded in them`,
+                            ephitet: mkGen({ pre: "Bejewelled" }),
                         }
                     }),
-                    ephitet: mkGen({ pre: "Bejewelled" }),
                     applicableTo: { any: counterAcceptingParts }
                 },
                 /**
@@ -71,10 +91,10 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: ` has ${counterCapacityByRarity[weapon.rarity]} magical gems embedded along it`,
-                            plural: ` have ${counterCapacityByRarity[weapon.rarity]} magical gems embedded along them`
+                            plural: ` have ${counterCapacityByRarity[weapon.rarity]} magical gems embedded along them`,
+                            ephitet: mkGen({ pre: "Bejewelled" }),
                         }
                     }),
-                    ephitet: mkGen({ pre: "Bejewelled" }),
                     applicableTo: { any: counterAcceptingParts }
                 },
                 /**
@@ -89,11 +109,11 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: " is inscribed with jagged runes of necromancy",
-                            plural: " are inscribed with jagged runes of necromancy"
+                            plural: " are inscribed with jagged runes of necromancy",
+                            ephitet: mkGen((rng) => ephBlack.choice(rng)),
                         }
                     }),
-                    ephitet: mkGen((rng) => ephBlack.choice(rng)),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 /**
                  * Can only be added by the passive powers "trap-souls", "make-zombie"
@@ -107,11 +127,11 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: " is polished to a mirror finish",
-                            plural: " are "
+                            plural: " are ",
+                            ephitet: mkGen((rng) => [{ pre: 'Mirrored' }, { post: 'of ' }].choice(rng)),
                         }
                     }),
-                    ephitet: mkGen((rng) => [{ pre: 'Mirrored' }, { post: 'of ' }].choice(rng)),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 /**
                  * Can only be added by the passive power "mounted-dismount-resist"
@@ -124,10 +144,10 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: " glows with dim orange light",
-                            plural: "lance pommel is not plural"
+                            plural: "lance pommel is not plural",
+                            ephitet: mkGen((rng) => ephHot.choice(rng)),
                         }
                     }),
-                    ephitet: mkGen((rng) => ephHot.choice(rng)),
                     applicableTo: { any: ['pommel'] }
                 },
                 /**
@@ -142,10 +162,10 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: " is freezing cold to the touch",
-                            plural: "lance pommel is not plural"
+                            plural: "lance pommel is not plural",
+                            ephitet: mkGen((rng) => ephCold.choice(rng)),
                         }
                     }),
-                    ephitet: mkGen((rng) => ephCold.choice(rng)),
                     applicableTo: { any: ['pommel'] }
                 },
                 /**
@@ -160,10 +180,10 @@ export default {
                         descriptor: {
                             descType: 'property',
                             singular: " emits shadowy mist",
-                            plural: "lance pommel is not plural"
+                            plural: "lance pommel is not plural",
+                            ephitet: mkGen((rng) => ephBlack.choice(rng)),
                         }
                     }),
-                    ephitet: mkGen((rng) => ephBlack.choice(rng)),
                     applicableTo: { any: ['pommel'] }
                 },
                 /**
@@ -178,10 +198,10 @@ export default {
                         descriptor: {
                             descType: 'possession',
                             singular: " a vine extending from it, which wraps around the grip and base",
-                            plural: "lance pommel is not plural"
+                            plural: "lance pommel is not plural",
+                            ephitet: { pre: 'Ivy' },
                         }
                     }),
-                    ephitet: { pre: 'Ivy' },
                     applicableTo: { any: ['pommel'] }
                 },
                 /**
@@ -196,10 +216,10 @@ export default {
                         descriptor: {
                             descType: 'possession',
                             singular: " a tendril extending from it, which wraps around the grip and base",
-                            plural: "lance pommel is not plural"
+                            plural: "lance pommel is not plural",
+                            ephitet: { pre: 'Tendrilous' },
                         }
                     }),
-                    ephitet: { pre: 'Tendrilous' },
                     applicableTo: { any: ['pommel'] }
                 },
                 /**
@@ -226,7 +246,7 @@ export default {
                         material: 'telekill alloy',
                         ephitet: mkGen(() => ({ pre: 'Nullifying' }))
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 /**
                  * Can only be added by the passive power "psi-immune"
@@ -244,7 +264,7 @@ export default {
                         },
                         ephitet: mkGen(rng => ephHot.choice(rng))
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -264,7 +284,7 @@ export default {
                         },
                         ephitet: mkGen((rng) => ephHot.choice(rng))
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -283,7 +303,7 @@ export default {
                         },
                         ephitet: mkGen(rng => ephCold.choice(rng))
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -341,7 +361,7 @@ export default {
                         MATERIALS.gingerbread,
                     ].choice(rng);
                 },
-                applicableTo: { any: businessEnd }
+                applicableTo: { any: businessEndParts }
             }, {
                 /**
                  * Can only be added by the passive power "eat-to-heal"
@@ -382,7 +402,7 @@ export default {
                             ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -404,7 +424,7 @@ export default {
                             ephitet: mkGen(rng => ephHot.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -426,7 +446,7 @@ export default {
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -448,7 +468,7 @@ export default {
                             ephitet: mkGen(rng => ephPurple.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -470,7 +490,7 @@ export default {
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -492,7 +512,7 @@ export default {
                             ephitet: mkGen(rng => ephRed.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -514,7 +534,7 @@ export default {
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -536,7 +556,7 @@ export default {
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -562,7 +582,7 @@ export default {
                             ].choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -584,7 +604,7 @@ export default {
                             ephitet: mkGen(rng => ephGold.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -606,7 +626,7 @@ export default {
                             ephitet: mkGen(rng => ephBlack.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -628,7 +648,7 @@ export default {
                             ephitet: mkGen(rng => ephSky.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -650,7 +670,7 @@ export default {
                             ephitet: mkGen(rng => ephSteampunk.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -672,7 +692,7 @@ export default {
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     /**
@@ -798,7 +818,7 @@ export default {
                             MATERIALS.flint,
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -826,7 +846,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -857,7 +877,7 @@ export default {
                         MISC_DESC_FEATURES.coating.oil,
                         MISC_DESC_FEATURES.coating.flames,
                     ].choice(rng), rng, weapon),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     themes: { any: ['fire'] }
@@ -882,7 +902,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -919,7 +939,7 @@ export default {
                             MATERIALS.glassLikeSteel
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -953,7 +973,7 @@ export default {
                     generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
                         MISC_DESC_FEATURES.coating.pearlescent,
                     ].choice(rng), rng, weapon),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     themes: { any: ['cloud'] }
@@ -986,7 +1006,7 @@ export default {
                             MATERIALS.obsidian
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1021,7 +1041,7 @@ export default {
                     generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
                         MISC_DESC_FEATURES.coating.volcanoCracks,
                     ].choice(rng), rng, weapon),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     themes: { any: ['earth'] }
@@ -1046,7 +1066,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1107,7 +1127,7 @@ export default {
                             MATERIALS.iceBlood
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1139,7 +1159,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1157,7 +1177,7 @@ export default {
                             MATERIALS.gingerbread,
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1192,7 +1212,7 @@ export default {
                             MATERIALS.acidium
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1223,7 +1243,7 @@ export default {
                         MISC_DESC_FEATURES.coating.acidBurned,
                     ].choice(rng), rng, weapon),
                     applicableTo: {
-                        any: [...businessEnd, ...wrappableParts]
+                        any: [...businessEndParts, ...wrappableParts]
                     }
                 },
                 {
@@ -1259,7 +1279,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1346,7 +1366,7 @@ export default {
                             MATERIALS.brass,
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1389,7 +1409,7 @@ export default {
                             MATERIALS.ironWood
                         ].choice(rng);
                     },
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     allowDuplicates: true,
@@ -1474,7 +1494,7 @@ export default {
                         material: "two separate blades (adamant and mythrel), they're intertwined in a spiral pattern",
                         ephitet: { pre: 'Binary' }
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     rarity: {
@@ -1492,7 +1512,7 @@ export default {
                         material: "two separate parts, split down the middle: one half is boreal steel, the other scarlet steel",
                         ephitet: { pre: 'Bifurcated' }
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     rarity: {
@@ -1510,7 +1530,7 @@ export default {
                         material: "a glass tank containing an aquarium, the contents seem unaffected by movement",
                         ephitet: mkGen((rng) => [{ pre: 'Aero-' }, { post: ' of Bliss', alliteratesWith: 'B' } satisfies Ephitet].choice(rng))
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     themes: { all: ['cloud', 'ice'] },
@@ -1524,7 +1544,7 @@ export default {
                         material: "hollow glass, filled with a roiling mix of magical fire and water",
                         ephitet: { pre: 'Steamy' }
                     }),
-                    applicableTo: { any: businessEnd }
+                    applicableTo: { any: businessEndParts }
                 },
                 {
                     rarity: {
@@ -1541,7 +1561,7 @@ export default {
                     material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
                     ephitet: { post: ' of the Elemental Lord' }
                 }),
-                applicableTo: { any: businessEnd }
+                applicableTo: { any: businessEndParts }
             }, {
                 rarity: {
                     gte: 'legendary'
@@ -1549,7 +1569,7 @@ export default {
                 themes: {
                     all: ['fire', 'earth', 'cloud', 'ice']
                 },
-                applicableTo: { any: businessEnd },
+                applicableTo: { any: businessEndParts },
                 isMaterial: true
             }
             ),
@@ -2092,7 +2112,7 @@ export default {
                         wizard: ["arcane power surges through the weapon"],
                         steampunk: ["the weapon produces an explosive blast", "the weapon produces a blast of steam"],
                         nature: [(() => {
-                            const { animal } = singularWildAnimalStructured.generate(rng);
+                            const { singular: animal } = singularWildAnimalStructured.generate(rng);
                             return `the weapon projects a spectral ${animal} that attacks the target`;
                         })()]
                     } as const satisfies Record<Theme, string[]>;
@@ -2340,14 +2360,19 @@ export default {
                 }
             ),
             new ProviderElement("weapon-animal-transformation",
-                mkGen(rng => ({
-                    desc: "Animal Transformation",
-                    cost: 2,
-                    additionalNotes: [
-                        `The weapon transforms into ${singularWildAnimal.generate(rng)} until the end of the scene, or until it dies.`,
-                        "You can command it to turn back into its regular form early."
-                    ]
-                })),
+                mkGen(rng => {
+                    const { article, singular } = singularWildAnimalStructured.generate(rng);
+
+                    return {
+                        desc: "Animal Transformation",
+                        cost: 2,
+                        additionalNotes: [
+                            `The weapon transforms into ${article} ${singular} until the end of the scene, or until it dies.`,
+                            "You can command it to turn back into its regular form early."
+                        ],
+                        descriptorPartGenerator: `carved-resembling-${singular.toLowerCase()}`
+                    };
+                }),
                 {
                     themes: { any: ["nature"], },
                     rarity: {
