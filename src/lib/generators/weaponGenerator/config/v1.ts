@@ -2,8 +2,8 @@ import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/gen
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { genMaybeGen, mkWepToGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { genMaybeGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -245,14 +245,21 @@ export default {
                 }
             ),
 
-            new ProviderElement('material-ice-hard-mundane',
+            new ProviderElement('material-ice-hard',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
                             MATERIALS["boreal steel"],
                             MATERIALS.silver,
                             MATERIALS.silverPlated,
                             MATERIALS["white gold"],
+                            ...(
+                                gte(weapon.rarity, 'rare') ? [
+                                    MATERIALS.iceLikeSteel,
+                                    MATERIALS.glassLikeSteel,
+                                    MATERIALS["glass"],
+                                ] : []
+                            )
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -264,39 +271,9 @@ export default {
                     themes: {
                         any: ['ice']
                     },
-                    rarity: {
-                        lte: 'rare',
-                    }
                 }
             ),
 
-            new ProviderElement('material-ice-hard-rare',
-                {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS.iceLikeSteel,
-                            MATERIALS.glassLikeSteel,
-                            MATERIALS["glass"],
-                            MATERIALS["boreal steel"],
-                            MATERIALS.silver,
-                            MATERIALS.silverPlated,
-                            MATERIALS["white gold"],
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    allowDuplicates: true,
-                    themes: {
-                        any: ['ice']
-                    },
-                    rarity: {
-                        gte: 'epic',
-                    }
-                }
-            ),
             new ProviderElement('material-ice-holding',
                 {
                     generate: (rng) => {
@@ -350,7 +327,7 @@ export default {
                             MATERIALS.silver,
                             MATERIALS.silverPlated,
                             MATERIALS.aetherWood,
-                            weapon.rarity === 'legendary' ? MATERIALS.heavenlyPeachWood : MATERIALS.alabaster,
+                            gte(weapon.rarity, 'legendary') ? MATERIALS.heavenlyPeachWood : MATERIALS.peachWood,
                         ].choice(rng), rng);
                     },
                     applicableTo: {
@@ -446,14 +423,21 @@ export default {
                 }
             ),
 
-            new ProviderElement('material-dark-hard-mundane',
+            new ProviderElement('material-dark-hard',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
                             MATERIALS.obsidian,
                             MATERIALS.onyx,
                             MATERIALS["black iron"],
                             MATERIALS["meteoric iron"],
+                            ...(
+                                gte(weapon.rarity, 'rare') ? [
+                                    MATERIALS.darkSteel,
+                                    MATERIALS.adamantum,
+                                    MATERIALS.darkness
+                                ] : []
+                            )
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -465,33 +449,6 @@ export default {
                     themes: {
                         any: ['dark']
                     },
-                    rarity: {
-                        lte: 'rare',
-                    }
-                }
-            ),
-            new ProviderElement('material-dark-hard-rare',
-                {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS["black iron"],
-                            MATERIALS.darkSteel,
-                            MATERIALS.adamantum,
-                            MATERIALS.darkness
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    allowDuplicates: true,
-                    themes: {
-                        any: ['dark']
-                    },
-                    rarity: {
-                        gte: 'epic',
-                    }
                 }
             ),
 
@@ -522,7 +479,7 @@ export default {
 
             new ProviderElement('material-light-holding',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return genMaybeGen([
                             MATERIALS.maple,
                             MATERIALS.birch,
@@ -531,7 +488,8 @@ export default {
                             MATERIALS.glass,
                             MATERIALS.crystal,
                             MATERIALS.quartz,
-                            MATERIALS.porcelain
+                            MATERIALS.porcelain,
+                            gte(weapon.rarity, 'legendary') ? MATERIALS.heavenlyPeachWood : MATERIALS.peachWood,
                         ].choice(rng), rng);
                     },
                     applicableTo: {
@@ -568,14 +526,25 @@ export default {
                 }
             ),
 
-            new ProviderElement('material-light-hard-mundane',
+            new ProviderElement('material-light-hard',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
-                            MATERIALS["white gold"],
                             MATERIALS.silver,
                             MATERIALS.silverPlated,
+                            MATERIALS["white gold"],
                             MATERIALS.crystal,
+                            gte(weapon.rarity, 'legendary') ? MATERIALS.heavenlyPeachWood : MATERIALS.peachWood,
+                            ...(
+                                gte(weapon.rarity, 'rare')
+                                    ? [
+                                        MATERIALS.light,
+                                        MATERIALS.glass,
+                                        MATERIALS.mythrel,
+                                        MATERIALS.diamond,
+                                    ]
+                                    : []
+                            )
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -587,37 +556,6 @@ export default {
                     themes: {
                         any: ['light']
                     },
-                    rarity: {
-                        lte: 'uncommon',
-                    }
-                }
-            ),
-            new ProviderElement('material-light-hard-rare',
-                {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS.light,
-                            MATERIALS.glass,
-                            MATERIALS["white gold"],
-                            MATERIALS.silver,
-                            MATERIALS.silverPlated,
-                            MATERIALS.mythrel,
-                            MATERIALS.crystal,
-                            MATERIALS.diamond,
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    allowDuplicates: true,
-                    themes: {
-                        any: ['light']
-                    },
-                    rarity: {
-                        gte: 'rare',
-                    }
                 }
             ),
 
@@ -625,7 +563,9 @@ export default {
                 {
                     generate: (rng) => {
                         return [
-                            MATERIALS.hardCandy
+                            MATERIALS.hardCandy,
+                            MATERIALS.rockCandy,
+                            MATERIALS.gingerbread,
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -704,14 +644,31 @@ export default {
                 }
             ),
 
-            new ProviderElement('material-wizard-hard-mundane',
+            new ProviderElement('material-wizard-hard',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
-                            MATERIALS['tin'],
-                            MATERIALS.quartz,
                             MATERIALS.crystal,
-                            MATERIALS.amethyst
+                            MATERIALS.quartz,
+                            MATERIALS.amethyst,
+                            ...(
+                                lt(weapon.rarity, 'rare')
+                                    ? [
+                                        MATERIALS['tin'],
+                                    ]
+                                    : []
+                            ),
+                            ...(
+                                gte(weapon.rarity, 'rare')
+                                    ? [
+                                        MATERIALS["blue gold"],
+                                        MATERIALS['purple gold'],
+                                        MATERIALS.cobalt,
+                                        MATERIALS["glassLikeSteel"],
+                                        MATERIALS.force,
+                                        MATERIALS.sapphire,
+                                    ] : []
+                            )
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -722,42 +679,10 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['wizard']
-                    },
-                    rarity: {
-                        lte: 'rare'
                     }
                 }
             ),
 
-            new ProviderElement('material-wizard-hard-rare',
-                {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS["blue gold"],
-                            MATERIALS['purple gold'],
-                            MATERIALS.cobalt,
-                            MATERIALS["glassLikeSteel"],
-                            MATERIALS.force,
-                            MATERIALS.quartz,
-                            MATERIALS.sapphire,
-                            MATERIALS.crystal,
-                            MATERIALS.amethyst
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    allowDuplicates: true,
-                    themes: {
-                        any: ['wizard']
-                    },
-                    rarity: {
-                        gte: 'rare'
-                    }
-                }
-            ),
             new ProviderElement('material-wizard-holding',
                 {
                     generate: (rng) => {
@@ -933,43 +858,21 @@ export default {
                 }
             ),
 
-            new ProviderElement('club-staff-main-material-mundane',
+            new ProviderElement('club-staff-main-material',
                 {
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS.oak,
                             MATERIALS.pine,
-                            MATERIALS.birch,
                             animeWeaponShapes.includes(weapon.shape.particular as typeof animeWeaponShapes[number]) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
-                            MATERIALS.ironWood,
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    }
-                },
-                {
-                    allowDuplicates: true,
-                    shapeFamily: {
-                        any: ['staff', 'club']
-                    },
-                    rarity: {
-                        lte: 'rare',
-                    }
-                }
-            ),
-            new ProviderElement('club-staff-main-material-rare',
-                {
-                    generate: (rng, weapon) => {
-                        return [
-                            MATERIALS.oak,
-                            MATERIALS.pine,
                             MATERIALS.birch,
-                            animeWeaponShapes.includes(weapon.shape.particular as typeof animeWeaponShapes[number]) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
-                            MATERIALS.ebonyWood,
-                            MATERIALS.ironWood,
-                            MATERIALS.bloodWood
+                            ...(
+                                gte(weapon.rarity, 'rare') ? [
+                                    MATERIALS.ironWood,
+                                    MATERIALS.bloodWood
+                                ] : []
+                            )
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -1081,7 +984,21 @@ export default {
             ),
 
 
-
+            new ProviderElement('material-telekill',
+                {
+                    generate: () => ({
+                        material: 'telekill alloy',
+                        ephitet: mkGen(() => ({ pre: 'Nullifying' }))
+                    }),
+                    applicableTo: { any: importantPart }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "psi-immune"
+                     */
+                    never: true
+                }
+            ),
             new ProviderElement('descriptor-wreathed-fire',
                 {
                     generate: () => ({
@@ -1090,11 +1007,9 @@ export default {
                             singular: ` is wreathed in flames`,
                             plural: ` are wreathed in flames`,
                         },
-                        ephitet: mkGen((rng) => ephHot.choice(rng))
+                        ephitet: mkGen(rng => ephHot.choice(rng))
                     }),
-                    applicableTo: {
-                        any: importantPart
-                    }
+                    applicableTo: { any: importantPart }
                 },
                 {
                     /**
@@ -1131,7 +1046,7 @@ export default {
                             singular: ` is wreathed in icy mist`,
                             plural: ` are wreathed in icy mist`,
                         },
-                        ephitet: mkGen((rng) => ephCold.choice(rng))
+                        ephitet: mkGen(rng => ephCold.choice(rng))
                     }),
                     applicableTo: {
                         any: importantPart
@@ -1257,7 +1172,7 @@ export default {
                                 singular: 'a superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
                                 plural: 'a superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
                             },
-                            ephitet: mkGen((rng) => ephHot.choice(rng)),
+                            ephitet: mkGen(rng => ephHot.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1280,7 +1195,7 @@ export default {
                                 singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
                                 plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
                             },
-                            ephitet: mkGen((rng) => ephCold.choice(rng)),
+                            ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1303,7 +1218,7 @@ export default {
                                 singular: 'a glass bulb running down the middle (it blasts ultraviolet light in all directions)',
                                 plural: 'a glass bulb running down the middle (blasting ultraviolet light in all directions)'
                             },
-                            ephitet: mkGen((rng) => ephPurple.choice(rng)),
+                            ephitet: mkGen(rng => ephPurple.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1326,7 +1241,7 @@ export default {
                                 singular: 'a river of sapphire curling through its center (waves of light ebb and flow within it)',
                                 plural: 'rivers of sapphire curling through them (waves of light ebb and flow within)'
                             },
-                            ephitet: mkGen((rng) => ephBlue.choice(rng)),
+                            ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1349,7 +1264,7 @@ export default {
                                 singular: mkGen((_, __, partName) => ` is partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
                                 plural: mkGen((_, __, partName) => ` are partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
                             },
-                            ephitet: mkGen((rng) => ephRed.choice(rng)),
+                            ephitet: mkGen(rng => ephRed.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1372,7 +1287,7 @@ export default {
                                 singular: 'channels of brilliant green light, spreading out from its base and across its surface in an organic fractal',
                                 plural: 'channels of brilliant green light, spreading out from their bases and across their surfaces in organic fractals'
                             },
-                            ephitet: mkGen((rng) => ephGreen.choice(rng)),
+                            ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1395,7 +1310,7 @@ export default {
                                 singular: 'an integrated nuclear reactor which gives it a healthy glow',
                                 plural: 'an integrated nuclear reactor which gives them a healthy glow'
                             },
-                            ephitet: mkGen((rng) => [
+                            ephitet: mkGen(rng => [
                                 { pre: 'Atomic' },
                                 { pre: 'Nuclear' },
                                 { pre: 'of the Mushroom Bombs' },
@@ -1422,7 +1337,7 @@ export default {
                                 singular: " is criss-crossed by a complex system of geometric lines, which glow with golden energy",
                                 plural: " are criss-crossed by a complex system of geometric lines, which glow with golden energy"
                             },
-                            ephitet: mkGen((rng) => ephGold.choice(rng)),
+                            ephitet: mkGen(rng => ephGold.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1445,7 +1360,7 @@ export default {
                                 singular: " is shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
                                 plural: " are shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
                             },
-                            ephitet: mkGen((rng) => ephBlack.choice(rng)),
+                            ephitet: mkGen(rng => ephBlack.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1468,7 +1383,7 @@ export default {
                                 singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
                                 plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
                             },
-                            ephitet: mkGen((rng) => ephSky.choice(rng)),
+                            ephitet: mkGen(rng => ephSky.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1491,7 +1406,7 @@ export default {
                                 singular: 'a glass tube running down the center (which crackles with electrical energy)',
                                 plural: 'glass tube running down their center (which crackle with electrical energy)'
                             },
-                            ephitet: mkGen((rng) => ephSteampunk.choice(rng)),
+                            ephitet: mkGen(rng => ephSteampunk.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1643,7 +1558,7 @@ export default {
         add: [
             new ProviderElement<Personality, WeaponPowerCond>("recharge-at-winter-solstice",
                 {
-                    desc: mkWepToGen("all charges at noon on the winter solstice")
+                    desc: "all charges at noon on the winter solstice"
                 },
                 {
 
@@ -1654,7 +1569,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("recharge-at-summer-solstice",
                 {
-                    desc: mkWepToGen("all charges at noon on the summer solstice")
+                    desc: "all charges at noon on the summer solstice"
                 },
                 {
 
@@ -1735,6 +1650,159 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("mana-vampire-strike",
+                {
+                    desc: 'Mana Drain',
+                    cost: 5,
+                    additionalNotes: [
+                        "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. They expend resources as if the spell was cast.",
+                        "The spell is then stored inside the weapon, only one spell can be stored at a time.",
+                        "Casting a stored spell requires the the same time, magic words, etc... As casting the spell normally, but consumes other resources."
+                    ],
+                    descriptorPartGenerator: 'vampire-mouth'
+                },
+                {
+                    themes: {
+                        all: ['dark', 'wizard']
+                    },
+                    rarity: {
+                        gte: 'epic'
+                    }
+                }
+            ),
+            new ProviderElement("vampire-strike",
+                {
+                    desc: 'Life Drain',
+                    cost: 3,
+                    additionalNotes: [
+                        "Upon landing a blow, you empower it to drain the target's life force. You regain hit points (or equivalent stat) equal to the damage dealt.",
+                        "Health gained in this way can heal you over your natural cap. These additional hit points are lost at the end of the scene."
+                    ],
+                    descriptorPartGenerator: 'vampire-mouth'
+                },
+                {
+                    themes: {
+                        any: ['dark']
+                    },
+                    rarity: {
+                        gte: 'rare'
+                    }
+                }
+            ),
+            new ProviderElement("caustic-strike",
+                {
+                    desc: "Caustic Strike",
+                    cost: 2,
+                    additionalNotes: [
+                        "Upon hitting, you can choose to infuse the attack. Melts objects, or damages armor of characters."
+                    ]
+                },
+                {
+                    themes: { any: ["sour"] },
+                }
+            ),
+            new ProviderElement("ice-strike",
+                {
+                    desc: "Chilling Strike",
+                    cost: 2,
+                    additionalNotes: [
+                        "Upon hitting, you can choose to infuse the attack. Characters must save or be frozen solid next turn."
+                    ],
+                },
+                {
+                    themes: { any: ["ice"] },
+                    rarity: {
+                        lte: "rare"
+                    }
+                }
+            ),
+            new ProviderElement("linger-strike",
+                mkGen((rng, weapon) => {
+                    const numbersByRarity = {
+                        common: { cost: 1, endChance: 6, damage: 4 },
+                        uncommon: { cost: 1, endChance: 6, damage: 4 },
+                        rare: { cost: 1, endChance: 8, damage: 4 },
+                        epic: { cost: 2, endChance: 10, damage: 4 },
+                        legendary: { cost: 2, endChance: 10, damage: 6 }
+                    } as const satisfies Record<WeaponRarity, { cost: number; endChance: CommonDieSize; damage: CommonDieSize }>;
+
+                    const effects = {
+                        fire: { title: "Lingering Flames", desc: "fire" },
+                        sour: { title: "Caustic Chain", desc: "acid" },
+                    } satisfies Partial<Record<Theme, { title: string, desc: string }>>;
+
+                    const effect = pickForTheme(weapon, effects, rng);
+                    return {
+                        desc: effect.title,
+                        cost: numbersByRarity[weapon.rarity].cost,
+                        additionalNotes: [
+                            `Infuse a strike with lingering ${effect.desc}, dealing d${numbersByRarity[weapon.rarity].damage} damage to the target at the start of each of their turns.`,
+                            `Each time it deals damage, the effect has a 1-in-${numbersByRarity[weapon.rarity].endChance} chance of wearing off.`
+                        ]
+
+                    }
+                }),
+                {
+                    themes: { any: ["fire", "sour"] }
+                }
+            ),
+            new ProviderElement("instant-castle",
+                {
+                    desc: 'Instant Castle',
+                    cost: 9,
+                    additionalNotes: [
+                        'Raise a stone fort from the earth, made of smooth stone, the same kind as its surroundings. It has a diameter of 30-ft, and 30-ft high walls with battlements.',
+                        'The entrance is a set of double doors, with a crossbar on the inside. A spiral staircase at the center leads up to the second floor.'
+                    ]
+                },
+                {
+                    themes: {
+                        any: ['earth']
+                    },
+                    rarity: {
+                        gte: 'legendary'
+                    }
+                }
+            ),
+            new ProviderElement("directional-slow",
+                {
+                    desc: 'Steadfast Storm',
+                    cost: 3,
+                    additionalNotes: [
+                        'Summon a magical wind, blowing in one of the cardinal directions, which lasts until the end of the scene',
+                        'Characters moving with the wind move twice as fast, and those moving against it are half as fast.',
+                    ]
+                },
+                {
+                    themes: {
+                        any: ['cloud']
+                    }
+                }
+            ),
+            new ProviderElement("icy-terrain",
+                {
+                    desc: "Ice Sheet", cost: 2,
+                    additionalNotes: [
+                        mkGen((_, weapon) => {
+                            const rangeByRarity = {
+                                common: 30,
+                                uncommon: 50,
+                                rare: 80,
+                                epic: 100,
+                                legendary: 120
+                            } as const satisfies Record<WeaponRarity, number>;
+                            return `A wave of frost emanates from the weapon. Surfaces and bodies of liquid within a ${rangeByRarity[weapon.rarity]}-ft radius freeze into a solid sheet of ice.`;
+                        })
+                    ]
+
+                },
+                {
+                    themes: { any: ["ice"] },
+                    rarity: {
+                        gte: "uncommon"
+                    }
+                }
+            ),
             new ProviderElement('gravity-gun', {
                 desc: 'Kinesis',
                 cost: 1,
@@ -1762,7 +1830,7 @@ export default {
                 },
             }),
             new ProviderElement("weapon-animal-transformation",
-                mkGen((rng) => ({
+                mkGen(rng => ({
                     desc: "Animal Transformation",
                     cost: 2,
                     additionalNotes: [
@@ -1791,98 +1859,92 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("wall-of-fire", {
-                desc: "Wall of Fire",
-                cost: 4
-            },
+            new ProviderElement("wall-of-fire",
+                {
+                    desc: "Wall of Fire",
+                    cost: 4
+                },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
                 }),
-            new ProviderElement("control-hot-weather", {
-                desc: "Control Weather",
-                cost: 2,
-                additionalNotes: [
-                    "Must move conditions towards heatwave."
-                ],
-            },
+            new ProviderElement("control-hot-weather",
+                {
+                    desc: "Control Weather",
+                    cost: 2,
+                    additionalNotes: [
+                        "Must move conditions towards heatwave."
+                    ],
+                },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement("control-flames", {
-                desc: "Control Flames",
-                cost: 1,
-                additionalNotes: [
-                    "Flames larger than wielder submit only after a save."
-                ],
-            },
+            new ProviderElement("control-flames",
+                {
+                    desc: "Control Flames",
+                    cost: 1,
+                    additionalNotes: [
+                        "Flames larger than wielder submit only after a save."
+                    ],
+                },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement("summon-fire-elemental", {
-                desc: "Summon Fire Elemental",
-                cost: 6,
-                additionalNotes: [
-                    "Dissipates after 1 hour."
-                ],
-            },
+            new ProviderElement("summon-fire-elemental",
+                {
+                    desc: "Summon Fire Elemental",
+                    cost: 6,
+                    additionalNotes: [
+                        "Dissipates after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         gte: "epic"
                     }
                 }),
-            new ProviderElement("wall-of-ice", {
-                desc: "Wall of Ice",
-                cost: 4,
-            },
+            new ProviderElement("wall-of-ice",
+                {
+                    desc: "Wall of Ice",
+                    cost: 4,
+                },
                 {
                     themes: { any: ["ice"] },
                     rarity: {
                         gte: "rare"
                     }
                 }),
-            new ProviderElement("control-cold-weather", {
-                desc: "Control Weather",
-                cost: 3,
-                additionalNotes: [
-                    "Must move conditions towards blizzard."
-                ],
-            },
+            new ProviderElement("control-cold-weather",
+                {
+                    desc: "Control Weather",
+                    cost: 3,
+                    additionalNotes: [
+                        "Must move conditions towards blizzard."
+                    ],
+                },
                 {
                     themes: { any: ["ice"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement("ice-strike", {
-                desc: "Chilling Strike",
-                cost: 2,
-                additionalNotes: [
-                    "Upon hitting, you can choose to infuse the attack. Characters must save or be frozen solid next turn."
-                ],
-            },
+            new ProviderElement("summon-ice-elemental",
                 {
-                    themes: { any: ["ice"] },
-                    rarity: {
-                        lte: "rare"
-                    }
-                }),
-            new ProviderElement("summon-ice-elemental", {
-                desc: "Summon Ice Elemental",
-                cost: 6,
-                additionalNotes: [
-                    "Dissipates after 1 hour."
-                ],
-            },
+                    desc: "Summon Ice Elemental",
+                    cost: 6,
+                    additionalNotes: [
+                        "Dissipates after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["ice"] },
                     rarity: {
@@ -1890,10 +1952,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("commune-demon", {
-                desc: "Commune With Demon",
-                cost: 2,
-            },
+            new ProviderElement("commune-demon",
+                {
+                    desc: "Commune With Demon",
+                    cost: 2,
+                },
                 {
                     themes: { any: ["dark"] },
                     rarity: {
@@ -1901,10 +1964,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("turn-holy", {
-                desc: "Turn Priests & Angels",
-                cost: 2,
-            },
+            new ProviderElement("turn-holy",
+                {
+                    desc: "Turn Priests & Angels",
+                    cost: 2,
+                },
                 {
                     themes: { any: ["dark"] },
                     rarity: {
@@ -1912,21 +1976,23 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("darkness", {
-                desc: "Darkness",
-                cost: 1
-            },
+            new ProviderElement("darkness",
+                {
+                    desc: "Darkness",
+                    cost: 1
+                },
                 {
                     themes: { any: ["dark"] },
                 }
             ),
-            new ProviderElement("summon-demon", {
-                desc: "Summon Demon",
-                cost: 6,
-                additionalNotes: [
-                    "Returns to hell after 1 hour."
-                ],
-            },
+            new ProviderElement("summon-demon",
+                {
+                    desc: "Summon Demon",
+                    cost: 6,
+                    additionalNotes: [
+                        "Returns to hell after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["dark"] },
                     rarity: {
@@ -1934,10 +2000,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("commune-divinity", {
-                desc: "Commune With Divinity",
-                cost: 4,
-            },
+            new ProviderElement("commune-divinity",
+                {
+                    desc: "Commune With Divinity",
+                    cost: 4,
+                },
                 {
                     themes: { any: ["light"] },
                     rarity: {
@@ -1945,29 +2012,32 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("turn-undead", {
-                desc: "Turn Undead",
-                cost: 2
-            },
+            new ProviderElement("turn-undead",
+                {
+                    desc: "Turn Undead",
+                    cost: 2
+                },
                 {
                     themes: { any: ["light"] },
                 }
             ),
-            new ProviderElement("light", {
-                desc: "Light",
-                cost: 1
-            },
+            new ProviderElement("light",
+                {
+                    desc: "Light",
+                    cost: 1
+                },
                 {
                     themes: { any: ["light"] },
                 }
             ),
-            new ProviderElement("summon-angel", {
-                desc: "Summon Angel",
-                cost: 6,
-                additionalNotes: [
-                    "Returns to heaven after 1 hour."
-                ],
-            },
+            new ProviderElement("summon-angel",
+                {
+                    desc: "Summon Angel",
+                    cost: 6,
+                    additionalNotes: [
+                        "Returns to heaven after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["light"] },
                     rarity: {
@@ -1975,54 +2045,47 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("charm-person", {
-                desc: "Charm Person",
-                cost: 2
-            },
+            new ProviderElement("charm-person",
+                {
+                    desc: "Charm Person",
+                    cost: 2
+                },
                 {
                     themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement("sweetberry", {
-                desc: "Sweetberry",
-                cost: 3,
-                additionalNotes: [
-                    "Create a small berry, stats as healing potion."
-                ]
-            },
+            new ProviderElement("sweetberry",
+                {
+                    desc: "Sweetberry",
+                    cost: 3,
+                    additionalNotes: [
+                        "Create a small berry, stats as healing potion."
+                    ]
+                },
                 {
                     themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement("sugar-spray", {
-                desc: "Sugar Spray",
-                cost: 1,
-                additionalNotes: [
-                    "Sprays a sweet and sticky syrup, enough to coat the floor of a small room. Makes movement difficult."
-                ]
-            },
+            new ProviderElement("sugar-spray",
+                {
+                    desc: "Sugar Spray",
+                    cost: 1,
+                    additionalNotes: [
+                        "Sprays a sweet and sticky syrup, enough to coat the floor of a small room. Makes movement difficult."
+                    ]
+                },
                 {
                     themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement("caustic-strike", {
-                desc: "Caustic Strike",
-                cost: 2,
-                additionalNotes: [
-                    "Upon hitting, you can choose to infuse the attack. Melts objects, or damages armor of characters."
-                ]
-            },
+            new ProviderElement("locate-lemon",
                 {
-                    themes: { any: ["sour"] },
-                }
-            ),
-            new ProviderElement("locate-lemon", {
-                desc: "Locate Lemon",
-                cost: 1,
-                additionalNotes: [
-                    "Wielder learns the exact location of the closest lemon."
-                ]
-            },
+                    desc: "Locate Lemon",
+                    cost: 1,
+                    additionalNotes: [
+                        "Wielder learns the exact location of the closest lemon."
+                    ]
+                },
                 {
                     themes: { any: ["sour"] },
                     rarity: {
@@ -2030,13 +2093,14 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("cause-nausea", {
-                desc: "Cause Nausea",
-                cost: 1,
-                additionalNotes: [
-                    "Target must save or waste their turn vomiting."
-                ]
-            },
+            new ProviderElement("cause-nausea",
+                {
+                    desc: "Cause Nausea",
+                    cost: 1,
+                    additionalNotes: [
+                        "Target must save or waste their turn vomiting."
+                    ]
+                },
                 {
                     themes: { any: ["sour"] },
                 }
@@ -2056,10 +2120,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("magic-missile", {
-                desc: "Magic Missile",
-                cost: 2
-            },
+            new ProviderElement("magic-missile",
+                {
+                    desc: "Magic Missile",
+                    cost: 2
+                },
                 {
                     themes: { any: ["wizard"] },
                 }
@@ -2073,48 +2138,52 @@ export default {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("magic-parry", {
-                desc: "Magic Parry",
-                cost: "charges equal to spell's level",
-                additionalNotes: [
-                    "Deflect a harmful spell that was targeted at you specifically.",
-                    "You save. On a success the spell is nullified.",
-                    "If you succeeded with the best possible roll, the spell is instead reflected back at the attacker."
-                ]
-            },
+            new ProviderElement("magic-parry",
+                {
+                    desc: "Magic Parry",
+                    cost: "charges equal to spell's level",
+                    additionalNotes: [
+                        "Deflect a harmful spell that was targeted at you specifically.",
+                        "You save. On a success the spell is nullified.",
+                        "If you succeeded with the best possible roll, the spell is instead reflected back at the attacker."
+                    ]
+                },
                 {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("instant-message", {
-                desc: "Instant Message",
-                cost: 1,
-                additionalNotes: [
-                    "Point the weapon at someone in your line of sight, send them a telepathic message."
-                ]
-            },
+            new ProviderElement("instant-message",
+                {
+                    desc: "Instant Message",
+                    cost: 1,
+                    additionalNotes: [
+                        "Point the weapon at someone in your line of sight, send them a telepathic message."
+                    ]
+                },
                 {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("create-wizard-servant", {
-                desc: "Create Servant",
-                cost: 3,
-                additionalNotes: [
-                    "Create an small ichorous being that obeys you without question. It dissolves into sludge after 2d6 days."
-                ]
-            },
+            new ProviderElement("create-wizard-servant",
+                {
+                    desc: "Create Servant",
+                    cost: 3,
+                    additionalNotes: [
+                        "Create an small ichorous being that obeys you without question. It dissolves into sludge after 2d6 days."
+                    ]
+                },
                 {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("summon-steam-elemental", {
-                desc: "Summon Steam Elemental",
-                cost: 6,
-                additionalNotes: [
-                    "Dissipates after 1 hour."
-                ],
-            },
+            new ProviderElement("summon-steam-elemental",
+                {
+                    desc: "Summon Steam Elemental",
+                    cost: 6,
+                    additionalNotes: [
+                        "Dissipates after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["steampunk"] },
                     rarity: {
@@ -2122,24 +2191,26 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("power-machine", {
-                desc: "Power Machine",
-                cost: 1,
-                additionalNotes: [
-                    "Touching the weapon to a machine causes it to activate under magical power. It operates for 24 hours."
-                ]
-            },
+            new ProviderElement("power-machine",
+                {
+                    desc: "Power Machine",
+                    cost: 1,
+                    additionalNotes: [
+                        "Touching the weapon to a machine causes it to activate under magical power. It operates for 24 hours."
+                    ]
+                },
                 {
                     themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement("summon-water-elemental", {
-                desc: "Summon Water Elemental",
-                cost: 6,
-                additionalNotes: [
-                    "Dissipates after 1 hour."
-                ],
-            },
+            new ProviderElement("summon-water-elemental",
+                {
+                    desc: "Summon Water Elemental",
+                    cost: 6,
+                    additionalNotes: [
+                        "Dissipates after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["cloud"] },
                     rarity: {
@@ -2147,44 +2218,48 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("zephyr-strike", {
-                desc: "Zephyr Strike",
-                cost: 2,
-                additionalNotes: [
-                    "Move up to 4× your normal movement to attack someone.",
-                    "They must save or be knocked down by the attack."
-                ]
-            },
+            new ProviderElement("zephyr-dash",
+                {
+                    desc: "Zephyr Dash",
+                    cost: 2,
+                    additionalNotes: [
+                        "Move up to 4× your normal movement to attack someone.",
+                        "They must save or be knocked down by the attack."
+                    ]
+                },
                 {
                     themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement("wind-blast", {
-                desc: "Wind Blast",
-                cost: 2,
-                additionalNotes: [
-                    "Characters in melee range must save, or be thrown back out of melee range and knocked down."
-                ]
-            },
+            new ProviderElement("wind-blast",
+                {
+                    desc: "Wind Blast",
+                    cost: 2,
+                    additionalNotes: [
+                        "Characters in melee range must save, or be thrown back out of melee range and knocked down."
+                    ]
+                },
                 {
                     themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement("summon-lightning", {
-                desc: "Lightning Bolt",
-                cost: 4,
-                additionalNotes: [
-                    "Summon a bolt of lightning to strike something in your line of sight."
-                ]
-            },
+            new ProviderElement("summon-lightning",
+                {
+                    desc: "Lightning Bolt",
+                    cost: 4,
+                    additionalNotes: [
+                        "Summon a bolt of lightning to strike something in your line of sight."
+                    ]
+                },
                 {
                     themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement("wall-of-stone", {
-                desc: "Wall of stone",
-                cost: 4,
-            },
+            new ProviderElement("wall-of-stone",
+                {
+                    desc: "Wall of stone",
+                    cost: 4,
+                },
                 {
                     themes: { any: ["earth"] },
                     rarity: {
@@ -2192,10 +2267,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("petrify-person", {
-                desc: "Petrify Person",
-                cost: 5,
-            },
+            new ProviderElement("petrify-person",
+                {
+                    desc: "Petrify Person",
+                    cost: 5,
+                },
                 {
                     themes: { any: ["earth"] },
                     rarity: {
@@ -2203,21 +2279,23 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("cure-petrify", {
-                desc: "Cure Petrification",
-                cost: 2
-            },
+            new ProviderElement("cure-petrify",
+                {
+                    desc: "Cure Petrification",
+                    cost: 2
+                },
                 {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement("summon-earth-elemental", {
-                desc: "Summon Earth Elemental",
-                cost: 6,
-                additionalNotes: [
-                    "Crumbles after 1 hour."
-                ],
-            },
+            new ProviderElement("summon-earth-elemental",
+                {
+                    desc: "Summon Earth Elemental",
+                    cost: 6,
+                    additionalNotes: [
+                        "Crumbles after 1 hour."
+                    ],
+                },
                 {
                     themes: { any: ["earth"] },
                     rarity: {
@@ -2225,33 +2303,36 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("instant-tree", {
-                desc: "Instant Tree",
-                cost: 1
-            },
+            new ProviderElement("instant-tree",
+                {
+                    desc: "Instant Tree",
+                    cost: 1
+                },
                 {
                     themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement("summon-chomp-flower", {
-                desc: "Instant Chomp-Flower",
-                cost: 2,
-                additionalNotes: [
-                    "Stats as shark but can't move."
-                ]
-            },
+            new ProviderElement("summon-chomp-flower",
+                {
+                    desc: "Instant Chomp-Flower",
+                    cost: 2,
+                    additionalNotes: [
+                        "Stats as shark but can't move."
+                    ]
+                },
                 {
                     themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement("vine-hook", {
-                desc: "Vine Hook",
-                cost: 1,
-                additionalNotes: [
-                    "Launch a vine from the weapon. It can stay attached to the weapon at one end, or detach to link two objects together.",
-                    "Vines can be up to 50-ft long and are as strong as steel."
-                ]
-            },
+            new ProviderElement("vine-hook",
+                {
+                    desc: "Vine Hook",
+                    cost: 1,
+                    additionalNotes: [
+                        "Launch a vine from the weapon. It can stay attached to the weapon at one end, or detach to link two objects together.",
+                        "Vines can be up to 50-ft long and are as strong as steel."
+                    ]
+                },
                 {
                     themes: { any: ["nature"] },
                 }
@@ -2467,18 +2548,45 @@ export default {
                     lte: 'rare'
                 },
             }),
-            new ProviderElement('instant-door', {
-                desc: 'Instant Door',
-                cost: 6,
-                additionalNotes: [
-                    "Trace the outline of the doorway on a surface using the weapon. A moment later, it's magically created.",
-                    "The door can punch through a thin sheet of metal (except lead), or 10-ft of any other material."
-                ]
-            }, {
+            new ProviderElement('instant-door',
+                mkGen((rng, weapon) => {
+                    const wholeAbilityByTheme = {
+                        fire: {
+                            desc: 'Arc Cutter',
+                            cost: 6,
+                            additionalNotes: [
+                                "A thin blade of fire surges from the weapon's tip, lasting for 1 minute.",
+                                "It can cut through up to a foot of metal (or similar material)."
+                            ]
+                        },
+                        sour: {
+                            desc: 'Arc Cutter',
+                            cost: 6,
+                            additionalNotes: [
+                                "The weapon glows with caustic energy, lasting for 1 minute.",
+                                "It can melt through organic materials, metal, and stone (but not glass)."
+                            ]
+                        },
+                        wizard: {
+                            desc: 'Instant Door',
+                            cost: 6,
+                            additionalNotes: [
+                                "Trace the outline of the doorway on a surface using the weapon. A moment later, it's magically created.",
+                                "The door can punch through a thin sheet of metal (except lead), or 10-ft of any other material."
+                            ]
+                        }
+                    } satisfies Partial<Record<Theme, ActivePower>>;
+
+                    return pickForTheme(weapon, wholeAbilityByTheme, rng);
+                }), {
                 rarity: {
                     gte: 'rare'
                 },
-            }),
+                themes: {
+                    any: ['fire', 'wizard', 'sour']
+                }
+            }
+            ),
             new ProviderElement('acid-etch', {
                 desc: 'Spray',
                 cost: 1,
@@ -2686,8 +2794,20 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("psi-immune",
+                {
+                    miscPower: true,
+                    desc: "When the wielder saves against psionic effects, the effect of all relevant skills or bonuses is doubled.",
+                    descriptorPartGenerator: 'material-telekill'
+                },
+                {
+                    themes: {
+                        any: ["earth"],
+                    },
+                }
+            ),
             new ProviderElement("detect-unholy",
-                mkGen((rng) => {
+                mkGen(rng => {
                     return {
                         miscPower: true,
                         desc: new StringGenerator([
@@ -2729,7 +2849,7 @@ export default {
                 }
             ),
             new ProviderElement("focus-light-beam",
-                mkGen((rng) => ({
+                mkGen(rng => ({
                     miscPower: true,
                     desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."]).generate(rng)
                 })),
@@ -2890,7 +3010,7 @@ export default {
                             d10: 1
                         }
                     },
-                    descriptorPartGenerator: 'wreathed-ice'
+                    descriptorPartGenerator: 'descriptor-wreathed-ice'
                 },
                 {
 
@@ -3312,6 +3432,23 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('magic-pocket',
+                {
+                    miscPower: true,
+                    desc: "The wielder can banish the weapon to a pocket plane, then withdraw it at will."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    shapeFamily: {
+                        none: twoHandedWeaponShapeFamilies
+                    },
+                    UUIDs: {
+                        none: ['instant-recall']
+                    }
+                }
+            ),
             new ProviderElement("petrify-on-hit",
                 {
 
@@ -3532,23 +3669,6 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('magic-pocket',
-                {
-                    miscPower: true,
-                    desc: "The wielder can banish the weapon to a pocket plane, then withdraw it at will."
-                },
-                {
-                    rarity: {
-                        gte: 'epic'
-                    },
-                    shapeFamily: {
-                        none: twoHandedWeaponShapeFamilies
-                    },
-                    UUIDs: {
-                        none: ['instant-recall']
-                    }
-                }
-            ),
             new ProviderElement('the-axe',
                 {
                     miscPower: true,
@@ -3590,21 +3710,21 @@ export default {
             ),
             new ProviderElement("transform-tool",
                 mkGen((rng, weapon) => {
-                    const isRare = weapon.rarity === 'epic' || weapon.rarity === 'legendary';
+                    const isRare = gte(weapon.rarity, 'epic');
 
                     const toolType = {
                         ice: ['a set of ice picks', isRare ? 'a snowboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a snowboard'],
                         fire: ['a lighter', 'an empty brass brazier'],
 
                         cloud: [isRare ? 'a surfboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a surfboard', 'an umbrella'],
-                        earth: [isRare ? 'a diamond pickaxe' : 'a pickaxe', isRare ? 'a diamond shovel' : 'a shovel'],
+                        earth: [isRare ? 'a pickaxe. Its magic allows one person to do the work of a dozen miners.' : 'a pickaxe', isRare ? 'a shovel. Its magic allows one person to do the work of a dozen diggers' : 'a shovel'],
 
-                        sweet: ['a whisk', 'an empty biscuit tin'],
+                        sweet: ['a whisk', isRare ? 'an empty biscuit tin. A single object can be placed inside, stored in a pocket dimension when it turns back into its regular form' : 'an empty biscuit tin'],
 
-                        wizard: ['a quill'],
+                        wizard: [isRare ? 'a quill. It has a limitless supply of ink, in any color' : 'a quill'],
 
-                        steampunk: ['a pocket watch', isRare ? 'a skateboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a skateboard'],
-                        nature: ['a smoking pipe', 'a bouquet of flowers'],
+                        steampunk: ['a wrench', isRare ? 'a skateboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a skateboard'],
+                        nature: [isRare ? 'a smoking pipe. Its magic allows the user to control the smoke, directing it into any shape' : 'a smoking pipe', 'a bouquet of flowers'],
 
                     } satisfies Partial<Record<Theme, string[]>>;
 

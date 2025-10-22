@@ -8,8 +8,9 @@ import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, ProviderElement
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, linkingIsOrPossessionFor, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
+
 /**
- * Draw a theme from a record of things organised by theme, based on a weapon with THemes.
+ * Draw a theme from a record of things organised by theme, based on a weapon with Themes.
  * Records used by this function should have their keys ordered in the same order as the Theme union type, or the behaviour is undefined.
  * @param weapon pick an option based on the themes of this weapon
  * @param mapsTo options to pick from
@@ -66,6 +67,16 @@ export function toLang(theme: Theme, lang: string): ProviderElement<Language, We
         }
     });
 }
+
+function hasEyes(weapon: Weapon) {
+    return false;
+}
+
+function hasMouth(weapon: Weapon) {
+    return false;
+}
+
+
 
 export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
     return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
@@ -422,13 +433,11 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         const choice = featureProviders.passivePowerProvider.draw(rng, weapon);
         const gennedChoice = genMaybeGen(choice, rng, weapon);
         if (gennedChoice != undefined) {
-            if (gennedChoice.desc !== null) {
-                weapon.passivePowers.push({
-                    UUID: choice.UUID,
-                    ...gennedChoice,
-                    desc: genMaybeGen(gennedChoice.desc, rng, weapon)
-                });
-            }
+            weapon.passivePowers.push({
+                UUID: choice.UUID,
+                ...gennedChoice,
+                desc: genMaybeGen(gennedChoice.desc, rng, weapon)
+            });
 
             if (gennedChoice.descriptorPartGenerator) {
                 if (gennedChoice.descriptorPartGenerator in featureProviders.descriptorIndex) {
@@ -537,8 +546,12 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // if it is sentient, also apply eyes and a mouth
     if (weapon.sentient) {
-        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-eyes'], weapon);
-        //applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-mouth'], weapon, structure, weapon.description);
+        if (!hasEyes(weapon)) {
+            applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-eyes'], weapon);
+        }
+        if (!hasMouth(weapon)) {
+            //applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-mouth'], weapon, structure, weapon.description);
+        }
     }
 
     // convert the structured description to a text block
@@ -589,7 +602,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
             }))
         },
-        passivePowers: weapon.passivePowers.filter(power => power.desc !== undefined).map(power => ({
+        passivePowers: weapon.passivePowers.filter(power => power.desc !== null && power.desc !== undefined && power.desc.length > 0).map(power => ({
             desc: power.desc as string,
             ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
         })),
