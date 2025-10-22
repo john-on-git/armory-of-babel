@@ -181,10 +181,14 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             let usedAndThisSentence: boolean = false;
             for (const [partName, part] of parts) {
                 const start = i === 0
-                    ? pronounLoc[weapon.pronouns].singular.possessive.capWords()
+                    ? pronounLoc[weapon.pronouns].singular.possessive.toTitleCase()
                     : usedAndThisSentence
-                        ? weapon.pronouns === 'object' ? 'the' : pronounLoc[weapon.pronouns].singular.possessive
-                        : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capWords();
+                        ? weapon.pronouns === 'object'
+                            ? 'the'
+                            : pronounLoc[weapon.pronouns].singular.possessive
+                        : weapon.pronouns === 'object'
+                            ? 'The'
+                            : pronounLoc[weapon.pronouns].singular.possessive.toTitleCase();
 
 
                 // get all the descriptors, merging together any chains of 'has' / 'have' etc
@@ -370,13 +374,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // draw themes until we have enough to cover our number of powers
     const unusedThemes = new Set<Theme>(featureProviders.themeProvider); // this could be a provider but whatever go my Set<Theme>
-    const minThemes = Math.max(
-        1,
-        Math.min(
-            Math.ceil((params.nActive + params.nUnlimitedActive + params.nPassive) / 2),
-            3
-        ),
-    );
+    const minThemes = 1 + Math.floor(rng() * 2);
     while (
         weapon.themes.length < minThemes ||
         featureProviders.activePowerProvider.available(weapon).size < params.nActive + params.nUnlimitedActive ||
@@ -565,7 +563,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         else {
             weapon.name = 'pre' in ephitet
                 ? `${ephitet.pre} ${weapon.shape.particular}`
-                : `The ${weapon.shape.particular} ${ephitet.post}`;
+                : `The ${weapon.shape.particular}${ephitet.post}`;
         }
     }
     else {

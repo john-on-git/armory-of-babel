@@ -2,7 +2,7 @@ import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAn
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
-import { capWords } from "$lib/util/string";
+import { titleCase } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
 
@@ -107,7 +107,7 @@ const simpleMaterials = [
         'adamantum',
     ] as const, (metal) => ({
         material: metal,
-        ephitet: { pre: capWords(metal) }
+        ephitet: { pre: titleCase(metal) }
     } satisfies Descriptor)),
 
     // boring materials (cannot be the source of an ephitet)
@@ -128,36 +128,36 @@ const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as
 // export const eph_TEMPLATE = [] satisfies Ephitet[];
 
 const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
-export const ephCold = [{ pre: "Icebound" }, { pre: "Frostbound" }, { pre: "Frigid" }, { pre: "Silent" }, { post: "of the North Star" }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
-export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: 'of the Bonfire Keeper' }, { post: 'of the Scorchlands' }, { pre: 'Burning' }] satisfies Ephitet[];
+export const ephCold = [{ pre: "Icebound" }, { pre: "Frostbound" }, { pre: "Frigid" }, { pre: "Silent" }, { post: " of the North Star" }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
+export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: ' of the Bonfire Keeper' }, { post: ' of the Scorchlands' }, { pre: 'Burning' }] satisfies Ephitet[];
 const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
-export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: 'of the Zephyr' }, { post: 'of the Skylands' }, { post: 'of the Cloud Giants' }, { post: 'of the Butterfly Lords' }, { post: 'of the Valkyrie Queen' }] satisfies Ephitet[];
-export const ephWizard = [{ post: 'of the Wizard' }, { post: 'of Stars' }, { post: 'of the Cosmos' }] satisfies Ephitet[];
-export const ephExplorer = [{ pre: "Explorer's" }, { pre: "Navigator's" }, { pre: "Pathfinder's" }, { post: 'of the Explorer' }, { post: 'of the Navigator' }] satisfies Ephitet[];
-export const ephSteampunk = [...ephExplorer, { post: 'of the Empire' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
+export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: ' of the Zephyr' }, { post: ' of the Skylands' }, { post: ' of the Cloud Giants' }, { post: ' of the Butterfly Lords' }, { post: ' of the Valkyrie Queen' }] satisfies Ephitet[];
+export const ephWizard = [{ post: ' of the Wizard' }, { post: ' of Stars' }, { post: ' of the Cosmos' }] satisfies Ephitet[];
+export const ephExplorer = [{ pre: "Explorer's" }, { pre: "Navigator's" }, { pre: "Pathfinder's" }, { post: ' of the Explorer' }, { post: ' of the Navigator' }] satisfies Ephitet[];
+export const ephSteampunk = [...ephExplorer, { post: ' of the Empire' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
 
 const ephAcid = [{ pre: 'Toxic' }, { pre: 'Corrosive' }] satisfies Ephitet[];
-const ephBug = [{ pre: 'Verminous' }, { post: "of the Isopod" }, { post: "of the Beetle" }, { post: "of the Queen Bee" }, { post: "of the Swarm" }, { post: "of the Hive" }] satisfies Ephitet[];
+const ephBug = [{ pre: 'Verminous' }, { post: " of the Isopod" }, { post: " of the Beetle" }, { post: " of the Queen Bee" }, { post: " of the Swarm" }, { post: " of the Hive" }] satisfies Ephitet[];
 
-export const ephTransparent = [{ pre: 'Glass' }, { post: 'of Glass' }, { pre: 'Translucent' }] satisfies Ephitet[];
+export const ephTransparent = [{ pre: 'Glass' }, { post: ' of Glass' }, { pre: 'Translucent' }] satisfies Ephitet[];
 export const ephGlowy = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }];
 
-export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { post: 'of Selene' }] satisfies Ephitet[];
-export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: 'of Chaos' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: 'of Shadows' }];
-export const ephRainbow = [{ pre: 'Prismatic' }, { post: 'of Rainbows' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }]
+export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { post: ' of Selene' }] satisfies Ephitet[];
+export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows' }];
+export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }]
 
-export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ', Herald of the King in Red' }] satisfies Ephitet[];
+export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red' }] satisfies Ephitet[];
 // TODO these need more stuff
 export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] satisfies Ephitet[];
 export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }, { pre: 'Sapphire' }] satisfies Ephitet[];
-export const ephGreen = [{ pre: 'Green' }, { pre: 'Emerald' }, { post: 'of Val Verde' }] satisfies Ephitet[];
-export const ephGold = [{ pre: 'Golden' }, { pre: 'Auric' }, { post: 'of the Sun' }, { post: 'of Ra' }] satisfies Ephitet[];
+export const ephGreen = [{ pre: 'Green' }, { pre: 'Emerald' }, { post: ' of Val Verde' }] satisfies Ephitet[];
+export const ephGold = [{ pre: 'Golden' }, { pre: 'Auric' }, { post: ' of the Sun' }, { post: ' of Ra' }] satisfies Ephitet[];
 
 
 export const MATERIALS = {
     lemonWood: {
         material: 'lemon tree wood',
-        ephitet: mkGen((rng) => [{ pre: 'Lemony' }, { post: 'of the Lemon Lord' }].choice(rng))
+        ephitet: mkGen((rng) => [{ pre: 'Lemony' }, { post: ' of the Lemon Lord' }].choice(rng))
     } as const,
     oak: {
         material: 'oak wood',
@@ -165,7 +165,7 @@ export const MATERIALS = {
     } as const,
     pine: {
         material: 'pine wood',
-        ephitet: { post: 'of the Tundra' }
+        ephitet: { post: ' of the Tundra' }
     } as const,
     cherryNormal: {
         material: 'cherry wood',
@@ -173,7 +173,7 @@ export const MATERIALS = {
     } as const,
     cherryAnime: {
         material: 'cherry wood',
-        ephitet: { post: 'of the Sakura Forest' }
+        ephitet: { post: ' of the Sakura Forest' }
     } as const,
     maple: {
         material: 'maple wood',
@@ -197,7 +197,7 @@ export const MATERIALS = {
     } as const,
     aetherWood: {
         material: 'wood from a sky-land tree',
-        ephitet: mkGen((rng) => [{ post: 'of the Skylands' }, { post: 'of the Skies' }].choice(rng))
+        ephitet: mkGen((rng) => [{ post: ' of the Skylands' }, { post: ' of the Skies' }].choice(rng))
     } as const,
     heavenlyPeachWood: {
         material: 'wood from a heavenly peach tree',
@@ -217,7 +217,7 @@ export const MATERIALS = {
     } as const,
     cedarWood: {
         material: 'cedar wood',
-        ephitet: { post: 'of the Cedar Copse' }
+        ephitet: { post: ' of the Cedar Copse' }
     } as const,
     ygdrassilWood: {
         material: 'the wood of Ygdrassil, the world tree',
@@ -238,7 +238,7 @@ export const MATERIALS = {
 
         return {
             material: `${creature} ${protrusionName}`,
-            ephitet: { post: `of the ${creature.capWords()}` }
+            ephitet: { post: ` of the ${creature}` }
         } as Descriptor;
     }),
     coldHorn: mkGen((rng) => {
@@ -246,7 +246,7 @@ export const MATERIALS = {
 
         return {
             material: `${creature} ${protrusionName}`,
-            ephitet: { post: `of the ${creature.capWords()}` }
+            ephitet: { post: ` of the ${creature}` }
         } as Descriptor;
     }),
     magicHorn: mkGen((rng) => {
@@ -254,7 +254,7 @@ export const MATERIALS = {
 
         return {
             material: `${creature} ${protrusionName}`,
-            ephitet: { post: `of the ${creature.capWords()}` }
+            ephitet: { post: ` of the ${creature}` }
         } as Descriptor;
     }),
     darkLeather: mkGen((rng) => {
@@ -263,15 +263,15 @@ export const MATERIALS = {
         function ephFor(val: typeof creature) {
             switch (val) {
                 case 'elf':
-                    return [{ post: "of the Dwarves" }, { post: "of the Dwarven Lords" }].choice(rng);
+                    return [{ post: " of the Dwarves" }, { post: " of the Dwarven Lords" }].choice(rng);
                 case 'dwarf':
                     return [{ pre: "Dwarfslayer's" }].choice(rng);
                 case 'human':
-                    return [{ pre: "Manslayer's" }, { post: 'of the Cannibal' }].choice(rng);
+                    return [{ pre: "Manslayer's" }, { post: ' of the Cannibal' }].choice(rng);
                 case 'orc':
-                    return [{ pre: "Orcslayer's" }, { post: 'of Orc City' }].choice(rng);
+                    return [{ pre: "Orcslayer's" }, { post: ' of Orc City' }].choice(rng);
                 default:
-                    return { post: `of the ${creature.capWords()}` };
+                    return { post: ` of the ${creature}` };
             }
         }
 
@@ -316,7 +316,7 @@ export const MATERIALS = {
     } as const,
     darkSteel: {
         material: 'shadow steel',
-        ephitet: { post: 'of Shadows' }
+        ephitet: { post: ' of Shadows' }
     } as const,
 
     razors: {
@@ -416,7 +416,7 @@ const embeddedArr = [
 
     ['a piece of eternal ice', ephCold],
     ['an onyx', ephBlack],
-    ['a black pearl', [{ post: 'of the Oyster King' }]],
+    ['a black pearl', [{ post: ' of the Oyster King' }]],
     ['a dark sapphire', ephBlack],
 
     ['acid diamond', ephAcid],
