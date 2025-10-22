@@ -37,14 +37,24 @@ export function evComp<T>(comp: Comp<T>, x: T, ord: (x: T) => number) {
     return true;
 }
 
+// store all the UUIDs to catch duplicates for debugging
+const allUUIDs = new Set<string>();
+
 export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPowerCond> extends Patchable {
     thing: TThing;
     cond: TCond;
 
     constructor(UUID: string, thing: TThing, cond: TCond) {
-        super(UUID);
-        this.thing = thing;
-        this.cond = cond;
+        if (allUUIDs.has(UUID)) {
+            throw new Error(`Duplicate UUID "${UUID}", this is likely to cause unexpected behaviour.`);
+        }
+        else {
+            allUUIDs.add(UUID);
+
+            super(UUID);
+            this.thing = thing;
+            this.cond = cond;
+        }
     }
 }
 
@@ -100,6 +110,8 @@ export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { 
         return evQuant(quantUUID, Array.from(x.set.values()));
     }
 }
+
+
 
 export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
     protected source: ProviderElement<TThing, TCond>[];

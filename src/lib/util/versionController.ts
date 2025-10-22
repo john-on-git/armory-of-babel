@@ -10,6 +10,9 @@ type RecursivePartial<T> = {
 };
 
 export abstract class Patchable {
+    /**
+     * Universally Unique IDentifier. No two patchables should have the same UUID anywhere in the program, or its behaviour is undefined.
+     */
     UUID: string;
 
     constructor(UUID: string) {
