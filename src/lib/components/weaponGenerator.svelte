@@ -2,6 +2,7 @@
     import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import { StatusCodes } from "http-status-codes";
+    import _ from "lodash";
     import { onMount, tick } from "svelte";
     import { defaultWeaponRarityConfigFactory } from "../generators/weaponGenerator/weaponGeneratorConfigLoader";
     import type { WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
@@ -32,13 +33,27 @@
                 searchParams.append("rarityOdds", odds[2].toFixed(2));
                 searchParams.append("rarityOdds", odds[3].toFixed(2));
             }
-            const res = await fetch(
-                `/api/generate-weapon?${searchParams.toString()}`,
-            );
+            const { res, forParams } = await (async () => {
+                const forParams = {
+                    weaponID: weaponID,
+                    version: version,
+                    odds: [...odds],
+                };
+                const res = await fetch(
+                    `/api/generate-weapon?${searchParams.toString()}`,
+                );
+                return { res: res, forParams: forParams };
+            })();
             if (res.status === StatusCodes.OK) {
-                // TODO if this still matches the UI state
-                const resBody = await res.json();
-                weapon = resBody as unknown as WeaponViewModel;
+                // if this still matches the UI state
+                if (
+                    _.isEqual(forParams.odds, odds) &&
+                    forParams.version === version &&
+                    forParams.weaponID === weaponID
+                ) {
+                    const resBody = await res.json();
+                    weapon = resBody as unknown as WeaponViewModel;
+                }
             } else {
                 weapon = null;
             }
