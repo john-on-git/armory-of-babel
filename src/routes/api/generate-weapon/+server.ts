@@ -1,7 +1,7 @@
+import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
+import { mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { WeaponRarity, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { StatusCodes } from "http-status-codes";
-import { weaponFeatureVersionController } from "../../../lib/generators/weaponGenerator/weaponFeatureVersionController";
-import { mkWeaponsForAllRarities } from "../../../lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { WeaponRarity, WeaponViewModel } from "../../../lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
 
 export interface GenerateWeaponRequest {

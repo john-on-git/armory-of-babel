@@ -1,9 +1,10 @@
+import { mkGen } from "$lib/generators/recursiveGenerator";
+import { v1 } from "$lib/generators/weaponGenerator/config/v1";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { type ActivePower, type FeatureProviderCollection, type Language, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponAdjective, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPatchableArray } from "../../util/versionController";
-import { mkGen } from "../recursiveGenerator";
-import { v1 } from "./config/v1";
-import { WeaponFeatureProvider } from "./weaponGeneratorLogic";
+import { mkWepToGen, WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { type ActivePower, type DamageDice, type FeatureProviderCollection, type Language, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponAdjective, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPatchableArray } from "$lib/util/versionController";
+
 
 interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
@@ -16,21 +17,6 @@ interface WeaponFeaturesTypes {
     passives: ProviderElement<PassivePower, WeaponPowerCond>;
     languages: ProviderElement<Language, WeaponPowerCond>;
     shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
-}
-
-
-export function toLang(theme: Theme, lang: string): ProviderElement<Language, WeaponPowerCond> {
-    return new ProviderElement<Language, WeaponPowerCond>(
-        lang.replaceAll(/\s/g, '-').toLowerCase(),
-        { language: true, desc: lang }, {
-        themes: {
-            any: [theme]
-        }
-    });
-}
-
-export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
-    return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
 }
 
 
@@ -162,7 +148,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     desc: 'Summon Animal',
                     cost: 5,
                     additionalNotes: [
-                        mkGen((rng) => {
+                        mkWepToGen((rng) => {
                             const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
 
                             const animal: Record<(typeof quantity), string[]> = {
@@ -186,7 +172,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     desc: 'Summon Animal',
                     cost: 5,
                     additionalNotes: [
-                        mkGen((rng) => {
+                        mkWepToGen((rng) => {
                             const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
 
                             const animal: Record<(typeof quantity), string[]> = {
@@ -231,21 +217,66 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'epic'
                         },
-                        themes: { none: ['wizard'] }
+                        themes: { none: ['wizard', 'fire'] }
                     }
                 ),
                 new ProviderElement<PassivePower, WeaponPowerCond>('flame-aura',
                     {
                         miscPower: true,
-                        desc: "All sound is erased within 10-ft of the weapon. The aura is inactive while the weapon is sheathed."
+                        desc: "The weapon emits a 10-ft aura of flames, which sets foes and objects alight. The aura is inactive while the weapon is sheathed."
                     },
                     {
                         rarity: {
                             gte: 'legendary'
                         },
-                        themes: { none: ['wizard'] }
+                        themes: { any: ['fire'] }
                     }
-                )
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('mist-aura',
+                    {
+                        miscPower: true,
+                        desc: "The weapon emits a 30-ft aura of magical mist, which the wielder can see through clearly. The aura is inactive while the weapon is sheathed."
+                    },
+                    {
+                        rarity: {
+                            gte: 'legendary'
+                        },
+                        themes: { any: ['cloud'] }
+                    }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('ice-aura',
+                    {
+                        miscPower: true,
+                        desc: "The weapon emits a 30-ft aura of frost. It freezes objects, and foes move half as fast within it. The aura is inactive while the weapon is sheathed."
+                    },
+                    {
+                        rarity: {
+                            gte: 'legendary'
+                        },
+                        themes: { any: ['ice'] }
+                    }
+                ),
+                ...([[['fire'], 'fire'], [['ice'], 'cold'], [['dark'], 'dark energy'], [['light', 'wizard'], 'energy'], [['cloud', 'steampunk'], 'lightning']] satisfies [Theme[], string][]).map(([themes, effect]) => new ProviderElement<PassivePower, WeaponPowerCond>(
+                    `${themes.join('-or-')}-blast`,
+                    {
+                        miscPower: true,
+                        desc: (weapon) => {
+                            const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
+                                common: "1d6",
+                                uncommon: "1d6",
+                                rare: "1d6",
+                                epic: "1d6",
+                                legendary: "2d6"
+                            }
+
+                            return mkGen(`Whenever the weapon kills a foe, they explode in a blast of ${effect}. It deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`);
+                        }
+                    },
+                    {
+                        themes: { any: themes },
+                        rarity: { gte: 'epic' }
+                    }
+                ))
             ]
         },
         languages: {},

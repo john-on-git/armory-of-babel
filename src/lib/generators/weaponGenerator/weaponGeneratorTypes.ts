@@ -1,5 +1,5 @@
+import type { TGenerator } from "$lib/generators/recursiveGenerator";
 import seedrandom from "seedrandom";
-import type { TGenerator } from "../recursiveGenerator";
 import type { Comp, Cond, Quant } from "./provider";
 import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
@@ -144,7 +144,7 @@ export interface WeaponViewModel {
 }
 
 export interface Power {
-    additionalNotes?: (string | TGenerator<string>)[];
+    additionalNotes?: (string | ((weapon: Weapon) => TGenerator<string>))[];
 }
 
 export interface DamageDice {
@@ -165,7 +165,7 @@ export interface PassiveBonus {
 } // TODO
 
 export interface ChargedPower extends Power {
-    desc: string | TGenerator<string>;
+    desc: string | ((weapon: Weapon) => TGenerator<string>);
     cost: number | string;
 }
 export interface UnlimitedChargedPower extends Power {
@@ -182,15 +182,15 @@ export interface WeaponAdjective {
     desc: string;
 }
 export interface Personality {
-    desc: string | TGenerator<string>;
+    desc: string | ((weapon: Weapon) => TGenerator<string>);
 };
 export interface RechargeMethod {
-    desc: string | TGenerator<string>;
+    desc: string | ((weapon: Weapon) => TGenerator<string>);
 }
 
 export interface PassivePower extends Power {
     miscPower: true;
-    desc: string | TGenerator<string>;
+    desc: string | ((weapon: Weapon) => TGenerator<string>);
     bonus?: PassiveBonus;
 }
 export interface Language extends Power {

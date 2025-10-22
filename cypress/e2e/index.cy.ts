@@ -1,6 +1,5 @@
+import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '$lib/generators/weaponGenerator/weaponGeneratorTypes';
 import { StatusCodes } from 'http-status-codes';
-import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
-//import { type GenerateWeaponResponse } from '../../src/routes/api/generate-weapon/+server';
 
 describe("Weapon Generator Main Page", () => {
     beforeEach(() => {

@@ -1,5 +1,9 @@
 <script lang="ts">
     import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
+    import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
+    import { type WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import { calcOdds } from "$lib/util/configUtils";
+    import { getOddsFromURL } from "$lib/util/getFromURL";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import { StatusCodes } from "http-status-codes";
     import _ from "lodash";
@@ -8,10 +12,6 @@
         GenerateWeaponRequest,
         GenerateWeaponResponse,
     } from "../../routes/api/generate-weapon/+server";
-    import { defaultWeaponRarityConfigFactory } from "../generators/weaponGenerator/weaponGeneratorConfigLoader";
-    import { type WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
-    import { calcOdds } from "../util/configUtils";
-    import { getOddsFromURL } from "../util/getFromURL";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
     let version = $state(getVersionFromURL());

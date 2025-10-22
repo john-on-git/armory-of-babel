@@ -4,10 +4,10 @@
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
     import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
+    import { getOddsFromURL } from "$lib/util/getFromURL";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import _ from "lodash";
     import { writable } from "svelte/store";
-    import { getOddsFromURL } from "../lib/util/getFromURL";
 
     import { dev } from "$app/environment";
     import { injectAnalytics } from "@vercel/analytics/sveltekit";

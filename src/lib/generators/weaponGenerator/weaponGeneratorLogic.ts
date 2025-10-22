@@ -1,11 +1,30 @@
+import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
+import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import "$lib/util/choice";
 import '$lib/util/string';
 import seedrandom from "seedrandom";
-import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGenerator";
-import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
-import { ConditionalThingProvider, evComp, evQuant, type ProviderElement } from "./provider";
+import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+
+export function mkWepToGen<T>(x: T | ((rng: seedrandom.PRNG) => T)) {
+    return () => mkGen(x);
+};
+
+export function toLang(theme: Theme, lang: string): ProviderElement<Language, WeaponPowerCond> {
+    return new ProviderElement<Language, WeaponPowerCond>(
+        lang.replaceAll(/\s/g, '-').toLowerCase(),
+        { language: true, desc: lang }, {
+        themes: {
+            any: [theme]
+        }
+    });
+}
+
+export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
+    return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
+}
+
 
 export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
     constructor(source: ProviderElement<T, WeaponPowerCond>[]) {
@@ -78,7 +97,7 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     throw new Error('failed to generate rarity');
 }
 
-export const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
+export const genStr = (weapon: Weapon, rng: seedrandom.PRNG, x: string | ((weapon: Weapon) => (TGenerator<string>))) => typeof x === 'string' ? x : x(weapon).generate(rng);
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
@@ -186,7 +205,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             if (choice != undefined) {
                 weapon.sentient.personality.push({
                     ...choice,
-                    desc: genStr(rng, choice?.desc)
+                    desc: genStr(weapon, rng, choice?.desc)
                 });
             }
         }
@@ -204,7 +223,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 if (choice.desc !== null) {
                     weapon.passivePowers.push({
                         ...choice,
-                        desc: genStr(rng, choice.desc)
+                        desc: genStr(weapon, rng, choice.desc)
                     });
                 }
                 for (const k in choice.bonus) {
@@ -247,15 +266,15 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     const rechargeMethodChoice = featureProviders.rechargeMethodProvider.draw(rng, weapon);
     weapon.active.rechargeMethod = {
         ...rechargeMethodChoice,
-        desc: genStr(rng, rechargeMethodChoice.desc)
+        desc: genStr(weapon, rng, rechargeMethodChoice.desc)
     };
     for (let i = 0; i < params.nActive; i++) {
         const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
             weapon.active.powers.push({
                 ...choice,
-                desc: genStr(rng, choice.desc),
-                additionalNotes: choice.additionalNotes?.map(x => genStr(rng, x))
+                desc: genStr(weapon, rng, choice.desc),
+                additionalNotes: choice.additionalNotes?.map(x => genStr(weapon, rng, x))
             });
         }
     }
@@ -266,8 +285,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             weapon.active.powers.push({
                 ...choice,
                 cost: 'at will',
-                desc: genStr(rng, choice.desc),
-                additionalNotes: choice.additionalNotes?.map(x => genStr(rng, x))
+                desc: genStr(weapon, rng, choice.desc),
+                additionalNotes: choice.additionalNotes?.map(x => genStr(weapon, rng, x))
             });
         }
     }
@@ -289,19 +308,19 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         toHit: weapon.toHit,
         active: {
             maxCharges: weapon.active.maxCharges,
-            rechargeMethod: genStr(rng, weapon.active.rechargeMethod.desc),
+            rechargeMethod: genStr(weapon, rng, weapon.active.rechargeMethod.desc),
             powers: weapon.active.powers.map(power => ({
-                desc: genStr(rng, power.desc),
+                desc: genStr(weapon, rng, power.desc),
                 cost: power.cost,
-                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(rng, desc)) })
+                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(weapon, rng, desc)) })
             }))
         },
         passivePowers: weapon.passivePowers.map(power => ({
-            desc: genStr(rng, power.desc),
-            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(rng, desc)) })
+            desc: genStr(weapon, rng, power.desc),
+            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(weapon, rng, desc)) })
         })),
         sentient: weapon.sentient ? {
-            personality: weapon.sentient.personality.map(x => genStr(rng, x.desc)),
+            personality: weapon.sentient.personality.map(x => genStr(weapon, rng, x.desc)),
             languages: weapon.sentient.languages,
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
         } : false

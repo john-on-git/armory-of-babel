@@ -1,10 +1,10 @@
-import '../../../util/string';
-import { PrimitiveContainer } from "../../../util/versionController";
-import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "../../foes";
-import { mkGen, StringGenerator } from "../../recursiveGenerator";
-import { ProviderElement } from "../provider";
-import { toLang, toProviderSource } from '../weaponFeatureVersionController';
-import type { ActivePower, PassivePower, Personality, RechargeMethod, Theme, WeaponAdjective, WeaponPowerCond, WeaponShape } from "../weaponGeneratorTypes";
+import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
+import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
+import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
+import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { ActivePower, PassivePower, Personality, RechargeMethod, Theme, WeaponAdjective, WeaponPowerCond, WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import "$lib/util/string";
+import { PrimitiveContainer } from "$lib/util/versionController";
 
 const agentOfExtractivism = mkGen((rng) =>
     [
@@ -618,7 +618,7 @@ export const v1 = {
                 const formatted = personality.capFirst() + '.';
                 return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, '-')}-${i}`,
                     {
-                        desc: mkGen(formatted)
+                        desc: formatted
                     },
                     {
                         themes: { all: [theme as Theme] },
@@ -632,7 +632,7 @@ export const v1 = {
         add: [
             new ProviderElement<Personality, WeaponPowerCond>('recharge-at-winter-solstice',
                 {
-                    desc: mkGen("all charges at noon on the winter solstice")
+                    desc: mkWepToGen("all charges at noon on the winter solstice")
                 },
                 {
 
@@ -643,7 +643,7 @@ export const v1 = {
             ),
             new ProviderElement<Personality, WeaponPowerCond>('recharge-at-summer-solstice',
                 {
-                    desc: mkGen("all charges at noon on the summer solstice")
+                    desc: mkWepToGen("all charges at noon on the summer solstice")
                 },
                 {
 
@@ -714,7 +714,7 @@ export const v1 = {
                 },
                 (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCond>(`${theme}-recharge-${i}`,
                     {
-                        desc: x
+                        desc: () => x
                     },
                     {
                         themes: { any: [theme as Theme] }
@@ -726,10 +726,10 @@ export const v1 = {
         add: [
             new ProviderElement<ActivePower, WeaponPowerCond>('weapon-animal-transformation',
                 {
-                    desc: mkGen("Animal Transformation"),
+                    desc: mkWepToGen("Animal Transformation"),
                     cost: 2,
                     additionalNotes: [
-                        new StringGenerator([
+                        () => new StringGenerator([
                             mkGen("The weapon transforms into "),
                             singularWildAnimal,
                             mkGen(" until the end of the scene, or until it dies.")
@@ -1265,7 +1265,7 @@ export const v1 = {
             new ProviderElement<PassivePower, WeaponPowerCond>('detect-unholy',
                 {
                     miscPower: true,
-                    desc: new StringGenerator([
+                    desc: () => new StringGenerator([
                         mkGen("Glows like a torch when "),
                         pluralUnholyFoe,
                         mkGen(" are near")
@@ -1305,7 +1305,7 @@ export const v1 = {
             new ProviderElement<PassivePower, WeaponPowerCond>('focus-light-beam',
                 {
                     miscPower: true,
-                    desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ['sun', 'moon'].choice(rng)), "light as a damaging beam (2d6 damage)."])
+                    desc: () => new StringGenerator(["Can reflect and focus ", mkGen((rng) => ['sun', 'moon'].choice(rng)), "light as a damaging beam (2d6 damage)."])
                 },
                 {
 
