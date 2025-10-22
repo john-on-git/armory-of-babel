@@ -4,7 +4,7 @@
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
     import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
-    import { pushURLSearchParamsToLocation } from "$lib/util/queryString";
+    import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import _, { isArray } from "lodash";
     import { writable } from "svelte/store";
 
@@ -67,7 +67,7 @@
                 searchParams.set("rarityOdds", newRarityOdds);
             }
         }
-        pushURLSearchParamsToLocation(searchParams);
+        syncLocationWithURLSearchParams(searchParams, "replace");
     });
 </script>
 
