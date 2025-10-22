@@ -5,7 +5,7 @@
     import { writable } from "svelte/store";
 
     let config = $state(defaultWeaponRarityConfigFactory());
-    const configWritable = writable(config);
+    const configWritable = writable((() => config)());
 
     configWritable.subscribe((newVal) => {
         config = newVal;
