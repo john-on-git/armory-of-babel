@@ -1,3 +1,4 @@
+import { choice } from "$lib/util/choice";
 import { mkGen } from "./recursiveGenerator";
 
 export const singularHolyFoe = mkGen((rng) => [
@@ -67,3 +68,19 @@ export const singularWildAnimal = mkGen((rng) => [
     "a lion",
     "a crow"
 ].choice(rng))
+
+const hornedHotBiomeAnimasArr = [
+    "auroch",
+    "mountain goat",
+    "bighorn sheep"
+] as const;
+
+const hornedColdBiomeAnimalsArr = [
+    "rhino",
+    "gazelle",
+    "buffallo",
+    "impala"
+] as const;
+
+export const hornedFireAnimal = mkGen((rng) => choice(hornedHotBiomeAnimasArr, rng));
+export const hornedIcyAnimal = mkGen((rng) => choice(hornedColdBiomeAnimalsArr, rng));

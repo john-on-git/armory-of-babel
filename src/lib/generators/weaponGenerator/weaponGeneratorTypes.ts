@@ -240,43 +240,41 @@ export interface WeaponPowerCond extends Cond {
 }
 
 
+interface WeaponPartAtom {
+    /**
+     * Text of the element in the description.
+     * @example
+     * const descriptorExample = 'encrusted with jewels';
+     * const materialExample = 'steel';
+     */
+    desc: string;
+
+    /**
+     * Ephitet used for this description. An ephitet is either pre or post, which indicates its position relative to the weapon type.
+     * @example
+     * const myEphitet = {
+     *      pre: 'Fiery'
+     * } 
+     * const myOtherEphitet = {
+     *      post: 'of the Volcano'
+     * } 
+     */
+    ephitet: {
+        pre: string;
+    } | {
+        post: string;
+    };
+    UUID: string;
+}
 export interface WeaponPart {
     /**
      * Main material of the part, if it's notable.
      */
-    material?: {
-        /**
-         * Text of the material in the description.
-         * @example
-         * const example = 'steel';
-         */
-        desc: string;
-        /**
-         * Ephitet used for this description.
-         * @example
-         * const example = 'steely';
-         */
-        ephitet: string;
-        UUID: string;
-    };
+    material?: WeaponPartAtom;
     /**
      * A list of facts about the physical properties of this part, which could be combined into a sentence.
      */
-    descriptors: {
-        /**
-         * Text of the material in the description.
-         * @example
-         * const example = 'encrusted with jewels';
-         */
-        desc: string;
-        /**
-         * Ephitet used for this description.
-         * @example
-         * const example = 'jewel-encrusted';
-         */
-        ephitet: string;
-        UUID: string;
-    }[];
+    descriptors: WeaponPartAtom[];
 }
 
 
@@ -374,7 +372,13 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
-export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & { ephitet: string | TGenerator<string, [Weapon]>; };
+export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & {
+    ephitet: {
+        pre: string | TGenerator<string, [Weapon]>;
+    } | {
+        post: string | TGenerator<string, [Weapon]>;
+    };
+};
 export type DescriptorGenerator<TArgs extends Array<unknown> = []> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
 };
