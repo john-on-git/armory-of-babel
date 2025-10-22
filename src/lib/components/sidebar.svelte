@@ -64,11 +64,15 @@
 <style>
     :root {
         --sidebar-width: 20vw;
-        --sidebar-color: #ffffff1a;
+        --sidebar-color: #4e4e4ecc;
+    }
+
+    .sidebar-content,
+    .toggle-sidebar-button {
+        background-color: var(--sidebar-color);
+        backdrop-filter: blur(2pt);
     }
     .sidebar-content {
-        background-color: var(--sidebar-color);
-
         width: var(--sidebar-width);
         padding: 1rem;
 
@@ -81,8 +85,6 @@
         align-items: flex-start;
     }
     .toggle-sidebar-button {
-        background-color: var(--sidebar-color);
-
         display: flex;
         align-items: center;
         justify-content: center;
