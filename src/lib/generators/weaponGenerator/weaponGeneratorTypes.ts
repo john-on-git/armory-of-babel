@@ -284,7 +284,7 @@ interface WeaponStructure {
     /**
      * The part(s) of the weapon that hurt people.
      */
-    business: [string, ...string[]];
+    business: string[];
 
     /**
      * The part(s) of the weapon that you hold.
@@ -303,8 +303,13 @@ const weaponStructures = {
         holding: ['grip'],
         other: ['crossguard', 'pommel']
     },
-    maceOrAxeLike: {
+    maceLike: {
         business: ['head'],
+        holding: ['grip'],
+        other: ['shaft', 'pommel']
+    },
+    axeLike: {
+        business: ['blade'],
         holding: ['grip'],
         other: ['shaft', 'pommel']
     },
@@ -314,9 +319,9 @@ const weaponStructures = {
         other: []
     },
     staffLike: {
-        business: ['body'],
+        business: [],
         holding: ['body'],
-        other: []
+        other: ['orb']
     },
     lanceLike: {
         business: ['tip'],
@@ -346,20 +351,20 @@ const shapeToStructure = {
     "club": 'clubLike',
     "staff": 'staffLike',
     "sword": 'swordLike',
-    "axe": 'maceOrAxeLike',
-    "mace": 'maceOrAxeLike',
+    "axe": 'axeLike',
+    "mace": 'maceLike',
 
     "greataxe": 'swordLike',
     "greatsword": 'swordLike',
 
     "spear": 'spearLike',
     "lance": 'lanceLike',
-    "polearm": 'maceOrAxeLike',
+    "polearm": 'axeLike',
 
     "sword (or bow)": 'bowSwordLike',
     "dagger (or pistol)": 'gunSwordLike',
     "sword (or musket)": 'gunSwordLike',
-    "greataxe (or musket)": "maceOrAxeLike",
+    "greataxe (or musket)": "axeLike",
 } as const satisfies Record<WeaponShapeGroup, keyof typeof weaponStructures>
 
 export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];

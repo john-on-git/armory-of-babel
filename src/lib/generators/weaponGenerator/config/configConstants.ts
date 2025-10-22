@@ -162,7 +162,7 @@ export const MATERIALS = {
         material: 'glass',
         ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
-    'glass-like-steel': {
+    'glassLikeSteel': {
         material: 'glass-like-steel',
         ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
@@ -184,8 +184,8 @@ export const MATERIALS = {
         ephitet: mkGen((rng) => ephSharp.choice(rng))
     } as const,
 
-    'ice': {
-        material: 'ice',
+    'iceLikeSteel': {
+        material: 'magical ice as strong as steel',
         ephitet: mkGen((rng) => ephCold.choice(rng))
     } as const,
     'iceBlood': {
@@ -249,7 +249,7 @@ export const MISC_DESC_FEATURES = {
         },
         emojis: {
             descriptor: mkGen((rng) => {
-                const options = ['a smiling face', 'a sad face', 'an angry face', "a dizzy face", "a melting face", "an imp's head", "a cat's head", "a sun face", "a moon face", "the north wind"];
+                const options = ['a smiling face', 'a sad face', 'an angry face', "a dizzy face", "a melting face", "an imp's head", "a cat's head", "a sun with a face", "a moon with a face", "the north wind"];
                 const nCharms = ([1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3] satisfies (1 | 2 | 3)[]).choice(rng);
                 const chosenOptions = new Array(nCharms).fill(null).map(() => {
                     // choose an element, and remove it from the array to prevent duplicates

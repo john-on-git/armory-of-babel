@@ -100,12 +100,36 @@ export default {
                 }
             ),
 
-            new ProviderElement('material-ice-hard',
+            new ProviderElement('material-ice-hard-mundane',
                 {
                     generate: (rng) => {
                         return [
-                            MATERIALS.ice,
-                            MATERIALS["glass-like-steel"],
+                            MATERIALS["boreal steel"],
+                            MATERIALS.silver,
+                            MATERIALS['silver-plated'],
+                            MATERIALS["white gold"],
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    themes: {
+                        any: ['ice']
+                    },
+                    rarity: {
+                        lte: 'rare',
+                    }
+                }
+            ),
+
+            new ProviderElement('material-ice-hard-rare',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.iceLikeSteel,
+                            MATERIALS.glassLikeSteel,
                             MATERIALS["glass"],
                             MATERIALS["boreal steel"],
                             MATERIALS.silver,
@@ -120,6 +144,9 @@ export default {
                 {
                     themes: {
                         any: ['ice']
+                    },
+                    rarity: {
+                        gte: 'epic',
                     }
                 }
             ),
@@ -130,7 +157,7 @@ export default {
                         return [
                             MATERIALS["meteoric iron"],
                             MATERIALS.silver,
-                            MATERIALS.ice,
+                            MATERIALS.iceLikeSteel,
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -394,7 +421,7 @@ export default {
                             MATERIALS["blue gold"],
                             MATERIALS['purple gold'],
                             MATERIALS.cobalt,
-                            MATERIALS["glass-like-steel"],
+                            MATERIALS["glassLikeSteel"],
                             MATERIALS.force,
                             MATERIALS.quartz,
                             MATERIALS.sapphire,
