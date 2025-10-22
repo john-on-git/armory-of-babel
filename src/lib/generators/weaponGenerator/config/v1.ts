@@ -1870,7 +1870,7 @@ export default {
                     desc: 'Return',
                     additionalNotes: [
                         'The weapon is bound to a particular location, you can slice the air to open a portal to it. It stays open for 1 minute before collapsing.',
-                        'The location is fixed and decided by the referee. Typical locations include the place the weapoon was forged, or the fortress of a previous wielder.'
+                        'The location is fixed and decided by the referee. Typical locations include the place the weapon was forged, or the fortress of a previous wielder.'
                     ]
                 },
                 { shapeFamily: { any: edgedWeaponShapeFamilies } }
