@@ -6,7 +6,6 @@ import _ from "lodash";
 export function calcOdds(
     config: WeaponRarityConfig,
 ): [number, number, number, number] {
-    console.log('calculated odds');
     const round = (x: number) => Math.round(x * 100) / 100;
     return [
         round(1 - config.uncommon.percentile),

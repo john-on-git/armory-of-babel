@@ -19,8 +19,8 @@
 
     const { odds }: Props = $props();
 
-    const version = $derived(getVersionFromURL());
-    const weaponID = $derived(getIDFromURL());
+    let version = $state(getVersionFromURL());
+    let weaponID = $state(getIDFromURL());
 
     let weaponState = $state<{
         req: GenerateWeaponRequest;
@@ -60,8 +60,11 @@
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", async () => {
+            weaponID = getIDFromURL();
+            version = getVersionFromURL();
+
             // construct the search params for the API
-            const searchParams = new URLSearchParams(window.location.search);
+            const searchParams = new URLSearchParams(page.url.search);
 
             if (!searchParams.has("o")) {
                 searchParams.set("o", odds[0].toFixed(2));
@@ -114,12 +117,11 @@
         });
 
         tick().then(() => {
-            const searchParams = new URLSearchParams(window.location.search);
             // and initialize any values in the URL that have not been set yet
-            if (!searchParams.has("id")) {
+            if (!page.url.searchParams.has("id")) {
                 pushIdToURL(weaponID, "replace");
             }
-            if (!searchParams.has("v")) {
+            if (!page.url.searchParams.has("v")) {
                 replaceVersionInURL(version);
             }
         });
@@ -137,7 +139,7 @@
     function getVersionFromURL(): number {
         // this is user input and could be literally anything, i.e. an XSS attack
         const maybeNumber = Number.parseInt(
-            new URLSearchParams(window.location.search).get("v") ?? "NaN",
+            page.url.searchParams.get("v") ?? "NaN",
         );
 
         if (Number.isInteger(maybeNumber)) {
@@ -148,7 +150,7 @@
             const latest = weaponVersionController.getLatestVersionNum();
 
             // push it to the URL
-            const searchParams = new URLSearchParams(window.location.search);
+            const searchParams = new URLSearchParams(page.url.search);
             searchParams.set("v", latest.toString());
             syncLocationWithURLSearchParams(searchParams, "replace");
 
@@ -158,7 +160,7 @@
     }
     function replaceVersionInURL(id: number) {
         // only add the id param if it wasn't added already
-        const searchParams = new URLSearchParams(window.location.search);
+        const searchParams = new URLSearchParams(page.url.search);
         searchParams.set("v", id.toString());
 
         // and update the URL params to point to its ID
@@ -181,8 +183,7 @@
     }
 
     function pushIdToURL(id: string, mode: "push" | "replace" = "push") {
-        // only add the id param if it wasn't added already
-        const searchParams = new URLSearchParams(window.location.search);
+        const searchParams = new URLSearchParams(page.url.search);
         searchParams.set("id", id);
 
         // and update the URL params to point to its ID
@@ -203,7 +204,6 @@
      */
     function generateWeapon() {
         invalidateCurrentWeapon();
-
         pushIdToURL(getNewId());
     }
 </script>
