@@ -144,7 +144,7 @@ export interface WeaponViewModel {
 }
 
 export interface Power {
-    additionalNotes?: (string | ((weapon: Weapon) => TGenerator<string>))[];
+    additionalNotes?: (string | (TGenerator<string, [Weapon]>))[];
 
     /**
      * UUID of the description provider that is applied to weapons with this power
@@ -170,7 +170,7 @@ export interface PassiveBonus {
 } // TODO
 
 export interface ChargedPower extends Power {
-    desc: string | ((weapon: Weapon) => TGenerator<string>);
+    desc: string | (TGenerator<string, [Weapon]>);
     cost: number | string;
 }
 export interface UnlimitedChargedPower extends Power {
@@ -187,15 +187,15 @@ export interface WeaponAdjective {
     desc: string;
 }
 export interface Personality {
-    desc: string | ((weapon: Weapon) => TGenerator<string>);
+    desc: string | (TGenerator<string, [Weapon]>);
 };
 export interface RechargeMethod {
-    desc: string | ((weapon: Weapon) => TGenerator<string>);
+    desc: string | (TGenerator<string, [Weapon]>);
 }
 
 export interface PassivePower extends Power {
     miscPower: true;
-    desc: string | ((weapon: Weapon) => TGenerator<string>);
+    desc: string | (TGenerator<string, [Weapon]>);
     bonus?: PassiveBonus;
 }
 export interface Language extends Power {
@@ -308,6 +308,16 @@ const weaponStructures = {
         holding: ['grip'],
         other: ['shaft', 'pommel']
     },
+    clubLike: {
+        business: ['head'],
+        holding: ['grip'],
+        other: []
+    },
+    staffLike: {
+        business: ['body'],
+        holding: ['body'],
+        other: []
+    },
     lanceLike: {
         business: ['tip'],
         holding: ['grip'],
@@ -317,11 +327,6 @@ const weaponStructures = {
         business: ['tip'],
         holding: ['grip'],
         other: ['shaft', 'pommel']
-    },
-    clubOrStaffLike: {
-        business: ['body'],
-        holding: ['body'],
-        other: []
     },
     bowSwordLike: {
         business: ['blades'],
@@ -338,8 +343,8 @@ const weaponStructures = {
 
 const shapeToStructure = {
     "dagger": "swordLike",
-    "club": 'clubOrStaffLike',
-    "staff": 'clubOrStaffLike',
+    "club": 'clubLike',
+    "staff": 'staffLike',
     "sword": 'swordLike',
     "axe": 'maceOrAxeLike',
     "mace": 'maceOrAxeLike',
@@ -364,8 +369,8 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
-export type Descriptor = ({ material: string | ((weapon: Weapon) => TGenerator<string>) } | { descriptor: string | ((weapon: Weapon) => TGenerator<string>) }) & { ephitet: string | ((weapon: Weapon) => TGenerator<string>); };
-export type DescriptorGenerator = TGenerator<Descriptor> & {
+export type Descriptor = ({ material: string | ((weapon: Weapon) => DescriptorGenerator) } | { descriptor: string | ((weapon: Weapon) => DescriptorGenerator) }) & { ephitet: string | ((weapon: Weapon) => DescriptorGenerator); };
+export type DescriptorGenerator<TArgs extends Array<unknown> = []> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
 };
 
@@ -398,6 +403,40 @@ export function structureFor<T extends WeaponShapeGroup>(shape: T) {
     return [structure, structuredDesc as StructuredDescription] as const;
 }
 
+// woke up mr Freeman. woke u and smell the pronouns
+export type Pronouns = 'object' | 'enby' | 'masc' | 'femm';
+type PronounsLoc = {
+    singular: {
+        subject: string,
+        possessive: string
+    },
+};
+export const pronounLoc = {
+    object: {
+        singular: {
+            subject: "it",
+            possessive: "its"
+        }
+    },
+    enby: {
+        singular: {
+            subject: "they",
+            possessive: "their"
+        }
+    },
+    masc: {
+        singular: {
+            subject: "he",
+            possessive: "his"
+        }
+    },
+    femm: {
+        singular: {
+            subject: "she",
+            possessive: "her"
+        }
+    }
+} as const satisfies Record<Pronouns, PronounsLoc>;
 
 /**
  * TODO this should really just accept weapon

@@ -37,8 +37,8 @@ const simpleMaterials = [
         ephitet: 'Scarlet Steel'
     } as const,
     {
-        material: 'toxisteel',
-        ephitet: 'Toxic'
+        material: 'acidium',
+        ephitet: 'Corrosive'
     } as const,
     {
         material: 'ultrahard candy',
@@ -65,6 +65,7 @@ const simpleMaterials = [
         'palladium',
         'cobalt',
 
+        'gingerbread',
 
         'quartz',
         'diamond',
@@ -78,7 +79,6 @@ const simpleMaterials = [
 
         'mythrel',
         'adamantum',
-        'australium',
     ] as const, (metal) => ({
         material: metal,
         ephitet: capFirst(metal)
@@ -249,24 +249,21 @@ export const MISC_DESC_FEATURES = {
             descriptor: 'has a piece of scripture affixed to it with a wax seal',
             ephitet: 'Sanctified'
         },
-        smile: {
-            descriptor: 'has a miniature bust tied to it, a smiling face',
-            ephitet: 'Charming'
-        },
-        sad: {
-            descriptor: 'has a miniature bust tied to it, a sad face',
-            ephitet: 'Charming'
-        },
-        angry: {
-            descriptor: 'has a miniature bust tied to it, an angry face',
-            ephitet: 'Charming'
-        },
-        demon: {
-            descriptor: "has a miniature bust tied to it, a demonic imp's head",
-            ephitet: 'Charming'
-        },
-        cat: {
-            descriptor: "has a miniature bust tied to it, a cat",
+        emojis: {
+            descriptor: () => mkGen((rng) => {
+                const options = ['a smiling face', 'a sad face', 'an angry face', 'a cross-eyed face', "an imp's head", "a cat's head"];
+                const nCharms = ([1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3] satisfies (1 | 2 | 3)[]).choice(rng);
+                const chosenOptions = new Array(nCharms).fill(null).map(() => options.choice(rng));
+
+                switch (nCharms) {
+                    case 1:
+                        return `has a miniature bust affixed to it, depicting ${chosenOptions[0]}`;
+                    case 2:
+                        return `has a pair of miniature busts affixed to it, depicting ${chosenOptions[0]} and ${chosenOptions[1]}`;
+                    case 3:
+                        return `has a cluster of miniature busts affixed to it: ${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]},`;
+                }
+            }),
             ephitet: 'Charming'
         },
         shrunken: {
@@ -303,23 +300,27 @@ export const MISC_DESC_FEATURES = {
         },
         beadsWrap: {
             descriptor: 'has a string of glass beads wrapped around it',
-            ephitet: 'Glassy'
+            ephitet: 'Beaded'
         },
         silverChainWrap: {
             descriptor: 'has a small silver chain wrapped around it',
-            ephitet: 'Silvery'
+            ephitet: 'Chained'
         },
         goldChainWrap: {
             descriptor: 'has a small gold chain wrapped around it',
-            ephitet: 'Golden'
+            ephitet: 'Chained'
+        },
+        ironChain: {
+            descriptor: 'has an iron chain wrapped around it',
+            ephitet: 'Chained'
         },
         silkWrap: {
             descriptor: 'has a silk sash wrapped around it',
-            ephitet: 'Silky'
+            ephitet: 'Silken'
         },
     },
 
-} as const;
+} as const satisfies Record<string, Record<string, Descriptor>>;
 
 // weapon parts
 

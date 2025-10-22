@@ -95,7 +95,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: ['ice']
+                        any: ['fire']
                     }
                 }
             ),
@@ -296,7 +296,7 @@ export default {
                     generate: (rng) => {
                         return [
                             MATERIALS.citrine,
-                            MATERIALS.toxisteel
+                            MATERIALS.acidium
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -363,18 +363,39 @@ export default {
                 }
             ),
 
-            new ProviderElement('material-wizard-hard',
+            new ProviderElement('material-wizard-hard-mundane',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS['tin'],
+                            MATERIALS.quartz,
+                            MATERIALS.crystal,
+                            MATERIALS.amethyst
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    themes: {
+                        any: ['wizard']
+                    },
+                    rarity: {
+                        lte: 'rare'
+                    }
+                }
+            ),
+
+            new ProviderElement('material-wizard-hard-rare',
                 {
                     generate: (rng) => {
                         return [
                             MATERIALS["blue gold"],
                             MATERIALS['purple gold'],
-                            MATERIALS['tin'],
                             MATERIALS.cobalt,
                             MATERIALS["glass-like-steel"],
-                            MATERIALS["glass"],
                             MATERIALS.force,
-                            MATERIALS["meteoric iron"],
                             MATERIALS.quartz,
                             MATERIALS.sapphire,
                             MATERIALS.crystal,
@@ -388,9 +409,13 @@ export default {
                 {
                     themes: {
                         any: ['wizard']
+                    },
+                    rarity: {
+                        gte: 'rare'
                     }
                 }
             ),
+
             new ProviderElement('material-wizard-nature',
                 {
                     generate: (rng) => {
@@ -404,7 +429,7 @@ export default {
                 },
                 {
                     themes: {
-                        any: ['wizard', 'nature']
+                        all: ['wizard', 'nature']
                     }
                 }
             ),
@@ -454,6 +479,19 @@ export default {
                     }
                 },
                 {}
+            ),
+            new ProviderElement('misc-charm-emojis',
+                {
+                    generate: () => MISC_DESC_FEATURES.charm.emojis,
+                    applicableTo: {
+                        any: wrappableParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['nature', 'wizard', 'sweet']
+                    }
+                }
             ),
 
             new ProviderElement('club-staff-main-material-mundane',
@@ -727,7 +765,7 @@ export default {
                 },
                 (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCond>(`${theme}-recharge-${i}`,
                     {
-                        desc: () => x
+                        desc: x
                     },
                     {
                         themes: { any: [theme as Theme] }
@@ -742,7 +780,7 @@ export default {
                     desc: mkWepToGen("Animal Transformation"),
                     cost: 2,
                     additionalNotes: [
-                        () => new StringGenerator([
+                        new StringGenerator([
                             mkGen("The weapon transforms into "),
                             singularWildAnimal,
                             mkGen(" until the end of the scene, or until it dies.")
@@ -1277,7 +1315,7 @@ export default {
             new ProviderElement<PassivePower, WeaponPowerCond>("detect-unholy",
                 {
                     miscPower: true,
-                    desc: () => new StringGenerator([
+                    desc: new StringGenerator([
                         mkGen("Glows like a torch when "),
                         pluralUnholyFoe,
                         mkGen(" are near")
@@ -1317,7 +1355,7 @@ export default {
             new ProviderElement<PassivePower, WeaponPowerCond>("focus-light-beam",
                 {
                     miscPower: true,
-                    desc: () => new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."])
+                    desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."])
                 },
                 {
 
@@ -1761,7 +1799,7 @@ export default {
             new ProviderElement<PassivePower, WeaponPowerCond>("can-fly",
                 {
                     miscPower: true,
-                    desc: (weapon) => mkGen((rng) => {
+                    desc: mkGen((rng, weapon) => {
                         const reasonsToFly = {
                             fire: new StringGenerator([
                                 "While using the weapon, you can ",
