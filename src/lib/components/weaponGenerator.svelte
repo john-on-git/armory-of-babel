@@ -195,12 +195,12 @@
      * Generate a new weapon, called when the page is loaded without an ID in the URL, and when the 'generate' button is clicked.
      */
     function generateWeapon() {
-        syncIdToURL(getNewId());
-
         weaponState = null;
 
         // switch animations
         fadeLock = !fadeLock;
+
+        syncIdToURL(getNewId());
     }
 
     /**
@@ -218,7 +218,10 @@
     <div class="body">
         <div class="weapon-display-container">
             {#if weapon !== null}
-                <WeaponDisplay {weapon} {fadeLock} />
+                <WeaponDisplay
+                    {weapon}
+                    classes={`fade-in-${fadeLock ? "1" : "2"}`}
+                />
             {/if}
         </div>
     </div>
@@ -230,15 +233,17 @@
         >
     {:else}
         <button
-            class="back-button"
-            data-testid="generate-button"
-            onclick={generateWeapon}>←</button
-        >
-        <button
             class="generate-button"
             data-testid="generate-button"
-            onclick={goBack}>→</button
-        >
+            onclick={generateWeapon}
+            aria-label="generate new weapon button"
+        ></button>
+        <button
+            class="back-button"
+            data-testid="go-back-button"
+            onclick={goBack}
+            aria-label="go back button"
+        ></button>
     {/if}
 </div>
 
@@ -279,21 +284,6 @@
         text-wrap: none;
     }
 
-    .header > button {
-        flex-basis: 20rem;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        margin-top: auto;
-
-        width: fit-content;
-
-        font-weight: bold;
-        font-size: 1.5rem;
-    }
-
     @media (orientation: landscape) {
         .body {
             margin-left: 10vw;
@@ -324,21 +314,39 @@
         flex-grow: 1;
     }
 
-    .mobile-generate-button {
+    .portrait-generate-button {
+        display: absolute;
     }
 
     .generate-button,
     .back-button {
-        position: fixed;
+        position: absolute;
+        top: 45vh;
 
-        height: 10vh;
-        top: 40vh;
+        aspect-ratio: 1;
+
+        background-color: transparent;
+        border: 0 solid transparent;
+
+        font-size: 10rem;
+        padding: 0;
+    }
+    .generate-button:after,
+    .back-button:after {
+        color: gray;
+        content: "⌵";
+    }
+    .generate-button:hover:after,
+    .back-button:hover:after {
+        color: white;
     }
     .generate-button {
-        right: 10vw;
+        right: 5vw;
+        rotate: -90deg;
     }
 
     .back-button {
-        left: 10vw;
+        left: 5vw;
+        rotate: 90deg;
     }
 </style>

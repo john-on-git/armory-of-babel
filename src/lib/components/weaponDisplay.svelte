@@ -4,10 +4,10 @@
 
     interface Props {
         weapon: WeaponViewModel;
-        fadeLock: boolean;
+        classes: string;
     }
 
-    let { weapon, fadeLock }: Props = $props();
+    let { weapon, classes }: Props = $props();
 
     /** Text for the weapon's damage. i.e. "as sword + d6 + 1"
      */
@@ -56,10 +56,7 @@
     }
 </script>
 
-<div
-    class={`weapon-display fade-in-${fadeLock ? "1" : "2"}`}
-    data-testid="weapon-display"
->
+<div class={`weapon-display ${classes}`} data-testid="weapon-display">
     <h2
         class={`weapon-class weapon-rarity-${weapon.rarity}`}
         data-testid="weapon-display-title"
