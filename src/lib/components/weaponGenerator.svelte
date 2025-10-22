@@ -18,7 +18,7 @@
     const weaponID = writable<string>(getIDFromURL());
     weaponID.subscribe((newId) => {
         // update the view with the new weapon
-        weapon = mkWeapon(newId);
+        weapon = mkWeapon(newId, config);
     });
 
     // set up event listeners
