@@ -449,8 +449,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: mkGen((_, __) => ` is partially transparent, revealing luminous red veins which emit a diffuse crimson glow`),
-                                plural: mkGen((_, __) => ` are partially transparent, revealing luminous red veins, which spread a diffuse crimson glow`)
+                                singular: mkGen((_, __) => ` is partially transparent, revealing red veins which emit a diffuse crimson glow`),
+                                plural: mkGen((_, __) => ` are partially transparent, revealing red veins, which emit a diffuse crimson glow`)
                             },
                             ephitet: mkGen(rng => ephRed.choice(rng)),
                         }
@@ -1755,7 +1755,6 @@ export default {
                     `,
                 ]
             }, {
-                never: true,
                 shapeFamily: {
                     any: ['dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
