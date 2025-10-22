@@ -8,6 +8,89 @@ import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./pr
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isRarity, itTheyFor, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
+/**
+ * 
+ * @param _locale locale to generator the weapon for (not currently implemented)
+ * @param weapon A weapon that has a description. If its description is null the behaviour is undefined. 
+ */
+function structuredDescToString(_locale: string, weapon: Weapon) {
+
+    if (weapon.description === null) {
+        throw new Error('cannot generate description for a weapon with null description');
+    }
+    else {
+
+
+        const parts = Object.values(weapon.description).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
+
+        function usesAnd(desc: WeaponPart) {
+            return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
+        }
+
+        let description = '';
+        let i = 0;
+        let usedAndThisSentence: boolean = false;
+        for (const [partName, part] of parts) {
+            const start = i === 0
+                ? pronounLoc[weapon.pronouns].singular.possessive.capFirst()
+                : usedAndThisSentence
+                    ? weapon.pronouns === 'object' ? 'the' : pronounLoc[weapon.pronouns].singular.possessive
+                    : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capFirst();
+
+
+            // get all the descriptors, merging together any chains of 'has' TODO this would need to take into account has/have
+            let hasChain = false;
+            const descriptors: string[] = [];
+            for (const descriptor of part.descriptors) {
+                const hasHas = descriptor.desc.startsWith('has ');
+                if (hasChain) {
+                    descriptors.push(hasHas ? `${descriptor.desc.slice(4)}` : descriptor.desc);
+                }
+                else {
+                    hasChain = hasHas;
+                    descriptors.push(descriptor.desc);
+                }
+            }
+
+            const materialStr = part.material === undefined ? '' : ` made of ${part.material.desc}${descriptors.length > 1
+                ? ','
+                : descriptors.length > 0
+                    ? `, and ${itTheyFor(partName)}`
+                    : ''
+                }`
+
+            // join the descriptors together in a grammatical list: with commas and the word 'and' before the last element
+            const descriptorsStr = descriptors.length > 1
+                ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
+                : descriptors.length === 1
+                    ? ` ${descriptors[0]}`
+                    : '';
+
+            usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
+
+            const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
+
+            // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
+            // but don't merge more than two
+            // otherwise end the current sentence
+            let sentence: string;
+            if (!usedAndThisSentence && (i < parts.length - 1) && !usesAnd(parts[i + 1][1])) {
+                sentence = `${partStr}, and `
+                usedAndThisSentence = true;
+            }
+            else {
+                sentence = `${partStr}. `;
+                usedAndThisSentence = false;
+            }
+
+            description += sentence;
+
+            i++;
+        }
+        return description;
+    }
+}
+
 function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
         const allApplicableParts = _
@@ -195,6 +278,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         id: rngSeed,
         description: null,
         rarity,
+        pronouns: isSentient ? (['enby', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm'] satisfies Pronouns[]).choice(rng) : 'object',
         name: '',
         shape: {
             particular: "sword",
@@ -419,106 +503,37 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
 
     // generate the weapon's pronouns for the description. If the weapon is sentient, this also requires us to generate its name
-    let pronouns: Pronouns;
-    let personalName: string;
 
-    if (weapon.sentient) {
-        pronouns = (['enby', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm'] satisfies Pronouns[]).choice(rng);
-        personalName = [
-            grecoRomanFirstNameGenerator, angloFirstNameGenerator,
-        ].choice(rng).generate(rng, pronouns);
-    }
-    else {
-        pronouns = 'object';
-        personalName = ''
-    }
+
 
     // convert the structured description to a text block
-    const parts = Object.values(weapon.description).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
-
-    function usesAnd(desc: WeaponPart) {
-        return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
-    }
-
-    let description = '';
-    let i = 0;
-    let usedAndThisSentence: boolean = false;
-    for (const [partName, part] of parts) {
-        const start = i === 0
-            ? pronounLoc[pronouns].singular.possessive.capFirst()
-            : usedAndThisSentence
-                ? pronouns === 'object' ? 'the' : pronounLoc[pronouns].singular.possessive
-                : pronouns === 'object' ? 'The' : pronounLoc[pronouns].singular.possessive.capFirst();
-
-
-        // get all the descriptors, merging together any chains of 'has' TODO this would need to take into account has/have
-        let hasChain = false;
-        const descriptors: string[] = [];
-        for (const descriptor of part.descriptors) {
-            const hasHas = descriptor.desc.startsWith('has ');
-            if (hasChain) {
-                descriptors.push(hasHas ? `${descriptor.desc.slice(4)}` : descriptor.desc);
-            }
-            else {
-                hasChain = hasHas;
-                descriptors.push(descriptor.desc);
-            }
-        }
-
-        const materialStr = part.material === undefined ? '' : ` made of ${part.material.desc}${descriptors.length > 1
-            ? ','
-            : descriptors.length > 0
-                ? `, and ${itTheyFor(partName)}`
-                : ''
-            }`
-
-        // join the descriptors together in a grammatical list: with commas and the word 'and' before the last element
-        const descriptorsStr = descriptors.length > 1
-            ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
-            : descriptors.length === 1
-                ? ` ${descriptors[0]}`
-                : '';
-
-        usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
-
-        const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
-
-        // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
-        // but don't merge more than two
-        // otherwise end the current sentence
-        let sentence: string;
-        if (!usedAndThisSentence && (i < parts.length - 1) && !usesAnd(parts[i + 1][1])) {
-            sentence = `${partStr}, and `
-            usedAndThisSentence = true;
-        }
-        else {
-            sentence = `${partStr}. `;
-            usedAndThisSentence = false;
-        }
-
-        description += sentence;
-
-        i++;
-    }
+    const description = structuredDescToString('en-GB', weapon);
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
     const ephitet = pickEphitet(rng, weapon.description);
-    if (ephitet === undefined) {
-        weapon.name = weapon.shape.particular;
-    }
-    else {
-
-        if (weapon.sentient === false) {
+    if (weapon.pronouns == 'object') {
+        if (ephitet === undefined) {
+            weapon.name = weapon.shape.particular;
+        }
+        else {
             weapon.name = 'pre' in ephitet
                 ? `${ephitet.pre} ${weapon.shape.particular}`
                 : `The ${weapon.shape.particular} ${ephitet.post}`;
         }
-        else {
+    }
+    else {
+        const personalName = [
+            grecoRomanFirstNameGenerator, angloFirstNameGenerator,
+        ].choice(rng).generate(rng, weapon.pronouns);
+
+        if (ephitet === undefined) {
+            weapon.name = `${personalName}, the ${weapon.shape.particular}`;
+        } else {
             const ephitetAndShape = 'pre' in ephitet
                 ? `${ephitet.pre} ${weapon.shape.particular}`
                 : `${weapon.shape.particular} ${ephitet.post}`;
 
-            weapon.name = `${personalName}, the ${ephitetAndShape}`
+            weapon.name = `${personalName}, the ${ephitetAndShape}`;
         }
     }
 
