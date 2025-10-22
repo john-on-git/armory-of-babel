@@ -960,12 +960,14 @@ const cores = {
             adj: 'Verdant',
             desc: 'green energy',
             featureUUID: 'energy-core-verdant'
-        },
+        }
+    ],
+    sour: [
         {
             adj: 'Atomic',
             desc: 'atomic energy',
             featureUUID: 'energy-core-atomic'
-        },
+        }
     ],
     dark: {
         adj: 'Dark',
