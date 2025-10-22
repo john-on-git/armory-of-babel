@@ -39,7 +39,7 @@ export const pluralUnholyFoe = mkGen((rng) => [
     "ghost",
     "ghouls",
     "wendigos",
-    "skinwalkers",
+    "shapeshifters",
 
     "automatons",
 
@@ -87,6 +87,7 @@ const hotAndMagicHornsAndAntlers = [
 
 const coldBiomeHornsAndTusks = [
     ["auroch", "horn"],
+    ["mammoth", "tusk"],
     ["mountain goat", "horn"],
     ["walrus", "tusk"],
     ["narwhal", "horn"],
