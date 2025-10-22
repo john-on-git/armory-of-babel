@@ -1741,7 +1741,7 @@ export default {
                     desc: "Chilling Strike",
                     cost: 2,
                     additionalNotes: [
-                        "Upon landing a blow, you empower it with ice. Characters must save or be frozen solid next turn."
+                        "Upon landing a blow, you empower it with frost. Characters must save or be frozen solid until the end of their next turn."
                     ],
                 },
                 {
