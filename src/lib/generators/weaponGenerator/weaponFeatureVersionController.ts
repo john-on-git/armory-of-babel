@@ -1,5 +1,4 @@
 import v1 from "$lib/generators/weaponGenerator/config/v1";
-import v2 from "$lib/generators/weaponGenerator/config/v2";
 import type { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DescriptorGenerator, type FeatureProviderCollection, type Theme, type WeaponFeaturesTypes } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -9,7 +8,6 @@ import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPat
 
 export const weaponFeatureVersionController = new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<WeaponFeaturesTypes>, FeatureProviderCollection>([
     v1,
-    v2,
     // ,{
     //     themes: {},
     //     descriptors: {},

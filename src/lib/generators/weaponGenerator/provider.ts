@@ -49,7 +49,7 @@ export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPower
 }
 
 export interface Cond {
-    allowDuplicates?: true;
+    allowDuplicates?: boolean;
     UUIDs?: Quant<string>
     /**
      * If present, this will never be chosen.
@@ -98,7 +98,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
             return false;
         }
         // if the cond doesn't use either of the conditions that require checking UUIDs, there's no point in checking the params' UUIDs. just return true
-        if ((cond.allowDuplicates || this.defaultAllowDuplicates) === true && cond.UUIDs === undefined) {
+        if ((cond.allowDuplicates ?? this.defaultAllowDuplicates) && cond.UUIDs === undefined) {
             return true;
         }
         else {
