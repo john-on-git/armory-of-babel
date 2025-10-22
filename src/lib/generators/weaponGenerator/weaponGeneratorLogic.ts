@@ -501,11 +501,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         nDescriptors++;
     }
 
-
-    // generate the weapon's pronouns for the description. If the weapon is sentient, this also requires us to generate its name
-
-
-
     // convert the structured description to a text block
     const description = structuredDescToString('en-GB', weapon);
 
