@@ -121,7 +121,7 @@ export interface WeaponViewModel {
 
     rarity: WeaponRarity;
     name: string;
-    description: string;
+    // description: string;
     shape: WeaponShape;
 
     damage: DamageDice & { as: string };

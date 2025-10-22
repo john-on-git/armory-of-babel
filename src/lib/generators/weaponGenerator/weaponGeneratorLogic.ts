@@ -77,7 +77,8 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
 
 const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
 
-export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = defaultWeaponRarityConfigFactory()): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
+const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
+export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
 
     const rng = seedrandom(rngSeed);
@@ -269,7 +270,6 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
         themes: weapon.themes,
         rarity: weapon.rarity,
         name: weapon.name,
-        description: weapon.description,
         shape: weapon.shape,
         damage: weapon.damage,
         toHit: weapon.toHit,
@@ -279,12 +279,12 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
             powers: weapon.active.powers.map(power => ({
                 desc: genStr(rng, power.desc),
                 cost: power.cost,
-                additionalNotes: power.additionalNotes === undefined ? undefined : power.additionalNotes.map(desc => genStr(rng, desc))
+                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(rng, desc)) })
             }))
         },
         passivePowers: weapon.passivePowers.map(power => ({
             desc: genStr(rng, power.desc),
-            additionalNotes: power.additionalNotes === undefined ? undefined : power.additionalNotes.map(desc => genStr(rng, desc))
+            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(rng, desc)) })
         })),
         sentient: weapon.sentient ? {
             personality: weapon.sentient.personality.map(x => genStr(rng, x.desc)),

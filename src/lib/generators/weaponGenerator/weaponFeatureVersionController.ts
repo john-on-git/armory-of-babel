@@ -2027,6 +2027,43 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 )
             ]
         }
+    },
+    {
+        themes: {},
+        adjectives: {},
+        personalities: {},
+        rechargeMethods: {},
+        actives: {
+            add: [
+                new ProviderElement<ActivePower, WeaponPowerCond>('frostbound', {
+                    desc: 'Bind',
+                    cost: 1,
+                    additionalNotes: [
+                        'Lock a mechanism in place with magical ice as strong as steel.',
+                        'It stays frozen for 2d6 * 10 minutes.'
+                    ]
+                }, {
+                    themes: {
+                        any: ['ice']
+                    }
+                }),
+                new ProviderElement<ActivePower, WeaponPowerCond>('rally-person', {
+                    desc: 'Rally',
+                    cost: 1,
+                    additionalNotes: [
+                        'Targets one non-hostile character.',
+                        'For the rest of the day, their morale cannot break.'
+                    ]
+                }, {
+                    themes: {
+                        any: ['light', 'steampunk']
+                    }
+                })
+            ]
+        },
+        passives: {},
+        languages: {},
+        shapes: {}
     }
     // ,{
     //     themes: {},

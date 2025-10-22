@@ -4,7 +4,7 @@ import { defaultWeaponRarityConfigFactory } from "../../../lib/generators/weapon
 import { mkWeapon } from "../../../lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { applyOddsToConfig } from "../../../lib/util/configUtils";
 import { isValidOdd } from "../../../lib/util/getFromURL";
-import { FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
+import { DEFAULT_RARITY_ODDS, FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
 
 export interface GenerateWeaponRequest {
     id: string;
@@ -34,19 +34,18 @@ export async function GET({ request }: { request: Request, }) {
     const location = request.url.slice(iStartOfQuery);
     const params = new URLSearchParams(location);
 
+    const oddsFromParams = params.getAll('rarityOdds').map(x => Number.parseFloat(x));
     const v = params.get('v');
+
     const weaponRequest = {
         id: params.get('id'),
         version: v === null ? NaN : Number.parseInt(v),
-        odds: params.getAll('rarityOdds').map(x => Number.parseFloat(x))
+        odds: oddsFromParams.length === 0 ? DEFAULT_RARITY_ODDS : oddsFromParams
     }
 
     if (isGenerateWeaponRequest(weaponRequest)) {
 
-        // just take the values, to prevent the client from attaching anything else to the array
-        const strippedOdds = [weaponRequest.odds[0], weaponRequest.odds[1], weaponRequest.odds[2], weaponRequest.odds[3]] satisfies [number, number, number, number];
-
-        const config = applyOddsToConfig(defaultWeaponRarityConfigFactory(), strippedOdds);
+        const config = applyOddsToConfig(defaultWeaponRarityConfigFactory(), weaponRequest.odds);
 
         const { weaponViewModel } = mkWeapon(FEATURE_PROVIDERS_BY_VERSION[weaponRequest.version], weaponRequest.id, config);
 
