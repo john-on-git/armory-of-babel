@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -591,11 +591,11 @@ export default {
 
             new ProviderElement('material-nature-hard',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
                             MATERIALS.oak,
                             MATERIALS.birch,
-                            MATERIALS.cherry,
+                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryNormal : MATERIALS.cherryAnime,
                             MATERIALS.ebonyWood,
                             MATERIALS.maple,
                             MATERIALS.ivory,
@@ -630,12 +630,12 @@ export default {
 
             new ProviderElement('club-staff-main-material-mundane',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return [
                             MATERIALS.oak,
                             MATERIALS.pine,
                             MATERIALS.birch,
-                            MATERIALS.cherry,
+                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryNormal : MATERIALS.cherryAnime,
                             MATERIALS.ebonyWood,
                             MATERIALS.ironWood,
                         ].choice(rng);
@@ -660,7 +660,7 @@ export default {
                             MATERIALS.oak,
                             MATERIALS.pine,
                             MATERIALS.birch,
-                            MATERIALS.cherry,
+                            MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
                             MATERIALS.ironWood,
                             MATERIALS.bloodWood
@@ -2194,6 +2194,7 @@ export default {
                         "Machete",
                         "Scimitar",
                         "Gladius",
+                        "Katana",
                         {
                             particular: "Flamberge",
                             rarity: {
