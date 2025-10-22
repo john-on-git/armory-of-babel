@@ -9,6 +9,10 @@
     import { writable } from "svelte/store";
     import { getOddsFromURL } from "../lib/util/getFromURL";
 
+    import { dev } from "$app/environment";
+    import { injectAnalytics } from "@vercel/analytics/sveltekit";
+    injectAnalytics({ mode: dev ? "development" : "production" });
+
     function getConfigFromURL(): WeaponRarityConfig {
         let config = defaultWeaponRarityConfigFactory();
 
