@@ -1,4 +1,5 @@
 <script>
+    import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
 
@@ -7,6 +8,7 @@
 
 <h1>Generator Test</h1>
 <WeaponGenerator {config} />
+<ConfigSidebar {config} />
 
 <style>
     :global(h1, h2) {
