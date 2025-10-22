@@ -1848,11 +1848,11 @@ export default {
                         fire: "a fiery chakram",
                         cloud: "a pressurized stream of water, razor-sharp",
                         steampunk: "an arc of electricity",
-                        light: `a wave of ${core.theme}`,
-                        dark: `a wave of ${core.theme}`,
-                        wizard: `a wave of ${core.theme}`,
-                        void: `a wave of ${core.theme}`,
-                        nature: `a wave of ${core.theme}`
+                        light: `a wave of ${core.desc}`,
+                        dark: `a wave of ${core.desc}`,
+                        wizard: `a wave of ${core.desc}`,
+                        void: `a wave of ${core.desc}`,
+                        nature: `a wave of ${core.desc}`
                     } as const satisfies Record<PossibleCoreThemes | 'void', string>;
 
                     const titleByTheme = {
