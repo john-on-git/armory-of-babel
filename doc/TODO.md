@@ -1,5 +1,7 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
-    - Bugs.
+    - Oddities.
+        - Zelda magic shoot sword ability can roll on ranged weapons. Kinda funny though.
+        - Steampunk theme should disallow natural materials.
 
     - Generator setup.
         - Configuration.
