@@ -116,6 +116,19 @@
                                 <p>
                                     {power.desc}
                                 </p>
+                                {#if power.additionalNotes}
+                                    <div>
+                                        {#each power.additionalNotes as additionalNote}
+                                            <div
+                                                class="weapon-generator-list-item"
+                                            >
+                                                <p>
+                                                    {additionalNote}
+                                                </p>
+                                            </div>
+                                        {/each}
+                                    </div>
+                                {/if}
                             </div>
                         {/each}
                     </div>
