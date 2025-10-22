@@ -23,9 +23,8 @@
             - Ban / Force Themes
             - 5e mode.
 
-        - ~~Implement bonuses for passive abilities.~~
-
         - Information page.
+        - Crafting Mode (create custom weapons).
 
         - UX.                                           EASY LONG   6
             - Weapon button is unclear?
