@@ -29,8 +29,11 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
         descriptors: new WeaponFeatureProvider(x.descriptors),
-        descriptorIndex: (x.descriptors as ProviderElement<DescriptorGenerator>[]).reduce<Record<string, DescriptorGenerator>>((acc, gen) => {
-            acc[gen.UUID] = gen.thing;
+        descriptorIndex: (x.descriptors as ProviderElement<DescriptorGenerator>[]).reduce<Record<string, DescriptorGenerator & { UUID: string }>>((acc, gen) => {
+            acc[gen.UUID] = {
+                ...gen.thing,
+                UUID: gen.UUID,
+            };
             return acc;
         }, {}),
         personalityProvider: new WeaponFeatureProvider(x.personalities),

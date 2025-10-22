@@ -49,6 +49,9 @@
                     {damageString}
                     {toHitString}
                 </p>
+                <p>
+                    {weapon.description}
+                </p>
             </div>
             {#if weapon.active.powers.length !== 0}
                 <div>
