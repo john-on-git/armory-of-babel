@@ -30,9 +30,11 @@
 
     :global(body) {
         margin: 0;
+
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
-        place-items: center;
+        align-items: center;
     }
 
     :global(#body) {
@@ -110,13 +112,6 @@
         height: 7.5vh;
         margin: 0;
         margin-top: 1.5vh;
-    }
-    :global(#body) {
-        height: 90vh;
-        margin: 0;
-        min-width: 33%;
-
-        display: flex;
     }
 
     :global(.fade-in-1) {
