@@ -84,7 +84,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     cost: 2,
                     additionalNotes: [
                         'Fire an enchanted shot, which anchors the target to a nearby surface.',
-                        'They are stuck in place until use their turn to save to escape.'
+                        'They are stuck in place until they use their turn to successfully save and escape.'
                     ]
                 }, {
                     themes: { any: ['nature', 'ice'] },
@@ -118,7 +118,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'epic'
                         },
-                        isSentient: true // If it can't call out to you, how would you know it's there?
+                        isSentient: true // If it can't call out to you, how will you know it's there?
                     }
                 )
             ]
