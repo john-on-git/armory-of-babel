@@ -489,8 +489,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'luminous vines emerging from a crack in its centre, spreading outwards and wrapping around it',
-                                plural: 'luminous vines emerging from a crack in their centre, spreading outwards and wrapping around them'
+                                singular: 'luminous vines emerging from a crack in its centre, spreading outwards to wrap around it',
+                                plural: 'luminous vines emerging from a crack in their centre, spreading outwards to wrap around them'
                             },
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
@@ -1327,9 +1327,14 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('misc-wizard-wrapping',
+            new ProviderElement('misc-wizard-charm',
                 {
-                    generate: () => MISC_DESC_FEATURES.wrap.silkWrap,
+                    generate: (rng) => [
+                        MISC_DESC_FEATURES.charm.silkWrap,
+                        MISC_DESC_FEATURES.charm.amethystChain,
+                        MISC_DESC_FEATURES.charm.beadsWrap,
+                        MISC_DESC_FEATURES.charm.peacockFeather,
+                    ].choice(rng),
                     applicableTo: {
                         any: wrappableParts
                     }
@@ -1588,7 +1593,6 @@ export default {
     },
     personalities: {
         add: [
-
             new ProviderElement("vengeful",
                 {
                     desc: "Vengeful."
@@ -1812,6 +1816,42 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement('roulette-shot', {
+                desc: 'Roulette',
+                cost: 1,
+                additionalNotes: [
+                    'Fire an enchanted shot, then roll on the table below to decide on the effect.',
+                    '1. ',
+                ]
+            }, {
+                shapeFamily: {
+                    any: ['dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
+                }
+            }),
+            new ProviderElement('return',
+                {
+                    cost: 3,
+                    desc: 'Return',
+                    additionalNotes: [
+                        'The weapon is bound to a particular location, you can slice the air to open a portal to it. It stays open for 1 minute before collapsing.',
+                        'The location is fixed and decided by the referee. Typical locations include the place the weapoon was forged, or the fortress of a previous wielder.'
+                    ]
+                },
+                { shapeFamily: { any: edgedWeaponShapeFamilies } }
+            ),
+            new ProviderElement("mist-mode",
+                {
+                    cost: '1 charge to activate, and 1 charge every 10s to maintain',
+                    desc: 'Mist Mode',
+                    additionalNotes: [
+                        'You transform into incorporeal mist.',
+                        'Mist Mode can be activated in response to being targeted by an attack, causing it to miss.'
+                    ]
+                },
+                {
+                    themes: { any: ['cloud', 'wizard', 'dark'] }
+                }
+            ),
             new ProviderElement("standard-projectile",
                 mkGen((rng, weapon) => {
 
@@ -3276,7 +3316,7 @@ export default {
             new ProviderElement("psi-immune",
                 {
                     miscPower: true,
-                    desc: "When the wielder saves against psionic effects, the effect of all relevant skills or bonuses is doubled.",
+                    desc: "When the wielder saves against psionic effects, the effects of all relevant skills and bonuses are doubled.",
                     descriptorPartGenerator: 'material-telekill'
                 },
                 {
@@ -3502,7 +3542,7 @@ export default {
                 {
 
                     miscPower: true,
-                    desc: "Menacing aura. Bonus to saves to frighten & intimidate."
+                    desc: "Menacing aura. When the wielder saves to frighten or intimidate, the effects of all relevant skills and bonuses are doubled."
                 },
                 {
                     themes: { any: ["dark"] }
@@ -3578,7 +3618,7 @@ export default {
             new ProviderElement("vibe-wholesome",
                 {
                     miscPower: true,
-                    desc: "Wielder has a wholesome aura. Bonus to saves to spread cheer and/or appear nonthreatening."
+                    desc: "Wholesome aura. The wielder has a +1 bonus to reaction rolls."
                 },
                 {
                     themes: { any: ["light", "sweet"] }
@@ -3851,11 +3891,21 @@ export default {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement("stats-as-shield",
-                {
-                    miscPower: true,
-                    desc: "Stats as (function as) a shield."
-                },
+            new ProviderElement("defender",
+                mkGen((_rng, weapon) => {
+                    const qualityByRarity = {
+                        common: "",
+                        uncommon: "",
+                        rare: "+1 ",
+                        epic: "+1 ",
+                        legendary: "+2 "
+                    } as const satisfies Record<WeaponRarity, string>;
+
+                    return {
+                        miscPower: true,
+                        desc: `Wielding the weapon confers the same benefits as wielding a ${qualityByRarity[weapon.rarity]}shield.`
+                    };
+                }),
                 {
                     themes: { any: ["earth"] },
                 }
@@ -4002,7 +4052,7 @@ export default {
             new ProviderElement<TGenerator<PassivePower, [Weapon]>, WeaponPowerCond>(
                 "death-blast",
                 mkGen<PassivePower, [Weapon]>((rng, weapon) => {
-                    const { desc, featureUUID } = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk']>, rng);
+                    const { desc, featureUUID: featureUUID } = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk']>, rng);
 
                     const damageByRarity = {
                         common: "1d6",
