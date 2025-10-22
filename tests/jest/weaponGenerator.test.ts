@@ -114,24 +114,29 @@ describe('Weapon Generator', () => {
 
     it('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
-            return weapon.active.powers.some(x => x.desc === "Heal");
+            return weapon.damage.d6 !== undefined && weapon.damage.d6 >= 2 && weapon.description.includes("glows with arcane energy");
         }
-        const start = 0;
+        const start = 2000;
         const attempts = 10_000;
 
         const end = start + attempts;
         let i = start;
         let weapons: WeaponViewModel[];
-        let n: number;
+        // let n: number;
 
         do {
-            const { weapons: nextWeapons, n: nextN } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
+            const {
+                weapons: nextWeapons,
+                //  n: nextN
+            } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
             weapons = _.toArray(nextWeapons);
-            n = nextN;
-        } while (i <= end && (!weapons.some(cond) || n <= .3));
+            // n = nextN;
+        } while (i <= end && (!weapons.some(cond)));
 
-        if (weapons.some(cond)) {
-            console.log(`Found weapon @ ${i}`);
+        const valid = weapons.filter(cond);
+
+        if (valid.length !== 0) {
+            console.log(`Found weapon @ ${i} (${valid.map(x => x.rarity).join(", ")})`);
         }
         else {
             console.error('\x1b[31mfailed to find weapon');

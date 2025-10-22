@@ -1,3 +1,4 @@
+import { get5eDamageType } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { getPlurality } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DescriptorAtom, type DescriptorType, type Pronouns, type PronounsLoc, type Weapon, type WeaponPart, type WeaponPartName, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
@@ -254,30 +255,11 @@ export function structuredDescToString(weapon: Weapon, _locale: string = 'en-GB'
  * Returns a very vague term for the weapon's shape. 
  */
 export function veryGenericWeaponShape(shape: WeaponShape) {
-    switch (shape.group) {
-        // bludgeoning
-        case "staff":
-        case "club":
-        case "greatclub":
-        case "mace":
-            return 'hammer';
-        // piercing
-        case "spear":
-        case "lance":
-            return 'lance';
-        // slashing
-        case "dagger":
-        case "dagger (or pistol)":
-        case "sword":
-        case "sword (or bow)":
-        case "sword (or musket)":
-        case "greatsword":
-        case "axe":
-        case "greataxe":
-        case "greataxe (or musket)":
-        case "polearm":
-            return 'blade';
-    }
+    return ({
+        bludgeoning: "hammer",
+        piercing: "lance",
+        slashing: "blade"
+    } as const satisfies Record<ReturnType<typeof get5eDamageType>, string>)[get5eDamageType(shape)];
 }
 
 const multNames = {

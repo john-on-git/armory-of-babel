@@ -1,6 +1,6 @@
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
 import { type Generator } from "$lib/generators/recursiveGenerator";
-import { allEyeProviders } from "$lib/generators/weaponGenerator/config/configConstants";
+import { allEyeProviders } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { structuredDescToString } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import "$lib/util/choice";
 import '$lib/util/string';
