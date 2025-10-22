@@ -2,7 +2,7 @@ import { type TGenerator } from "$lib/generators/recursiveGenerator";
 import { type PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
 import { ProviderElement, type Comp, type Cond, type Quant, type WithUUID } from "./provider";
-import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
+import type { DescriptorProvider, WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
     "fire", "ice",
@@ -261,6 +261,11 @@ export interface WeaponPowerCond extends Cond {
     isSentient?: boolean;
 }
 
+export interface DescriptorCond extends WeaponPowerCond {
+    applicableTo: Quant<WeaponPartName>;
+    isMaterial: boolean;
+}
+
 
 interface SharedAtom {
     /**
@@ -498,7 +503,9 @@ export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGene
     applicableTo?: Quant<WeaponPartName>;
 };
 
-// woke up mxsterr Freethem. woke u and smell the pronouns
+/**
+ * Woke up mxsterr Freethem. woke u and smell the pronouns.
+ */
 export type Pronouns = 'object' | 'enby' | 'masc' | 'femm';
 export type PronounsLoc = {
     singular: {
@@ -511,7 +518,8 @@ export type PronounsLoc = {
  * TODO this should really just accept weapon
  * (what did he mean by this?)
  */
-export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 'sentient' | 'rarity' | 'themes' | 'shape'>
+export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 'sentient' | 'rarity' | 'themes' | 'shape'>;
+export type DescriptorCondParams = Pick<Weapon, 'active' | 'passivePowers' | 'sentient' | 'rarity' | 'themes' | 'shape' | 'description'>
 
 // themes: PrimitiveContainer<Theme>;
 // adjectives: ProviderElement<WeaponAdjective;
@@ -526,7 +534,7 @@ export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 's
 
 export interface FeatureProviderCollection {
     themeProvider: Theme[];
-    descriptors: WeaponFeatureProvider<DescriptorGenerator>;
+    descriptors: DescriptorProvider;
     /**
      * Descriptor generator indexed by UUID. This allows features to apply specific descriptors, ignoring the usual conditions.
      */
@@ -544,8 +552,8 @@ export interface FeatureProviderCollection {
 
 export interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
-    nonRollableDescriptors: ProviderElement<DescriptorGenerator>;
-    descriptors: ProviderElement<DescriptorGenerator>;
+    nonRollableDescriptors: ProviderElement<DescriptorGenerator, { never: true }>;
+    descriptors: ProviderElement<DescriptorGenerator, DescriptorCond>;
     personalities: ProviderElement<Personality>
 
     rechargeMethods: ProviderElement<RechargeMethod>;
