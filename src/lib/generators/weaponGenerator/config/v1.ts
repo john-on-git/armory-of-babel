@@ -1845,7 +1845,7 @@ export default {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("pertify-on-hit",
+            new ProviderElement<PassivePower, WeaponPowerCond>("petrify-on-hit",
                 {
 
                     miscPower: true,

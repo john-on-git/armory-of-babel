@@ -10,7 +10,8 @@ import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPat
 export const weaponFeatureVersionController = new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<DeltaCollection<WeaponFeaturesTypes>>, FeatureProviderCollection>([
     v1,
     v2,
-    v3
+    v3,
+    v4
 
     // ,{
     //     themes: {},
