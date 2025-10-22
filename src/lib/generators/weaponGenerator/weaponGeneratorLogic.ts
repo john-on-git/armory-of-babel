@@ -264,7 +264,6 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 0 : x.cost, acc), weapon.active.maxCharges);
 
 
-    // TODO convert to viewmodel
     const weaponViewModel = {
         id: weapon.id,
         themes: weapon.themes,

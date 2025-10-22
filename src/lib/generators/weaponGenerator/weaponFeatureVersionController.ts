@@ -20,6 +20,7 @@ interface WeaponFeaturesTypes {
 
 
 const toLang = (theme: Theme, lang: string) => new ProviderElement<Language, WeaponPowerCond>(lang.replaceAll(/\s/g, '-').toLowerCase(), { language: true, desc: lang }, {
+
     themes: {
         any: [theme]
     }
@@ -147,6 +148,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "tin"
                     },
                     {
+
                         rarity: {
                             lte: "uncommon"
                         }
@@ -158,6 +160,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "copper"
                     },
                     {
+
                         rarity: {
                             lte: "uncommon"
                         }
@@ -169,6 +172,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "oak"
                     },
                     {
+
                         rarity: {
                             lte: "uncommon"
                         }
@@ -179,6 +183,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "pine"
                     },
                     {
+
                         rarity: {
                             lte: "uncommon"
                         }
@@ -190,6 +195,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "sandstone"
                     },
                     {
+
                         rarity: {
                             lte: "uncommon"
                         },
@@ -207,6 +213,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "granite"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -218,6 +225,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "alabaster"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -229,6 +237,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "marble"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -240,6 +249,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "silver"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -251,6 +261,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "gold"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -262,6 +273,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "black iron"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -273,6 +285,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "silver"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -284,6 +297,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "mythril"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -295,6 +309,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "adamant"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -306,6 +321,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "cobalt"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -317,6 +333,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "radium"
                     },
                     {
+
                         rarity: {
                             gte: "legendary"
                         }
@@ -327,6 +344,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "diamond"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         },
@@ -343,6 +361,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "ruby"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         },
@@ -359,6 +378,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "emerald"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         },
@@ -376,6 +396,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "sapphire"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         },
@@ -393,6 +414,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "flint"
                     },
                     {
+
                         rarity: {
                             lte: "uncommon"
                         },
@@ -410,6 +432,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "onyx"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         },
@@ -427,6 +450,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "quartz"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -437,6 +461,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "glass"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         },
@@ -455,6 +480,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "lumensteel"
                     },
                     {
+
                         rarity: {
                             gte: "epic"
                         }
@@ -476,7 +502,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: {
                             any: ["fire", "ice", "dark", "sweet"]
                         },
-                        unique: true,
+
                     }
                 ),
                 new ProviderElement<Personality, WeaponPowerCond>('cruel',
@@ -487,7 +513,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: {
                             any: ["sour", "dark"]
                         },
-                        unique: true,
+
                     }
                 ),
                 new ProviderElement<Personality, WeaponPowerCond>('curious',
@@ -498,7 +524,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: {
                             any: ["wizard", "steampunk", "cloud"]
                         },
-                        unique: true,
+
                     }
                 ),
                 new ProviderElement<Personality, WeaponPowerCond>('know-it-all',
@@ -509,7 +535,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: {
                             any: ["wizard", "steampunk"]
                         },
-                        unique: true,
+
                     }
                 ),
                 ...toProviderSource({
@@ -592,7 +618,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         },
                         {
                             themes: { all: [theme as Theme] },
-                            unique: true
+                            allowDuplicates: true
                         }
                     )
                 })
@@ -605,7 +631,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: mkGen("all charges at noon on the winter solstice")
                     },
                     {
-                        unique: true,
+
                         themes: {
                             any: ["ice", "nature"]
                         }
@@ -616,7 +642,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: mkGen("all charges at noon on the summer solstice")
                     },
                     {
-                        unique: true,
+
                         themes: {
                             any: ["fire", "nature"]
                         }
@@ -711,7 +737,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: {
                             any: ['nature'],
                         },
-                        unique: true
+                        allowDuplicates: true
                     }
                 ),
                 new ProviderElement<ActivePower, WeaponPowerCond>(
@@ -1239,10 +1265,10 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         ])
                     },
                     {
+
                         themes: {
                             any: ['light'],
                         },
-                        unique: true
                     }
                 ),
                 new ProviderElement<PassivePower, WeaponPowerCond>('command-critters',
@@ -1251,7 +1277,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Cute animals follow the wielder's polite requests i.e. cats and forest birds."
                     },
                     {
-                        unique: true,
+
                         themes: {
                             any: ["nature", "sweet"]
                         }
@@ -1263,7 +1289,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Weapon can telepathically control bees within 100-ft. They can only understand simple commands."
                     },
                     {
-                        unique: true,
+
                         themes: {
                             any: ["nature", "sweet"]
                         }
@@ -1275,7 +1301,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ['sun', 'moon'].choice(rng)), "light as a damaging beam (2d6 damage)."])
                     },
                     {
-                        unique: true,
+
                         themes: { any: ['light'] }
                     }
                 ),
@@ -1285,6 +1311,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Wielder is able to move completely silently.",
                     },
                     {
+
                         shapeFamily: {
                             any: [
                                 "dagger",
@@ -1302,6 +1329,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Can hover in the air to attack for you hands free. Commanding a floating weapon uses the same rules as followers / retainers.",
                     },
                     {
+
                         rarity: {
                             gte: "rare"
                         },
@@ -1319,6 +1347,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Wielder takes half damage from fire."
                     },
                     {
+
                         themes: { any: ['fire'] }
                     }
                 ),
@@ -1329,6 +1358,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Wielder cannot be harmed by fire.",
                     },
                     {
+
                         themes: { any: ['fire'] },
                         rarity: {
                             gte: "rare"
@@ -1346,6 +1376,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         }
                     },
                     {
+
                         themes: { any: ['fire'] }
                     }
                 ),
@@ -1356,6 +1387,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Weapon is an expert blacksmith.",
                     },
                     {
+
                         themes: { any: ['fire'] },
                         isSentient: true
                     }
@@ -1367,6 +1399,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Wielder takes half damage from ice & cold."
                     },
                     {
+
                         themes: { any: ['ice'] }
                     }
                 ),
@@ -1376,6 +1409,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Wielder cannot be harmed by ice & cold."
                     },
                     {
+
                         themes: { any: ['ice'] }
                     }
                 ),
@@ -1390,6 +1424,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         },
                     },
                     {
+
                         themes: { any: ['ice'] },
                         shapeFamily: {
                             none: [
@@ -1411,6 +1446,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         },
                     },
                     {
+
                         themes: { any: ['ice'] },
                         shapeFamily: {
                             any: [
@@ -1427,6 +1463,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "1-in-2 chance to sense icy weather before it hits, giving just enough time to escape."
                     },
                     {
+
                         themes: { any: ['ice'] }
                     }
                 ),
@@ -1437,6 +1474,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         desc: "Wielder can walk on any kind of ice without breaking it."
                     },
                     {
+
                         themes: { any: ['ice'] }
                     }
                 ),
@@ -1961,7 +1999,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                                         group: k as WeaponShape['group']
                                     },
                                     {
-                                        unique: true,
+
                                     }
                                 );
                             case 'object':
@@ -1978,7 +2016,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                                                 activePowers: shape?.activePowers,
                                                 rarity: shape?.rarity,
                                                 shapeFamily: shape?.shapeFamily,
-                                                unique: true,
+
                                             }
                                         )
                                     }

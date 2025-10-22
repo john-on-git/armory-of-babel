@@ -48,7 +48,7 @@ export class ProviderElement<TThing, TCond extends Cond> extends Patchable {
 }
 
 export interface Cond {
-    unique?: true;
+    allowDuplicates?: true;
 }
 
 export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
@@ -64,7 +64,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
             return Object.entries(x).some(([k, v]) => (k === 'UUID' && v === UUID) || (typeof v === 'object' && recurse(UUID, v)));
         }
         // unique implies no matching UUID (de-morgan's)
-        return !cond.unique || !recurse(UUID, params)
+        return cond.allowDuplicates || !recurse(UUID, params)
     };
 
     // note that the complexity on this implementation is awful, O(n). it should build a decision tree on construction & be O(1)
