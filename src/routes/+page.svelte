@@ -51,10 +51,19 @@
         }
     }
 
+    @media (prefers-color-scheme: dark) {
+        :global(:root) {
+            --color-background: #27272a;
+            --color-foreground: white;
+        }
+    }
+    @media (prefers-color-scheme: light) {
+        :global(:root) {
+            --color-background: white;
+            --color-foreground: #121212;
+        }
+    }
     :global(:root) {
-        --bg-dark: #242424;
-
-        --color-common: white;
         --color-uncommon: hsl(108, 74%, 50%);
         --color-rare: hsl(212, 74%, 55%);
         --color-epic: hsl(273, 74%, 60%);
@@ -67,8 +76,8 @@
         font-weight: 400;
 
         color-scheme: light dark;
-        color: rgba(255, 255, 255, 0.87);
-        background-color: var(--bg-dark);
+        color: var(--color-foreground);
+        background-color: var(--color-background);
 
         font-synthesis: none;
         text-rendering: optimizeLegibility;
@@ -188,8 +197,8 @@
             color: black;
         }
         :global(:root) {
-            color: #213547;
-            background-color: #ffffff;
+            color: var(--color-foreground);
+            background-color: var(--color-background);
         }
         :global(a:hover) {
             color: #747bff;
@@ -292,7 +301,7 @@
     }
     @media (prefers-color-scheme: light) {
         :global(.weapon-rarity-common) {
-            color: black !important;
+            color: #121212 !important;
         }
     }
     :global(.weapon-rarity-uncommon) {

@@ -110,19 +110,29 @@
         }
     }
 
-    :root {
-        --sidebar-color: #4e4e4ecc;
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --sidebar-color: #00000030;
+            --sidebar-border-color: #00000035;
+        }
     }
 
+    @media (prefers-color-scheme: light) {
+        :root {
+            --sidebar-color: #d6d6d621;
+            --sidebar-border-color: #f0e9e983;
+        }
+    }
     .sidebar-content {
         background-color: var(--sidebar-color);
-        backdrop-filter: blur(2pt);
-    }
-    .sidebar-content {
+        backdrop-filter: blur(3pt);
+
         width: var(--sidebar-width);
+        height: 100%;
+
         padding: 1rem;
 
-        height: 100%;
+        border-right: solid 0px var(--sidebar-border-color);
     }
     .sidebar {
         height: 100%;
