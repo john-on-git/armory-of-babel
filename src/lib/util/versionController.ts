@@ -97,6 +97,7 @@ export class VersionController<
      * @returns the things for this version, or undefined if this version does not exist
      */
     getVersion(v: number): TPost {
+        console.log('recalculated version');
         if (v >= 0 && v < this.deltaCollections.length) {
             // build the base object
             const head = (Object.keys(this.deltaCollections[0]) as (keyof TOut)[]).reduce<TOut>((acc, k) => {

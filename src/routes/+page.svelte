@@ -5,8 +5,9 @@
     import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
-    import _, { isArray } from "lodash";
+    import _ from "lodash";
     import { writable } from "svelte/store";
+    import { getOddsFromURL } from "../lib/util/getFromURL";
 
     function getConfigFromURL(): WeaponRarityConfig {
         let config = defaultWeaponRarityConfigFactory();
@@ -15,28 +16,12 @@
 
         const urlParams = new URLSearchParams(window.location.search);
 
-        // get the rarity odds
-        const maybeURIEncodedUnsafeJSON = urlParams.get("rarityOdds");
-
-        if (maybeURIEncodedUnsafeJSON !== null) {
-            const unsafeJSON = JSON.parse(decodeURI(maybeURIEncodedUnsafeJSON));
-
-            function asNumber(x: unknown) {
-                return typeof x === "number" && x >= 0 && x <= 1 ? x : NaN;
-            }
-
-            if (isArray(unsafeJSON)) {
-                const odds: [number, number, number, number] = [
-                    asNumber(unsafeJSON[0]),
-                    asNumber(unsafeJSON[1]),
-                    asNumber(unsafeJSON[2]),
-                    asNumber(unsafeJSON[3]),
-                ];
-                if (odds.every((x) => !Number.isNaN(x))) {
-                    config = applyOddsToConfig(config, odds);
-                }
-            }
+        const odds = getOddsFromURL(urlParams);
+        if (odds !== null) {
+            config = applyOddsToConfig(config, odds);
         }
+
+        // get the rarity odds
 
         return config;
     }
@@ -55,24 +40,22 @@
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
 
-        const odds = calcOdds(config);
+        const newOdds = calcOdds(config);
 
-        const newRarityOdds = _.isEqual(odds, defaultOdds)
-            ? undefined
-            : JSON.stringify(calcOdds(config));
-        if (searchParams.get("rarityOdds") !== newRarityOdds) {
-            if (newRarityOdds === undefined) {
-                searchParams.delete("rarityOdds");
-            } else {
-                searchParams.set("rarityOdds", newRarityOdds);
-            }
+        if (_.isEqual(newOdds, defaultOdds)) {
+            searchParams.delete("rarityOdds");
+        } else {
+            searchParams.set("rarityOdds", newOdds[0].toFixed(2));
+            searchParams.append("rarityOdds", newOdds[1].toFixed(2));
+            searchParams.append("rarityOdds", newOdds[2].toFixed(2));
+            searchParams.append("rarityOdds", newOdds[3].toFixed(2));
         }
         syncLocationWithURLSearchParams(searchParams, "replace");
     });
 </script>
 
 <h1>Generator Test</h1>
-<WeaponGenerator {config} />
+<WeaponGenerator />
 <ConfigSidebar {config} {configWritable} />
 
 <style>

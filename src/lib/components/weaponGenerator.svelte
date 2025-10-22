@@ -1,35 +1,47 @@
 <script lang="ts">
     import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
-    import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-    import {
-        type Weapon,
-        type WeaponRarityConfig,
-    } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
+    import { StatusCodes } from "http-status-codes";
     import { onMount, tick } from "svelte";
+    import { defaultWeaponRarityConfigFactory } from "../generators/weaponGenerator/weaponGeneratorConfigLoader";
+    import type { WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
+    import { calcOdds } from "../util/configUtils";
+    import { getOddsFromURL } from "../util/getFromURL";
     import WeaponDisplay from "./weaponDisplay.svelte";
-
-    interface Props {
-        config?: WeaponRarityConfig;
-    }
-
-    const { config }: Props = $props();
 
     let version = $state(getVersionFromURL());
     let weaponID = $state(getIDFromURL());
+    let odds = $state(getOddsFromURL());
 
-    const featureProviders = $derived(
-        weaponVersionController.getVersion(version),
-    );
-
-    let weapon: Weapon = $derived(mkWeapon(featureProviders, weaponID, config));
+    let weapon = $state<WeaponViewModel | null>(null);
 
     // set up event listeners
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
-        window.addEventListener("popstate", () => {
+        window.addEventListener("popstate", async () => {
             weaponID = getIDFromURL();
             version = getVersionFromURL();
+            odds =
+                getOddsFromURL() ??
+                calcOdds(defaultWeaponRarityConfigFactory());
+
+            const searchParams = new URLSearchParams(window.location.search);
+            if (searchParams.get("rarityOdds") === null) {
+                searchParams.set("rarityOdds", odds[0].toFixed(2));
+                searchParams.append("rarityOdds", odds[1].toFixed(2));
+                searchParams.append("rarityOdds", odds[2].toFixed(2));
+                searchParams.append("rarityOdds", odds[3].toFixed(2));
+            }
+            const res = await fetch(
+                `/api/generate-weapon?${searchParams.toString()}`,
+            );
+            if (res.status === StatusCodes.OK) {
+                // TODO if this still matches the UI state
+                const resBody = await res.json();
+                weapon = resBody as unknown as WeaponViewModel;
+            } else {
+                weapon = null;
+            }
         });
 
         tick().then(() => {
