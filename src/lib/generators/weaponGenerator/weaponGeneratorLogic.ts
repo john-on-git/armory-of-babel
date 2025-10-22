@@ -167,7 +167,7 @@ export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerato
             return x === null ? [] : _.values(x);
         }
 
-        // there must be least one part (some) part that can accept the element 
+        // there must be least one part that can accept the element 
         return vals(params.description).flatMap(entries).some(([k, v]) => {
             // the element must be applicable to this part, and if the element is a material the part can't already have a material
             return evQuant(thing.applicableTo, k) && (!(thing.yields === 'material') || v.material === undefined)

@@ -3,7 +3,7 @@ import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiv
 import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -46,7 +46,7 @@ export default {
         add: [
             new ProviderElement('mirror-finish-forced',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -63,7 +63,7 @@ export default {
                 { never: true }),
             new ProviderElement('mounted-dismount-resist-descriptor-fire',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -83,7 +83,7 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-ice',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -103,7 +103,7 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-dark',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -123,7 +123,7 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-nature',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
@@ -143,7 +143,7 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-generic',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
@@ -163,7 +163,7 @@ export default {
             ),
             new ProviderElement('generic-eyes',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: (rng) =>
                         genMaybeGen([
                             MISC_DESC_FEATURES.sensorium.eyes.beady,
@@ -191,7 +191,7 @@ export default {
             ),
             new ProviderElement('descriptor-wreathed-fire',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -211,7 +211,7 @@ export default {
             ),
             new ProviderElement('descriptor-wreathed-dark-fire',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -232,7 +232,7 @@ export default {
                 }
             ), new ProviderElement('descriptor-wreathed-ice',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -254,7 +254,7 @@ export default {
             ),
             new ProviderElement('descriptor-clock-embed-forced',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
@@ -276,7 +276,7 @@ export default {
             ),
             new ProviderElement('descriptor-compass-embed-forced',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
@@ -317,7 +317,7 @@ export default {
             ),
 
             new ProviderElement('injector-module-forced', {
-                yields: 'descriptor',
+                yields: 'feature',
                 generate: () => (
                     {
                         descriptor: {
@@ -339,7 +339,7 @@ export default {
 
             new ProviderElement('energy-core-void',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -363,7 +363,7 @@ export default {
             ),
             new ProviderElement('energy-core-fire',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -387,7 +387,7 @@ export default {
             ),
             new ProviderElement('energy-core-ice',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -411,7 +411,7 @@ export default {
             ),
             new ProviderElement('energy-core-ultraviolet',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -435,7 +435,7 @@ export default {
             ),
             new ProviderElement('energy-core-azure',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -459,7 +459,7 @@ export default {
             ),
             new ProviderElement('energy-core-crimson',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -483,7 +483,7 @@ export default {
             ),
             new ProviderElement('energy-core-verdant',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -507,7 +507,7 @@ export default {
             ),
             new ProviderElement('energy-core-nature',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -531,7 +531,7 @@ export default {
             ),
             new ProviderElement('energy-core-atomic',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -559,7 +559,7 @@ export default {
             ),
             new ProviderElement('energy-core-gold',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -583,7 +583,7 @@ export default {
             ),
             new ProviderElement('energy-core-dark',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -607,7 +607,7 @@ export default {
             ),
             new ProviderElement('energy-core-aether',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -631,7 +631,7 @@ export default {
             ),
             new ProviderElement('energy-core-steampunk',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -655,7 +655,7 @@ export default {
             ),
             new ProviderElement('energy-core-wizard',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => {
                         return {
                             descriptor: {
@@ -707,7 +707,7 @@ export default {
             // ),
             new ProviderElement('descriptor-pommel-embed',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: (rng, weapon) => {
                         const embedsByTheme = {
                             ice: [
@@ -770,7 +770,7 @@ export default {
                                 MISC_DESC_FEATURES.embedded["a piece of lapis lazuli"]
                             ],
                             nature: [MISC_DESC_FEATURES.embedded.amber]
-                        } as const satisfies Partial<Record<Theme, Descriptor[]>>;
+                        } as const satisfies Partial<Record<Theme, PartFeature[]>>;
 
                         return pickForTheme(weapon as WeaponGivenThemes<['ice' | 'fire' | 'cloud' | 'earth' | 'light' | 'dark' | 'wizard']>, embedsByTheme, rng).chosen.choice(rng);
                     },
@@ -863,8 +863,8 @@ export default {
             ),
             new ProviderElement('descriptor-fire-coating',
                 {
-                    yields: 'descriptor',
-                    generate: (rng, weapon) => genMaybeGen<Descriptor, [Weapon]>([
+                    yields: 'feature',
+                    generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
                         MISC_DESC_FEATURES.coating.oil,
                         MISC_DESC_FEATURES.coating.flames,
                     ].choice(rng), rng, weapon),
@@ -984,8 +984,8 @@ export default {
             ),
             new ProviderElement('descriptor-cloud-coating',
                 {
-                    yields: 'descriptor',
-                    generate: (rng, weapon) => genMaybeGen<Descriptor, [Weapon]>([
+                    yields: 'feature',
+                    generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
                         MISC_DESC_FEATURES.coating.pearlescent,
                     ].choice(rng), rng, weapon),
                     applicableTo: {
@@ -1382,7 +1382,7 @@ export default {
             ),
             new ProviderElement('misc-wizard-charm',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: (rng) => [
                         MISC_DESC_FEATURES.charm.silkWrap,
                         MISC_DESC_FEATURES.charm.amethystChain,
@@ -1401,7 +1401,7 @@ export default {
             ),
             new ProviderElement('misc-wizard-coating',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: (rng, weapon) => genMaybeGen([
                         MISC_DESC_FEATURES.coating.squiggles,
                         MISC_DESC_FEATURES.coating.celestialEngraving,
@@ -1526,7 +1526,7 @@ export default {
 
             new ProviderElement('misc-charm-emojis',
                 {
-                    yields: 'descriptor',
+                    yields: 'feature',
                     generate: () => MISC_DESC_FEATURES.charm.emojis,
                     applicableTo: {
                         any: wrappableParts
