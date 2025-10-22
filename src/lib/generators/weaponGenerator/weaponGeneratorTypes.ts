@@ -328,15 +328,39 @@ const shapeToStructure = {
     "greataxe (or musket)": "maceOrAxeLike",
 } as const satisfies Record<WeaponShapeGroup, keyof typeof weaponStructures>
 
-type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
+export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
 
 export type DescriptorGenerator = TGenerator<({ material: string } | { descriptor: string })> & {
-    applicableTo: Quant<WeaponPartName>;
+    applicableTo?: Quant<WeaponPartName>;
 };
 
 
 export function structureFor<T extends WeaponShapeGroup>(shape: T) {
-    return weaponStructures[shapeToStructure[shape]];
+    const structure = weaponStructures[shapeToStructure[shape]];
+
+    const structuredDesc = {
+        business: structure.business.reduce((acc, partName) => {
+            acc[partName] = {
+                descriptors: [] as string[]
+            } satisfies WeaponPart;
+            return acc;
+        }, {} as Record<WeaponPartName, WeaponPart>),
+        holding: structure.holding.reduce((acc, partName) => {
+            acc[partName] = {
+                descriptors: [] as string[]
+            } satisfies WeaponPart;
+            return acc;
+        }, {} as Record<WeaponPartName, WeaponPart>),
+        other: structure.other.reduce((acc, partName) => {
+            acc[partName] = {
+                descriptors: [] as string[]
+            } satisfies WeaponPart;
+            return acc;
+        }, {} as Record<WeaponPartName, WeaponPart>),
+
+    };
+
+    return [structure, structuredDesc] as const;
 }
 
 

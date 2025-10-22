@@ -1,10 +1,48 @@
+import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
 import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
 import "$lib/util/choice";
 import '$lib/util/string';
+import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+
+function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
+    function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
+        const allApplicableParts = _
+            .entries(structure)
+            .flatMap(([k, parts]) =>
+                parts.filter(part =>
+                    (applicableTo === undefined) || evQuant(applicableTo, part) &&
+                    !checkMaterial || structuredDesc[k as keyof typeof structure][part].material === undefined
+                ).map(part => [k, part]) as [keyof typeof structure, WeaponPartName][]
+            );
+        // 2. choose one at random
+        return allApplicableParts.choice(rng);
+    }
+
+    // generate the thing.
+    const descriptor = provider.generate(rng);
+
+    // find the chosen part in structuredDesc and apply the provider's output to it 
+    // if it's a material we also have to filter out parts that already have a material
+    if ('material' in descriptor) {
+
+        const targetPart = choosePart(rng, true, provider.applicableTo, structure, structuredDesc);
+
+        structuredDesc[targetPart[0]][targetPart[1]].material = descriptor.material;
+    }
+    else {
+        const targetPart = choosePart(rng, false, provider.applicableTo, structure, structuredDesc);
+
+        structuredDesc[targetPart[0]][targetPart[1]].descriptors.push(descriptor.descriptor);
+    }
+}
+
+function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureFor>[1]) {
+    return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng);
+}
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
     function textForDamageKey(k: string, v: string | number | undefined): string {
@@ -108,7 +146,7 @@ const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
     // features may provide pieces of description, which are stored here
-    const descriptionPartProviders: DescriptorGenerator[] = [];
+    const featureDescriptorProviders: DescriptorGenerator[] = [];
 
     const rng = seedrandom(rngSeed);
 
@@ -262,7 +300,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
 
             if (choice.descriptorPartGenerator) {
-                descriptionPartProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
+                featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
             }
         }
     }
@@ -283,7 +321,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             });
 
             if (choice.descriptorPartGenerator) {
-                descriptionPartProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
+                featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
             }
         }
     }
@@ -299,7 +337,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             });
 
             if (choice.descriptorPartGenerator) {
-                descriptionPartProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
+                featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
             }
         }
     }
@@ -311,7 +349,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 0 : x.cost, acc), weapon.active.maxCharges);
 
     // generate the weapon's parts
-    const structure = structureFor(weapon.shape.group);
+    const [structure, structuredDesc] = structureFor(weapon.shape.group);
+
     /** 
         Generate the weapon's description based on its parts.
         Ideas (???)
@@ -326,18 +365,48 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     */
 
     const MAX_DESCRIPTORS = 5;
+    let nDescriptors = 0;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
+    for (const featureDescriptorProvider of featureDescriptorProviders) {
+        applyDescriptionPartProvider(rng, featureDescriptorProvider, structure, structuredDesc);
 
-    // then, apply theme-based descriptor, up to the cap
+        nDescriptors++;
+        if (nDescriptors >= MAX_DESCRIPTORS) {
+            break;
+        }
+    }
 
-    // then, generate the weapon's ephitet by picking a descriptor to reference
+    // then, apply theme-based descriptors, up to the cap
+    while (nDescriptors < MAX_DESCRIPTORS) {
+        const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
+        applyDescriptionPartProvider(rng, descriptorProvider, structure, structuredDesc);
+    }
+
+    // convert the structured description to a text block
+    // (placeholder for now)
+    const description = JSON.stringify(structuredDesc);
+
+    // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
+    const ephitet = pickEphitet(rng, structuredDesc);
+
+    if (weapon.sentient === false) {
+        weapon.name = `${ephitet} ${weapon.shape.particular}`;
+    }
+    else {
+        const personalName = [
+            grecoRomanFirstNameGenerator, angloFirstNameGenerator,
+        ].choice(rng);
+
+        weapon.name = `${personalName}, the ${ephitet} ${weapon.shape.particular}`
+    }
 
     const weaponViewModel = {
         id: weapon.id,
         themes: weapon.themes,
         rarity: weapon.rarity,
         name: weapon.name,
+        description,
         damage: weapon.damage,
         toHit: weapon.toHit,
         active: {
@@ -358,7 +427,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             languages: weapon.sentient.languages,
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
         } : false,
-        description: ""
     } satisfies WeaponViewModel;
 
     return { weaponViewModel, params };

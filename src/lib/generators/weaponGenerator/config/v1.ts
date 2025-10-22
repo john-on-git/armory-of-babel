@@ -57,6 +57,13 @@ export default {
                     }
                 }
             ),
+            ...(new Array(10).fill(null).map((_, i) =>
+                new ProviderElement(`test-${i}`,
+                    {
+                        generate: () => ({ descriptor: `test${i}` })
+                    },
+                    {}
+                )))
         ]
     },
     personalities: {
