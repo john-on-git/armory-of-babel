@@ -1714,6 +1714,28 @@ export default {
                     themes: { any: ["sour"] },
                 }
             ),
+            new ProviderElement("light-strike",
+                mkGen((_, weapon) => {
+                    const durationByRarity = {
+                        common: "until the end of the scene",
+                        uncommon: "until the end of the scene",
+                        rare: "for 24  hours",
+                        epic: "for a week",
+                        legendary: "until you choose to end it"
+                    } as const satisfies Record<WeaponRarity, string>;
+                    return {
+                        desc: "You Are Being Watched",
+                        cost: 3,
+                        additionalNotes: [
+                            "Upon landing a blow (on a person), you empower it to draw the attention of the divine powers. You gain supernatural knowledge of the target's exact location.",
+                            `The effect lasts ${durationByRarity[weapon.rarity]}, or until the target dies.`
+                        ],
+                    };
+                }),
+                {
+                    themes: { any: ["light"] },
+                }
+            ),
             new ProviderElement("ice-strike",
                 {
                     desc: "Chilling Strike",
