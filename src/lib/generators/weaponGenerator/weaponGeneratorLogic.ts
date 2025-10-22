@@ -160,39 +160,83 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     }
     throw new Error('failed to generate rarity');
 }
-function applyBonuses(weapon: Weapon, bonus: PassiveBonus) {
-    for (const k in bonus) {
-        const bonusKind = k as keyof PassiveBonus
-        switch (bonusKind) {
-            case 'addDamageDie':
-                // apply all damage dice to the weapon
-                for (const k in bonus.addDamageDie) {
-                    const die = k as keyof DamageDice;
-                    if (typeof bonus.addDamageDie[die] === 'number') {
-                        if (weapon.damage[die] === undefined) {
-                            weapon.damage[die] = 0;
-                        }
-                        weapon.damage[die] += bonus.addDamageDie[die];
-                    }
-                }
-                break;
-            case "plus":
-                weapon.toHit += bonus.plus ?? 0;
 
-                if (weapon.damage.const === undefined) {
-                    weapon.damage.const = 0;
-                }
-                weapon.damage.const += 1;
-                break;
-            case "addChargedPowers":
-                weapon.params.nActive++;
-                break;
-            default:
-                return bonusKind satisfies never;
+
+
+/**
+ * Handle a possibly invalid request for a descriptor. Applying the descriptor if it's valid, or ignoring it and printing an error if it isn't.
+ * @param UUID the UUID of the requested descriptor, or undefined if one wasn't requested
+ */
+function tryPushProvider(UUID: string | undefined, featureDescriptorProviders: Set<string>, descriptorIndex: Record<string, DescriptorGenerator & { UUID: string }>, silent: boolean = false) {
+    if (UUID !== undefined) {
+        if (descriptorIndex[UUID]) {
+            featureDescriptorProviders.add(UUID);
+        }
+        else if (!silent) {
+            console.error(`\x1b[31mfeature requested the descriptor "${UUID}" but it was falsey: implement this descriptor.`)
         }
     }
 }
 
+/**
+ * Apply a descriptorPartGenerator to the weapon, if one was requested.
+ */
+function descriptorPartGenerator(weapon: Weapon, rng: PRNG, descriptorPartGenerator: string[] | string | undefined, featureDescriptorProviders: Set<string>, descriptorIndex: Record<string, DescriptorGenerator & { UUID: string }>, silent: boolean = false) {
+
+    const alreadySeenProviders = (UUIDSource: string | string[] = []): boolean => UUIDSource instanceof Array ? UUIDSource.some(x => featureDescriptorProviders.has(x)) : featureDescriptorProviders.has(UUIDSource);
+    const pushProviders = (UUIDSource: string | string[] = []): void => UUIDSource instanceof Array ? UUIDSource.forEach(x => tryPushProvider(x, featureDescriptorProviders, descriptorIndex, silent)) : tryPushProvider(UUIDSource, featureDescriptorProviders, descriptorIndex, silent);
+
+    const applyAllDescriptionPartProviders = (weapon: Weapon, rng: PRNG, UUIDSource: string | string[] = []): void => UUIDSource instanceof Array ? UUIDSource.forEach(x => applyDescriptionPartProvider(rng, descriptorIndex[x], weapon, silent)) : applyDescriptionPartProvider(rng, descriptorIndex[UUIDSource], weapon, silent);
+
+
+    // we must immediately apply the descriptorPartGenerator, if it has one
+    // this is because other powers may expect to see its UUID on the weapon
+    if (descriptorPartGenerator !== undefined) {
+        if (!alreadySeenProviders(descriptorPartGenerator)) {
+            applyAllDescriptionPartProviders(weapon, rng, descriptorPartGenerator);
+        }
+        pushProviders(descriptorPartGenerator);
+    }
+}
+
+/**
+ * Apply a bonus to the weapon, if one was requested.
+ */
+function applyBonuses(weapon: Weapon, bonus: PassiveBonus | undefined) {
+    if (bonus !== undefined) {
+
+        for (const k in bonus) {
+            const bonusKind = k as keyof PassiveBonus
+            switch (bonusKind) {
+                case 'addDamageDie':
+                    // apply all damage dice to the weapon
+                    for (const k in bonus.addDamageDie) {
+                        const die = k as keyof DamageDice;
+                        if (typeof bonus.addDamageDie[die] === 'number') {
+                            if (weapon.damage[die] === undefined) {
+                                weapon.damage[die] = 0;
+                            }
+                            weapon.damage[die] += bonus.addDamageDie[die];
+                        }
+                    }
+                    break;
+                case "plus":
+                    weapon.toHit += bonus.plus ?? 0;
+
+                    if (weapon.damage.const === undefined) {
+                        weapon.damage.const = 0;
+                    }
+                    weapon.damage.const += 1;
+                    break;
+                case "addChargedPowers":
+                    weapon.params.nActive++;
+                    break;
+                default:
+                    return bonusKind satisfies never;
+            }
+        }
+    }
+}
 function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon, silent = false) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined) {
         if (weapon.description === null) {
@@ -250,6 +294,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator:
     }
 }
 
+
 function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined {
     function fallbackEph(theme: Theme): Ephitet {
         switch (theme) {
@@ -306,23 +351,9 @@ const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
 export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity, silent = false): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
 
-    // features may provide pieces of description, which are stored here
+    // features may provide pieces of description. they are stored here so we don't have to gather UUIDs.
+    // this doesn't really matter rn because we do this constantly anyway when checking conds, but maybe in the future :(
     const featureDescriptorProviders = new Set<string>();
-    const tryPushProviders = (UUIDSource: string | string[] = []) => UUIDSource instanceof Array ? UUIDSource.forEach(tryPushProvider) : tryPushProvider(UUIDSource);
-    /**
-     * Handle a possibly invalid request for a descriptor. Applying the descriptor if it's valid, or ignoring it and printing an error if it isn't.
-     * @param UUID the UUID of the requested descriptor, or undefined if one wasn't requested
-     */
-    function tryPushProvider(UUID: string | undefined) {
-        if (UUID !== undefined) {
-            if (featureProviders.descriptorIndex[UUID]) {
-                featureDescriptorProviders.add(UUID);
-            }
-            else if (!silent) {
-                console.error(`\x1b[31mfeature requested the descriptor "${UUID}" but it was falsey: implement this descriptor.`)
-            }
-        }
-    }
 
     const rng = seedrandom(rngSeed);
 
@@ -454,11 +485,9 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 desc: genMaybeGen(gennedChoice.desc, rng, weapon)
             });
 
-            tryPushProviders(gennedChoice.descriptorPartGenerator);
-
-            if (gennedChoice.bonus) {
-                applyBonuses(weapon, gennedChoice.bonus);
-            }
+            // apply all the update requests that were attached to the power
+            descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+            applyBonuses(weapon, gennedChoice.bonus);
         }
     }
 
@@ -477,11 +506,9 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 ...gennedChoice
             });
 
-            tryPushProviders(gennedChoice.descriptorPartGenerator);
-
-            if (gennedChoice.bonus) {
-                applyBonuses(weapon, gennedChoice.bonus);
-            }
+            // apply all the update requests that were attached to the power
+            descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+            applyBonuses(weapon, gennedChoice.bonus);
         }
     }
 
@@ -495,11 +522,9 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 cost: 'at will',
             });
 
-            tryPushProviders(gennedChoice.descriptorPartGenerator);
-
-            if (gennedChoice.bonus) {
-                applyBonuses(weapon, gennedChoice.bonus);
-            }
+            // apply all the update requests that were attached to the power
+            descriptorPartGenerator(weapon, rng, gennedChoice.descriptorPartGenerator, featureDescriptorProviders, featureProviders.descriptorIndex, silent);
+            applyBonuses(weapon, gennedChoice.bonus);
         }
     }
 
@@ -510,27 +535,15 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 1 : x.cost, acc), weapon.active.maxCharges);
 
     /*
-     * Generate the structured description.
+     * Generate the rest of the structured description.
      */
 
     const maxDescriptors = weapon.themes.length * (1 + Math.floor(rng() * 2));
     let nDescriptors = 0;
 
-
-    // first, apply any descriptor parts provided by the weapon's features, up to the cap
-    for (const UUID of featureDescriptorProviders.values()) {
-        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex[UUID], weapon, silent);
-
-        nDescriptors++;
-        if (nDescriptors >= maxDescriptors) {
-            break;
-        }
-    }
-
-    // then, apply theme-based descriptors, up to the cap
+    // first, apply theme-based descriptors, up to the cap
     while (nDescriptors < maxDescriptors) {
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
-
 
         applyDescriptionPartProvider(rng, descriptorProvider, weapon, silent);
         nDescriptors++;

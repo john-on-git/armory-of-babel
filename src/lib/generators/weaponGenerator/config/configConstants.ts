@@ -435,8 +435,8 @@ const embeddedArr = [
     ['a black pearl', [{ post: ' of the Oyster King', alliteratesWith: 'O' }] satisfies Ephitet[]],
     ['a dark sapphire', ephBlack],
 
-    ['acid diamond', ephAcid],
-    ['toxic pearl', ephAcid],
+    ['an acid diamond', ephAcid],
+    ['a toxic pearl', ephAcid],
 ] as const satisfies [string, Ephitet[]][];
 
 const eyeStructureGenSingular = mkGen((rng, weapon: Weapon) => [
@@ -888,7 +888,11 @@ const cores = {
         featureUUID: 'energy-core-dark'
     },
 
-    wizard: wizardColoredEnergy,
+    wizard: [...wizardColoredEnergy, {
+        adj: 'Arcane',
+        desc: 'arcane energy',
+        featureUUID: 'energy-core-wizard'
+    }],
     steampunk: {
         adj: 'Fulminating',
         desc: 'lightning',
@@ -901,14 +905,16 @@ const cores = {
     }
 } as const satisfies Partial<Record<Theme, WeaponEnergyCore | WeaponEnergyCore[]>>;
 
+export type PossibleCoreThemes = keyof typeof cores;
+
 /**
  * If the weapon already has an energy core, get that one. Otherwise roll one at random.
  */
-export function pickOrLinkWithEnergyCore<TTheme extends (keyof typeof cores)>(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): WeaponEnergyCore & { theme: TTheme | 'void' } {
+export function pickOrLinkWithEnergyCore<TTheme extends PossibleCoreThemes>(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): WeaponEnergyCore & { theme: PossibleCoreThemes | 'void' } {
 
 
     const fallBack = {
-        adj: 'void',
+        adj: 'Void',
         desc: 'void energy',
         featureUUID: 'energy-core-void'
     } as const satisfies WeaponEnergyCore;
@@ -919,10 +925,10 @@ export function pickOrLinkWithEnergyCore<TTheme extends (keyof typeof cores)>(we
         const flatCores = [];
         for (const [k, v] of _.entries(cores)) {
             if (v instanceof Array) {
-                v.forEach(core => flatCores.push({ ...core, theme: k as keyof typeof cores }))
+                v.forEach(core => flatCores.push({ ...core, theme: k as PossibleCoreThemes }))
             }
             else {
-                flatCores.push({ ...v, theme: k as keyof typeof cores });
+                flatCores.push({ ...v, theme: k as PossibleCoreThemes });
             }
         }
 

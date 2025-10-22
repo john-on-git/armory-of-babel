@@ -1,5 +1,5 @@
 import { getPlurality } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { type DescriptorType, type Pronouns, type PronounsLoc, type Weapon, type WeaponPart, type WeaponPartName } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { type DescriptorAtom, type DescriptorType, type Pronouns, type PronounsLoc, type Weapon, type WeaponPart, type WeaponPartName } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
 
 function isAre(name: WeaponPartName) {
@@ -119,6 +119,21 @@ export function structuredDescToString(_locale: string, weapon: Weapon) {
         }
     }
 
+    /**
+     * Descriptors are printed out in this order
+     */
+    function descriptorsOrdering(a: Pick<DescriptorAtom, 'desc'>, b: Pick<DescriptorAtom, 'desc'>): number {
+        // try to put descriptors containing colons and commas at the end of the sentence. This makes it read a little more naturally.
+        const prio = (x: Pick<DescriptorAtom, 'desc'>): number =>
+            x.desc.includes(':')
+                ? 2 // first colons 
+                : x.desc.includes(',')
+                    ? 1 //then commas
+                    : 0; // then default
+
+        return prio(a) - prio(b)
+    }
+
     if (weapon.description === null) {
         throw new Error('cannot generate description for a weapon with null description');
     }
@@ -146,14 +161,15 @@ export function structuredDescToString(_locale: string, weapon: Weapon) {
 
             // get all the descriptors, merging together any chains of 'has' / 'have' etc
             let hasChain = false;
+            const orderedDescriptors = part.descriptors.sort(descriptorsOrdering);
             const descriptors: string[] = [];
-            if (part.descriptors.length > 0) {
+            if (orderedDescriptors.length > 0) {
                 // handle the first one separately if there's no material
                 if (part.material === undefined) {
-                    descriptors.push(`${isOrPossessionFor(partName, part.descriptors[0].descType)}${part.descriptors[0].desc}`);
-                    hasChain = part.descriptors[0].descType === 'possession';
+                    descriptors.push(`${isOrPossessionFor(partName, orderedDescriptors[0].descType)}${orderedDescriptors[0].desc}`);
+                    hasChain = orderedDescriptors[0].descType === 'possession';
                 }
-                for (const descriptor of part.material === undefined ? part.descriptors.slice(1) : part.descriptors) {
+                for (const descriptor of part.material === undefined ? orderedDescriptors.slice(1) : orderedDescriptors) {
                     // if this is possessive and the previous one was too, omit the possessiveness prefix
                     descriptors.push(descriptor.descType === 'possession' && hasChain ? descriptor.desc : `${linkingIsOrPossessionFor(partName, descriptor.descType)}${descriptor.desc}`);
 
