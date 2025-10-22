@@ -67,7 +67,7 @@ export type WithUUID<T extends object> = { UUID: string; } & T;
  * @param acc accumulator to gather the values inside
  * @returns the accumualtor, modified such that it contains all the values in the subtree
  */
-export function gatherProperties<T extends object>(property: string | number | symbol, x: T, acc: Set<string> = new Set<string>()): Set<string> {
+function gatherProperties<T extends object>(property: string | number | symbol, x: T, acc: Set<string> = new Set<string>()): Set<string> {
     Object.values(x).forEach((x) => {
         if (typeof x === 'object' && x !== null && x !== undefined) {
             if (property in x) {
@@ -81,8 +81,9 @@ export function gatherProperties<T extends object>(property: string | number | s
 
 /**
  * get all the UUIDs of all patchables in the subtree.
- * @param args 
- * @returns 
+ * @param x the object to gather UUIDs for
+ * @param acc accumulator to gather the UUIDs inside
+ * @returns the accumualtor, modified such that it contains all UUIDs in the subtree
  */
 export function gatherUUIDs<T extends object>(x: T, acc: Set<string> = new Set<string>()): Set<string> {
     return gatherProperties('UUID', x, acc);
