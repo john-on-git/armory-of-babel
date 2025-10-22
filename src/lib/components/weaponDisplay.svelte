@@ -57,11 +57,12 @@
         </h2>
         <div class="link-container">
             <button
-                class={`inline-button copy-weapon-link weapon-rarity-${weapon.rarity}`}
+                class="inline-button copy-weapon-link"
                 onclick={copyWeaponLink}
                 aria-label="copy to clipboard"
             >
-                <i class="fa-solid fa-link"></i>
+                <i class={`fa-solid fa-link weapon-rarity-${weapon.rarity}`}
+                ></i>
             </button>
             <Flasher bind:this={flasher} text={"copied to clipboard"} />
         </div>
@@ -96,7 +97,16 @@
                         {#each weapon.active.powers as power}
                             <div class="weapon-generator-list-item">
                                 <p>
-                                    {`${(power.desc as string).toTitleCase()} (${textForCharges(power.cost)}).`}
+                                    <span class="bold"
+                                        >{(
+                                            power.desc as string
+                                        ).toTitleCase()}</span
+                                    >
+                                    <span
+                                        >{`(${textForCharges(
+                                            power.cost,
+                                        )})`}</span
+                                    >
                                 </p>
                                 {#if power.additionalNotes}
                                     <div>
