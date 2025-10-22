@@ -64,7 +64,6 @@ describe('Weapon Generator', () => {
         for (let i = 0; i < nRuns; i++) {
             const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
-            console.log(weapon)
             expect(weapon.description.length).toBeGreaterThan(0);
         }
     });
@@ -107,10 +106,7 @@ describe('Weapon Generator', () => {
 
     // it('Manual utility / find a weapon with a particular feature', () => {
     //     function cond(weapon: WeaponViewModel): boolean {
-    //         return (
-    //             weapon.passivePowers.some(x => x.desc.includes('pocket plane')) &&
-    //             weapon.passivePowers.some(x => x.desc.includes('into their hand at will'))
-    //         );
+    //         return weapon.active.powers.some(x => x.desc.includes('Mana Drain'))
     //     }
     //     const start = 0;
     //     const attempts = 10000;
@@ -129,6 +125,6 @@ describe('Weapon Generator', () => {
     //     else {
     //         console.error(JSON.stringify(weapon, undefined, 1));
     //     }
-    //     expect(cond(weapon)).toBe(false);
+    //     expect(cond(weapon)).toBe(true);
     // })
 })

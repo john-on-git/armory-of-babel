@@ -1576,7 +1576,7 @@ export default {
                 {
 
                     themes: {
-                        any: ["ice", "nature"]
+                        any: ["ice", "nature", "light"]
                     }
                 }
             ),
@@ -1587,7 +1587,7 @@ export default {
                 {
 
                     themes: {
-                        any: ["fire", "nature"]
+                        any: ["fire", "nature", "light"]
                     }
                 }
             ),
@@ -1669,8 +1669,7 @@ export default {
                     cost: 5,
                     additionalNotes: [
                         "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. They expend resources as if the spell was cast.",
-                        "The spell is then stored inside the weapon, only one spell can be stored at a time.",
-                        "Casting a stored spell requires the the same time, magic words, etc... As casting the spell normally, but consumes other resources."
+                        "The spell is then stored inside the weapon for you to cast later, only one spell can be stored at a time.",
                     ],
                     descriptorPartGenerator: 'vampire-mouth'
                 },
