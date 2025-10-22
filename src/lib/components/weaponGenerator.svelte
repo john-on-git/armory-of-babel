@@ -14,10 +14,10 @@
 
     const { config }: Props = $props();
 
-    let weapon: Weapon = $state(mkWeapon(getIDFromURL(), config));
+    let weapon: Weapon = $derived(mkWeapon(getIDFromURL(), config));
     const weaponID = writable<string>(getIDFromURL());
     weaponID.subscribe((newId) => {
-        // update the view with the new weapon
+        // update the view with the new weapon. derived doesn't update when the URL is changed
         weapon = mkWeapon(newId, config);
     });
 
@@ -45,7 +45,9 @@
             new URLSearchParams(window.location.search).get("id") ?? "NaN",
         );
 
-        return Number.isSafeInteger(maybeNumber)
+        console.log("id from URL", maybeNumber, Number.isInteger(maybeNumber));
+
+        return Number.isInteger(maybeNumber)
             ? maybeNumber.toString()
             : getNewId();
     }
