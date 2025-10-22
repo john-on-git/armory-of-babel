@@ -318,24 +318,6 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('material-sour-hard',
-                {
-                    generate: (rng) => {
-                        return [
-                            MATERIALS.citrine,
-                            MATERIALS.acidium
-                        ].choice(rng);
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    }
-                },
-                {
-                    themes: {
-                        any: ['sour']
-                    }
-                }
-            ),
 
             new ProviderElement('material-sweet-hard',
                 {
@@ -354,7 +336,6 @@ export default {
                     }
                 }
             ),
-
             new ProviderElement('material-sweet-holding',
                 {
                     generate: (rng) => {
@@ -369,6 +350,25 @@ export default {
                 {
                     themes: {
                         any: ['sweet']
+                    }
+                }
+            ),
+
+            new ProviderElement('material-sour-hard',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.citrine,
+                            MATERIALS.acidium
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    themes: {
+                        any: ['sour']
                     }
                 }
             ),
@@ -480,7 +480,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('misc-silk-wrapping',
+            new ProviderElement('misc-wizard-wrapping',
                 {
                     generate: () => MISC_DESC_FEATURES.wrap.silkWrap,
                     applicableTo: {

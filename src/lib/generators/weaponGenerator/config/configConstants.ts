@@ -316,6 +316,14 @@ export const MISC_DESC_FEATURES = {
             descriptor: 'has an iron chain wrapped around it',
             ephitet: 'Chained'
         },
+        amethystChain: {
+            descriptor: 'has an amethyst bracelet wrapped around it',
+            ephitet: 'Chained'
+        },
+        anyJewelChain: {
+            descriptor: new StringGenerator(['has a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
+            ephitet: 'Bejewelled'
+        },
         silkWrap: {
             descriptor: 'has a silk sash wrapped around it',
             ephitet: 'Silken'
