@@ -1,19 +1,21 @@
 import { Patchable, VersionController } from "$lib/util/VersionController";
 
 describe('VersionController', () => {
-    it('should correctly apply the updates in this simple example', () => {
-        class Animal extends Patchable {
-            species: string;
-
+    it('It should correctly apply the updates in this simple example.', () => {
+        interface Stats {
             atk: number;
             def: number;
 
-            constructor(UUID: string, species: string, atk: number, def: number) {
+        }
+        class Animal extends Patchable {
+            species: string;
+            stats: Stats;
+
+            constructor(UUID: string, species: string, stats: Stats) {
                 super(UUID);
 
                 this.species = species;
-                this.atk = atk;
-                this.def = def;
+                this.stats = stats;
             }
         }
 
@@ -40,8 +42,8 @@ describe('VersionController', () => {
             },
             animals: {
                 add: [
-                    new Animal('sea-carnivore', 'anomalocaris', 10, 5),
-                    new Animal('sea-herbivore', 'trilobite', 0, 20),
+                    new Animal('sea-carnivore', 'anomalocaris', { atk: 10, def: 5 }),
+                    new Animal('sea-herbivore', 'trilobite', { atk: 0, def: 20 }),
                 ]
             }
         }, {
@@ -52,7 +54,7 @@ describe('VersionController', () => {
             },
             animals: {
                 add: [
-                    new Animal('land-carnivore', 'tiktaalik', 5, 5)
+                    new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
                 ],
                 remove: new Set(['sea-carnivore'])
             }
@@ -65,7 +67,7 @@ describe('VersionController', () => {
             animals: {
                 modify: {
                     'not-a-key': { species: 'seaweed' },
-                    'sea-herbivore': { def: 30 }
+                    'sea-herbivore': { stats: { def: 30 } }
                 }
             }
         }]);
@@ -74,8 +76,8 @@ describe('VersionController', () => {
             plants: [
                 new Plant('sea-plant', 'sponge')],
             animals: [
-                new Animal('sea-carnivore', 'anomalocaris', 10, 5),
-                new Animal('sea-herbivore', 'trilobite', 0, 20)
+                new Animal('sea-carnivore', 'anomalocaris', { atk: 10, def: 5 }),
+                new Animal('sea-herbivore', 'trilobite', { atk: 0, def: 20 })
             ]
         });
 
@@ -85,8 +87,8 @@ describe('VersionController', () => {
                 new Plant('land-plant', 'fern')
             ],
             animals: [
-                new Animal('sea-herbivore', 'trilobite', 0, 20),
-                new Animal('land-carnivore', 'tiktaalik', 5, 5)
+                new Animal('sea-herbivore', 'trilobite', { atk: 0, def: 20 }),
+                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
             ]
         });
 
@@ -96,8 +98,8 @@ describe('VersionController', () => {
                 new Plant('land-plant', 'neuropteris')
             ],
             animals: [
-                new Animal('sea-herbivore', 'trilobite', 0, 30),
-                new Animal('land-carnivore', 'tiktaalik', 5, 5)
+                new Animal('sea-herbivore', 'trilobite', { atk: 0, def: 30 }),
+                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
             ]
         });
 
