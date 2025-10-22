@@ -1,3 +1,4 @@
+import { dev } from "$app/environment";
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
 import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
 import "$lib/util/choice";
@@ -6,7 +7,7 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isRarity, itTheyFor, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 /**
  * 
@@ -19,8 +20,6 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
         throw new Error('cannot generate description for a weapon with null description');
     }
     else {
-
-
         const parts = Object.values(weapon.description).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
 
         function usesAnd(desc: WeaponPart) {
@@ -52,10 +51,18 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
                 }
             }
 
+            if (dev) {
+                for (const atom of [part.material, ...part.descriptors]) {
+                    if (atom !== undefined && /^\s*$/.test(atom.desc)) {
+                        console.error(`\x1b[31mSaw empty description atom: "${atom.desc}" (${atom.UUID})`);
+                    }
+                }
+            }
+
             const materialStr = part.material === undefined ? '' : ` made of ${part.material.desc}${descriptors.length > 1
                 ? ','
                 : descriptors.length > 0
-                    ? `, and ${itTheyFor(partName)}`
+                    ? `, and ${isOrPossessionFor(partName, part.descriptors[0].atomType)}`
                     : ''
                 }`
 
@@ -68,7 +75,7 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
 
             usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
 
-            const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
+            const partStr = `${start} ${partName} ${isAre(partName)}${materialStr}${descriptorsStr}`;
 
             // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
             // but don't merge more than two
@@ -130,6 +137,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             const desc = genMaybeGen(descriptor.descriptor, rng, weapon);
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
+                atomType: 'descType' in desc ? desc.descType : undefined,
                 desc: 'quantityless' in desc ? genMaybeGen(desc.quantityless, rng, weapon) : genMaybeGen(desc[getPlurality(targetPart[1])], rng, weapon),
                 ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
@@ -413,7 +421,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                     featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
                 }
                 else {
-                    console.error(`feature requested the non-existent descriptor "${choice.descriptorPartGenerator}": implement this descriptor.`)
+                    console.error(`\x1b[31mfeature requested the non-existent descriptor "${choice.descriptorPartGenerator}": implement this descriptor.`)
                 }
             }
         }

@@ -1,6 +1,6 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import type { Descriptor, Ephitet, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { Descriptor, DescriptorText, Ephitet, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { capFirst } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
@@ -28,20 +28,23 @@ const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
     });
     switch (nCharms) {
         case 1:
-            return {
-                singular: `has a miniature bust affixed to it (${chosenOptions[0]})`,
-                plural: `have a pair of miniature busts affixed to them (${chosenOptions[0]} and ${chosenOptions[1]})`,
-            }[quantity];
+            return ({
+                descType: 'has',
+                singular: `a miniature bust affixed to it (${chosenOptions[0]})`,
+                plural: `a pair of miniature busts affixed to them (${chosenOptions[0]} and ${chosenOptions[1]})`,
+            } satisfies DescriptorText)[quantity];
         case 2:
-            return {
-                singular: `has a pair of miniature busts affixed to it (${chosenOptions[0]} and ${chosenOptions[1]})`,
-                plural: `have a pair of miniature busts affixed to them (${chosenOptions[0]} and ${chosenOptions[1]})`,
-            }[quantity];
+            return ({
+                descType: 'has',
+                singular: `a pair of miniature busts affixed to it (${chosenOptions[0]} and ${chosenOptions[1]})`,
+                plural: `a pair of miniature busts affixed to them (${chosenOptions[0]} and ${chosenOptions[1]})`,
+            } satisfies DescriptorText)[quantity];
         case 3:
-            return {
-                singular: `has a cluster of miniature busts affixed to it (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`,
-                plural: `have a cluster of miniature busts affixed to them (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`,
-            }[quantity];
+            return ({
+                descType: 'has',
+                singular: `a cluster of miniature busts affixed to it (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`,
+                plural: `a cluster of miniature busts affixed to them (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`,
+            } satisfies DescriptorText)[quantity];
     }
 }
 
@@ -348,8 +351,9 @@ export const MISC_DESC_FEATURES = {
     charm: {
         puritySeal: {
             descriptor: {
-                singular: 'has pieces of scripture affixed to it, each with a wax seal',
-                plural: 'have pieces of scripture affixed to them, each with a wax seal',
+                descType: 'has',
+                singular: 'pieces of scripture affixed to it, each with a wax seal',
+                plural: 'pieces of scripture affixed to them, each with a wax seal',
             },
             ephitet: { pre: 'Sanctified' }
         },
@@ -363,8 +367,9 @@ export const MISC_DESC_FEATURES = {
         },
         shrunken: {
             descriptor: {
-                singular: 'has a shrunken head tied to it',
-                plural: 'each have a shrunken head tied to them',
+                descType: 'has',
+                singular: 'a shrunken head tied to it',
+                plural: 'a shrunken head tied to them',
             },
             ephitet: { pre: 'Headhunter' }
         },
@@ -372,15 +377,17 @@ export const MISC_DESC_FEATURES = {
     coating: {
         glitter: {
             descriptor: {
-                singular: 'has small flecks of glitter embedded just below the surface',
-                plural: 'have small flecks of glitter embedded just below the surface',
+                descType: 'has',
+                singular: 'small flecks of glitter embedded just below the surface',
+                plural: 'small flecks of glitter embedded just below the surface',
             },
             ephitet: { pre: 'Glittering' }
         },
         caseHardened: {
             descriptor: {
-                singular: "is split into multicolored regions with psychedelic shapes",
-                plural: "are split into multicolored regions with psychedelic shapes",
+                descType: 'is',
+                singular: "split into multicolored regions with psychedelic shapes",
+                plural: "split into multicolored regions with psychedelic shapes",
             },
             ephitet: { pre: 'Case Hardened' }
         },
@@ -402,64 +409,73 @@ export const MISC_DESC_FEATURES = {
     wrap: {
         bannerWrap: {
             descriptor: {
-                singular: 'has the flag of an ancient realm wrapped around it',
-                plural: 'have the flags of ancient realms wrapped around them',
+                descType: 'has',
+                singular: 'the flag of an ancient realm wrapped around it',
+                plural: 'the flags of ancient realms wrapped around them',
             },
             ephitet: { pre: 'Bannered' }
         },
         pirateWrap: {
             descriptor: {
-                singular: 'has a scrap of a jolly roger wrapped around it',
-                plural: 'have the scraps of a jolly roger wrapped around them',
+                descType: 'has',
+                singular: 'a scrap of a jolly roger wrapped around it',
+                plural: 'the scraps of a jolly roger wrapped around them',
             },
             ephitet: { pre: "Pirate" }
         },
         beadsWrap: {
             descriptor: {
-                singular: 'has a chain of glass beads wrapped around it',
-                plural: 'have glass beads dangling from them'
+                descType: 'has',
+                singular: 'a chain of glass beads wrapped around it',
+                plural: 'glass beads dangling from them'
             },
             ephitet: { pre: 'Beaded' }
         },
         silverChainWrap: {
             descriptor: {
-                singular: 'has intricate silver chains wrapped around it',
-                plural: 'have intricate silver chains wrapped around them',
+                descType: 'has',
+                singular: 'intricate silver chains wrapped around it',
+                plural: 'intricate silver chains wrapped around them',
             },
             ephitet: { pre: 'Silver' }
         },
         goldChainWrap: {
             descriptor: {
-                singular: 'has intricate golden chains wrapped around it',
-                plural: 'have intricate golden chains wrapped around them',
+                descType: 'has',
+                singular: 'intricate golden chains wrapped around it',
+                plural: 'intricate golden chains wrapped around them',
             },
             ephitet: { pre: 'Gilded' }
         },
         ironChain: {
             descriptor: {
-                singular: 'has iron chains wrapped around it',
-                plural: 'have iron chains wrapped around them',
+                descType: 'has',
+                singular: 'iron chains wrapped around it',
+                plural: 'iron chains wrapped around them',
             },
             ephitet: { pre: 'Chained' }
         },
         amethystChain: {
             descriptor: {
-                singular: 'has an amethyst bracelet wrapped around it',
-                plural: 'have amethyst bracelet bracelets wrapped around them',
+                descType: 'has',
+                singular: 'an amethyst bracelet wrapped around it',
+                plural: 'amethyst bracelet bracelets wrapped around them',
             },
             ephitet: { pre: 'Chained' }
         },
         anyJewelChain: {
             descriptor: {
-                singular: new StringGenerator(['has a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
-                plural: new StringGenerator(['have ', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelets wrapped around them']),
+                descType: 'has',
+                singular: new StringGenerator(['a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
+                plural: new StringGenerator(['', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelets wrapped around them']),
             },
             ephitet: { pre: 'Bejewelled' }
         },
         silkWrap: {
             descriptor: {
-                singular: 'has a silk sash wrapped around it',
-                plural: 'have silk sashes wrapped around them'
+                descType: 'has',
+                singular: 'a silk sash wrapped around it',
+                plural: 'silk sashes wrapped around them'
             },
             ephitet: { pre: 'Silken' }
         },
@@ -467,8 +483,9 @@ export const MISC_DESC_FEATURES = {
     glyph: {
         oldCoatOfArms: {
             descriptor: {
-                singular: 'has the coat of arms of an ancient dynasty emblazoned on it',
-                plural: 'each have the coat of arms of an ancient dynasty emblazoned on them',
+                descType: 'has',
+                singular: 'the coat of arms of an ancient dynasty emblazoned on it',
+                plural: 'the coat of arms of an ancient dynasty emblazoned on them',
             },
             ephitet: { pre: 'Heraldic' }
         },
