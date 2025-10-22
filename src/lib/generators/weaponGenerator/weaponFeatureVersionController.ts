@@ -6,7 +6,7 @@ import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPat
 
 
 
-export const weaponFeatureVersionController = new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<WeaponFeaturesTypes>, FeatureProviderCollection>([
+export const getWeaponFeatureVersionController = () => new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<WeaponFeaturesTypes>, FeatureProviderCollection>([
     v1,
     // ,{
     //     themes: {},
@@ -19,6 +19,17 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
     //     shapes: {}
     // }
 ], (x) => {
+    console.log(
+        "Loaded\n",
+        (x.themes as Array<unknown>).length, 'Themes\n',
+        (x.descriptors as Array<unknown>).length + (x.nonRollableDescriptors as Array<unknown>).length, 'Descriptors\n',
+        (x.personalities as Array<unknown>).length, 'Personalities\n',
+        (x.shapes as Array<unknown>).length, 'Shapes\n',
+        (x.rechargeMethods as Array<unknown>).length, 'Recharge Methods\n',
+        (x.actives as Array<unknown>).length, 'Active Powers\n',
+        (x.passives as Array<unknown>).length, 'Passive powers\n',
+        (x.languages as Array<unknown>).length, 'Languages\n',
+    )
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
         descriptors: new WeaponFeatureProvider(x.descriptors),

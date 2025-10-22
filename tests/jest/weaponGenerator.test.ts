@@ -1,4 +1,4 @@
-import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
+import { getWeaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
 import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { FeatureProviderCollection } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
@@ -9,6 +9,7 @@ describe('Weapon Generator', () => {
     let weaponFeaturesByVersion: FeatureProviderCollection[];
 
     beforeAll(() => {
+        const weaponFeatureVersionController = getWeaponFeatureVersionController();
         weaponFeaturesByVersion = new Array(weaponFeatureVersionController.getLatestVersionNum() + 1).fill(null).map((_, i) => weaponFeatureVersionController.getVersion(i));
     });
 

@@ -1719,7 +1719,7 @@ export default {
                     const durationByRarity = {
                         common: "until the end of the scene",
                         uncommon: "until the end of the scene",
-                        rare: "for 24  hours",
+                        rare: "for 24 hours",
                         epic: "for a week",
                         legendary: "until you choose to end it"
                     } as const satisfies Record<WeaponRarity, string>;
@@ -1727,8 +1727,8 @@ export default {
                         desc: "You Are Being Watched",
                         cost: 3,
                         additionalNotes: [
-                            "Upon landing a blow (on a person), you empower it to draw the attention of the divine powers. You gain supernatural knowledge of the target's exact location.",
-                            `The effect lasts ${durationByRarity[weapon.rarity]}, or until the target dies.`
+                            "Upon landing a blow (on a person), you empower it to draw divine attention to them.",
+                            `You magically know the target's location. The effect lasts ${durationByRarity[weapon.rarity]}, or until the target dies.`
                         ],
                     };
                 }),
@@ -1838,32 +1838,6 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('gravity-gun', {
-                desc: 'Kinesis',
-                cost: 1,
-                additionalNotes: [
-                    mkGen((rng, weapon) => {
-                        const effects = {
-                            fire: 'The weapon emit a fiery whip.',
-
-                            cloud: "The weapon emits a vortex of air.",
-
-                            light: 'The weapon emits a tether of luminous energy.',
-
-                            nature: "A sturdy vine grows from the weapon's tip.",
-
-                        } satisfies Partial<Record<Theme, string>>;
-
-                        const tetherTheme = pickForTheme(weapon, effects, rng);
-
-                        return `${tetherTheme} It can lift and throw object an weighing up to 500 lbs.`;
-                    })
-                ]
-            }, {
-                themes: {
-                    any: ['light', 'fire', 'nature', 'cloud']
-                },
-            }),
             new ProviderElement("weapon-animal-transformation",
                 mkGen(rng => ({
                     desc: "Animal Transformation",
@@ -2713,17 +2687,17 @@ export default {
                         const effects = {
                             fire: 'The weapon emit a fiery whip.',
 
-                            light: 'The weapon emits a tether of luminous energy.',
-
                             cloud: "The weapon emits a vortex of air.",
 
+                            light: 'The weapon emits a tether of luminous energy.',
+
                             nature: "A sturdy vine grows from the weapon's tip.",
+
                         } satisfies Partial<Record<Theme, string>>;
 
                         const tetherTheme = pickForTheme(weapon, effects, rng);
-                        //const tetherTheme = typeof chosen === "string" ? chosen : chosen(rng)
 
-                        return `${tetherTheme} It can lift and throw object an weighing up to 500 lbs.`;
+                        return `${tetherTheme} It can lift and throw an object weighing up to 500 lbs.`;
                     })
                 ]
             }, {
@@ -2898,9 +2872,9 @@ export default {
                 }
             ),
             new ProviderElement("focus-light-beam",
-                mkGen(rng => ({
+                mkGen(() => ({
                     miscPower: true,
-                    desc: new StringGenerator(["Can reflect and focus ", mkGen((rng) => ["sun", "moon"].choice(rng)), "light as a damaging beam (2d6 damage)."]).generate(rng)
+                    desc: "Can reflect and focus sunlight as a damaging beam (2d6 damage, range 100-ft)."
                 })),
                 {
 
