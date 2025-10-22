@@ -1136,14 +1136,14 @@ export default {
 
             new ProviderElement('material-wizard-holding',
                 {
-                    generate: (rng) => {
+                    generate: (rng, weapon) => {
                         return genMaybeGen([
                             MATERIALS.magicWood,
                             MATERIALS.magicHorn,
                             MATERIALS.magicHorn,
                             MATERIALS.magicHorn,
                             MATERIALS.magicHorn,
-                        ].choice(rng), rng);
+                        ].choice(rng), rng, weapon);
                     },
                     applicableTo: {
                         any: holdingParts
@@ -1302,6 +1302,8 @@ export default {
                     }
                 },
                 {
+                    // remove me when more abilities are added. this is just really over-represented at the moment & messing with the vibe
+                    never: true,
                     allowDuplicates: false,
                     themes: {
                         any: ['nature', 'wizard', 'sweet']
@@ -1485,11 +1487,9 @@ export default {
             ...toProviderSource({
                 fire: [
                     "compassionate",
-                    "irritable",
                     "flirty",
                     "standoffish",
-                    "zealous",
-                    "wrathful",
+                    "short fuse",
                     "kind",
                     "honest",
                 ],
@@ -1497,11 +1497,11 @@ export default {
                     "cold",
                     "formal",
                     "haughty",
-                    "idealistic",
                     "pitiless",
                     "reserved",
                     "serious",
                     "stubborn",
+                    "Black & White Thinker"
                 ],
                 cloud: [
                     "easy-going",
@@ -1524,7 +1524,7 @@ export default {
                     "tries to act mysterious",
                     "quiet",
                     "depressive",
-                    "angry",
+                    "short fuse",
                     "sadistic",
                     "enjoys provoking others"
                 ],
@@ -1533,6 +1533,7 @@ export default {
                     "honest",
                     "pious",
                     "zealous",
+                    "Black & White Thinker"
                 ],
                 wizard: [
                     "overconfident"
@@ -1616,7 +1617,6 @@ export default {
                         ])
                     ],
                     sweet: [
-                        "one charge each time it eats an extravagant dessert",
                         "all charges each time its wielder hosts a feast",
                         "one charge each time its wielder gives a well-received compliment"
                     ],
@@ -1663,13 +1663,85 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("stasis",
+                mkGen((rng, weapon) => {
+                    const byTheme = {
+                        dark: {
+                            desc: "Tenth Circle",
+                            additionalNotes: [
+                                "The target is snapped up whole by a titanic thing from the space-between-spaces",
+                                "It emerges from an edge, targeting something within 15-ft.",
+                                "Targets save at the end of each of their turns, ending the effect on a success. The chance is 20% for a character with no modifiers."
+                            ]
+                        },
+                        ice: {
+                            desc: "Cryostasis",
+                            additionalNotes: [
+                                "You imprison the target in a block of eternal ice, which magically freezes them until it's destroyed.",
+                                mkGen((__, weapon) => {
+                                    // It has HP equal to 3x the weapon's damage
+                                    const iceHP = _.mapValues(
+                                        _.omit(weapon.damage, ['as']),
+                                        x => x === undefined ? undefined : x * 3
+                                    );
+                                    return `It has ${textForDamage(iceHP)}.`;
+                                })
+                            ]
+                        }
+                    } as const satisfies Partial<Record<Theme, Pick<ActivePower, 'additionalNotes' | 'desc'>>>;
+
+                    return {
+                        cost: 3,
+                        ...pickForTheme(weapon, byTheme, rng) ?? byTheme['ice']
+                    }
+                }),
+                {
+                    themes: { any: ["dark", "ice"] },
+                }
+            ),
+            new ProviderElement("spin-attack",
+                {
+                    desc: "Spin Attack",
+                    cost: 3,
+                    additionalNotes: [
+                        "Make an attack against every character in the weapon's melee range."
+                    ]
+                }, {}
+            ),
+            new ProviderElement("turn-ethereal",
+                {
+                    desc: "Spirit Skim",
+                    cost: 3,
+                    additionalNotes: [
+                        "You enter the spirit realm until the end of your next turn.",
+                        "You become partially transparent. Living things, and structures smaller than a shipping container, can't physically interact with you, but you can interact with ghosts & spirits as if they were physical.",
+                        "If you end your turn inside something, the weapon automatically extends the effect. If it lacks the charge to do so, that part of your body is permanently trapped in the spirit realm."
+                    ]
+                },
+                {
+                    themes: { any: ["light"] },
+                }
+            ),
+            new ProviderElement("shadow-walk",
+                {
+                    desc: "Shadow Walk",
+                    cost: 3,
+                    additionalNotes: [
+                        "You enter the shadow realm until the end of your next turn.",
+                        "You become invisible. Living things can't physically interact with you, but you can interact with ghosts & spirits as if they were physical."
+                    ]
+                },
+                {
+                    themes: { any: ["dark"] },
+                }
+            ),
             new ProviderElement("mana-vampire-strike",
                 {
                     desc: 'Mana Drain',
                     cost: 5,
                     additionalNotes: [
                         "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. They expend resources as if the spell was cast.",
-                        "The spell is then stored inside the weapon for you to cast later, only one spell can be stored at a time.",
+                        "The spell is then stored inside the weapon for you to cast later (at no cost), only one spell can be stored at a time.",
                     ],
                     descriptorPartGenerator: 'vampire-mouth'
                 },
@@ -2241,13 +2313,22 @@ export default {
                 }
             ),
             new ProviderElement("wind-blast",
-                {
-                    desc: "Wind Blast",
-                    cost: 2,
-                    additionalNotes: [
-                        "Characters in melee range must save, or be thrown back out of melee range and knocked down."
-                    ]
-                },
+                mkGen((_, weapon) => {
+                    const damageByRarity = {
+                        common: "",
+                        uncommon: "take 1d4 damage, ",
+                        rare: "take 1d6 damage, ",
+                        epic: "take 1d10 damage, ",
+                        legendary: "take 1d12 damage, "
+                    } as const satisfies Record<WeaponRarity, string>;
+                    return {
+                        desc: "Wind Blast",
+                        cost: 2,
+                        additionalNotes: [
+                            `Characters in melee range must save, or ${damageByRarity[weapon.rarity]}be thrown back out of melee range, and knocked down.`
+                        ]
+                    }
+                }),
                 {
                     themes: { any: ["cloud"] },
                 }
@@ -2444,7 +2525,7 @@ export default {
                             dark: ["a cave troll", "a land shark", "an evil and intimidating horse"],
 
                             sour: ["a giant acid-spitting insect"],
-                            sweet: ["a giant mosquito from the sugar swamps (targets save or suffer high blood sugar)"],
+                            sweet: ["a giant mosquito from the sugar swamps"],
 
                             wizard: ["a witch's walking hut", "a unicorn", "a griffin", "a hippogriff"],
                             steampunk: ["motor snail (stats as horse, but twice as fast)"]
@@ -2572,11 +2653,11 @@ export default {
                             ]
                         },
                         sour: {
-                            desc: 'Arc Cutter',
+                            desc: 'Acid Edge',
                             cost: 6,
                             additionalNotes: [
                                 "The weapon glows with caustic energy, lasting for 1 minute.",
-                                "It can melt through organic materials, metal, and stone (but not glass)."
+                                "It can cut through any organic material, metal, and stone (but not glass)."
                             ]
                         },
                         wizard: {
@@ -2782,7 +2863,7 @@ export default {
                         desc,
                         cost: `a charge per month that an expert would need to produce a regular version of the object, rounding up`,
                         additionalNotes: [
-                            `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}.`,
+                            `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}. Initially intangible, it finishes solidifying at the start of your next turn.`,
                             "Only replicates the structure of the object, not any special functions. Its magical nature is obvious at a glance."
                         ]
                     }
@@ -2806,6 +2887,19 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("blade-of-truth",
+                {
+                    miscPower: true,
+                    desc: "Characters touching the weapon cannot lie."
+                }, {
+                themes: {
+                    any: ["light"],
+                },
+                rarity: {
+                    gte: 'epic'
+                }
+            }
+            ),
             new ProviderElement("potion-resistant",
                 {
                     miscPower: true,
@@ -2958,7 +3052,7 @@ export default {
 
                     themes: { any: ["fire"] },
                     UUIDs: {
-                        none: ['damage-bonus-dark-fire', 'damage-bonus-ice', 'damage-bonus-ice-blunt']
+                        none: ['damage-bonus-dark-fire', 'damage-bonus-ice-sharp', 'damage-bonus-ice-blunt']
                     }
                 }
             ),
@@ -3020,7 +3114,7 @@ export default {
                         ]
                     },
                     UUIDs: {
-                        none: ['damage-bonus-dark-fire', 'damage-bonus-ice', 'damage-bonus-dark-fire']
+                        none: ['damage-bonus-fire', 'damage-bonus-dark-fire', 'damage-bonus-ice-sharp']
                     }
                 }
             ),
@@ -3098,7 +3192,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("damage-bonus-dark-flame",
+            new ProviderElement("damage-bonus-dark-fire",
                 {
                     miscPower: true,
                     bonus: {
@@ -3111,7 +3205,7 @@ export default {
                 {
                     themes: { any: ["dark"] },
                     UUIDs: {
-                        none: ['damage-bonus-fire', 'damage-bonus-ice', 'damage-bonus-ice-blunt']
+                        none: ['damage-bonus-fire', 'damage-bonus-ice-sharp', 'damage-bonus-ice-blunt']
                     }
                 }
             ),

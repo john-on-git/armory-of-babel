@@ -21,7 +21,7 @@ export const getWeaponFeatureVersionController = () => new VersionController<Wea
 ], (x) => {
     console.log(
         "Loaded\n",
-        (x.themes as Array<unknown>).length, 'Themes\n',
+        ((x.themes as Array<unknown>).length), 'Themes\n',
         (x.descriptors as Array<unknown>).length + (x.nonRollableDescriptors as Array<unknown>).length, 'Descriptors\n',
         (x.personalities as Array<unknown>).length, 'Personalities\n',
         (x.shapes as Array<unknown>).length, 'Shapes\n',

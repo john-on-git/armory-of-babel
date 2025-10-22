@@ -1,3 +1,4 @@
+import type { Weapon } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { mkGen } from "./recursiveGenerator";
 
@@ -79,6 +80,7 @@ const coldAndMagicHornsAndAntlers = [
 
 const hotAndMagicHornsAndAntlers = [
     ["red dragon", "horn"],
+    ["orange dragon", "horn"],
     ["blue dragon", "horn"],
     ["satyr", "horn"],
     ["demon", "horn"],
@@ -106,18 +108,6 @@ const hotBiomeHornsAndAntlers = [
 ] as const satisfies [string, string][];
 
 
-const magicHornsAndAntlers = [
-    ["black dragon", "horn"],
-    ["purple dragon", "horn"],
-    ["gold dragon", "horn"],
-    ["orange dragon", "horn"],
-    ["moon dragon", "horn"],
-    ["space dragon", "horn"],
-    ["cyclops", "horn"],
-    ["cacodemon", "leather"],
-    ...hotAndMagicHornsAndAntlers,
-    ...coldAndMagicHornsAndAntlers
-] as const satisfies [string, string][];
 
 const evilSkinAnimals = [
     ["human", "skin"],
@@ -133,5 +123,24 @@ const evilSkinAnimals = [
 
 export const coldBiomeHorn = mkGen((rng) => choice(coldBiomeHornsAndTusks, rng));
 export const hotBiomeHorn = mkGen((rng) => choice(hotBiomeHornsAndAntlers, rng));
-export const magicAnimalHorn = mkGen((rng) => choice(magicHornsAndAntlers, rng));
+export const magicAnimalHorn = mkGen((rng, weapon: Weapon) => choice(
+    [
+        ...(weapon.themes.some(x => x === 'light') ? [
+            ["moon dragon", "horn"],
+        ] : []),
+        ...(weapon.themes.some(x => x === 'light' || x === 'fire') ? [
+            ["gold dragon", "horn"],
+        ] : []),
+        ...(weapon.themes.some(x => x === 'dark' || x === 'fire') ? [
+            ["cacodemon", "leather"],
+        ] : []),
+        ...(weapon.themes.some(x => x === 'fire') ? hotAndMagicHornsAndAntlers : []),
+        ...(weapon.themes.some(x => x === 'dark') ? [
+            ["black dragon", "horn"],
+            ["demon", "horn"],
+        ] : []),
+        ...(weapon.themes.some(x => x === 'ice') ? coldAndMagicHornsAndAntlers : []),
+        ["purple dragon", "horn"],
+        ["cyclops", "horn"]
+    ] as const, rng));
 export const darkAnimalSkin = mkGen((rng) => choice(evilSkinAnimals, rng));

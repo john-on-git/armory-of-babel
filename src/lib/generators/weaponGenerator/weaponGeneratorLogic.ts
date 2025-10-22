@@ -224,9 +224,9 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
             case "ice":
                 return { pre: 'Icy' };
             case "cloud":
-                return { post: 'of the Sky', alliteratesWith: 'S' };
+                return { post: ' of the Sky' };
             case "earth":
-                return { post: 'of the Earth', alliteratesWith: 'E' };
+                return { post: ' of the Earth' };
             case "light":
                 return { pre: 'Divine' };
             case "dark":
@@ -240,7 +240,7 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
             case "steampunk":
                 return { pre: 'Clockwork' };
             case "nature":
-                return { pre: "Treehugger's" };
+                return { post: " of the Forest" };
             default:
                 return { pre: theme };
         }
@@ -250,7 +250,6 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
         // Take the alliteratesWith if one was provided, then if it's pre, fall back to taking the first letter, otherwise count it as non illiterative
         const compareTo = ephitet?.alliteratesWith ?? ('pre' in ephitet ? ephitet.pre[0] : undefined);
         return compareTo !== undefined && weapon.shape.particular[0].localeCompare(compareTo, undefined, { sensitivity: "base" }) === 0;
-
     }
 
     if (weapon.description !== null) {

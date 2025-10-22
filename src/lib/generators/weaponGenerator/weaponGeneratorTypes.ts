@@ -361,13 +361,18 @@ export const weaponStructures = {
     },
     spearLike: {
         business: ['tip'],
-        holding: ['grip'],
-        other: ['shaft', 'pommel']
+        holding: ['spearShaft'],
+        other: []
+    },
+    polearmLike: {
+        business: ['axeHead'],
+        holding: ['spearShaft'],
+        other: []
     },
     forkLike: {
         business: ['prongs'],
-        holding: ['grip'],
-        other: ['shaft', 'pommel']
+        holding: ['spearShaft'],
+        other: []
     },
     bowSwordLike: {
         business: ['blades'],
@@ -419,7 +424,7 @@ export const shapeToStructure = {
 
     "spear": 'spearLike',
     "lance": 'lanceLike',
-    "polearm": 'axeLike',
+    "polearm": 'polearmLike',
 
     "sword (or bow)": 'bowSwordLike',
     "dagger (or pistol)": 'gunSwordLike',
