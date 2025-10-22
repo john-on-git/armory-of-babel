@@ -69,18 +69,29 @@ export const singularWildAnimal = mkGen((rng) => [
     "a crow"
 ].choice(rng))
 
-const hornedHotBiomeAnimasArr = [
-    "auroch",
-    "mountain goat",
-    "bighorn sheep"
-] as const;
+const coldBiomeHornsAndTusks = [
+    ["auroch", "horn"],
+    ["mountain goat", "horn"],
+    ["walrus", "tusk"],
+    ["narwhal", "horn"],
+    ["reindeer", "antler"],
+    ["yeti", "horn"],
+    ["white dragon", "horn"],
+    ["minotaur", "horn"]
+] as const satisfies [string, string][];
 
-const hornedColdBiomeAnimalsArr = [
-    "rhino",
-    "gazelle",
-    "buffallo",
-    "impala"
-] as const;
+const hotBiomeHornsAndAntlers = [
+    ["rhino", "horn"],
+    ["Arsinoitherium ", "horn"],
+    ["gazelle", "horn"],
+    ["buffallo", "horn"],
+    ["impala", "antler"],
+    ["ibex", "antler"],
+    ["red dragon", "horn"],
+    ["blue dragon", "horn"],
+    ["satyr", "horn"],
+    ["demon", "horn"]
+] as const satisfies [string, string][];
 
-export const hornedFireAnimal = mkGen((rng) => choice(hornedHotBiomeAnimasArr, rng));
-export const hornedIcyAnimal = mkGen((rng) => choice(hornedColdBiomeAnimalsArr, rng));
+export const coldBiomeHorn = mkGen((rng) => choice(coldBiomeHornsAndTusks, rng));
+export const hotBiomeHorn = mkGen((rng) => choice(hotBiomeHornsAndAntlers, rng));

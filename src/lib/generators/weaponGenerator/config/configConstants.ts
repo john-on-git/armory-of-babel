@@ -1,4 +1,4 @@
-import { hornedFireAnimal } from "$lib/generators/foes";
+import { coldBiomeHorn as coldAnimalHorn, coldBiomeHorn as hotAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { capFirst } from "$lib/util/string";
@@ -153,20 +153,20 @@ export const MATERIALS = {
     } as const,
 
     hotHorn: mkGen((rng) => {
-        const animal = hornedFireAnimal.generate(rng);
+        const [creature, protrusionName] = hotAnimalHorn.generate(rng);
 
         return {
-            material: `${animal} horn`,
-            ephitet: { post: `of the ${animal}` }
-        }
+            material: `${creature} ${protrusionName}`,
+            ephitet: { post: `of the ${creature.capFirst()}` }
+        } as Descriptor;
     }),
     coldHorn: mkGen((rng) => {
-        const animal = hornedFireAnimal.generate(rng);
+        const [creature, protrusionName] = coldAnimalHorn.generate(rng);
 
         return {
-            material: `${animal} horn`,
-            ephitet: { pre: 'Horned' }
-        }
+            material: `${creature} ${protrusionName}`,
+            ephitet: { post: `of the ${creature.capFirst()}` }
+        } as Descriptor;
     }),
 
     silverPlated: {

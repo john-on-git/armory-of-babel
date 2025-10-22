@@ -6,10 +6,10 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
-function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
-    function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
+function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
+    function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
         const allApplicableParts = _
             .entries(structure)
             .flatMap(([k, parts]) =>
@@ -34,8 +34,8 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         // if we fail to get a part, try to handle it gracefully
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].material = {
-                desc: genStr(descriptor.material, rng, weapon),
-                ephitet: 'pre' in descriptor.ephitet ? { pre: genStr(descriptor.ephitet.pre, rng, weapon) } : { post: genStr(descriptor.ephitet.post, rng, weapon) },
+                desc: genMaybeGen(descriptor.material, rng, weapon),
+                ephitet: 'pre' in descriptor.ephitet ? { pre: genMaybeGen(descriptor.ephitet.pre, rng, weapon) } : { post: genMaybeGen(descriptor.ephitet.post, rng, weapon) },
                 UUID: provider.UUID
             };
         }
@@ -46,15 +46,15 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         // if we fail to get a part, try to handle it gracefully
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
-                desc: genStr(descriptor.descriptor, rng, weapon),
-                ephitet: 'pre' in descriptor.ephitet ? { pre: genStr(descriptor.ephitet.pre, rng, weapon) } : { post: genStr(descriptor.ephitet.post, rng, weapon) },
+                desc: genMaybeGen(descriptor.descriptor, rng, weapon),
+                ephitet: 'pre' in descriptor.ephitet ? { pre: genMaybeGen(descriptor.ephitet.pre, rng, weapon) } : { post: genMaybeGen(descriptor.ephitet.post, rng, weapon) },
                 UUID: provider.UUID
             });
         }
     }
 }
 
-function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureFor>[1]) {
+function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>[1]) {
     return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng)?.ephitet;
 }
 
@@ -153,7 +153,7 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     throw new Error('failed to generate rarity');
 }
 
-export const genStr = <T extends Array<unknown>>(x: string | ((TGenerator<string, T>)), rng: seedrandom.PRNG, ...args: T) => typeof x === 'string' ? x : x.generate(rng, ...args);
+export const genMaybeGen = <TOut, TArgs extends Array<unknown>>(x: TOut | ((TGenerator<TOut, TArgs>)), rng: seedrandom.PRNG, ...args: TArgs): TOut => typeof x === 'object' && x !== null && 'generate' in x ? x.generate(rng, ...args) : x;
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
@@ -248,8 +248,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     weapon.damage.as = weapon.shape.group;
 
     // generate the structure for the weapon's parts
-    const [structure, structuredDesc] = structureFor(weapon.shape.group);
-    weapon.description = structuredDesc;
+    const [structure, structuredDesc] = structureDescFor(weapon.shape);
 
     if (weapon.sentient) {
         const nPersonalities = 2;
@@ -258,7 +257,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             if (choice != undefined) {
                 weapon.sentient.personality.push({
                     ...choice,
-                    desc: genStr(choice?.desc, rng, weapon)
+                    desc: genMaybeGen(choice?.desc, rng, weapon)
                 });
             }
         }
@@ -276,7 +275,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 if (choice.desc !== null) {
                     weapon.passivePowers.push({
                         ...choice,
-                        desc: genStr(choice.desc, rng, weapon)
+                        desc: genMaybeGen(choice.desc, rng, weapon)
                     });
                 }
                 for (const k in choice.bonus) {
@@ -323,15 +322,15 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     const rechargeMethodChoice = featureProviders.rechargeMethodProvider.draw(rng, weapon);
     weapon.active.rechargeMethod = {
         ...rechargeMethodChoice,
-        desc: genStr(rechargeMethodChoice.desc, rng, weapon)
+        desc: genMaybeGen(rechargeMethodChoice.desc, rng, weapon)
     };
     for (let i = 0; i < params.nActive; i++) {
         const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
             weapon.active.powers.push({
                 ...choice,
-                desc: genStr(choice.desc, rng, weapon),
-                additionalNotes: choice.additionalNotes?.map(x => genStr(x, rng, weapon))
+                desc: genMaybeGen(choice.desc, rng, weapon),
+                additionalNotes: choice.additionalNotes?.map(x => genMaybeGen(x, rng, weapon))
             });
 
             if (choice.descriptorPartGenerator) {
@@ -346,8 +345,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             weapon.active.powers.push({
                 ...choice,
                 cost: 'at will',
-                desc: genStr(choice.desc, rng, weapon),
-                additionalNotes: choice.additionalNotes?.map(x => genStr(x, rng, weapon))
+                desc: genMaybeGen(choice.desc, rng, weapon),
+                additionalNotes: choice.additionalNotes?.map(x => genMaybeGen(x, rng, weapon))
             });
 
             if (choice.descriptorPartGenerator) {
@@ -417,7 +416,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     }
 
     // convert the structured description to a text block
-    const parts = Object.values(structuredDesc).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0);
+    const parts = Object.values(structuredDesc).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
 
     function usesAnd(desc: WeaponPart) {
         return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
@@ -448,7 +447,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
         }
 
-        const materialStr = part.material === undefined ? '' : ` is made of ${part.material.desc}${descriptors.length > 1
+        const materialStr = part.material === undefined ? '' : ` made of ${part.material.desc}${descriptors.length > 1
             ? ','
             : descriptors.length > 0
                 ? `, and`
@@ -464,7 +463,22 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
         usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
 
-        const partStr = `${start} ${partName}${materialStr}${descriptorsStr}`;
+        /**
+         * Determines whether a weapon name is singular or plural.
+         * @param name weaponpart to get name for
+         * @returns the next word in the sentence after the weapon part
+         */
+        function nextFor(name: WeaponPartName) {
+            switch (name) {
+                case 'blades':
+                case 'limbs':
+                    return 'are';
+                default:
+                    return 'is';
+            }
+        }
+
+        const partStr = `${start} ${partName} ${nextFor(partName)} ${materialStr}${descriptorsStr}`;
 
         // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
         // but don't merge more than two
@@ -516,19 +530,19 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         toHit: weapon.toHit,
         active: {
             maxCharges: weapon.active.maxCharges,
-            rechargeMethod: genStr(weapon.active.rechargeMethod.desc, rng, weapon),
+            rechargeMethod: genMaybeGen(weapon.active.rechargeMethod.desc, rng, weapon),
             powers: weapon.active.powers.map(power => ({
-                desc: genStr(power.desc, rng, weapon),
+                desc: genMaybeGen(power.desc, rng, weapon),
                 cost: power.cost,
-                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(desc, rng, weapon)) })
+                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
             }))
         },
         passivePowers: weapon.passivePowers.map(power => ({
-            desc: genStr(power.desc, rng, weapon),
-            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(desc, rng, weapon)) })
+            desc: genMaybeGen(power.desc, rng, weapon),
+            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
         })),
         sentient: weapon.sentient ? {
-            personality: weapon.sentient.personality.map(x => genStr(x.desc, rng, weapon)),
+            personality: weapon.sentient.personality.map(x => genMaybeGen(x.desc, rng, weapon)),
             languages: weapon.sentient.languages,
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
         } : false,
