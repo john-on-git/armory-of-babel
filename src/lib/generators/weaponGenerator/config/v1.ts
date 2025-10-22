@@ -51,8 +51,8 @@ export default {
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
-                            singular: " is incribed with jagged runes of necromancy",
-                            plural: " are incribed with jagged runes of necromancy"
+                            singular: " is inscribed with jagged runes of necromancy",
+                            plural: " are inscribed with jagged runes of necromancy"
                         }
                     }),
                     ephitet: mkGen((rng) => ephBlack.choice(rng)),
@@ -1746,12 +1746,12 @@ export default {
                 additionalNotes: [
                     `
                     You fire an enchanted shot. Roll on the table below to decide the effect.
-                    \n1. Target is set on fire.
-                    \n2. Explosive, everyone within melee range of the target takes equal damage.
-                    \n3.
-                    \n4.
-                    \n5.
-                    \n6.
+                    \n1. Dragon's Breath. Target is set on fire.
+                    \n2. Explosive. Everyone within melee range of the target takes equal damage.
+                    \n3. Flash Powder. Target must save or be stunned during their next turn.
+                    \n4. Hammer Shot. Shatters every bone in a random limb of the target.
+                    \n5. Tesla Round.
+                    \n6. Wormhole. You swap places with the target.
                     `,
                 ]
             }, {
@@ -1760,7 +1760,7 @@ export default {
                     any: ['dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
                 }
             }),
-            new ProviderElement('return',
+            new ProviderElement('return-to-home',
                 {
                     cost: 3,
                     desc: 'Return',
@@ -1925,7 +1925,7 @@ export default {
                     cost: 3,
                     additionalNotes: [
                         "You enter the shadow realm until the end of your next turn.",
-                        "You become invisible. Living things can't physically interact with you, but you can interact with ghosts & spirits as if they were physical."
+                        "You become invisible to living things, and they can't physically interact with you. You can interact with ghosts & spirits as if they were physical."
                     ]
                 },
                 {
@@ -3143,6 +3143,18 @@ export default {
                     shapeFamily: { any: ["axe"] },
                 }
             ),
+            new ProviderElement("anti-air",
+                {
+                    miscPower: true,
+                    desc: `Flying creatures struck by the blade must save or become afflicted, falling to the ground.`,
+                    additionalNotes: [
+                        'Victims save at the end of each of their turns, ending the effect on a success.'
+                    ]
+                },
+                {
+                    shapeFamily: { any: rangedWeaponShapeFamilies }
+                }
+            ),
             new ProviderElement("of-x-slaying",
                 mkGen((rng, weapon) => {
                     const bonusByRarity = {
@@ -3257,7 +3269,7 @@ export default {
             new ProviderElement("destroy-undead",
                 {
                     miscPower: true,
-                    desc: `Undead (and other evil creatures) defeated by the blade are consumed by divine light, and reduced to ash. If they can normally regenerate, they can't.`
+                    desc: `Undead creatures defeated using the weapon are reduced to ash in a flare of divine light. They can't regenerate.`
                 },
                 {
                     themes: { any: ["light"], }
@@ -3287,7 +3299,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("detect-unholy",
+            new ProviderElement("control-bees",
                 {
                     miscPower: true,
                     desc: "The weapon can telepathically control bees within 100-ft. They can only understand simple commands."
@@ -4081,7 +4093,11 @@ export default {
                         fire: ['a lighter', 'an empty brass brazier'],
 
                         cloud: [isRare ? 'a surfboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a surfboard', 'an umbrella'],
-                        earth: [isRare ? 'a pickaxe. Its magic allows one person to do the work of a dozen miners.' : 'a pickaxe', isRare ? 'a shovel. Its magic allows one person to do the work of a dozen diggers' : 'a shovel'],
+                        earth: [
+                            isRare ? 'a pickaxe. Its magic allows one person to do the work of a dozen miners.' : 'a pickaxe',
+                            isRare ? 'a shovel. Its magic allows one person to do the work of a dozen diggers' : 'a shovel',
+                            isRare ? 'a chisel. Its magic allows one person to do the work of a dozen masons' : 'a chisel'
+                        ],
 
                         sweet: ['a whisk', isRare ? 'an empty biscuit tin. A single object can be placed inside, stored in a pocket dimension when it turns back into its regular form' : 'an empty biscuit tin'],
 

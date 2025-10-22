@@ -390,7 +390,7 @@ export const weaponStructures = {
     scytheRifleLike: {
         business: ['blade'],
         holding: ['grip'],
-        other: ['shaft', 'pommel', 'barrel']
+        other: ['shaft', 'pommel', 'barrel', 'rifleSight']
     },
     multiClubLike: {
         business: ['maceHeads'],

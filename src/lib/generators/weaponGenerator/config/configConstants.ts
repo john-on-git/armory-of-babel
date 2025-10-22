@@ -836,7 +836,7 @@ export const holdingParts = ['body', 'grip', 'limbs', 'spearShaft'] as const sat
 /**
  * Parts of a weapon that a sentient weapon's eyes can be placed on.
  */
-export const eyeAcceptingParts = ['crossguard', 'axeHead', 'maceHead', 'maceHeads', 'chain', 'chains', 'tip', 'body', 'base', 'quiver', 'limbs'] as const satisfies WeaponPartName[];
+export const eyeAcceptingParts = ['crossguard', 'axeHead', 'maceHead', 'maceHeads', 'chain', 'chains', 'tip', 'prongs', 'body', 'base', 'quiver', 'limbs', 'rifleSight'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).

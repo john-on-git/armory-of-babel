@@ -36,20 +36,19 @@ const angloNamesByPartShortSuffixGenerator = mkGen<string, [Exclude<Pronouns, 'o
         "sh",
     ]));
 
-const angloNamesByPartLongSuffixGenerator = mkGen<string, [Exclude<Pronouns, 'object' | 'enby'>]>((rng, ...args) => `
-    ${["t", "y", "rr", "nn", "s", "sh"].choice(rng)}
-    ${genderedChoice(rng, ...args,
-    [
-        "ah",
-        "ley",
-        "leigh",
-        "cy",
-        "cey",
-    ],
-    [
-        "on",
-        "in",
-    ])}`
+const angloNamesByPartLongSuffixGenerator = mkGen<string, [Exclude<Pronouns, 'object' | 'enby'>]>((rng, ...args) =>
+    `${["t", "y", "rr", "nn", "s", "sh"].choice(rng)}${genderedChoice(rng, ...args,
+        [
+            "ah",
+            "ley",
+            "leigh",
+            "cy",
+            "cey",
+        ],
+        [
+            "on",
+            "in",
+        ])}`
 );
 
 
