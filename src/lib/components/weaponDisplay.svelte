@@ -61,7 +61,7 @@
     data-testid="weapon-display"
 >
     <h2
-        class={`weapon-class weapon-rarity-${weapon.rarity}`}
+        class={`weapon-class weapon-display-title weapon-rarity-${weapon.rarity}`}
         data-testid="weapon-display-title"
     >
         {weapon?.name ?? ""}
@@ -217,10 +217,6 @@
         }
     }
 
-    .weapon-display-powers,
-    .weapon-display-sentient-info {
-    }
-
     .weapon-display-powers {
         flex-grow: 2;
     }
@@ -246,9 +242,8 @@
         width: 10pt;
         height: 10pt;
     }
-    .weapon-name {
-        width: 100%;
-        text-align: center;
+    .weapon-display-title {
+        font-size: 2rem;
     }
     .weapon-damage-title {
         font-weight: bold;
