@@ -818,6 +818,8 @@ type WeaponEnergyCore = {
     adj: string;
     /**
      * Descriptor for the effect, for power descriptions.
+     * @example
+     * "ultraviolet energy", "ice wind", "fire"
      */
     desc: string,
     /**
@@ -871,7 +873,7 @@ const cores = {
         },
         {
             adj: 'Verdant',
-            desc: 'verdant energy',
+            desc: 'green energy',
             featureUUID: 'energy-core-verdant'
         },
         {
@@ -893,8 +895,8 @@ const cores = {
         featureUUID: 'energy-core-steampunk'
     },
     nature: {
-        adj: 'Fulminating',
-        desc: 'lightning',
+        adj: 'Overgrown',
+        desc: 'green energy',
         featureUUID: 'energy-core-nature'
     }
 } as const satisfies Partial<Record<Theme, WeaponEnergyCore | WeaponEnergyCore[]>>;

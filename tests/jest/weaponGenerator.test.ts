@@ -62,7 +62,7 @@ describe('Weapon Generator', () => {
         }
     });
 
-    it('2. Always generates a weapon with a non-empty description.', () => {
+    it('6. Always generates a weapon with a non-empty description.', () => {
         for (let i = 0; i < nRuns; i++) {
             const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
 
@@ -71,7 +71,7 @@ describe('Weapon Generator', () => {
     });
 
 
-    it('2. Never generates a weapon with empty description bulletpoints.', () => {
+    it('7. Never generates a weapon with empty description bulletpoints.', () => {
         const notJustWhitespace = /\S+/;
 
         for (let i = 0; i < nRuns; i++) {
@@ -87,14 +87,20 @@ describe('Weapon Generator', () => {
         }
     });
 
-    it('5. TODO Weapons never contain two components with the same UUID, unless that component is marked non-unique.', () => {
+    it('8. Never generates a weapon that contains text that is an indicator of broken functionality', () => {
+        // i.e. "undefined", "[object ", "null"
+
+        // TODO, will probably mean removing the joke names on the void core ephitets
+    })
+
+    it('9. TODO Weapons never contain two components with the same UUID, unless that component is marked non-unique.', () => {
         // for (let i = 0; i < nRuns; i++) {
         //     const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
         // }
     });
 
-    it('6. The weapon that corresponds to a particular set of parameters is fixed and never changes, even when the software is updated.', () => {
+    it('10. The weapon that corresponds to a particular set of parameters is fixed and never changes, even when the software is updated.', () => {
         // expect(mkWeapon('test1', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
         //     { id: "test1", themes: ["nature"], rarity: "uncommon", name: "Oak Epee", damage: { as: "sword", const: 1 }, toHit: 1, active: { maxCharges: 4, rechargeMethod: "all charges when its wielder drives a poacher to bankruptcy", powers: [] }, passivePowers: [{ desc: "Can transform into a bouquet of flowers." }], sentient: false }
         // );
