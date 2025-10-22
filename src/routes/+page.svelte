@@ -19,7 +19,6 @@
 
         if (maybeURIEncodedUnsafeJSON !== null) {
             const unsafeJSON = JSON.parse(decodeURI(maybeURIEncodedUnsafeJSON));
-            console.log(unsafeJSON);
 
             function asNumber(x: unknown) {
                 return typeof x === "number" && x >= 0 && x <= 1 ? x : NaN;
@@ -32,7 +31,6 @@
                     asNumber(unsafeJSON[2]),
                     asNumber(unsafeJSON[3]),
                 ];
-                console.log(odds);
                 if (odds.every((x) => !Number.isNaN(x))) {
                     config = applyOddsToConfig(config, odds);
                 }
