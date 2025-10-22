@@ -45,8 +45,6 @@
             new URLSearchParams(window.location.search).get("id") ?? "NaN",
         );
 
-        console.log("id from URL", maybeNumber, Number.isInteger(maybeNumber));
-
         return Number.isInteger(maybeNumber)
             ? maybeNumber.toString()
             : getNewId();

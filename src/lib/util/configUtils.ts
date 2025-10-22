@@ -1,15 +1,16 @@
 import type { WeaponRarity, WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import _ from "lodash";
 
+// TODO these are wrong?
 
 export function calcOdds(
     config: WeaponRarityConfig,
 ): [number, number, number, number] {
     return [
-        0,
         1 - config.uncommon.percentile,
         1 - config.rare.percentile,
         1 - config.epic.percentile,
+        1 - config.legendary.percentile,
     ].map(x => Number(x.toFixed(2))) as [number, number, number, number];
 }
 
