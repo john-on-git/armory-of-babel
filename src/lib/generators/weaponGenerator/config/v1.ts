@@ -536,8 +536,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'an integrated nuclear reactor which gives it a healthy glow',
-                                plural: 'an integrated nuclear reactor which gives them a healthy glow'
+                                singular: ' a vein of radium running down the center',
+                                plural: ' veins of radium running through them'
                             },
                             ephitet: mkGen(rng => [
                                 { pre: 'Atomic' },
@@ -1971,7 +1971,8 @@ export default {
                         dark: `a wave of ${core.desc}`,
                         wizard: `a wave of ${core.desc}`,
                         void: `a wave of ${core.desc}`,
-                        nature: `a wave of ${core.desc}`
+                        nature: `a wave of ${core.desc}`,
+                        sour: `a wave of ${core.desc}`
                     } as const satisfies Record<PossibleCoreThemes | 'void', string>;
 
                     const titleByTheme = {
@@ -1983,7 +1984,8 @@ export default {
                         light: `${core.adj} Blast`,
                         dark: `${core.adj} Blast`,
                         wizard: `${core.adj} Blast`,
-                        void: `${core.adj} Blast`
+                        void: `${core.adj} Blast`,
+                        sour: `${core.adj} Blast`
                     } as const satisfies Record<PossibleCoreThemes | 'void', string>;
 
                     return {
@@ -1997,7 +1999,8 @@ export default {
                 {
                     themes: {
                         any: ['fire', 'ice', 'light', 'dark', 'wizard', 'cloud', 'steampunk']
-                    }
+                    },
+                    rarity: { gte: 'rare' }
                 }
             ),
             new ProviderElement("shuffle",
@@ -3170,6 +3173,7 @@ export default {
                         fire: 'The weapon emit a fiery whip.',
                         light: `The weapon emits a tether of ${coreChoice.desc}.`,
                         dark: `The weapon emits a tether of ${coreChoice.desc}`,
+                        sour: `The weapon emits a tether of ${coreChoice.desc}`,
                         wizard: "A hand made of magical force extends from the weapon's tip.",
                         steampunk: "A compartment opens at the weapon's tip, revealing a spring-loaded hand.",
                         nature: "A sturdy vine grows from the weapon's tip.",

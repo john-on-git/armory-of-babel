@@ -117,6 +117,7 @@ const evilSkinAnimals = [
     ["monkey", "skin"],
     ["seal", "fur"],
     ["puppy", "fur"],
+    ["kitten", "fur"],
     ["crocodile", "skin"],
     ["cobra", "skin"],
 ] as const satisfies [string, string][];
