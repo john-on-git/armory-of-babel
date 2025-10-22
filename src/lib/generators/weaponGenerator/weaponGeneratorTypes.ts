@@ -369,7 +369,7 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
-export type Descriptor = ({ material: string | ((weapon: Weapon) => DescriptorGenerator) } | { descriptor: string | ((weapon: Weapon) => DescriptorGenerator) }) & { ephitet: string | ((weapon: Weapon) => DescriptorGenerator); };
+export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & { ephitet: string | TGenerator<string, [Weapon]>; };
 export type DescriptorGenerator<TArgs extends Array<unknown> = []> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
 };

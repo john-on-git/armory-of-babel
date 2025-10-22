@@ -2,7 +2,6 @@ import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { capFirst } from "$lib/util/string";
 import _ from "lodash";
-import type { PRNG } from "seedrandom";
 
 // shapes
 
@@ -85,7 +84,6 @@ const simpleMaterials = [
     } satisfies Descriptor))] satisfies Descriptor[];
 
 
-const voidGen = (f: (rng: PRNG) => string) => () => mkGen(f);
 const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as const;
 
 const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
@@ -120,19 +118,19 @@ export const MATERIALS = {
     } as const,
     'maple': {
         material: 'maple wood',
-        ephitet: voidGen((rng) => ephWhite.choice(rng))
+        ephitet: mkGen((rng) => ephWhite.choice(rng))
     } as const,
     'birch': {
         material: 'birch wood',
-        ephitet: voidGen((rng) => ephWhite.choice(rng))
+        ephitet: mkGen((rng) => ephWhite.choice(rng))
     } as const,
     'ebonyWood': {
         material: 'ebony wood',
-        ephitet: voidGen((rng) => ephBlack.choice(rng))
+        ephitet: mkGen((rng) => ephBlack.choice(rng))
     } as const,
     'bloodWood': {
         material: 'bloodwood',
-        ephitet: voidGen((rng) => ephRed.choice(rng))
+        ephitet: mkGen((rng) => ephRed.choice(rng))
     } as const,
     'ironWood': {
         material: 'ironwood',
@@ -149,7 +147,7 @@ export const MATERIALS = {
 
     'ivory': {
         material: 'ivory',
-        ephitet: voidGen((rng) => ephWhite.choice(rng))
+        ephitet: mkGen((rng) => ephWhite.choice(rng))
     } as const,
 
     'silver-plated': {
@@ -162,54 +160,54 @@ export const MATERIALS = {
     } as const,
     'glass': {
         material: 'glass',
-        ephitet: voidGen((rng) => ephTransparent.choice(rng))
+        ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
     'glass-like-steel': {
         material: 'glass-like-steel',
-        ephitet: voidGen((rng) => ephTransparent.choice(rng))
+        ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
     'force': {
         material: 'magical force',
-        ephitet: voidGen((rng) => ephTransparent.choice(rng))
+        ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
     'light': {
         material: 'light',
-        ephitet: voidGen((rng) => ephGlowy.choice(rng))
+        ephitet: mkGen((rng) => ephGlowy.choice(rng))
     } as const,
     'darkness': {
         material: 'darkness',
-        ephitet: voidGen((rng) => ephBlack.choice(rng))
+        ephitet: mkGen((rng) => ephBlack.choice(rng))
     } as const,
 
     'razors': {
         material: 'razor blades',
-        ephitet: voidGen((rng) => ephSharp.choice(rng))
+        ephitet: mkGen((rng) => ephSharp.choice(rng))
     } as const,
 
     'ice': {
         material: 'ice',
-        ephitet: voidGen((rng) => ephCold.choice(rng))
+        ephitet: mkGen((rng) => ephCold.choice(rng))
     } as const,
     'iceBlood': {
         material: 'frozen blood',
-        ephitet: voidGen((rng) => [...ephRed, ...ephCold].choice(rng))
+        ephitet: mkGen((rng) => [...ephRed, ...ephCold].choice(rng))
     } as const,
     'iceSlime': {
         material: 'frozen slime',
-        ephitet: voidGen((rng) => [...ephCold].choice(rng))
+        ephitet: mkGen((rng) => [...ephCold].choice(rng))
     } as const,
 
     'fossils': {
         material: 'various compacted fossils',
-        ephitet: voidGen((rng) => ephOld.choice(rng))
+        ephitet: mkGen((rng) => ephOld.choice(rng))
     } as const,
     'recursiveSwords': {
-        material: (weapon) => mkGen(() => `various smaller ${weapon.shape.particular}s, melded together into a single hunk`),
-        ephitet: voidGen((rng) => ephOld.choice(rng))
+        material: mkGen((_rng, weapon) => `various smaller ${weapon.shape.particular}s, melded together into a single hunk`),
+        ephitet: mkGen((rng) => ephOld.choice(rng))
     } as const,
     'beetleShell': {
         material: 'beetle shell',
-        ephitet: voidGen((rng) => ['Verminous', 'Bug'].choice(rng))
+        ephitet: mkGen((rng) => ['Verminous', 'Bug'].choice(rng))
     } as const,
 
     "clockwork": {
@@ -229,7 +227,7 @@ export const MATERIALS = {
 } as const satisfies Record<string, Descriptor>;
 
 const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'crustacean', 'lizard', 'dragonfly', 'hummingbird'].choice(rng))]);
-const embeddedArr = [['a ruby', voidGen((rng) => ephRed.choice(rng))], ['an emerald', 'Emerald'], ['a sapphire', 'Sapphire'], ['an amethyst', 'Amethyst'], ['a pearl', 'Empearled']] as const;
+const embeddedArr = [['a ruby', mkGen((rng) => ephRed.choice(rng))], ['an emerald', 'Emerald'], ['a sapphire', 'Sapphire'], ['an amethyst', 'Amethyst'], ['a pearl', 'Empearled']] as const;
 export const MISC_DESC_FEATURES = {
     embedded: {
         ..._.reduce<(typeof embeddedArr)[number], Record<(typeof embeddedArr)[number][0], Descriptor>>(embeddedArr, (acc, [thing, ephitet]) => {
@@ -240,8 +238,8 @@ export const MISC_DESC_FEATURES = {
             return acc;
         }, {} as Record<(typeof embeddedArr)[number][0], Descriptor>),
         amber: {
-            descriptor: () => amberGen,
-            ephitet: voidGen((rng) => ephOld.choice(rng))
+            descriptor: amberGen,
+            ephitet: mkGen((rng) => ephOld.choice(rng))
         } as Descriptor
     },
     charm: {
@@ -250,7 +248,7 @@ export const MISC_DESC_FEATURES = {
             ephitet: 'Sanctified'
         },
         emojis: {
-            descriptor: () => mkGen((rng) => {
+            descriptor: mkGen((rng) => {
                 const options = ['a smiling face', 'a sad face', 'an angry face', 'a cross-eyed face', "an imp's head", "a cat's head"];
                 const nCharms = ([1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3] satisfies (1 | 2 | 3)[]).choice(rng);
                 const chosenOptions = new Array(nCharms).fill(null).map(() => options.choice(rng));
@@ -282,11 +280,11 @@ export const MISC_DESC_FEATURES = {
         },
         oil: {
             descriptor: 'shines like a rainbow when viewed from the right angle',
-            ephitet: voidGen((rng) => ephRainbow.choice(rng))
+            ephitet: mkGen((rng) => ephRainbow.choice(rng))
         },
         pearlescent: {
             descriptor: 'changes between pink and blue depending on the viewing angle',
-            ephitet: voidGen((rng) => ephRainbow.choice(rng))
+            ephitet: mkGen((rng) => ephRainbow.choice(rng))
         }
     },
     wrap: {

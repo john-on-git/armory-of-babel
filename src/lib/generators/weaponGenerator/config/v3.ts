@@ -156,7 +156,7 @@ export default {
                 cost: 3,
                 additionalNotes: [
                     "Slam the weapon into the ground, emitting a circular shockwave.",
-                    (weapon) => {
+                    new StringGenerator(["Characters within 20-ft must save, or be knocked down & take ", mkGen((_rng, weapon) => {
                         // it deals damage equal to 3 * the weapon's 
                         const { as, d6, ...rest } = weapon.damage;
                         const slamDamage = _.mapValues(
@@ -166,8 +166,10 @@ export default {
                             },
                             x => x === undefined ? undefined : x * 3
                         );
-                        return new StringGenerator(["Characters within 20-ft must save, or be knocked down & take ", textForDamage(slamDamage), " damage"])
-                    }
+
+                        return textForDamage(slamDamage)
+                    }), " damage"])
+
                 ]
             }, {
                 themes: {
@@ -182,7 +184,7 @@ export default {
                 cost: 3,
                 additionalNotes: [
                     "Slam the weapon into the ground, emitting a shockwave that travels straight ahead for 60-ft.",
-                    (weapon) => {
+                    new StringGenerator(["Characters hit by the wave must save, or be knocked down & take ", mkGen((_rng, weapon) => {
                         // it deals damage equal to 3 * the weapon's 
                         const { as, d6, ...rest } = weapon.damage;
                         const slamDamage = _.mapValues(
@@ -192,8 +194,8 @@ export default {
                             },
                             x => x === undefined ? undefined : x * 3
                         );
-                        return new StringGenerator(["Characters hit by the wave must save, or be knocked down & take ", textForDamage(slamDamage), " damage"])
-                    }
+                        return textForDamage(slamDamage)
+                    }), " damage"])
                 ]
             }, {
                 themes: {
@@ -222,7 +224,7 @@ export default {
                 desc: 'Kinesis',
                 cost: 1,
                 additionalNotes: [
-                    (weapon) => mkGen((rng) => {
+                    mkGen((rng, weapon) => {
                         const effects = {
                             light: 'The weapon emits a tether of luminous energy.',
                             fire: 'The weapon emit a fiery whip.',
@@ -327,7 +329,7 @@ export default {
                 {
                     miscPower: true,
 
-                    desc: (weapon) => mkGen((rng) => {
+                    desc: mkGen((rng, weapon) => {
                         const cloudOrSteampunkEffect = () => ['lightning', 'steam'].choice(rng)
                         const effects = {
                             fire: 'fire',
