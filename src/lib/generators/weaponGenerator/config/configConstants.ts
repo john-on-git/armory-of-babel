@@ -249,9 +249,13 @@ export const MISC_DESC_FEATURES = {
         },
         emojis: {
             descriptor: mkGen((rng) => {
-                const options = ['a smiling face', 'a sad face', 'an angry face', 'a cross-eyed face', "an imp's head", "a cat's head"];
+                const options = ['a smiling face', 'a sad face', 'an angry face', "a dizzy face", "a melting face", "an imp's head", "a cat's head", "a sun face", "a moon face", "the north wind"];
                 const nCharms = ([1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3] satisfies (1 | 2 | 3)[]).choice(rng);
-                const chosenOptions = new Array(nCharms).fill(null).map(() => options.choice(rng));
+                const chosenOptions = new Array(nCharms).fill(null).map(() => {
+                    // choose an element, and remove it from the array to prevent duplicates
+                    const iChoice = Math.floor(options.length * rng());
+                    return options.splice(iChoice, 1);
+                });
 
                 switch (nCharms) {
                     case 1:
