@@ -5,13 +5,13 @@ describe('VersionController', () => {
         interface Stats {
             atk: number;
             def: number;
-
         }
+
         class Animal extends Patchable {
             species: string;
-            stats: Stats;
+            stats: Stats | null;
 
-            constructor(UUID: string, species: string, stats: Stats) {
+            constructor(UUID: string, species: string, stats: Stats | null) {
                 super(UUID);
 
                 this.species = species;
@@ -70,6 +70,12 @@ describe('VersionController', () => {
                     'sea-herbivore': { stats: { def: 30 } }
                 }
             }
+        }, {
+            animals: {
+                modify: {
+                    'sea-herbivore': { stats: null }
+                }
+            }
         }]);
 
         expect(myVersionController.getVersion(0)).toEqual({
@@ -99,6 +105,17 @@ describe('VersionController', () => {
             ],
             animals: [
                 new Animal('sea-herbivore', 'trilobite', { atk: 0, def: 30 }),
+                new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
+            ]
+        });
+
+        expect(myVersionController.getVersion(3)).toEqual({
+            plants: [
+                new Plant('sea-plant', 'sponge'),
+                new Plant('land-plant', 'neuropteris')
+            ],
+            animals: [
+                new Animal('sea-herbivore', 'trilobite', null),
                 new Animal('land-carnivore', 'tiktaalik', { atk: 5, def: 5 })
             ]
         });
