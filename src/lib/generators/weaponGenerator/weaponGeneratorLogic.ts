@@ -51,7 +51,10 @@ function mkNonSentientNameGenerator(adjectiveProvider: WeaponFeatureProvider<Wea
 function mkSentientNameGenerator(adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>, weapon: Weapon, shape: string, rng: seedrandom.PRNG) {
     return mkGen(() => {
         const string = new StringGenerator([
-            mkGen((rng) => [grecoRomanFirstNameGenerator, angloFirstNameGenerator].choice(rng).generate(rng)),
+            mkGen((rng) => [
+                grecoRomanFirstNameGenerator, angloFirstNameGenerator,
+                // ...(weapon.shape.group in objectifyingNameFor ? [mkObjectifyingNameGenerator(weapon, adjectiveProvider)] : [])
+            ].choice(rng).generate(rng)),
             mkGen([', ', ', the '].choice(rng)),
             mkGen((x) => adjectiveProvider.draw(x, weapon).desc),
             mkGen(' '),
@@ -75,7 +78,7 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     throw new Error('failed to generate rarity');
 }
 
-const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
+export const genStr = (rng: seedrandom.PRNG, x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: string, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
