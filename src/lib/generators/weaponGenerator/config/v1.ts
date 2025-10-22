@@ -1,9 +1,9 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -452,7 +452,7 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: mkGen((_, __, partName) => ` is partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
+                                singular: mkGen((_, __, partName) => ` is partially transparent, revealing luminous red veins which emit a gentle crimson glow that diffuses through the ${partName}`),
                                 plural: mkGen((_, __, partName) => ` are partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
                             },
                             ephitet: mkGen(rng => ephRed.choice(rng)),
@@ -705,7 +705,7 @@ export default {
                             nature: [MISC_DESC_FEATURES.embedded.amber]
                         } as const satisfies Partial<Record<Theme, Descriptor[]>>;
 
-                        return pickForTheme(weapon, embedsByTheme, rng).choice(rng);
+                        return pickForTheme(weapon as WeaponGivenThemes<['ice' | 'fire' | 'cloud' | 'earth' | 'light' | 'dark' | 'wizard']>, embedsByTheme, rng).chosen.choice(rng);
                     },
                     applicableTo: {
                         any: embeddableParts
@@ -1775,6 +1775,26 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("standard-projectile",
+                mkGen((rng, weapon) => {
+
+                    const damage = textForDamage(modDamage(weapon.damage, x => 3 * x));
+                    const core = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'wizard', 'cloud', 'steampunk']>, rng);
+
+                    return {
+                        cost: 2,
+
+                        desc: `${core.adj} Blast`,
+                        additionalNotes: [`You strike at the air, summoning a wave of ${core.desc}.`, `It deals ${damage} damage, range as bow.`],
+                        descriptorPartGenerator: core.featureUUID
+                    }
+                }),
+                {
+                    themes: {
+                        any: ['fire', 'ice', 'light', 'dark', 'wizard', 'cloud', 'steampunk']
+                    }
+                }
+            ),
             new ProviderElement("shuffle",
                 mkGen((rng, weapon) => {
                     const numTargetsByRarity = {
@@ -1799,7 +1819,7 @@ export default {
 
                     return {
                         cost: 3,
-                        ...pickForTheme(weapon, byTheme, rng) ?? byTheme['cloud']
+                        ...pickForTheme(weapon, byTheme, rng).chosen ?? byTheme['cloud']
                     }
                 }),
                 {
@@ -1842,7 +1862,7 @@ export default {
 
                     return {
                         cost: 3,
-                        ...pickForTheme(weapon, byTheme, rng) ?? byTheme['ice']
+                        ...pickForTheme(weapon, byTheme, rng).chosen ?? byTheme['ice']
                     }
                 }),
                 {
@@ -1979,7 +1999,7 @@ export default {
                         sour: { title: "Caustic Chain", desc: "acid" },
                     } satisfies Partial<Record<Theme, { title: string, desc: string }>>;
 
-                    const effect = pickForTheme(weapon, effects, rng);
+                    const effect = pickForTheme(weapon as WeaponGivenThemes<['fire' | 'sour']>, effects, rng).chosen;
                     return {
                         desc: effect.title,
                         cost: numbersByRarity[weapon.rarity].cost,
@@ -2627,7 +2647,7 @@ export default {
                         }
                     } as const satisfies Record<typeof quantity, Partial<Record<Theme, string[]>>>;
 
-                    const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
+                    const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng).chosen ?? [];
 
                     const chosenAnimal = [...sharedAnimals[quantity], ...themeSpecificAnimals].choice(rng);
 
@@ -2706,7 +2726,7 @@ export default {
                         }
                     } as const satisfies Record<typeof quantity, Partial<Record<Theme, string[]>>>;
 
-                    const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
+                    const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng).chosen ?? [];
 
                     const allAnimals = [...sharedAnimals[quantity], ...themeSpecificAnimals];
 
@@ -2863,7 +2883,7 @@ export default {
                         }
                     } satisfies Partial<Record<Theme, ActivePower>>;
 
-                    return pickForTheme(weapon, wholeAbilityByTheme, rng);
+                    return pickForTheme(weapon as WeaponGivenThemes<['fire' | 'wizard' | 'sour']>, wholeAbilityByTheme, rng).chosen;
                 }), {
                 rarity: {
                     gte: 'rare'
@@ -2951,11 +2971,14 @@ export default {
 
                             nature: "A sturdy vine grows from the weapon's tip.",
 
-                        } satisfies Partial<Record<Theme, string>>;
+                            void: 'The weapon emits a tether of void energy.'
 
-                        const tetherTheme = pickForTheme(weapon, effects, rng);
+                        } as const satisfies Partial<Record<Theme | 'void', string>>;
 
-                        return `${tetherTheme} It can lift and throw an object weighing up to 500 lbs.`;
+                        const coreChoice = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['light' | 'fire' | 'nature' | 'cloud']>, rng);
+
+
+                        return `${effects[coreChoice.theme]} It can lift and throw an object weighing up to 500 lbs.`;
                     })
                 ]
             }, {
@@ -3035,7 +3058,7 @@ export default {
 
                         sweet: ['Caramel Creation', 'Threads of molten sugar burst from the weapon, spinning into', 'of solid sugar'],
                     } as const satisfies Partial<Record<Theme, [string, string, string]>>;
-                    const [desc, howItsMade, madeOf] = pickForTheme(weapon, effects, rng);
+                    const [desc, howItsMade, madeOf] = pickForTheme(weapon as WeaponGivenThemes<["fire" | "ice" | "dark" | "light" | "wizard" | "sweet"]>, effects, rng).chosen;
                     return {
                         desc,
                         cost: `a charge per month that an expert would need to produce a regular version of the object, rounding up`,
@@ -3111,7 +3134,7 @@ export default {
                         nature: { partialDesc: "the vine on the pommel wraps around your body and your mount's,", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-nature" }
                     } satisfies Partial<Record<Theme, { partialDesc: string; partialDescriptionPartGenerator: string }>>;
 
-                    const { partialDesc, partialDescriptionPartGenerator } = pickForTheme(weapon, descByTheme, rng) ?? {
+                    const { partialDesc, partialDescriptionPartGenerator } = pickForTheme(weapon, descByTheme, rng).chosen ?? {
                         partialDesc: "the tendril on the weapon's pommel extends to wrap,", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-generic"
                     };
                     return {
@@ -3122,6 +3145,25 @@ export default {
                 }),
                 {
                     shapeFamily: { any: ["lance"] },
+                }
+            ),
+            new ProviderElement("kneecapper",
+                mkGen((__, weapon) => {
+                    const bonusByRarity = {
+                        common: 'double',
+                        uncommon: 'double',
+                        rare: 'double',
+                        epic: 'triple',
+                        legendary: 'triple'
+                    } as const satisfies Record<WeaponRarity, string>;
+
+                    return {
+                        miscPower: true,
+                        desc: `Deals ${bonusByRarity[weapon.rarity]} damage vs giants.`
+                    };
+                }),
+                {
+                    shapeFamily: { any: ["axe"] },
                 }
             ),
             new ProviderElement("bonus-vs-stronger",
@@ -3575,7 +3617,7 @@ export default {
                     isSentient: true
                 }
             ),
-            new ProviderElement("fire-magic-projectile",
+            new ProviderElement("free-magic-projectile",
                 {
                     miscPower: true,
                     desc: "If you are not wounded, the weapon can also fire a spectral copy of itself as a projectile attack. Damage as weapon, range as bow.",
@@ -3584,6 +3626,9 @@ export default {
                     themes: { any: ["wizard"], },
                     rarity: {
                         gte: "rare"
+                    },
+                    UUIDs: {
+                        none: ['standard-projectile', 'attack-wisps']
                     }
                 }
             ),
@@ -3596,6 +3641,9 @@ export default {
                     themes: { any: ["wizard"] },
                     rarity: {
                         gte: "epic"
+                    },
+                    UUIDs: {
+                        none: ['standard-projectile', 'free-magic-projectile']
                     }
                 }
             ),
@@ -3720,7 +3768,7 @@ export default {
                         ])
                     } as const;
 
-                    const desc = genMaybeGen(pickForTheme(weapon, reasonsToFly, rng), rng);
+                    const desc = genMaybeGen(pickForTheme(weapon, reasonsToFly, rng).chosen, rng);
 
                     return {
                         miscPower: true,
@@ -3905,74 +3953,7 @@ export default {
             new ProviderElement<TGenerator<PassivePower, [Weapon]>, WeaponPowerCond>(
                 "death-blast",
                 mkGen<PassivePower, [Weapon]>((rng, weapon) => {
-                    type WeaponEnergyEffect = {
-                        /**
-                         * Text for the effect.
-                         */
-                        desc: string,
-                        /**
-                         * UUID of the feature that should be added to the weapon, if any.
-                         */
-                        featureUUID?: string,
-                    };
-
-                    const fallBack = {
-                        desc: 'void energy',
-                        featureUUID: 'energy-core-void'
-                    } satisfies WeaponEnergyEffect;
-
-                    const effects = {
-                        ice: {
-                            desc: 'icy wind',
-                            featureUUID: 'energy-core-ice'
-                        },
-                        fire: {
-                            desc: 'fire',
-                            featureUUID: 'energy-core-fire'
-                        },
-
-                        cloud: {
-                            desc: 'lightning',
-                            featureUUID: 'energy-core-aether'
-                        },
-
-                        light: mkGen<WeaponEnergyEffect>((rng) => (([
-                            {
-                                desc: 'ultraviolet energy',
-                                featureUUID: 'energy-core-ultraviolet'
-                            },
-                            {
-                                desc: 'azure energy',
-                                featureUUID: 'energy-core-azure'
-                            },
-                            {
-                                desc: 'crimson energy',
-                                featureUUID: 'energy-core-crimson'
-                            },
-                            {
-                                desc: 'verdant energy',
-                                featureUUID: 'energy-core-verdant'
-                            },
-                            {
-                                desc: 'atomic energy',
-                                featureUUID: 'energy-core-atomic'
-                            },
-                            {
-                                desc: 'golden energy',
-                                featureUUID: 'energy-core-gold'
-                            },
-                        ] satisfies WeaponEnergyEffect[])).choice(rng)),
-                        dark: {
-                            desc: 'dark energy',
-                            featureUUID: 'energy-core-dark'
-                        },
-
-                        steampunk: {
-                            desc: 'lightning',
-                            featureUUID: 'energy-core-steampunk'
-                        },
-                    } satisfies Partial<Record<Theme, WeaponEnergyEffect | TGenerator<WeaponEnergyEffect, [Weapon]>>>;
-                    const { desc, featureUUID } = genMaybeGen(pickForTheme(weapon, effects, rng) ?? fallBack, rng);
+                    const { desc, featureUUID } = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk']>, rng);
 
                     const damageByRarity = {
                         common: "1d6",
@@ -4088,7 +4069,7 @@ export default {
 
                     } satisfies Partial<Record<Theme, string[]>>;
 
-                    const chosenTool = choice(pickForTheme(weapon, toolType, rng), rng);
+                    const chosenTool = choice(pickForTheme(weapon as WeaponGivenThemes<["ice" | "fire" | "cloud" | "earth" | "nature" | "steampunk" | "wizard" | "sweet"]>, toolType, rng).chosen, rng);
                     return {
                         miscPower: true,
                         desc: `Can transform into ${chosenTool}.`

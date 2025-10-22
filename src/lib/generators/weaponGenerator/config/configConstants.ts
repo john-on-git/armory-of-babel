@@ -1,7 +1,8 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { gatherUUIDs } from "$lib/generators/weaponGenerator/provider";
 import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponGivenThemes, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { titleCase } from "$lib/util/string";
 import _ from "lodash";
@@ -479,6 +480,36 @@ const eyeColorGen = mkGen((rng, weapon: Weapon) => {
 });
 
 
+
+const themedAnimals = {
+    fire: ["a tiger's", "a lion's"],
+    ice: ["a seal's"],
+    cloud: [
+        "a cuttlefish's",
+        "an octopus'",
+        "a hawk's",
+        "an owl's",
+        "an eagle's",
+    ],
+    earth: ["a mountain goat's"],
+    dark: ["a snake's"],
+    sweet: ["a cat's"],
+    light: [
+        "a hawk's",
+        "an eagle's"
+    ],
+    sour: ["a frog's"],
+    wizard: ["an owl's"],
+    steampunk: ["an owl's"],
+    nature: [
+        "a mountain goat's",
+        "a cuttlefish's",
+        "an octopus'",
+        "a hawk's",
+        "an owl's",
+        "an eagle's",
+    ]
+} as const satisfies Record<Theme, string[]>;
 const themedAnimal = mkGen((rng, weapon: Weapon) => {
 
     const sharedAnimals = [
@@ -487,22 +518,7 @@ const themedAnimal = mkGen((rng, weapon: Weapon) => {
         "a bear's",
     ] as const;
 
-    const themedAnimals = {
-        fire: ["a tiger's", "a lion's"],
-        ice: ["a seal's"],
-        cloud: [
-            "a cuttlefish's",
-            "an octopus'",
-            "a hawk's",
-            "an owl's",
-            "an eagle's",
-        ],
-        earth: ["a mountain goat's"],
-        dark: ["a snake's"],
-        sweet: ["a cat's"],
-    } as const satisfies Partial<Record<Theme, string[]>>;
-
-    return [...pickForTheme(weapon, themedAnimals, rng) ?? [], ...sharedAnimals].choice(rng);
+    return [...pickForTheme(weapon, themedAnimals, rng).chosen ?? [], ...sharedAnimals].choice(rng);
 })
 
 export const MISC_DESC_FEATURES = {
@@ -792,3 +808,134 @@ export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver'
  * Parts of a weapon that a small object such as a gem could be embedded in.
  */
 export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'quiver', 'maceHead', 'maceHeads', 'chain'] as const satisfies WeaponPartName[];
+
+
+
+type WeaponEnergyCore = {
+    /**
+     * Adjective for the effect, for active power titles.
+     */
+    adj: string;
+    /**
+     * Descriptor for the effect, for power descriptions.
+     */
+    desc: string,
+    /**
+     * UUID of the feature that should be added to the weapon, if any.
+     */
+    featureUUID?: string,
+};
+
+
+const wizardColoredEnergy = [
+    {
+        adj: 'Ultraviolet',
+        desc: 'ultraviolet energy',
+        featureUUID: 'energy-core-ultraviolet'
+    },
+    {
+        adj: 'Azure',
+        desc: 'azure energy',
+        featureUUID: 'energy-core-azure'
+    },
+    {
+        adj: 'Golden',
+        desc: 'golden energy',
+        featureUUID: 'energy-core-gold'
+    },
+];
+const cores = {
+    ice: {
+        adj: 'Icy',
+        desc: 'icy wind',
+        featureUUID: 'energy-core-ice'
+    },
+    fire: {
+        adj: 'Fiery',
+        desc: 'fire',
+        featureUUID: 'energy-core-fire'
+    },
+
+    cloud: {
+        adj: 'Coruscating',
+        desc: 'lightning',
+        featureUUID: 'energy-core-aether'
+    },
+
+    light: [
+        ...wizardColoredEnergy,
+        {
+            adj: 'Crimson',
+            desc: 'crimson energy',
+            featureUUID: 'energy-core-crimson'
+        },
+        {
+            adj: 'Verdant',
+            desc: 'verdant energy',
+            featureUUID: 'energy-core-verdant'
+        },
+        {
+            adj: 'Atomic',
+            desc: 'atomic energy',
+            featureUUID: 'energy-core-atomic'
+        },
+    ],
+    dark: {
+        adj: 'Dark',
+        desc: 'dark energy',
+        featureUUID: 'energy-core-dark'
+    },
+
+    wizard: wizardColoredEnergy,
+    steampunk: {
+        adj: 'Fulminating',
+        desc: 'lightning',
+        featureUUID: 'energy-core-steampunk'
+    },
+    nature: {
+        adj: 'Fulminating',
+        desc: 'lightning',
+        featureUUID: 'energy-core-nature'
+    }
+} as const satisfies Partial<Record<Theme, WeaponEnergyCore | WeaponEnergyCore[]>>;
+
+/**
+ * If the weapon already has an energy core, get that one. Otherwise roll one at random.
+ */
+export function pickOrLinkWithEnergyCore<TTheme extends (keyof typeof cores)>(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): WeaponEnergyCore & { theme: TTheme | 'void' } {
+
+
+    const fallBack = {
+        adj: 'void',
+        desc: 'void energy',
+        featureUUID: 'energy-core-void'
+    } as const satisfies WeaponEnergyCore;
+
+
+
+    function tryGetExistingCore(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (WeaponEnergyCore & { theme: TTheme }) | undefined {
+        const flatCores = [];
+        for (const [k, v] of _.entries(cores)) {
+            if (v instanceof Array) {
+                v.forEach(core => flatCores.push({ ...core, theme: k as keyof typeof cores }))
+            }
+            else {
+                flatCores.push({ ...v, theme: k as keyof typeof cores });
+            }
+        }
+
+        // get a random core that is already present on the weapon. 
+        // so long as this function is the only way to acquire a core, there should only ever be zero-or-one cores on the weapon
+        const weaponUUIDs = gatherUUIDs(weapon);
+
+        return flatCores.filter(x => weaponUUIDs.has(x.featureUUID)).choice(rng) as (WeaponEnergyCore & { theme: TTheme }) ?? undefined;
+    }
+
+    function getNewCore(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (WeaponEnergyCore & { theme: TTheme | 'void' }) {
+        const { chosen, theme } = pickForTheme(weapon, cores, rng);
+        const chosenOrFallBack = chosen ?? fallBack;
+        return { ...(chosenOrFallBack instanceof Array ? chosenOrFallBack.choice(rng) : chosenOrFallBack), theme: theme ?? 'void' };
+    }
+
+    return tryGetExistingCore(weapon, rng) ?? getNewCore(weapon, rng);
+}
