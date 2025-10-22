@@ -111,12 +111,12 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
         this.defaultAllowDuplicates = defaultAllowDuplicates;
     }
 
-    protected condExecutor(UUID: string, cond: TCond, params: TParams): boolean {
-        if (cond.never === true) {
+    protected condExecutor(element: ProviderElement<TThing, TCond>, params: TParams): boolean {
+        if (element.cond.never === true) {
             return false;
         }
         // if the cond doesn't use either of the conditions that require checking UUIDs, there's no point in checking the params' UUIDs. just return true
-        if ((cond.allowDuplicates ?? this.defaultAllowDuplicates) && cond.UUIDs === undefined) {
+        if ((element.cond.allowDuplicates ?? this.defaultAllowDuplicates) && element.cond.UUIDs === undefined) {
             return true;
         }
         else {
@@ -125,10 +125,10 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
 
             return (
                 // uniqueness demanded -> no duplicates of this.UUID (de-morgan's)
-                (cond.allowDuplicates || !allIDs.has(UUID)) &&
+                (element.cond.allowDuplicates || !allIDs.has(element.UUID)) &&
 
                 // cond.others provided -> cond.others is satisfied (de-morgan's)
-                (cond.UUIDs === undefined || evQuantUUID(cond.UUIDs, { set: allIDs }))
+                (element.cond.UUIDs === undefined || evQuantUUID(element.cond.UUIDs, { set: allIDs }))
             );
         }
     };
@@ -141,7 +141,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
      * @returns a random thing meeting that is valid for conditions
      */
     draw(rng: seedrandom.PRNG, params: TParams): TThing & { UUID: string } {
-        const choice = this.source.filter(x => this.condExecutor(x.UUID, x.cond, params)).choice(rng);
+        const choice = this.source.filter(x => this.condExecutor(x, params)).choice(rng);
         if (choice === undefined) {
             throw new Error(`Provider failed to draw. No valid options for:\n${JSON.stringify(params, undefined, 1)}.\nFirst option:\n${JSON.stringify(this.source.length >= 1 ? this.source[0] : undefined)}`);
         }
@@ -159,7 +159,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
      * @param params the params to get all the things whose condition must hold for
      * @returns the set of things that may possibly be returned by calling this.draw with conditions 
      */
-    available: (params: TParams) => Set<TThing> = (params) => new Set(this.source.filter(x => this.condExecutor(x.UUID, x.cond, params)).map(x => ({
+    available: (params: TParams) => Set<TThing> = (params) => new Set(this.source.filter(x => this.condExecutor(x, params)).map(x => ({
         ...(x.thing),
         UUID: x.UUID
     })));

@@ -1,11 +1,11 @@
 import seedrandom from "seedrandom";
-import { mkGen, StringGenerator, type TGenerator } from "./recursiveGenerator";
+import { mkGen, StringGenerator, type Generator } from "./recursiveGenerator";
 import { ProviderElement } from "./weaponGenerator/provider";
 import { WeaponFeatureProvider } from "./weaponGenerator/weaponGeneratorLogic";
 import type { Theme, Weapon, WeaponPowerCond } from "./weaponGenerator/weaponGeneratorTypes";
 
 interface Demand {
-    desc: TGenerator<string>;
+    desc: Generator<string>;
 }
 
 const demands = [

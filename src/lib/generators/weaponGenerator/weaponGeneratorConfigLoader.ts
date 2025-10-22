@@ -1,4 +1,4 @@
-import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { mkGen, type Generator } from "$lib/generators/recursiveGenerator";
 import '$lib/util/string';
 import seedrandom from "seedrandom";
 import type { WeaponRarity, WeaponRarityConfig } from "./weaponGeneratorTypes";
@@ -67,7 +67,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
     }
 });
 
-export const WEAPON_TO_HIT: Record<WeaponRarity, TGenerator<number>> = {
+export const WEAPON_TO_HIT: Record<WeaponRarity, Generator<number>> = {
     common: mkGen((rng: seedrandom.PRNG) => {
         return (
             rng() > .75 ?
