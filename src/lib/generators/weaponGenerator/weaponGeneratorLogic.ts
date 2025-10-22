@@ -53,7 +53,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
 }
 
 function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureFor>[1]) {
-    return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng);
+    return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng)?.desc;
 }
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
@@ -386,7 +386,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             break;
         }
     }
-    console.log('-------------------------------------------------------------');
 
     // then, apply theme-based descriptors, up to the cap
     while (nDescriptors < MAX_DESCRIPTORS) {
