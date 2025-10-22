@@ -21,8 +21,9 @@ const config = {
 			strict: true
 		}),
 		paths: {
-			// eslint-disable-next-line no-undef
-			base: process.argv.includes('dev') ? '' : '/tetragrade/weapon-generator'
+			base: ''
+			// line below is used when deploying to GitHub pages
+			//base: process.argv.includes('dev') ? '' : '/tetragrade/weapon-generator'
 		}
 	}
 };
