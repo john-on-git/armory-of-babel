@@ -5,7 +5,7 @@
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
-    import { onMount, tick } from "svelte";
+    import { onMount } from "svelte";
     import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
@@ -24,12 +24,13 @@
     });
 
     // set up event listeners
-    onMount(() => {
+    onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
-        window.addEventListener("popstate", () => {
-            weaponID.set(getIDFromURL());
-        });
-        tick().then(generateWeapon);
+        await new Promise(() =>
+            window.addEventListener("popstate", () => {
+                weaponID.set(getIDFromURL());
+            }),
+        ).then(generateWeapon);
     });
 
     /** Generate a new weapon ID / seed.
@@ -88,6 +89,12 @@
         .weapon-generator {
             margin-left: 10vw;
             margin-right: 10vw;
+        }
+    }
+    @media (orientation: portrait) {
+        .weapon-generator {
+            margin-left: 5vw;
+            margin-right: 5vw;
         }
     }
 
