@@ -6,7 +6,7 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
@@ -18,7 +18,6 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
                     (!checkMaterial || structuredDesc[k as keyof typeof structure][part].material === undefined)
                 ).map(part => [k, part]) as [keyof typeof structure, WeaponPartName][]
             );
-        console.log(provider.generate(seedrandom()), applicableTo, allApplicableParts)
         // 2. choose one at random
         return allApplicableParts.choice(rng);
     }
@@ -93,7 +92,7 @@ export function textForDamage(damage: DamageDice & { as?: string }) {
 }
 
 export function mkWepToGen<T>(x: T | ((rng: seedrandom.PRNG) => T)) {
-    return () => mkGen(x);
+    return mkGen(x);
 };
 
 export function toLang(theme: Theme, lang: string): ProviderElement<Language, WeaponPowerCond> {
@@ -154,7 +153,7 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     throw new Error('failed to generate rarity');
 }
 
-export const genStr = <T extends Array<unknown>>(x: string | ((...args: T) => (TGenerator<string>)), rng: seedrandom.PRNG, ...args: T) => typeof x === 'string' ? x : x(...args).generate(rng);
+export const genStr = <T extends Array<unknown>>(x: string | ((TGenerator<string, T>)), rng: seedrandom.PRNG, ...args: T) => typeof x === 'string' ? x : x.generate(rng, ...args);
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
@@ -401,27 +400,98 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         nDescriptors++;
     }
 
-    // convert the structured description to a text block
-    // (placeholder for now)
-    const description = Object.values(structuredDesc).flatMap((func, i) => Object.entries(func).flatMap(([partName, part]) => {
-        const descriptors = part.descriptors.map(z => z.desc).join(' and ');
-        const descriptorsAndMaterial = part.material === undefined ? descriptors : `is made of ${part.material.desc}${descriptors.length > 0 ? ', and ' : ''}${descriptors}`;
 
-        return descriptorsAndMaterial.length > 0 ? `${i == 0 ? 'Its' : 'The'} ${partName} ${descriptorsAndMaterial}.` : '';
-    })).join(' ');
+    // generate the weapon's pronouns for the description. If the weapon is sentient, this also requires us to generate its name
+    let pronouns: Pronouns;
+    let personalName: string;
+
+    if (weapon.sentient) {
+        pronouns = (['enby', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm', 'masc', 'femm'] satisfies Pronouns[]).choice(rng);
+        personalName = [
+            grecoRomanFirstNameGenerator, angloFirstNameGenerator,
+        ].choice(rng).generate(rng, pronouns);
+    }
+    else {
+        pronouns = 'object';
+        personalName = ''
+    }
+
+    // convert the structured description to a text block
+    const parts = Object.values(structuredDesc).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0);
+
+    function usesAnd(desc: WeaponPart) {
+        return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
+    }
+
+    let description = '';
+    let i = 0;
+    let usedAndThisSentence: boolean = false;
+    for (const [partName, part] of parts) {
+        const start = i === 0
+            ? pronounLoc[pronouns].singular.possessive.capFirst()
+            : usedAndThisSentence
+                ? pronouns === 'object' ? 'the' : pronounLoc[pronouns].singular.possessive
+                : pronouns === 'object' ? 'The' : pronounLoc[pronouns].singular.possessive;
+
+
+        // get all the descriptors, merging together any chains of 'has'
+        let hasChain = false;
+        const descriptors: string[] = [];
+        for (const descriptor of part.descriptors) {
+            const hasHas = descriptor.desc.startsWith('has ');
+            if (hasChain) {
+                descriptors.push(hasHas ? `${descriptor.desc.slice(4)}` : descriptor.desc);
+            }
+            else {
+                hasChain = hasHas;
+                descriptors.push(descriptor.desc);
+            }
+        }
+
+        const materialStr = part.material === undefined ? '' : ` is made of ${part.material.desc}${descriptors.length > 1
+            ? ','
+            : descriptors.length > 0
+                ? ` and`
+                : ''
+            }`
+
+        // join the descriptors together in a grammatical list: with commas and the word 'and' before the last element
+        const descriptorsStr = descriptors.length > 1
+            ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
+            : descriptors.length === 1
+                ? ` ${descriptors[0]}`
+                : '';
+
+        usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
+
+        const partStr = `${start} ${partName}${materialStr}${descriptorsStr}`;
+
+        // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
+        // but don't merge more than two
+        // otherwise end the current sentence
+        let sentence: string;
+        if (!usedAndThisSentence && (i < parts.length - 1) && !usesAnd(parts[i + 1][1])) {
+            sentence = `${partStr}, and `
+            usedAndThisSentence = true;
+        }
+        else {
+            sentence = `${partStr}. `;
+            usedAndThisSentence = false;
+        }
+
+        description += sentence;
+
+        i++;
+    }
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
     const ephitet = pickEphitet(rng, structuredDesc);
 
     if (weapon.sentient === false) {
-        weapon.name = `${ephitet} ${weapon.shape.particular}`;
+        weapon.name = `${ephitet} ${weapon.shape.particular} `;
     }
     else {
-        const personalName = [
-            grecoRomanFirstNameGenerator, angloFirstNameGenerator,
-        ].choice(rng).generate(rng);
-
-        weapon.name = `${personalName}, the ${ephitet} ${weapon.shape.particular}`
+        weapon.name = `${personalName}, the ${ephitet} ${weapon.shape.particular} `
     }
 
     const weaponViewModel = {

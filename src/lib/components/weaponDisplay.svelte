@@ -42,15 +42,17 @@
         {weapon?.name ?? ""}
     </h2>
     <div class="weapon-display-body" data-test>
-        <div class="weapon-display-powers">
+        <div class="weapon-display-nonsentient">
+            <div class="weapon-generator-row-flex">
+                <p class="weapon-desc">
+                    {weapon.description}
+                </p>
+            </div>
             <div class="weapon-generator-row-flex">
                 <p class="weapon-damage">
                     <span class="weapon-damage-title">Damage:</span>
                     {damageString}
                     {toHitString}
-                </p>
-                <p class="weapon-desc">
-                    {weapon.description}
                 </p>
             </div>
             {#if weapon.active.powers.length !== 0}
@@ -195,8 +197,19 @@
         }
     }
 
-    .weapon-display-powers {
+    .weapon-display-nonsentient {
         flex-grow: 2;
+
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .weapon-display-nonsentient h2 {
+        margin: 0;
+    }
+    .weapon-desc {
+        margin-left: auto;
+        margin-right: auto;
     }
     .weapon-display-sentient-info {
         padding: 10pt;
@@ -246,9 +259,5 @@
     .weapon-damage {
         flex-grow: 1;
         text-wrap: nowrap;
-    }
-
-    .weapon-desc {
-        margin-left: auto;
     }
 </style>

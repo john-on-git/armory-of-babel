@@ -1,3 +1,4 @@
+import type { Pronouns } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import "$lib/util/choice";
 import { mkGen, StringGenerator } from "./recursiveGenerator";
 
@@ -99,7 +100,7 @@ export const angloFirstNameGenerator = mkGen((rng) => [
     angloNamesByPartGenerator
 ].choice(rng).generate(rng));
 
-export const grecoRomanFirstNameGenerator = new StringGenerator([
+export const grecoRomanFirstNameGenerator = new StringGenerator<[Pronouns]>([
     mkGen((rng) => [
         "Lacri",
         "Lace",
@@ -121,17 +122,17 @@ export const grecoRomanFirstNameGenerator = new StringGenerator([
         "l",
         "s"
     ].choice(rng)),
-    mkGen((rng) => [
-        "ius",
-        "us",
-        "ion",
-        "or",
-
-        "a",
-        "ia",
-        "ina",
-        "ira"
-    ].choice(rng))
+    mkGen((_rng, pronouns: Pronouns) => {
+        switch (pronouns) {
+            case "enby":
+                return '';
+            case "masc":
+                return '';
+            case "femm":
+                return '';
+        }
+        return '';
+    })
 ]);
 
 // const swordLikeObjectifyingNameGenerator = (weapon: Weapon, adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>) => mkGen((rng) =>
