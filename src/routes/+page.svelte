@@ -8,7 +8,7 @@
 
 <h1>Generator Test</h1>
 <WeaponGenerator {config} />
-<ConfigSidebar {config} />
+<ConfigSidebar configWritable={config} />
 
 <style>
     :global(h1, h2) {
