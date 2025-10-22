@@ -134,6 +134,7 @@ export interface WeaponViewModel {
 
     rarity: WeaponRarity;
     name: string;
+    pronouns: Pronouns;
     description: string;
 
     damage: DamageDice & { as: string };

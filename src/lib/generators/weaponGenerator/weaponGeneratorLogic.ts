@@ -50,10 +50,10 @@ export function maxDamage(damage: DamageDice): number {
  * 
  * 'damage as' will be omitted, and replaced with d6
  * @param damage the weapon's damage. 
- * @param f the function to apply
+ * @param f the function to apply, defaults to identity.
  * @returns the damage dice after the function was applied
  */
-export function modDamage(damage: Weapon['damage'], f: (x: number) => number): DamageDice {
+export function modDamage(damage: Weapon['damage'], f: (x: number) => number = (x) => x): DamageDice {
     const { as, d6, ...rest } = damage;
     return _.mapValues(
         {
@@ -686,6 +686,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         themes: weapon.themes,
         rarity: weapon.rarity,
         name: weapon.name,
+        pronouns: weapon.pronouns,
         description: structuredDescToString(weapon),
         damage: weapon.damage,
         toHit: weapon.toHit,
@@ -740,6 +741,13 @@ export function pickForTheme<TTheme extends Theme, TOut, TWeapon extends Weapon>
     } as TWeapon extends WeaponGivenThemes<[TTheme]> ? { chosen: TOut, theme: TWeapon['themes'][number] } : { chosen: TOut | undefined, theme: TWeapon['themes'][number] | undefined };
 }
 
+/**
+ * Convert a DamageDice to a string that reads it off in the standard format.
+ * @example
+ * textForDamage({as: "sword", d4: 1, d6: 2}) === "as sword + 2d6 + 1d4"; // true
+ * @param damage 
+ * @returns 
+ */
 export function textForDamage(damage: DamageDice & { as?: string }): string {
     function textForDamageKey(k: string, v: string | number | undefined): string {
         if (v === undefined || v === 0) {

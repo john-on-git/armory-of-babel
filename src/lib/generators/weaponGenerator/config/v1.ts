@@ -2,7 +2,7 @@ import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/gen
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
 import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { getBusinessEndDesc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
+import { getBusinessEndDesc, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
@@ -471,8 +471,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'channels of brilliant green light, spreading out from its base and across its surface in an organic fractal',
-                                plural: 'channels of brilliant green light, spreading out from their bases and across their surfaces in organic fractals'
+                                singular: 'channels of brilliant green light spreading out from its base and across its surface in an organic fractal',
+                                plural: 'channels of brilliant green light spreading out from their bases and across their surfaces in organic fractals'
                             },
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
@@ -1634,85 +1634,82 @@ export default {
     },
     rechargeMethods: {
         add: [
-            new ProviderElement<Personality, WeaponPowerCond>("recharge-at-winter-solstice",
+            new ProviderElement<Personality, WeaponPowerCond>(`recharge-at-winter-solstice`,
                 {
-                    desc: "all charges at noon on the winter solstice"
+                    desc: `all charges at noon on the winter solstice`
                 },
                 {
 
                     themes: {
-                        any: ["ice", "nature", "light"]
+                        any: [`ice`, `nature`, `light`]
                     }
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("recharge-at-summer-solstice",
+            new ProviderElement<Personality, WeaponPowerCond>(`recharge-at-summer-solstice`,
                 {
-                    desc: "all charges at noon on the summer solstice"
+                    desc: `all charges at noon on the summer solstice`
                 },
                 {
 
                     themes: {
-                        any: ["fire", "nature", "light"]
+                        any: [`fire`, `nature`, `light`]
                     }
                 }
             ),
             ...toProviderSource(
                 {
                     fire: [
-                        "all charges after being superheated",
+                        `all charges after being superheated`,
                     ],
                     ice: [
-                        "all charges after being cooled to sub-zero",
-                        "one charge whenever its wielder builds a snowman",
-                        "one charge at the end of each scene where its wielder made an ice pun"
+                        `all charges after being cooled to sub-zero`,
+                        mkGen((_, weapon: Weapon) => `one charge whenever ${pronounLoc[weapon.pronouns].singular.possessive} wielder builds a snowman`),
+                        mkGen((_, weapon: Weapon) => `one charge at the end of each scene where ${pronounLoc[weapon.pronouns].singular.possessive} wielder made an ice pun`),
                     ],
                     dark: [
-                        "one charge upon absorbing a human soul",
-                        "one charge at the end of each scene where its wielder destroyed an object unnecessarily",
-                        "all charges each day at the witching hour",
-                        "one charge when its wielder defenestrates a priest, or all charges if it was a high ranking priest"
+                        `one charge upon absorbing a human soul`,
+                        mkGen((_, weapon: Weapon) => `one charge at the end of each scene where ${pronounLoc[weapon.pronouns].singular.possessive} wielder destroyed an object unnecessarily`),
+                        `all charges each day at the witching hour`,
+                        mkGen((_, weapon: Weapon) => `one charge when ${pronounLoc[weapon.pronouns].singular.possessive} wielder defenestrates a priest, or all charges if it was a high ranking priest`)
                     ],
                     light: [
-                        "all charges after an hour in a sacred space",
-                        "all charges each day at sunrise",
-                        new StringGenerator([
-                            "one charge each time you defeat ",
-                            singularUnholyFoe,
-                        ])
+                        `all charges after an hour in a sacred space`,
+                        `all charges each day at sunrise`,
+                        mkGen(rng => `one charge each time you defeat ${singularUnholyFoe.generate(rng)}`,)
                     ],
                     sweet: [
-                        "all charges each time its wielder hosts a feast",
-                        "one charge each time its wielder gives a well-received compliment"
+                        mkGen((_, weapon: Weapon) => `all charges each time ${pronounLoc[weapon.pronouns].singular.possessive} wielder hosts a feast`),
+                        mkGen((_, weapon: Weapon) => `one charge each time ${pronounLoc[weapon.pronouns].singular.possessive} wielder gives a well-received compliment`)
                     ],
                     sour: [
-                        "all charges after an hour immersed in acid",
-                        "all charges when used to fell a citrus tree",
-                        "one charge each time its wielder insults someone"
+                        `all charges after an hour immersed in acid`,
+                        `all charges when used to fell a citrus tree`,
+                        mkGen((_, weapon: Weapon) => `one charge each time ${pronounLoc[weapon.pronouns].singular.possessive} wielder insults someone`)
                     ],
                     cloud: [
-                        "all charges when struck by lightning",
-                        "all charges when its wielder survives a significant fall",
-                        "one charge each time you defeat a winged creature, or all charges if it was also a powerful foe",
+                        `all charges when struck by lightning`,
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder survives a significant fall`),
+                        `one charge each time you defeat a winged creature, or all charges if it was also a powerful foe`,
                     ],
                     wizard: [
-                        "one charge when you cast one of your own spells",
-                        "all charges when its wielder learns a new spell",
-                        "all charges when its wielder wins a wizard duel",
-                        "one charge when its wielder finishes reading a new book",
-                        "all charges when its wielder views the night sky",
+                        `one charge when you cast one of your own spells`,
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder learns a new spell`),
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder wins a wizard duel`),
+                        mkGen((_, weapon: Weapon) => `one charge when ${pronounLoc[weapon.pronouns].singular.possessive} wielder finishes reading a new book`),
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder views the night sky`),
                     ],
                     steampunk: [
-                        "all charges when its wielder invents something",
-                        "all charges when its wielder throws a tea party",
-                        "one charge when its wielder breaks news",
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder invents something`),
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder throws a tea party`),
+                        mkGen((_, weapon: Weapon) => `one charge when ${pronounLoc[weapon.pronouns].singular.possessive} wielder breaks news`),
                     ],
                     earth: [
-                        "one charge when its wielder throws a rock at something important",
-                        "all charges when its wielder meditates atop a mountain",
-                        "all charges when driven into the ground while something important is happening"
+                        mkGen((_, weapon: Weapon) => `one charge when ${pronounLoc[weapon.pronouns].singular.possessive} wielder throws a rock at something important`),
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder meditates atop a mountain`),
+                        `2d6 charges when driven into the ground while something important is happening, once per event`
                     ],
                     nature: [
-                        new StringGenerator(["all charges when its wielder drives ", agentOfExtractivism, " to bankruptcy"])
+                        mkGen(rng => `all charges when its wielder drives ${agentOfExtractivism.generate(rng)} to bankruptcy`)
                     ]
                 },
                 (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCond>(`${theme}-recharge-${i}`,
@@ -1727,12 +1724,35 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("fore-strike",
+                mkGen((_, weapon) => {
+                    const rangeByRarity = {
+                        common: 40,
+                        uncommon: 40,
+                        rare: 40,
+                        epic: 50,
+                        legendary: 60
+                    } satisfies Record<WeaponRarity, number>;
+
+                    return {
+                        cost: 2,
+                        desc: 'Fore!',
+                        additionalNotes: [
+                            'Upon landing a blow, you empower it with extra force.',
+                            `The target is knocked backwards ${rangeByRarity[weapon.rarity]}-ft. If it causes them to hit something, they take ${textForDamage(modDamage(weapon.damage))} damage.`
+                        ]
+                    }
+                }),
+                {
+                    shapeFamily: { any: bluntWeaponShapeFamilies }
+                }
+            ),
             new ProviderElement("mist-mode",
                 {
-                    cost: '1 charge to activate, and 1 charge every 10s to maintain',
+                    cost: '1 charge to activate, and 1 charge each turn to maintain',
                     desc: 'Mist Mode',
                     additionalNotes: [
-                        'You transform into incorporeal mist.',
+                        'You transform into mist.',
                         'Mist Mode can be activated in response to being targeted by an attack, causing it to miss.'
                     ]
                 },
@@ -1744,20 +1764,17 @@ export default {
                 desc: 'Roulette',
                 cost: 1,
                 additionalNotes: [
-                    `
-                    You fire an enchanted shot. Roll on the table below to decide the effect.
-                    \n1. Dragon's Breath. Target is set on fire.
-                    \n2. Explosive. Everyone within melee range of the target takes equal damage.
-                    \n3. Flash Powder. Target must save or be stunned during their next turn.
-                    \n4. Hammer Shot. Shatters every bone in a random limb of the target.
-                    \n5. Tesla Round.
-                    \n6. Wormhole. You swap places with the target.
-                    `,
+                    `You fire an enchanted shot. Roll on the table below to decide the effect.
+                    \r1. Dragon's Breath. Target is set on fire.
+                    \r2. Explosive. Everyone within melee range of the target takes equal damage.
+                    \r3. Flash Powder. Target must save or be stunned during their next turn.
+                    \r4. Hammer Shot. Shatters every bone in a random limb of the target.
+                    \r5. Wither Shot. Target takes double damage until your next turn.
+                    \r6. Wormhole. You swap places with the target.`,
                 ]
             }, {
-                shapeFamily: {
-                    any: ['dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)']
-                }
+                rarity: { gte: 'legendary' },
+                shapeFamily: { any: ['dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)'] }
             }),
             new ProviderElement('return-to-home',
                 {
@@ -1824,10 +1841,10 @@ export default {
                     }
                 }),
                 {
-                    themes: {
-                        any: ['fire', 'ice', 'light', 'dark', 'wizard', 'cloud', 'steampunk']
-                    },
-                    rarity: { gte: 'rare' }
+                    themes: { any: ['fire', 'ice', 'light', 'dark', 'wizard', 'cloud', 'steampunk'] },
+                    rarity: { gte: 'rare' },
+                    // waste of a slot if you can already shoot
+                    shapeFamily: { none: rangedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement("shuffle",
@@ -2018,11 +2035,11 @@ export default {
             new ProviderElement("linger-strike",
                 mkGen((rng, weapon) => {
                     const numbersByRarity = {
-                        common: { cost: 1, endChance: 6, damage: 4 },
-                        uncommon: { cost: 1, endChance: 6, damage: 4 },
-                        rare: { cost: 1, endChance: 8, damage: 4 },
-                        epic: { cost: 2, endChance: 10, damage: 4 },
-                        legendary: { cost: 2, endChance: 10, damage: 6 }
+                        common: { cost: 2, endChance: 6, damage: 4 },
+                        uncommon: { cost: 2, endChance: 6, damage: 4 },
+                        rare: { cost: 2, endChance: 8, damage: 4 },
+                        epic: { cost: 3, endChance: 10, damage: 4 },
+                        legendary: { cost: 3, endChance: 10, damage: 6 }
                     } as const satisfies Record<WeaponRarity, { cost: number; endChance: CommonDieSize; damage: CommonDieSize }>;
 
                     const effects = {
@@ -2805,7 +2822,7 @@ export default {
             new ProviderElement("lance-charge",
                 mkGen((_rng) => ({
                     desc: "Tilt",
-                    cost: 3,
+                    cost: 2,
                     additionalNotes: ["Upon landing a blow, you empower it with extra force. If the target is a rider they are forcibly dismounted, otherwise they are knocked over."]
                 })),
                 {
@@ -3673,13 +3690,15 @@ export default {
                     },
                     UUIDs: {
                         none: ['standard-projectile', 'attack-wisps']
-                    }
+                    },
+                    // waste of a slot if you can already shoot
+                    shapeFamily: { none: rangedWeaponShapeFamilies }
                 }
             ),
             new ProviderElement("attack-wisps",
                 {
                     miscPower: true,
-                    desc: "Each blow you land with the weapon generates a wisp, which dissipate when combat ends. On your turn, you can launch any number of wisps (instantly / as no action). d4 damage, range as bow.",
+                    desc: "Each hit you land with the weapon generates a wisp, which dissipate when combat ends. On your turn, you can launch any number of wisps (instantly / as no action). d4 damage, range as bow.",
                 },
                 {
                     themes: { any: ["wizard"] },
