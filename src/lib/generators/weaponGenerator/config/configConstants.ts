@@ -136,29 +136,29 @@ export const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
 export const ephCold = [{ pre: "Icebound" }, { pre: "Frostbound" }, { pre: "Frigid" }, { pre: "Silent" }, { post: " of the North Star", alliteratesWith: 'N' }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
 export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: ' of the Bonfire Keeper', alliteratesWith: 'B' }, { post: ' of the Scorchlands', alliteratesWith: 'S' }, { pre: 'Burning' }] satisfies Ephitet[];
 export const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
-export const ephSky = [{ pre: 'Cloudborn', alliteratesWith: 'K' }, { pre: 'Zephyr' }, { post: ' of the Zephyr', alliteratesWith: 'Z' }, { post: ' of the Skylands', alliteratesWith: 'S' }, { post: ' of the Cloud Giants', alliteratesWith: 'K' }, { post: ' of the Butterfly Lords', alliteratesWith: 'B' }, { post: ' of the Valkyrie Queen', alliteratesWith: 'V' }] satisfies Ephitet[];
-export const ephWizard = [{ post: ' of the Wizard', alliteratesWith: 'W' }, { post: ' of Stars', alliteratesWith: 'S' }, { post: ' of the Cosmos', alliteratesWith: 'K' }] satisfies Ephitet[];
+export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: ' of the Zephyr', alliteratesWith: 'Z' }, { post: ' of the Skylands', alliteratesWith: 'S' }, { post: ' of the Cloud Giants', alliteratesWith: 'C' }, { post: ' of the Butterfly Lords', alliteratesWith: 'B' }, { post: ' of the Valkyrie Queen', alliteratesWith: 'V' }] satisfies Ephitet[];
+export const ephWizard = [{ post: ' of the Wizard', alliteratesWith: 'W' }, { post: ' of Stars', alliteratesWith: 'S' }, { post: ' of the Cosmos', alliteratesWith: 'C' }] satisfies Ephitet[];
 export const ephExplorer = [{ pre: "Explorer's" }, { pre: "Navigator's" }, { pre: "Pathfinder's" }, { post: ' of the Explorer', alliteratesWith: 'E' }, { post: ' of the Navigator', alliteratesWith: 'N' }] satisfies Ephitet[];
-export const ephSteampunk = [...ephExplorer, { post: ' of the Empire', alliteratesWith: 'E' }, { pre: 'Clockwork', alliteratesWith: 'K' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
+export const ephSteampunk = [...ephExplorer, { post: ' of the Empire', alliteratesWith: 'E' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
 
-export const ephAcid = [{ pre: 'Toxic' }, { pre: 'Corrosive', alliteratesWith: 'K' }] satisfies Ephitet[];
+export const ephAcid = [{ pre: 'Toxic' }, { pre: 'Corrosive' }] satisfies Ephitet[];
 export const ephBug = [{ pre: 'Verminous' }, { post: " of the Isopod", alliteratesWith: 'I' }, { post: " of the Beetle", alliteratesWith: 'B' }, { post: " of the Queen Bee", alliteratesWith: 'Q' }, { post: " of the Swarm", alliteratesWith: 'S' }, { post: " of the Hive", alliteratesWith: 'H' }] satisfies Ephitet[];
 
 export const ephTransparent = [{ pre: 'Glass' }, { post: ' of Glass', alliteratesWith: 'G' }, { pre: 'Translucent' }] satisfies Ephitet[];
 export const ephGlowy = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }];
 
 export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { post: ' of Selene', alliteratesWith: 'S' }] satisfies Ephitet[];
-export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'K' }, { pre: 'Chaotic', alliteratesWith: 'K' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }] satisfies Ephitet[];
+export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }] satisfies Ephitet[];
 export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows', alliteratesWith: 'R' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
 
-export const ephRed = [{ pre: 'Crimson', alliteratesWith: 'K' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
+export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
 
 // TODO these need more stuff
 export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] satisfies Ephitet[];
 export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }, { pre: 'Sapphire' }] satisfies Ephitet[];
 export const ephGreen = [{ pre: 'Green' }, { pre: 'Emerald' }, { post: ' of Val Verde', alliteratesWith: 'V' }] satisfies Ephitet[];
 export const ephGold = [{ pre: 'Golden' }, { pre: 'Auric' }, { post: ' of the Sun', alliteratesWith: 'S' }, { post: ' of Ra', alliteratesWith: 'R' }] satisfies Ephitet[];
-export const ephSweet = [{ pre: 'Candied', alliteratesWith: 'K' }] satisfies Ephitet[];
+export const ephSweet = [{ pre: 'Candied' }] satisfies Ephitet[];
 
 
 
