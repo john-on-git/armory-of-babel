@@ -597,7 +597,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
      * Generate the rest of the structured description.
      */
 
-    const maxDescriptors = weapon.themes.length * (1 + Math.floor(rng() * 2));
+    const maxDescriptors = Math.min(weapon.themes.length, numParts(weapon.description)) * (1 + Math.floor(rng() * 2));
     let nDescriptors = 0;
 
     // first, apply theme-based descriptors, up to the cap
