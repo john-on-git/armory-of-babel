@@ -1,7 +1,7 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-import { capFirst } from "$lib/util/string";
+import { capWords } from "$lib/util/string";
 import _ from "lodash";
 import type { PRNG } from "seedrandom";
 
@@ -14,8 +14,9 @@ export const sharpWeaponShapeFamilies = [...edgedWeaponShapeFamilies, ...pointed
 
 export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)'] as const satisfies WeaponShapeGroup[];
 export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)', 'club', 'mace'] as const satisfies WeaponShapeGroup[];
+export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
 
-export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"];
+export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"] as const;
 
 // reused descriptors and materials
 const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
@@ -65,6 +66,8 @@ const simpleMaterials = [
         material: 'scarlet steel',
         ephitet: { pre: 'Scarlet Steel' }
     } as const,
+
+    // cool materials (can be the source of an ephitet)
     ..._.map([
 
         'sandstone',
@@ -75,16 +78,10 @@ const simpleMaterials = [
         'flint',
         'obsidian',
 
-        'copper',
-        'tin',
-        'bronze',
-        'brass',
-        'iron',
-        'steel',
-
         'terracotta',
         'porcelain',
 
+        'brass',
         'silver',
         'platinum',
         'palladium',
@@ -106,8 +103,20 @@ const simpleMaterials = [
         'adamantum',
     ] as const, (metal) => ({
         material: metal,
-        ephitet: { pre: capFirst(metal) }
-    } satisfies Descriptor))] satisfies Descriptor[];
+        ephitet: { pre: capWords(metal) }
+    } satisfies Descriptor)),
+
+    // boring materials (cannot be the source of an ephitet)
+    ..._.map([
+        'copper',
+        'tin',
+        'bronze',
+        'iron',
+        'steel',
+    ] as const, (metal) => ({
+        material: metal,
+    } satisfies Descriptor))
+] satisfies Descriptor[];
 
 
 const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as const;
@@ -221,7 +230,7 @@ export const MATERIALS = {
 
         return {
             material: `${creature} ${protrusionName}`,
-            ephitet: { post: `of the ${creature.capFirst()}` }
+            ephitet: { post: `of the ${creature.capWords()}` }
         } as Descriptor;
     }),
     coldHorn: mkGen((rng) => {
@@ -229,7 +238,7 @@ export const MATERIALS = {
 
         return {
             material: `${creature} ${protrusionName}`,
-            ephitet: { post: `of the ${creature.capFirst()}` }
+            ephitet: { post: `of the ${creature.capWords()}` }
         } as Descriptor;
     }),
     magicHorn: mkGen((rng) => {
@@ -237,7 +246,7 @@ export const MATERIALS = {
 
         return {
             material: `${creature} ${protrusionName}`,
-            ephitet: { post: `of the ${creature.capFirst()}` }
+            ephitet: { post: `of the ${creature.capWords()}` }
         } as Descriptor;
     }),
     darkLeather: mkGen((rng) => {
@@ -254,7 +263,7 @@ export const MATERIALS = {
                 case 'orc':
                     return [{ pre: "Orcslayer's" }, { post: 'of Orc City' }].choice(rng);
                 default:
-                    return { post: `of the ${creature.capFirst()}` };
+                    return { post: `of the ${creature.capWords()}` };
             }
         }
 

@@ -2,16 +2,16 @@ export { };
 declare global {
   interface String {
     /**
-     * Get this string with the first letter capitalized.
+     * Get this string with the first letter of each word capitalized.
      * @returns the string with the first letter capitalized.
      */
-    capFirst: () => string;
+    capWords: () => string;
   }
 }
 
-export const capFirst = function (x: string) { return x.slice(0, 1).toUpperCase() + x.slice(1) }
+export const capWords = function (x: string) { return x.replaceAll(/(^[A-z])|(\s+[A-z])/g, (match) => match.toUpperCase()) }
 
-if (!String.prototype.capFirst) {
-  String.prototype.capFirst = function () { return capFirst(this as string) }
+if (!String.prototype.capWords) {
+  String.prototype.capWords = function () { return capWords(this as string) }
 }
 

@@ -35,10 +35,10 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
         let usedAndThisSentence: boolean = false;
         for (const [partName, part] of parts) {
             const start = i === 0
-                ? pronounLoc[weapon.pronouns].singular.possessive.capFirst()
+                ? pronounLoc[weapon.pronouns].singular.possessive.capWords()
                 : usedAndThisSentence
                     ? weapon.pronouns === 'object' ? 'the' : pronounLoc[weapon.pronouns].singular.possessive
-                    : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capFirst();
+                    : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capWords();
 
 
             // get all the descriptors, merging together any chains of 'has' / 'have' etc
@@ -104,18 +104,6 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
         return description;
     }
 }
-
-//                 TO
-//               TODO
-//               TODO
-//               TODO
-// TODO TODO TODO     In the function below, look at the weapon structure itself, running the quant on the weapon parts. This is to allow the same descriptor to be
-// TODO TODO TODO DO  picked on multiple parts of the same weapon. We also need to disable the quant checking on the call to featureProviders.descriptors.draw, I guess
-// TODO TODO TODO     we can just make them all allow duplicates and then pass in a custom cond in applyDescriptionPartProvider { none: [thisDesc.UUID] } simple as
-//               TODO                                             
-//               TODO                                                     
-//               TODO                                                         
-//                 DO
 
 function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined) {

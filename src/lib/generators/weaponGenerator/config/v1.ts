@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, mkWepToGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DamageDice, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -714,7 +714,7 @@ export default {
                         return [
                             MATERIALS.oak,
                             MATERIALS.birch,
-                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
+                            animeWeaponShapes.includes(weapon.shape.particular as typeof animeWeaponShapes[number]) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
                             MATERIALS.maple,
                             MATERIALS.ivory,
@@ -756,7 +756,7 @@ export default {
                             MATERIALS.oak,
                             MATERIALS.pine,
                             MATERIALS.birch,
-                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
+                            animeWeaponShapes.includes(weapon.shape.particular as typeof animeWeaponShapes[number]) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
                             MATERIALS.ironWood,
                         ].choice(rng);
@@ -1281,7 +1281,7 @@ export default {
                     "Detail-Oriented"
                 ]
             }, (theme, personality, i) => {
-                const formatted = personality.capFirst() + ".";
+                const formatted = personality.capWords() + ".";
                 return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
                     {
                         desc: formatted
@@ -1426,7 +1426,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("fireball",
+            new ProviderElement("blast",
                 { desc: "Fire Ball", cost: 4 },
                 {
                     themes: { any: ["fire"] },
@@ -1435,106 +1435,98 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("wall-of-fire",
-                {
-                    desc: "Wall of Fire",
-                    cost: 4
-                },
+            new ProviderElement("wall-of-fire", {
+                desc: "Wall of Fire",
+                cost: 4
+            },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         gte: "rare"
                     }
                 }),
-            new ProviderElement("control-hot-weather",
-                {
-                    desc: "Control Weather",
-                    cost: 2,
-                    additionalNotes: [
-                        "Must move conditions towards heatwave."
-                    ],
-                },
-                {
-                    themes: { any: ["fire"] },
-                    rarity: {
-                        lte: "rare"
-                    }
-                }),
-            new ProviderElement("control-flames",
-                {
-                    desc: "Control Flames",
-                    cost: 1,
-                    additionalNotes: [
-                        "Flames larger than wielder submit only after a save."
-                    ],
-                },
+            new ProviderElement("control-hot-weather", {
+                desc: "Control Weather",
+                cost: 2,
+                additionalNotes: [
+                    "Must move conditions towards heatwave."
+                ],
+            },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement("summon-fire-elemental",
+            new ProviderElement("control-flames", {
+                desc: "Control Flames",
+                cost: 1,
+                additionalNotes: [
+                    "Flames larger than wielder submit only after a save."
+                ],
+            },
                 {
-                    desc: "Summon Fire Elemental",
-                    cost: 6,
-                    additionalNotes: [
-                        "Dissipates after 1 hour."
-                    ],
-                },
+                    themes: { any: ["fire"] },
+                    rarity: {
+                        lte: "rare"
+                    }
+                }),
+            new ProviderElement("summon-fire-elemental", {
+                desc: "Summon Fire Elemental",
+                cost: 6,
+                additionalNotes: [
+                    "Dissipates after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["fire"] },
                     rarity: {
                         gte: "epic"
                     }
                 }),
-            new ProviderElement("wall-of-ice",
-                {
-                    desc: "Wall of Ice",
-                    cost: 4,
-                },
+            new ProviderElement("wall-of-ice", {
+                desc: "Wall of Ice",
+                cost: 4,
+            },
                 {
                     themes: { any: ["ice"] },
                     rarity: {
                         gte: "rare"
                     }
                 }),
-            new ProviderElement("control-cold-weather",
-                {
-                    desc: "Control Weather",
-                    cost: 3,
-                    additionalNotes: [
-                        "Must move conditions towards blizzard."
-                    ],
-                },
-                {
-                    themes: { any: ["ice"] },
-                    rarity: {
-                        lte: "rare"
-                    }
-                }),
-            new ProviderElement("ice-strike",
-                {
-                    desc: "Chilling Strike",
-                    cost: 2,
-                    additionalNotes: [
-                        "Upon hitting, you can choose to infuse the attack. Characters must save or be frozen solid next turn."
-                    ],
-                },
+            new ProviderElement("control-cold-weather", {
+                desc: "Control Weather",
+                cost: 3,
+                additionalNotes: [
+                    "Must move conditions towards blizzard."
+                ],
+            },
                 {
                     themes: { any: ["ice"] },
                     rarity: {
                         lte: "rare"
                     }
                 }),
-            new ProviderElement("summon-ice-elemental",
+            new ProviderElement("ice-strike", {
+                desc: "Chilling Strike",
+                cost: 2,
+                additionalNotes: [
+                    "Upon hitting, you can choose to infuse the attack. Characters must save or be frozen solid next turn."
+                ],
+            },
                 {
-                    desc: "Summon Ice Elemental",
-                    cost: 6,
-                    additionalNotes: [
-                        "Dissipates after 1 hour."
-                    ],
-                },
+                    themes: { any: ["ice"] },
+                    rarity: {
+                        lte: "rare"
+                    }
+                }),
+            new ProviderElement("summon-ice-elemental", {
+                desc: "Summon Ice Elemental",
+                cost: 6,
+                additionalNotes: [
+                    "Dissipates after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["ice"] },
                     rarity: {
@@ -1542,23 +1534,10 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("commune-demon",
-                {
-                    desc: "Commune With Demon",
-                    cost: 2,
-                },
-                {
-                    themes: { any: ["dark"] },
-                    rarity: {
-                        gte: "uncommon"
-                    }
-                }
-            ),
-            new ProviderElement("turn-holy",
-                {
-                    desc: "Turn Priests & Angels",
-                    cost: 2,
-                },
+            new ProviderElement("commune-demon", {
+                desc: "Commune With Demon",
+                cost: 2,
+            },
                 {
                     themes: { any: ["dark"] },
                     rarity: {
@@ -1566,23 +1545,32 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("darkness",
+            new ProviderElement("turn-holy", {
+                desc: "Turn Priests & Angels",
+                cost: 2,
+            },
                 {
-                    desc: "Darkness",
-                    cost: 1
-                },
+                    themes: { any: ["dark"] },
+                    rarity: {
+                        gte: "uncommon"
+                    }
+                }
+            ),
+            new ProviderElement("darkness", {
+                desc: "Darkness",
+                cost: 1
+            },
                 {
                     themes: { any: ["dark"] },
                 }
             ),
-            new ProviderElement("summon-demon",
-                {
-                    desc: "Summon Demon",
-                    cost: 6,
-                    additionalNotes: [
-                        "Returns to hell after 1 hour."
-                    ],
-                },
+            new ProviderElement("summon-demon", {
+                desc: "Summon Demon",
+                cost: 6,
+                additionalNotes: [
+                    "Returns to hell after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["dark"] },
                     rarity: {
@@ -1590,11 +1578,10 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("commune-divinity",
-                {
-                    desc: "Commune With Divinity",
-                    cost: 4,
-                },
+            new ProviderElement("commune-divinity", {
+                desc: "Commune With Divinity",
+                cost: 4,
+            },
                 {
                     themes: { any: ["light"] },
                     rarity: {
@@ -1602,32 +1589,29 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("turn-undead",
-                {
-                    desc: "Turn Undead",
-                    cost: 2
-                },
-                {
-                    themes: { any: ["light"] },
-                }
-            ),
-            new ProviderElement("light",
-                {
-                    desc: "Light",
-                    cost: 1
-                },
+            new ProviderElement("turn-undead", {
+                desc: "Turn Undead",
+                cost: 2
+            },
                 {
                     themes: { any: ["light"] },
                 }
             ),
-            new ProviderElement("summon-angel",
+            new ProviderElement("light", {
+                desc: "Light",
+                cost: 1
+            },
                 {
-                    desc: "Summon Angel",
-                    cost: 6,
-                    additionalNotes: [
-                        "Returns to heaven after 1 hour."
-                    ],
-                },
+                    themes: { any: ["light"] },
+                }
+            ),
+            new ProviderElement("summon-angel", {
+                desc: "Summon Angel",
+                cost: 6,
+                additionalNotes: [
+                    "Returns to heaven after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["light"] },
                     rarity: {
@@ -1635,59 +1619,54 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("charm-person",
-                {
-                    desc: "Charm Person",
-                    cost: 2
-                },
-                {
-                    themes: { any: ["sweet"] },
-                }
-            ),
-            new ProviderElement("sweetberry",
-                {
-                    desc: "Sweetberry",
-                    cost: 3,
-                    additionalNotes: [
-                        "Create a small berry, stats as healing potion."
-                    ]
-                },
+            new ProviderElement("charm-person", {
+                desc: "Charm Person",
+                cost: 2
+            },
                 {
                     themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement("sugar-spray",
-                {
-                    desc: "Sugar Spray",
-                    cost: 1,
-                    additionalNotes: [
-                        "Sprays a sweet and sticky syrup, enough to coat the floor of a small room. Makes movement difficult."
-                    ]
-                },
+            new ProviderElement("sweetberry", {
+                desc: "Sweetberry",
+                cost: 3,
+                additionalNotes: [
+                    "Create a small berry, stats as healing potion."
+                ]
+            },
                 {
                     themes: { any: ["sweet"] },
                 }
             ),
-            new ProviderElement("caustic-strike",
+            new ProviderElement("sugar-spray", {
+                desc: "Sugar Spray",
+                cost: 1,
+                additionalNotes: [
+                    "Sprays a sweet and sticky syrup, enough to coat the floor of a small room. Makes movement difficult."
+                ]
+            },
                 {
-                    desc: "Caustic Strike",
-                    cost: 2,
-                    additionalNotes: [
-                        "Upon hitting, you can choose to infuse the attack. Melts objects, or damages armor of characters."
-                    ]
-                },
+                    themes: { any: ["sweet"] },
+                }
+            ),
+            new ProviderElement("caustic-strike", {
+                desc: "Caustic Strike",
+                cost: 2,
+                additionalNotes: [
+                    "Upon hitting, you can choose to infuse the attack. Melts objects, or damages armor of characters."
+                ]
+            },
                 {
                     themes: { any: ["sour"] },
                 }
             ),
-            new ProviderElement("locate-lemon",
-                {
-                    desc: "Locate Lemon",
-                    cost: 1,
-                    additionalNotes: [
-                        "Wielder learns the exact location of the closest lemon."
-                    ]
-                },
+            new ProviderElement("locate-lemon", {
+                desc: "Locate Lemon",
+                cost: 1,
+                additionalNotes: [
+                    "Wielder learns the exact location of the closest lemon."
+                ]
+            },
                 {
                     themes: { any: ["sour"] },
                     rarity: {
@@ -1695,14 +1674,13 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("cause-nausea",
-                {
-                    desc: "Cause Nausea",
-                    cost: 1,
-                    additionalNotes: [
-                        "Target must save or waste their turn vomiting."
-                    ]
-                },
+            new ProviderElement("cause-nausea", {
+                desc: "Cause Nausea",
+                cost: 1,
+                additionalNotes: [
+                    "Target must save or waste their turn vomiting."
+                ]
+            },
                 {
                     themes: { any: ["sour"] },
                 }
@@ -1722,11 +1700,10 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("magic-missile",
-                {
-                    desc: "Magic Missile",
-                    cost: 2
-                },
+            new ProviderElement("magic-missile", {
+                desc: "Magic Missile",
+                cost: 2
+            },
                 {
                     themes: { any: ["wizard"] },
                 }
@@ -1740,52 +1717,48 @@ export default {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("magic-parry",
-                {
-                    desc: "Magic Parry",
-                    cost: "charges equal to spell's level",
-                    additionalNotes: [
-                        "Deflect a harmful spell that was targeted at you specifically.",
-                        "You save. On a success the spell is nullified.",
-                        "If you succeeded with the best possible roll, the spell is instead reflected back at the attacker."
-                    ]
-                },
-                {
-                    themes: { any: ["wizard"] },
-                }
-            ),
-            new ProviderElement("instant-message",
-                {
-                    desc: "Instant Message",
-                    cost: 1,
-                    additionalNotes: [
-                        "Point the weapon at someone in your line of sight, send them a telepathic message."
-                    ]
-                },
+            new ProviderElement("magic-parry", {
+                desc: "Magic Parry",
+                cost: "charges equal to spell's level",
+                additionalNotes: [
+                    "Deflect a harmful spell that was targeted at you specifically.",
+                    "You save. On a success the spell is nullified.",
+                    "If you succeeded with the best possible roll, the spell is instead reflected back at the attacker."
+                ]
+            },
                 {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("create-wizard-servant",
-                {
-                    desc: "Create Servant",
-                    cost: 3,
-                    additionalNotes: [
-                        "Create an small ichorous being that obeys you without question. It dissolves into sludge after 2d6 days."
-                    ]
-                },
+            new ProviderElement("instant-message", {
+                desc: "Instant Message",
+                cost: 1,
+                additionalNotes: [
+                    "Point the weapon at someone in your line of sight, send them a telepathic message."
+                ]
+            },
                 {
                     themes: { any: ["wizard"] },
                 }
             ),
-            new ProviderElement("summon-steam-elemental",
+            new ProviderElement("create-wizard-servant", {
+                desc: "Create Servant",
+                cost: 3,
+                additionalNotes: [
+                    "Create an small ichorous being that obeys you without question. It dissolves into sludge after 2d6 days."
+                ]
+            },
                 {
-                    desc: "Summon Steam Elemental",
-                    cost: 6,
-                    additionalNotes: [
-                        "Dissipates after 1 hour."
-                    ],
-                },
+                    themes: { any: ["wizard"] },
+                }
+            ),
+            new ProviderElement("summon-steam-elemental", {
+                desc: "Summon Steam Elemental",
+                cost: 6,
+                additionalNotes: [
+                    "Dissipates after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["steampunk"] },
                     rarity: {
@@ -1793,26 +1766,24 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("power-machine",
-                {
-                    desc: "Power Machine",
-                    cost: 1,
-                    additionalNotes: [
-                        "Touching the weapon to a machine causes it to activate under magical power. It operates for 24 hours."
-                    ]
-                },
+            new ProviderElement("power-machine", {
+                desc: "Power Machine",
+                cost: 1,
+                additionalNotes: [
+                    "Touching the weapon to a machine causes it to activate under magical power. It operates for 24 hours."
+                ]
+            },
                 {
                     themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement("summon-water-elemental",
-                {
-                    desc: "Summon Water Elemental",
-                    cost: 6,
-                    additionalNotes: [
-                        "Dissipates after 1 hour."
-                    ],
-                },
+            new ProviderElement("summon-water-elemental", {
+                desc: "Summon Water Elemental",
+                cost: 6,
+                additionalNotes: [
+                    "Dissipates after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["cloud"] },
                     rarity: {
@@ -1820,48 +1791,44 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("zephyr-strike",
-                {
-                    desc: "Zephyr Strike",
-                    cost: 2,
-                    additionalNotes: [
-                        "Move up to 4× your normal movement to attack someone.",
-                        "They must save or be knocked down by the attack."
-                    ]
-                },
-                {
-                    themes: { any: ["cloud"] },
-                }
-            ),
-            new ProviderElement("wind-blast",
-                {
-                    desc: "Wind Blast",
-                    cost: 2,
-                    additionalNotes: [
-                        "Characters in melee range must save, or be thrown back out of melee range and knocked down."
-                    ]
-                },
+            new ProviderElement("zephyr-strike", {
+                desc: "Zephyr Strike",
+                cost: 2,
+                additionalNotes: [
+                    "Move up to 4× your normal movement to attack someone.",
+                    "They must save or be knocked down by the attack."
+                ]
+            },
                 {
                     themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement("summon-lightning",
-                {
-                    desc: "Summon Lightning",
-                    cost: 4,
-                    additionalNotes: [
-                        "Summon a bolt of lightning to strike something in your line of sight."
-                    ]
-                },
+            new ProviderElement("wind-blast", {
+                desc: "Wind Blast",
+                cost: 2,
+                additionalNotes: [
+                    "Characters in melee range must save, or be thrown back out of melee range and knocked down."
+                ]
+            },
                 {
                     themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement("wall-of-stone",
+            new ProviderElement("summon-lightning", {
+                desc: "Lightning Bolt",
+                cost: 4,
+                additionalNotes: [
+                    "Summon a bolt of lightning to strike something in your line of sight."
+                ]
+            },
                 {
-                    desc: "Wall of stone",
-                    cost: 4,
-                },
+                    themes: { any: ["cloud"] },
+                }
+            ),
+            new ProviderElement("wall-of-stone", {
+                desc: "Wall of stone",
+                cost: 4,
+            },
                 {
                     themes: { any: ["earth"] },
                     rarity: {
@@ -1869,11 +1836,10 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("petrify-person",
-                {
-                    desc: "Petrify Person",
-                    cost: 5,
-                },
+            new ProviderElement("petrify-person", {
+                desc: "Petrify Person",
+                cost: 5,
+            },
                 {
                     themes: { any: ["earth"] },
                     rarity: {
@@ -1881,23 +1847,21 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("cure-petrify",
-                {
-                    desc: "Cure Petrification",
-                    cost: 2
-                },
+            new ProviderElement("cure-petrify", {
+                desc: "Cure Petrification",
+                cost: 2
+            },
                 {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement("summon-earth-elemental",
-                {
-                    desc: "Summon Earth Elemental",
-                    cost: 6,
-                    additionalNotes: [
-                        "Crumbles after 1 hour."
-                    ],
-                },
+            new ProviderElement("summon-earth-elemental", {
+                desc: "Summon Earth Elemental",
+                cost: 6,
+                additionalNotes: [
+                    "Crumbles after 1 hour."
+                ],
+            },
                 {
                     themes: { any: ["earth"] },
                     rarity: {
@@ -1905,36 +1869,33 @@ export default {
                     }
                 }
             ),
-            new ProviderElement("instant-tree",
-                {
-                    desc: "Instant Tree",
-                    cost: 1
-                },
-                {
-                    themes: { any: ["nature"] },
-                }
-            ),
-            new ProviderElement("summon-chomp-flower",
-                {
-                    desc: "Instant Chomp-Flower",
-                    cost: 2,
-                    additionalNotes: [
-                        "Stats as shark but can't move."
-                    ]
-                },
+            new ProviderElement("instant-tree", {
+                desc: "Instant Tree",
+                cost: 1
+            },
                 {
                     themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement("vine-hook",
+            new ProviderElement("summon-chomp-flower", {
+                desc: "Instant Chomp-Flower",
+                cost: 2,
+                additionalNotes: [
+                    "Stats as shark but can't move."
+                ]
+            },
                 {
-                    desc: "Vine Hook",
-                    cost: 1,
-                    additionalNotes: [
-                        "Launch a vine from the weapon. It can stay attached to the weapon at one end, or detach to link two objects together.",
-                        "Vines can be up to 50-ft long and are as strong as steel."
-                    ]
-                },
+                    themes: { any: ["nature"] },
+                }
+            ),
+            new ProviderElement("vine-hook", {
+                desc: "Vine Hook",
+                cost: 1,
+                additionalNotes: [
+                    "Launch a vine from the weapon. It can stay attached to the weapon at one end, or detach to link two objects together.",
+                    "Vines can be up to 50-ft long and are as strong as steel."
+                ]
+            },
                 {
                     themes: { any: ["nature"] },
                 }
@@ -1950,47 +1911,141 @@ export default {
                     any: ['nature']
                 }
             }),
-            new ProviderElement('summon-animal-weak', {
-                desc: 'Summon Animal',
-                cost: 5,
-                additionalNotes: [
-                    mkWepToGen((rng) => {
-                        const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
+            new ProviderElement('summon-animal-weak',
+                mkGen((rng, weapon) => {
 
-                        const animal: Record<(typeof quantity), string[]> = {
-                            '': ['a lion', 'a tiger', 'a caracal', 'an ape', 'a kangaroo', 'a horse', 'a boar'],
-                            '1d6 ': ['wolves', 'coyotes', 'thylacines', 'junglefowl'],
-                            '2d6 ': ['mice', 'crickets', 'geckos', 'snails']
+                    const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
+
+                    const sharedAnimals: Record<typeof quantity, string[]> = {
+                        '': ['a caracal', 'an ape', 'a horse', 'a boar'],
+                        '1d6 ': ['wolves', 'coyotes', 'thylacines', 'junglefowl', "hyraxes"],
+                        '2d6 ': ['mice', 'crickets', 'geckos', 'snails', "kiwi birds"]
+                    } as const;
+
+                    const animalsByTheme = {
+                        '': {
+                            ice: ['a leopard seal', 'a white tiger'],
+                            fire: ['a kangaroo', 'a lion', "a camel"],
+
+                            light: ['a sun bear'],
+
+                            cloud: ['an eagle'],
+                            earth: ['a horse-sized earthworm']
+                        },
+                        '1d6 ': {
+                            ice: ['arctic foxes', 'rockhopper penguins'],
+                            fire: ["magma toads", "fennec foxes"],
+
+                            cloud: ['pidgeons', 'owls', 'flying fish'],
+                            earth: ['giant naked mole rats'],
+
+                            light: ["ray cats", "scarab beetles"],
+                            dark: ['murder hornets'],
+                        },
+                        '2d6 ': {
+                            fire: ['salamanders', "elephant shrews"],
+                            ice: ['arctic hares'],
+
+                            cloud: ['butterflies'],
+                            earth: ['olms', 'moles'],
+
+                            wizard: ['coin mimics', 'ink pot mimics'],
                         }
+                    } as const satisfies Record<typeof quantity, Partial<Record<Theme, string[]>>>;
 
-                        return `Call ${quantity} ${animal[quantity].choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
-                    })
-                ]
-            }, {
-                themes: {
-                    any: ['nature']
-                },
-                rarity: {
-                    lte: 'rare'
-                }
-            }),
-            new ProviderElement('summon-animal-strong', {
-                desc: 'Summon Animal',
-                cost: 5,
-                additionalNotes: [
-                    mkWepToGen((rng) => {
-                        const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
+                    const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
 
-                        const animal: Record<(typeof quantity), string[]> = {
-                            '': ['an elephant', 'a rhino', 'a bear', 'a dire wolf', 'a giant carnivorous snail', 'a moose', 'a honey badger', 'a silverback gorilla'],
-                            '1d6 ': ['giant sea termites', 'giant fire ants', 'lions', 'tigers', 'caracals', 'apes', 'kangaroos', 'horses', 'boars'],
-                            '2d6 ': ['rats', 'wolves', 'coyotes', 'beavers', 'owls', 'hawks', 'alpacas', 'ostriches', 'peacocks']
+                    const allAnimals = [...sharedAnimals[quantity], ...themeSpecificAnimals];
+
+                    console.log('weak');
+
+                    return {
+                        desc: 'Summon Animal',
+                        cost: 5,
+                        additionalNotes: [
+                            `Call ${quantity} ${allAnimals.choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
+                        ]
+                    }
+                }),
+                {
+                    themes: {
+                        any: ['nature']
+                    },
+                    rarity: {
+                        lte: 'rare'
+                    }
+                }),
+            new ProviderElement('summon-animal-strong',
+                mkGen((rng, weapon) => {
+                    const quantity = ['' as const, '1d6 ' as const, '2d6 ' as const].choice(rng);
+
+                    const sharedAnimals: Record<(typeof quantity), string[]> = {
+                        '': ['an elephant', 'a rhino', 'a bear', 'a dire wolf', 'a giant carnivorous snail', 'a moose', 'a honey badger', 'a silverback gorilla'],
+                        '1d6 ': ['giant sea termites', 'giant fire ants', 'lions', 'tigers', 'caracals', 'apes', 'kangaroos', 'horses', 'boars'],
+                        '2d6 ': ['rats', 'wolves', 'coyotes', 'beavers', 'owls', 'hawks', 'alpacas', 'ostriches', 'peacocks']
+                    }
+
+                    const animalsByTheme = {
+                        '': {
+                            fire: ['a phoenix'],
+                            ice: ['an akhlut', 'a white tiger', 'a polar bear', "an elephant seal"],
+
+                            cloud: ['a giant eagle', 'a wyvern', 'a kelpie', "a pegasus", 'a living cloud'],
+                            earth: ['a giant death worm', 'a giant enemy crab'],
+
+                            light: ["a pegasus", "a living star"],
+                            dark: ["a cave troll", "a land shark", "an evil and intimidating horse"],
+
+                            sour: ["a giant acid-spitting insect"],
+                            sweet: ["a giant mosquito from the sugar swamps (targets save or suffer high blood sugar)"],
+
+                            wizard: ["a witch's walking hut", "a unicorn", "a griffin", "a hippogriff"],
+                            steampunk: ["motor snail (stats as horse, but twice as fast)"]
+                        },
+                        '1d6 ': {
+                            fire: ["sapient jackals (stats as rogue/thief of ½ wielder's level)", "camels"],
+                            ice: ['winter wolves', 'emperor penguins'],
+
+                            light: ["sun dogs", "moon dogs"],
+                            dark: ['hell hounds', 'zombie wolves'],
+
+                            sour: ['giant plague rats', "giant bombardier beetles"],
+                            sweet: ['fudge foxes'],
+
+                            wizard: ['treasure chest mimic', 'flamingos'],
+                        },
+                        '2d6 ': {
+                            ice: ['arctic foxes', 'rockhopper penguins'],
+                            fire: ["magma toads", "fennec foxes"],
+
+                            cloud: ['hawks', 'eagles', 'flying fish'],
+                            earth: ['giant naked mole rats'],
+
+                            light: ["ray cats", "scarab beetles"],
+                            dark: ['murder hornets'],
+
+                            sweet: ["candy cats", "caramel cats", "marzipan mice", "bumblebees"],
+                            sour: ['lemon frogs', 'bombardier beetles'],
+
+                            wizard: ['coin mimics', 'ink pot mimics'],
                         }
+                    } as const satisfies Record<typeof quantity, Partial<Record<Theme, string[]>>>;
 
-                        return `Call ${quantity}${animal[quantity].choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
-                    })
-                ]
-            }, {
+                    console.log('strong');
+
+                    const themeSpecificAnimals = pickForTheme(weapon, animalsByTheme[quantity] as Record<keyof (typeof animalsByTheme)[typeof quantity], string[]>, rng) ?? [];
+
+                    const allAnimals = [...sharedAnimals[quantity], ...themeSpecificAnimals];
+
+                    return {
+
+                        desc: 'Summon Animal',
+                        cost: 5,
+                        additionalNotes: [
+                            `Call ${quantity}${allAnimals.choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
+                        ]
+                    }
+                }), {
                 themes: {
                     any: ['nature']
                 },
@@ -1998,14 +2053,13 @@ export default {
                     gte: 'epic'
                 }
             }),
-            new ProviderElement('immovable-bc-earth',
-                {
-                    desc: 'Immovable',
-                    cost: 1,
-                    additionalNotes: [
-                        "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
-                    ]
-                },
+            new ProviderElement('immovable-bc-earth', {
+                desc: 'Immovable',
+                cost: 1,
+                additionalNotes: [
+                    "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
+                ]
+            },
                 {
                     themes: { any: ['earth'] },
                     UUIDs: {
@@ -2013,14 +2067,13 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('immovable-bc-weapon-shape',
-                {
-                    desc: 'Immovable',
-                    cost: 1,
-                    additionalNotes: [
-                        "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
-                    ]
-                },
+            new ProviderElement('immovable-bc-weapon-shape', {
+                desc: 'Immovable',
+                cost: 1,
+                additionalNotes: [
+                    "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
+                ]
+            },
                 {
                     shapeFamily: {
                         any: ['greatsword', 'greatsword']
@@ -2251,6 +2304,17 @@ export default {
                     themes: { any: ["fire", "ice", "dark", "light", "wizard", "sweet"] },
                 }
             ),
+            new ProviderElement('smoke-bomb', {
+                desc: 'Smog',
+                cost: 2,
+                additionalNotes: [
+                    'A cloud of black smoke billows from the weapon, filling up to 270000ft³. It chokes characters and is highly flammable.'
+                ]
+            }, {
+                themes: {
+                    any: ['fire', 'dark']
+                }
+            })
         ]
     },
     passives: {
@@ -2839,7 +2903,7 @@ export default {
                 },
                 {
                     rarity: {
-                        gte: 'uncommon'
+                        gte: 'rare'
                     },
                     UUIDs: {
                         none: ['magic-pocket']
@@ -3073,7 +3137,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)']
+                        none: twoHandedWeaponShapeFamilies
                     },
                     UUIDs: {
                         none: ['instant-recall']
@@ -3121,14 +3185,16 @@ export default {
             ),
             new ProviderElement("transform-tool",
                 mkGen((rng, weapon) => {
+                    const isRare = weapon.rarity === 'epic' || weapon.rarity === 'legendary';
+
                     const toolType = {
-                        ice: ['a set of ice picks', 'a toboggan'] as const,
-                        fire: ['a lighter', 'an empty brass brazier'] as const,
-                        cloud: ['a surfboard', 'an umbrella'] as const,
-                        earth: ['a pickaxe', 'a shovel'] as const,
-                        nature: ['a smoking pipe', 'a bouquet of flowers'] as const,
-                        steampunk: ['a pocket watch', 'a wrench'] as const,
-                        wizard: ['a pocket watch', 'a wrench'] as const,
+                        ice: ['a set of ice picks', isRare ? 'a snowboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a snowboard'],
+                        fire: ['a lighter', 'an empty brass brazier'],
+                        cloud: [isRare ? 'a surfboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a surfboard', 'an umbrella'],
+                        earth: [isRare ? 'a diamond pickaxe' : 'a pickaxe', isRare ? 'a diamond shovel' : 'a shovel'],
+                        nature: ['a smoking pipe', 'a bouquet of flowers'],
+                        steampunk: ['a pocket watch', isRare ? 'a skateboard. Tricks restore charges (other players rate 0-5, then take average)' : 'a skateboard'],
+                        wizard: ['a quill'],
                         sweet: ['a whisk', 'an empty biscuit tin']
                     } satisfies Partial<Record<Theme, string[]>>;
 
@@ -3141,7 +3207,7 @@ export default {
                 {
                     themes: { any: ["ice", "fire", "cloud", "earth", "nature", "steampunk", "wizard", "sweet"] },
                 }
-            ),
+            )
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
             //     {
 
