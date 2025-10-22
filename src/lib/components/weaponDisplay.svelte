@@ -3,6 +3,7 @@
         type FlasherInterface,
     } from "$lib/components/Flasher.svelte";
     import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
+    import { pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
     import { textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
@@ -43,6 +44,10 @@
         }
     }
 </script>
+
+<svelte:head>
+    <title>Library of Babel - {weapon.name}</title>
+</svelte:head>
 
 <div
     class={`weapon-display fade-in-${fadeLock ? "1" : "2"}`}
@@ -88,7 +93,9 @@
                         <p>
                             {textForCharges(weapon.active.maxCharges)}. Regains
                             {#if weapon.sentient}
-                                charges when its demands are fulfilled, and
+                                charges when {pronounLoc[weapon.pronouns]
+                                    .singular.possessive} demands are fulfilled,
+                                and
                             {/if}
                             {weapon.active.rechargeMethod}.
                         </p>
@@ -267,6 +274,7 @@
         margin-left: 20pt;
         margin-top: 10pt;
         margin-bottom: 10pt;
+        white-space: pre-line;
     }
     .weapon-generator-list-item > p {
         display: inline;
