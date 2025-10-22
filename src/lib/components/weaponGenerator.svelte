@@ -303,7 +303,6 @@
     }
     .header {
         width: 100%;
-        height: 7.5vh;
 
         display: flex;
         flex-direction: column;
@@ -317,6 +316,7 @@
     }
     @media (orientation: landscape) {
         .header {
+            height: 7.5vh;
             margin-top: 2.5vh;
             margin-bottom: 2.5vh;
         }

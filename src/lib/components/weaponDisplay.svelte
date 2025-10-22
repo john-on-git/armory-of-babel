@@ -198,7 +198,6 @@
         width: 100%;
 
         flex-grow: 1;
-        overflow-y: auto;
 
         padding-bottom: 10pt;
     }
