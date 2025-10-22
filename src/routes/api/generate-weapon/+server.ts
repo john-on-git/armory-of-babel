@@ -46,8 +46,6 @@ export async function GET({ request }: { request: Request, }) {
         v: v === null ? NaN : Number.parseInt(v),
     }
 
-    console.log(weaponRequest);
-
     if (isGenerateWeaponRequest(weaponRequest)) {
 
         const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, FEATURE_PROVIDERS_BY_VERSION[weaponRequest.v]);

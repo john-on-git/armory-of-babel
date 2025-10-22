@@ -75,7 +75,6 @@
                 newReq.v !== null &&
                 !_.isEqual(newReq, weaponState?.req)
             ) {
-                console.log(newReq, weaponState?.req);
                 try {
                     // take just the ID & version from the current searchParams, to post to the API
                     const filteredParams = new URLSearchParams(
