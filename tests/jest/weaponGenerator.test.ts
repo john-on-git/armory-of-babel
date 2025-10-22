@@ -71,7 +71,7 @@ describe('Weapon Generator', () => {
 
     // it('Manual utility / find a weapon with a particular feature', () => {
     //     function cond(weapon: WeaponViewModel): boolean {
-    //         return weapon.active.powers.some(x => x.desc.includes('Homing Shot'));
+    //         return weapon.active.powers.some(x => x.desc.includes('Summon Animal'));
     //     }
     //     const start = 0;
     //     const attempts = 10000;
@@ -81,9 +81,15 @@ describe('Weapon Generator', () => {
     //     let weapon: WeaponViewModel;
 
     //     do {
-    //         weapon = mkWeapon(weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], (++i).toString()).weaponViewModel;
+    //         weapon = mkWeapon((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]).weaponViewModel;
     //     } while (i <= end && !cond(weapon));
-    //     console.log(weapon);
+
+    //     if (cond(weapon)) {
+    //         console.log(JSON.stringify(weapon, undefined, 1));
+    //     }
+    //     else {
+    //         console.error(JSON.stringify(weapon, undefined, 1));
+    //     }
     //     expect(cond(weapon)).toBe(true);
     // })
 })
