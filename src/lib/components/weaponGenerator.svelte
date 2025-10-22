@@ -8,6 +8,7 @@
     import { StatusCodes } from "http-status-codes";
     import _ from "lodash";
     import { onMount, tick } from "svelte";
+    import { MediaQuery } from "svelte/reactivity";
     import type {
         GenerateWeaponRequest,
         GenerateWeaponResponse,
@@ -22,6 +23,15 @@
         req: GenerateWeaponRequest;
         res?: GenerateWeaponResponse;
     } | null>(null);
+
+    /**
+     * The display swaps between two animations each
+     * time a new demand is generated, so that the animation
+     * always triggers. fadeLock represents which one it's using
+     */
+    let fadeLock = $state(false);
+
+    let isPortrait = new MediaQuery("orientation: portrait");
 
     const weapon = $derived.by<WeaponViewModel | null>(() => {
         if (odds === null || !weaponState?.res) {
@@ -186,46 +196,92 @@
      */
     function generateWeapon() {
         syncIdToURL(getNewId());
+
+        weaponState = null;
+
+        // switch animations
+        fadeLock = !fadeLock;
+    }
+
+    /**
+     * go back in history
+     */
+    function goBack() {
+        history.back();
     }
 </script>
 
 <div class="weapon-generator">
-    {#if weapon !== null}
-        <WeaponDisplay {weapon} />
+    <div class="header">
+        <h1>Armory of Babel</h1>
+    </div>
+    <div class="body">
+        <div class="weapon-display-container">
+            {#if weapon !== null}
+                <WeaponDisplay {weapon} {fadeLock} />
+            {/if}
+        </div>
+    </div>
+    {#if isPortrait.current}
+        <button
+            class="portrait-generate-button"
+            data-testid="portrait-generate-button"
+            onclick={generateWeapon}>Generate</button
+        >
+    {:else}
+        <button
+            class="back-button"
+            data-testid="generate-button"
+            onclick={generateWeapon}>←</button
+        >
+        <button
+            class="generate-button"
+            data-testid="generate-button"
+            onclick={goBack}>→</button
+        >
     {/if}
-    <button
-        class="generate-button"
-        data-testid="weapon-generator-generate-button"
-        onclick={generateWeapon}>Generate</button
-    >
 </div>
 
 <style>
-    @media (orientation: landscape) {
-        .weapon-generator {
-            margin-left: 10vw;
-            margin-right: 10vw;
-        }
-    }
-    @media (orientation: portrait) {
-        .weapon-generator {
-            margin-left: 5vw;
-            margin-right: 5vw;
-        }
-    }
-
     .weapon-generator {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        position: relative;
-
         flex-grow: 1;
+        width: 100vw;
+    }
+    .header {
+        width: 100%;
+        height: 7.5vh;
+
+        display: flex;
+        flex-direction: row;
+        gap: 10%;
+
+        align-items: center;
+        justify-content: center;
+
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+    @media (orientation: landscape) {
+        .header {
+            margin-top: 2.5vh;
+            margin-bottom: 2.5vh;
+        }
+    }
+    .header > * {
+        height: 100%;
+    }
+    .header > h1 {
+        margin: 0;
+
+        font-size: 3.2em;
+        line-height: 1.1;
+
+        text-wrap: none;
     }
 
-    .generate-button {
-        height: 3rem;
+    .header > button {
+        flex-basis: 20rem;
+
         display: flex;
         align-items: center;
         justify-content: center;
@@ -233,5 +289,56 @@
         margin-top: auto;
 
         width: fit-content;
+
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+
+    @media (orientation: landscape) {
+        .body {
+            margin-left: 10vw;
+            margin-right: 10vw;
+        }
+    }
+    @media (orientation: portrait) {
+        .body {
+            margin-left: 5vw;
+            margin-right: 5vw;
+        }
+    }
+
+    .body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        position: relative;
+
+        flex-grow: 1;
+
+        margin-bottom: 1rem;
+    }
+
+    .weapon-display-container {
+        display: flex;
+        flex-grow: 1;
+    }
+
+    .mobile-generate-button {
+    }
+
+    .generate-button,
+    .back-button {
+        position: fixed;
+
+        height: 10vh;
+        top: 40vh;
+    }
+    .generate-button {
+        right: 10vw;
+    }
+
+    .back-button {
+        left: 10vw;
     }
 </style>
