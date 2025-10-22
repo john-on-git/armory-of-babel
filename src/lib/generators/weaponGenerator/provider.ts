@@ -57,32 +57,48 @@ export interface Cond {
     never?: true;
 }
 
+
+function gatherIDs<T extends object>(x: T, acc: Set<string>): Set<string> {
+    // get all the UUIDs of all patchables in the subtree
+    Object.values(x).forEach((x) => {
+        if (typeof x === 'object' && x !== null && x !== undefined) {
+            if ('UUID' in x) {
+                acc.add(x.UUID);
+            }
+            gatherIDs(x, acc);
+        }
+    });
+    return acc;
+}
+
+export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { set: Set<string> }) {
+
+    if ('target' in x) {
+
+        const allIDs = gatherIDs(x, new Set());
+
+        return evQuant(quantUUID, Array.from(allIDs.values()));
+    }
+    else {
+        return evQuant(quantUUID, Array.from(x.set.values()));
+    }
+}
+
 export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
     protected source: ProviderElement<TThing, TCond>[];
+    protected defaultAllowDuplicates: boolean;
 
-    constructor(source: ProviderElement<TThing, TCond>[]) {
+    constructor(source: ProviderElement<TThing, TCond>[], defaultAllowDuplicates = false) {
         this.source = source;
+        this.defaultAllowDuplicates = defaultAllowDuplicates;
     }
 
     protected condExecutor(UUID: string, cond: TCond, params: TParams): boolean {
         if (cond.never === true) {
             return false;
         }
-
-        function gatherIDs<T extends object>(x: T, acc: Set<string>): Set<string> {
-            // get all the UUIDs of all patchables in the subtree
-            Object.values(x).forEach((x) => {
-                if (typeof x === 'object' && x !== null && x !== undefined) {
-                    if ('UUID' in x) {
-                        acc.add(x.UUID);
-                    }
-                    gatherIDs(x, acc);
-                }
-            });
-            return acc;
-        }
         // if the cond doesn't use either of the conditions that require checking UUIDs, there's no point in checking the params' UUIDs. just return true
-        if (cond.allowDuplicates === true && cond.UUIDs === undefined) {
+        if ((cond.allowDuplicates || this.defaultAllowDuplicates) === true && cond.UUIDs === undefined) {
             return true;
         }
         else {
@@ -94,7 +110,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
                 (cond.allowDuplicates || !allIDs.has(UUID)) &&
 
                 // cond.others provided -> cond.others is satisfied (de-morgan's)
-                (cond.UUIDs === undefined || evQuant(cond.UUIDs, Array.from(allIDs.values())))
+                (cond.UUIDs === undefined || evQuantUUID(cond.UUIDs, { set: allIDs }))
             );
         }
     };

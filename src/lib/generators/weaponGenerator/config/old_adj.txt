@@ -30,11 +30,6 @@
 ),
             ...(
     [
-        "Shadow-Wreathed",
-        "stygian",
-        "abyssal",
-        "spiked",
-        "Blood-Stained"
     ].map(adj => new ProviderElement<WeaponAdjective, WeaponPowerCond>(adj.toLowerCase(), { desc: adj }, { themes: {any: new Set(["dark"]) } }))
 ),
             ...(

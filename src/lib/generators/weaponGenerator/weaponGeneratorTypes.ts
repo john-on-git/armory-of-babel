@@ -171,7 +171,7 @@ export interface PassiveBonus {
 } // TODO
 
 export interface ChargedPower extends Power {
-    desc: string | (TGenerator<string, [Weapon]>);
+    desc: string;
     cost: number | string;
 }
 export interface UnlimitedChargedPower extends Power {
@@ -544,7 +544,7 @@ export function structureDescFor(shape: WeaponShape) {
         }, {} as Record<WeaponPartName, WeaponPart>),
 
     };
-    return [structure, structuredDesc as StructuredDescription] as const;
+    return structuredDesc as StructuredDescription;
 }
 
 export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
@@ -643,7 +643,7 @@ export interface FeatureProviderCollection {
     shapeProvider: WeaponFeatureProvider<WeaponShape>;
 
     rechargeMethodProvider: WeaponFeatureProvider<RechargeMethod>;
-    activePowerProvider: WeaponFeatureProvider<ActivePower>;
+    activePowerProvider: WeaponFeatureProvider<ActivePower | TGenerator<ActivePower, [Weapon]>>;
 
     passivePowerOrLanguageProvider: WeaponFeatureProvider<PassivePower | TGenerator<PassivePower, [Weapon]>>;
     languageProvider: WeaponFeatureProvider<Language>;
@@ -656,7 +656,7 @@ export interface WeaponFeaturesTypes {
     personalities: ProviderElement<Personality>
 
     rechargeMethods: ProviderElement<RechargeMethod>;
-    actives: ProviderElement<ActivePower>;
+    actives: ProviderElement<ActivePower | TGenerator<ActivePower, [Weapon]>>;
 
     passives: ProviderElement<PassivePower | TGenerator<PassivePower, [Weapon]>>;
     languages: ProviderElement<Language>;

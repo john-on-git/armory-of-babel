@@ -1,4 +1,5 @@
 import v1 from "$lib/generators/weaponGenerator/config/v1";
+import v2 from "$lib/generators/weaponGenerator/config/v2";
 import type { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DescriptorGenerator, type FeatureProviderCollection, type Theme, type WeaponFeaturesTypes } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -8,10 +9,10 @@ import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPat
 
 export const weaponFeatureVersionController = new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<WeaponFeaturesTypes>, FeatureProviderCollection>([
     v1,
-
+    v2,
     // ,{
     //     themes: {},
-    //     adjectives: {},
+    //     descriptors: {},
     //     personalities: {},
     //     rechargeMethods: {},
     //     actives: {},
@@ -22,7 +23,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
 ], (x) => {
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
-        descriptors: new WeaponFeatureProvider(x.descriptors),
+        descriptors: new WeaponFeatureProvider(x.descriptors, true),
         descriptorIndex: (x.descriptors as ProviderElement<DescriptorGenerator>[]).reduce<Record<string, DescriptorGenerator & { UUID: string }>>((acc, gen) => {
             acc[gen.UUID] = {
                 ...gen.thing,

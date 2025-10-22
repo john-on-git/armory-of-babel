@@ -1,4 +1,4 @@
-import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn } from "$lib/generators/foes";
+import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { capFirst } from "$lib/util/string";
@@ -115,20 +115,21 @@ const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as
 // export const eph_TEMPLATE = [] satisfies Ephitet[];
 
 const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
-export const ephCold = [{ pre: "Icy" }, { pre: "Frigid" }, { pre: "Silent" }, { post: "of the North Star" }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
-export const ephHot = [{ pre: 'TODO' }] satisfies Ephitet[];
+export const ephCold = [{ pre: "Icebound" }, { pre: "Frostbound" }, { pre: "Frigid" }, { pre: "Silent" }, { post: "of the North Star" }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
+export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: 'of the Bonfire Keeper' }, { post: 'of the Scorchlands' }, { pre: 'Burning' }] satisfies Ephitet[];
 const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
 export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: 'of the Zephyr' }, { post: 'of the Skylands' }, { post: 'of the Cloud Giants' }, { post: 'of the Butterfly Lords' }, { post: 'of the Valkyrie Queen' }] satisfies Ephitet[];
-export const ephSteampunk = [{ pre: 'of the Empire' }, { pre: 'Cloudborn' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
+export const ephWizard = [{ post: 'of the Wizard' }, { post: 'of Stars' }, { post: 'of the Cosmos' }] satisfies Ephitet[];
+export const ephSteampunk = [{ post: 'of the Empire' }, { pre: 'Cloudborn' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
 
 export const ephTransparent = [{ pre: 'Glass' }, { post: 'of Glass' }, { pre: 'Translucent' }] satisfies Ephitet[];
 export const ephGlowy = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }];
 
 export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { post: 'of Selene' }] satisfies Ephitet[];
-export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: 'of Chaos' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }];
+export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: 'of Chaos' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: 'of Shadows' }];
 export const ephRainbow = ['Prismatic', 'Rainbow', 'Variegated', 'Multicolored', 'Kaleidosopic', 'Polychromatic']
 
-export const ephRed = [{ pre: 'Crimson' }, { pre: 'Bloodied' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ', Herald of the King in Red' }] satisfies Ephitet[];
+export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ', Herald of the King in Red' }] satisfies Ephitet[];
 // TODO these need more stuff
 export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] satisfies Ephitet[];
 export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }] satisfies Ephitet[];
@@ -197,6 +198,18 @@ export const MATERIALS = {
         material: 'plywood',
         ephitet: { pre: 'Compliant' }
     } as const,
+    cedarWood: {
+        material: 'cedar wood',
+        ephitet: { post: 'of the Cedar Copse' }
+    } as const,
+    ygdrassilWood: {
+        material: 'the wood of Ygdrassil, the world tree',
+        ephitet: mkGen((rng) => ephWizard.choice(rng))
+    } as const,
+    magicWood: {
+        material: 'purple mageleaf wood',
+        ephitet: mkGen((rng) => ephWizard.choice(rng))
+    } as const,
 
     ivory: {
         material: 'ivory',
@@ -219,12 +232,35 @@ export const MATERIALS = {
             ephitet: { post: `of the ${creature.capFirst()}` }
         } as Descriptor;
     }),
+    magicHorn: mkGen((rng) => {
+        const [creature, protrusionName] = magicAnimalHorn.generate(rng);
+
+        return {
+            material: `${creature} ${protrusionName}`,
+            ephitet: { post: `of the ${creature.capFirst()}` }
+        } as Descriptor;
+    }),
     darkLeather: mkGen((rng) => {
         const [creature, skinName] = darkAnimalSkin.generate(rng);
 
+        function ephFor(val: typeof creature) {
+            switch (val) {
+                case 'elf':
+                    return [{ post: "of the Dwarves" }, { post: "of the Dwarven Lords" }].choice(rng);
+                case 'dwarf':
+                    return [{ pre: "Dwarfslayer's" }].choice(rng);
+                case 'human':
+                    return [{ pre: "Manslayer's" }, { post: 'of the Cannibal' }].choice(rng);
+                case 'orc':
+                    return [{ pre: "Orcslayer's" }, { post: 'of Orc City' }].choice(rng);
+                default:
+                    return { post: `of the ${creature.capFirst()}` };
+            }
+        }
+
         return {
             material: `${creature} ${skinName}`,
-            ephitet: { post: `of the ${creature.capFirst()}` }
+            ephitet: ephFor(creature)
         } as Descriptor;
     }),
 
@@ -608,7 +644,7 @@ export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver'
 /**
  * Parts of a weapon that a sentient weapon's eyes can be placed on.
  */
-export const eyeAcceptingParts = ['crossguard', 'head', 'heads', 'chain', 'chains', 'shaft', 'body', 'base', 'quiver', 'limbs'] as const satisfies WeaponPartName[];
+export const eyeAcceptingParts = ['crossguard', 'head', 'heads', 'chain', 'chains', 'tip', 'body', 'base', 'quiver', 'limbs'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that a sentient weapon's mouth can be placed on.

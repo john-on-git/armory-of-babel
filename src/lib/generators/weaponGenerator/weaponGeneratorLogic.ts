@@ -3,10 +3,15 @@ import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
 import "$lib/util/choice";
 import '$lib/util/string';
 import _ from "lodash";
-import seedrandom from "seedrandom";
-import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
+import seedrandom, { type PRNG } from "seedrandom";
+import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, linkingIsOrPossessionFor, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+
+
+export function pickForTheme<TKey extends Theme, TRes>(weapon: Weapon, mapsTo: Record<TKey, TRes>, rng: PRNG): TRes {
+    return mapsTo[(weapon.themes.filter(theme => theme in mapsTo) as (keyof typeof mapsTo)[]).choice(rng)];
+}
 
 /**
  * 
@@ -100,55 +105,70 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
     }
 }
 
-function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
-    function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureDescFor>) {
-        const allApplicableParts = _
-            .entries(structure)
-            .flatMap(([k, parts]) =>
-                parts.filter(part =>
-                    ((applicableTo === undefined) || evQuant(applicableTo, part)) &&
-                    (!checkMaterial || structuredDesc[k as keyof typeof structure][part].material === undefined)
-                ).map(part => [k, part]) as [keyof typeof structure, WeaponPartName][]
-            );
-        // 2. choose one at random
-        return allApplicableParts.choice(rng);
+//                 TO
+//               TODO
+//               TODO
+//               TODO
+// TODO TODO TODO     In the function below, look at the weapon structure itself, running the quant on the weapon parts. This is to allow the same descriptor to be
+// TODO TODO TODO DO  picked on multiple parts of the same weapon. We also need to disable the quant checking on the call to featureProviders.descriptors.draw, I guess
+// TODO TODO TODO     we can just make them all allow duplicates and then pass in a custom cond in applyDescriptionPartProvider { none: [thisDesc.UUID] } simple as
+//               TODO                                             
+//               TODO                                                     
+//               TODO                                                         
+//                 DO
+
+function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon) {
+    function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined) {
+        if (weapon.description === null) {
+            return undefined
+        }
+        else {
+            // get all the parts that we can apply this descriptor to
+            const allApplicableParts = _
+                .values(weapon.description)
+                .flatMap(parts => _.entries(parts).filter(([partName, part]) =>
+                    ((applicableTo === undefined) || evQuant(applicableTo, partName)) &&
+                    (!checkMaterial || part.material === undefined) && // we can't apply a material to a part that already has one
+                    evQuantUUID({ none: [descriptorGenerator.UUID] }, { target: part }))) as [WeaponPartName, WeaponPart][];
+            // 2. choose one at random
+            return allApplicableParts.choice(rng);
+        }
     }
 
     // generate the thing.
-    const descriptor = provider.generate(rng, weapon);
+    const descriptor = descriptorGenerator.generate(rng, weapon);
 
     // find the chosen part in structuredDesc and apply the provider's output to it 
     // if it's a material we also have to filter out parts that already have a material
     if ('material' in descriptor) {
 
-        const targetPart = choosePart(rng, true, provider.applicableTo, structure, structuredDesc);
+        const choice = choosePart(rng, true, descriptorGenerator.applicableTo);
 
         // if we fail to get a part, try to handle it gracefully
-        if (targetPart !== undefined) {
-            structuredDesc[targetPart[0]][targetPart[1]].material = {
+        if (choice !== undefined) {
+            choice[1].material = {
                 desc: genMaybeGen(descriptor.material, rng, weapon),
                 ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
-                UUID: provider.UUID
+                UUID: descriptorGenerator.UUID
             };
         }
     }
     else {
-        const targetPart = choosePart(rng, false, provider.applicableTo, structure, structuredDesc);
+        const choice = choosePart(rng, false, descriptorGenerator.applicableTo);
 
         // if we fail to get a part, try to handle it gracefully
-        if (targetPart !== undefined) {
-            const desc = genMaybeGen(descriptor.descriptor, rng, weapon);
-            structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
-                descType: desc.descType,
-                desc: genMaybeGen(desc[getPlurality(targetPart[1])], rng, weapon, targetPart[1]),
+        if (choice !== undefined) {
+            choice[1].descriptors.push({
+                descType: descriptor.descriptor.descType,
+                desc: genMaybeGen(descriptor.descriptor[getPlurality(choice[0])], rng, weapon, choice[0]),
                 ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
-                UUID: provider.UUID
+                UUID: descriptorGenerator.UUID
             });
         }
     }
 }
 
-function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>[1]): Ephitet | undefined {
+function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>): Ephitet | undefined {
     const maybeEphitets = Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
     return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng);
 }
@@ -206,8 +226,8 @@ export function toProviderSource<TKey extends string | number | symbol, T1, T2>(
 
 
 export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
-    constructor(source: ProviderElement<T, WeaponPowerCond>[]) {
-        super(source);
+    constructor(source: ProviderElement<T, WeaponPowerCond>[], defaultAllowDuplicates = false) {
+        super(source, defaultAllowDuplicates);
     }
 
     protected override condExecutor(UUID: string, cond: WeaponPowerCond, params: WeaponPowerCondParams): boolean {
@@ -348,7 +368,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     weapon.damage.as = weapon.shape.group;
 
     // generate the structure for the weapon's parts
-    const [structure, structuredDesc] = structureDescFor(weapon.shape);
+    const structuredDesc = structureDescFor(weapon.shape);
     /**
      * It's important that we attach it to the weapon.
      * When drawing descriptions, providers will check that the UUIDs of the previously drawn abilities are on the weapon. 
@@ -439,14 +459,11 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     for (let i = 0; i < params.nActive; i++) {
         const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
-            weapon.active.powers.push({
-                ...choice,
-                desc: genMaybeGen(choice.desc, rng, weapon),
-                additionalNotes: choice.additionalNotes?.map(x => genMaybeGen(x, rng, weapon))
-            });
+            const gennedChoice = genMaybeGen(choice, rng, weapon);
+            weapon.active.powers.push(gennedChoice);
 
-            if (choice.descriptorPartGenerator) {
-                featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
+            if (gennedChoice.descriptorPartGenerator) {
+                featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator])
             }
         }
     }
@@ -454,15 +471,14 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     for (let i = 0; i < params.nUnlimitedActive; i++) {
         const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
+            const gennedChoice = genMaybeGen(choice, rng, weapon)
             weapon.active.powers.push({
-                ...choice,
+                ...gennedChoice,
                 cost: 'at will',
-                desc: genMaybeGen(choice.desc, rng, weapon),
-                additionalNotes: choice.additionalNotes?.map(x => genMaybeGen(x, rng, weapon))
             });
 
-            if (choice.descriptorPartGenerator) {
-                featureDescriptorProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
+            if (gennedChoice.descriptorPartGenerator) {
+                featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator])
             }
         }
     }
@@ -471,7 +487,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     weapon.active.maxCharges =
         weapon.active.powers
             .filter(x => x.cost != 'at will')
-            .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 0 : x.cost, acc), weapon.active.maxCharges);
+            .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 1 : x.cost, acc), weapon.active.maxCharges);
 
 
     /** 
@@ -496,7 +512,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
     for (const featureDescriptorProvider of featureDescriptorProviders) {
-        applyDescriptionPartProvider(rng, featureDescriptorProvider, weapon, structure, weapon.description);
+        applyDescriptionPartProvider(rng, featureDescriptorProvider, weapon);
 
         nDescriptors++;
         if (nDescriptors >= MAX_DESCRIPTORS) {
@@ -508,13 +524,13 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     while (nDescriptors < MAX_DESCRIPTORS) {
 
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
-        applyDescriptionPartProvider(rng, descriptorProvider, weapon, structure, weapon.description);
+        applyDescriptionPartProvider(rng, descriptorProvider, weapon);
         nDescriptors++;
     }
 
     // if it is sentient, also apply eyes and a mouth
     if (weapon.sentient) {
-        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-eyes'], weapon, structure, weapon.description);
+        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-eyes'], weapon);
         //applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-mouth'], weapon, structure, weapon.description);
     }
 
