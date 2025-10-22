@@ -217,7 +217,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 // }
 
                 const materialStr = part.material === undefined ? '' : `${isAre(partName)} made of ${part.material.desc}${descriptors.length > 1
-                    ? ','
+                    ? ', '
                     : descriptors.length === 1
                         ? `, and `
                         : ''
@@ -225,14 +225,14 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
                 // join the descriptors together in a grammatical list: with commas and the word 'and' before the last element
                 const descriptorsStr = descriptors.length > 1
-                    ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
+                    ? `${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
                     : descriptors.length === 1
                         ? `${descriptors[0]}`
                         : '';
 
                 usedAndThisSentence = usedAndThisSentence || usesAnd(parts[i][1]);
 
-                const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
+                const partStr = `${start} ${partName}${materialStr}${descriptorsStr}`;
 
                 // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
                 // but don't merge more than two

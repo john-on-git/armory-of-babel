@@ -445,9 +445,9 @@ export function getPlurality(name: WeaponPartName) {
 export function isAre(name: WeaponPartName) {
     switch (getPlurality(name)) {
         case 'singular':
-            return 'is';
+            return ' is';
         case 'plural':
-            return 'are';
+            return ' are';
     }
 }
 export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
@@ -456,7 +456,7 @@ export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
         case 'singular':
             switch (type) {
                 case 'possession':
-                    return 'has ';
+                    return ' has ';
                 case 'property':
                     return "";
                 case undefined:
@@ -467,7 +467,7 @@ export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
         case 'plural':
             switch (type) {
                 case 'possession':
-                    return 'have ';
+                    return ' have ';
                 case 'property':
                     return "";
                 case undefined:

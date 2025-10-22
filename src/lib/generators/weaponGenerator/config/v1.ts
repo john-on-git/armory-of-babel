@@ -1284,8 +1284,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: mkGen((_, __, partName) => `'s partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
-                                plural: mkGen((_, __, partName) => `'re partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
+                                singular: mkGen((_, __, partName) => ` is partially transparent, revealing a beating heart at its core, which emits a gentle crimson glow that diffuses through the ${partName}`),
+                                plural: mkGen((_, __, partName) => ` are partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
                             },
                             ephitet: mkGen((rng) => ephRed.choice(rng)),
                         }
@@ -1357,8 +1357,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: "'s criss-crossed by a complex system of geometric lines, which glow with golden energy",
-                                plural: "'re criss-crossed by a complex system of geometric lines, which glow with golden energy"
+                                singular: " is criss-crossed by a complex system of geometric lines, which glow with golden energy",
+                                plural: " are criss-crossed by a complex system of geometric lines, which glow with golden energy"
                             },
                             ephitet: mkGen((rng) => ephGold.choice(rng)),
                         }
@@ -1380,8 +1380,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: "'s shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
-                                plural: "'re shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
+                                singular: " is shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
+                                plural: " are shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
                             },
                             ephitet: mkGen((rng) => ephBlack.choice(rng)),
                         }
