@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Toaster, {
-        type ToasterInteface,
-    } from "$lib/components/Toaster.svelte";
+    import Flasher, {
+        type FlasherInterface,
+    } from "$lib/components/Flasher.svelte";
     import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
     import { textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -13,7 +13,7 @@
 
     let { weapon, fadeLock }: Props = $props();
 
-    let toaster: ToasterInteface;
+    let flasher: FlasherInterface;
 
     /** Text for the weapon's damage. i.e. "as sword + d6 + 1"
      */
@@ -38,8 +38,8 @@
     function copyWeaponLink() {
         navigator.clipboard.writeText(window.location.href);
 
-        if (toaster !== undefined) {
-            toaster.toast("copied to clipboard");
+        if (flasher !== undefined) {
+            flasher.flash();
         }
     }
 </script>
@@ -63,7 +63,7 @@
             >
                 <i class="fa-solid fa-link"></i>
             </button>
-            <Toaster bind:this={toaster} />
+            <Flasher bind:this={flasher} text={"copied to clipboard"} />
         </div>
     </div>
     <div class="weapon-display-body" data-test>

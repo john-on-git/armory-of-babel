@@ -248,9 +248,11 @@
     :global(.fade-in-2) {
         animation: 0.666s ease-in 0s 1 fade-in-2 forwards;
     }
-    :global(.fade-out) {
-        animation: 0.666s ease-in 0s 1 fade-in-2 forwards;
-        animation-direction: reverse;
+    :global(.fade-out-1) {
+        animation: 0.666s ease-out 0s 1 fade-in-1 reverse;
+    }
+    :global(.fade-out-2) {
+        animation: 0.666s ease-out 0s 1 fade-in-2 reverse;
     }
     :global(.fade-in-fast) {
         animation: 0.2s ease-in 0s 1 fade-in-1 forwards;
