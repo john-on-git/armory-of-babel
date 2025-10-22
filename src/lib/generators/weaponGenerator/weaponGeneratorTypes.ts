@@ -235,6 +235,7 @@ export interface WeaponPowerCond extends Cond {
     activePowers?: Quant<ActivePower>;
     passivePowers?: Quant<PassivePower>;
     shapeFamily?: Quant<WeaponShape['group']>;
+    shapeParticular?: Quant<WeaponShape['particular']>;
     rarity?: Comp<WeaponRarity>;
     isSentient?: boolean;
 }
@@ -419,7 +420,7 @@ export type Ephitet = {
 export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & {
     ephitet: Ephitet | TGenerator<Ephitet, [Weapon]>;
 };
-export type DescriptorGenerator<TArgs extends Array<unknown> = []> = TGenerator<Descriptor, TArgs> & {
+export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
 };
 

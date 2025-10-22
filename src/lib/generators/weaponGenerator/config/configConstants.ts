@@ -14,6 +14,7 @@ export const sharpWeaponShapeFamilies = [...edgedWeaponShapeFamilies, ...pointed
 export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)'] as const satisfies WeaponShapeGroup[];
 export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)', 'club', 'mace'] as const satisfies WeaponShapeGroup[];
 
+export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"];
 
 // reused descriptors and materials
 
@@ -110,9 +111,13 @@ export const MATERIALS = {
         material: 'pine wood',
         ephitet: { post: 'of the Tundra' }
     } as const,
-    cherry: {
+    cherryNormal: {
         material: 'cherry wood',
-        ephitet: mkGen((rng) => ({ pre: [''].choice(rng) }))
+        ephitet: { pre: 'Cherry' }
+    } as const,
+    cherryAnime: {
+        material: 'cherry wood',
+        ephitet: { post: 'of the Sakura Forest' }
     } as const,
     maple: {
         material: 'maple wood',

@@ -23,7 +23,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
     }
 
     // generate the thing.
-    const descriptor = provider.generate(rng);
+    const descriptor = provider.generate(rng, weapon);
 
     // find the chosen part in structuredDesc and apply the provider's output to it 
     // if it's a material we also have to filter out parts that already have a material
@@ -134,7 +134,8 @@ export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, Weapon
             (!cond.activePowers || evQuant(cond.activePowers, params.active.powers)) && // actives OK
             (!cond.passivePowers || evQuant(cond.passivePowers, params.passivePowers)) && // passives OK
             (!cond.languages || evQuant(cond.languages, params.sentient ? params.sentient.languages : [])) && // languages OK
-            (!cond.shapeFamily || evQuant(cond.shapeFamily, params.shape.group)) // shapes OK
+            (!cond.shapeFamily || evQuant(cond.shapeFamily, params.shape.group)) && // shapes OK
+            (!cond.shapeParticular || evQuant(cond.shapeParticular, params.shape.particular)) // shape particular OK
         );
     }
 }
