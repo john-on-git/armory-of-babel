@@ -633,7 +633,7 @@ export const hardNonHoldingParts = ['blade', 'blades', 'tip', 'head', 'heads', '
 /**
  * Parts of a weapon that are used to hold it. Usually made of wood.
  */
-export const holdingParts = ['body', 'shaft', 'grip', 'limbs'] as const satisfies WeaponPartName[];
+export const holdingParts = ['body', 'grip', 'limbs'] as const satisfies WeaponPartName[];
 
 /**
  * Parts of a weapon that could have something wrapped around them (like a string or piece of cloth).
