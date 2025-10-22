@@ -1,0 +1,37 @@
+import type { WeaponRarity, WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import _ from "lodash";
+
+
+export function calcOdds(
+    config: WeaponRarityConfig,
+): [number, number, number, number] {
+    return [
+        0,
+        1 - config.uncommon.percentile,
+        1 - config.rare.percentile,
+        1 - config.epic.percentile,
+    ].map(x => Number(x.toFixed(2))) as [number, number, number, number];
+}
+
+export function applyOddsToConfig(config: WeaponRarityConfig, odds: [number, number, number, number]) {
+    const POSITION: Record<Exclude<WeaponRarity, "common">, 0 | 1 | 2 | 3> = {
+        uncommon: 0,
+        rare: 1,
+        epic: 2,
+        legendary: 3,
+    };
+
+    return _.transform(
+        _.omit(config, "common"),
+        (acc, v, k: Exclude<WeaponRarity, "common">) => {
+            acc[k] = {
+                ...v,
+                percentile: Number((1 - odds[POSITION[k]]).toFixed(2)),
+            };
+            return true;
+        },
+        {
+            common: { ...config.common },
+        } as WeaponRarityConfig, // type is wrong? seems to work fine...
+    )
+}

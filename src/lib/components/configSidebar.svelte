@@ -1,10 +1,7 @@
 <script lang="ts">
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
-    import {
-        type WeaponRarity,
-        type WeaponRarityConfig,
-    } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-    import * as _ from "lodash";
+    import { type WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
     import { type Writable } from "svelte/store";
     import RaritySlider from "./raritySlider.svelte";
     import Sidebar from "./sidebar.svelte";
@@ -16,50 +13,12 @@
 
     const { config, configWritable }: Props = $props();
 
-    function toPercentile(rarity: Exclude<WeaponRarity, "common">) {
-        switch (rarity) {
-            case "uncommon":
-                return 1 - odds[0];
-            case "rare":
-                return 1 - odds[1];
-            case "epic":
-                return 1 - odds[2];
-            case "legendary":
-                return 1 - odds[3];
-            default:
-                return rarity satisfies never;
-        }
-    }
-
     let odds = $state(calcOdds((() => config)()));
 
-    $effect(() =>
+    function onOddsChanged(odds: [number, number, number, number]) {
         configWritable.update((prevValue) =>
-            _.transform(
-                _.omit(prevValue, "common"),
-                (acc, v, k: Exclude<WeaponRarity, "common">) => {
-                    acc[k] = {
-                        ...v,
-                        percentile: Number(toPercentile(k).toFixed(2)),
-                    };
-                    return true;
-                },
-                {
-                    common: { ...prevValue.common },
-                } as WeaponRarityConfig, // type is wrong? seems to work fine...
-            ),
-        ),
-    );
-
-    function calcOdds(
-        config: WeaponRarityConfig,
-    ): [number, number, number, number] {
-        return [
-            0,
-            1 - config.uncommon.percentile,
-            1 - config.rare.percentile,
-            1 - config.epic.percentile,
-        ];
+            applyOddsToConfig(prevValue, odds),
+        );
     }
 
     function resetToDefault() {
@@ -73,7 +32,7 @@
         <h2>Custom Generation Parameters</h2>
         <button onclick={resetToDefault}>🗑️</button>
         <div>
-            <RaritySlider bind:odds />
+            <RaritySlider bind:odds onChange={onOddsChanged} />
         </div>
     </div>
 </Sidebar>

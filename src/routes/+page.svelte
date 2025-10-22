@@ -2,14 +2,86 @@
     import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
+    import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
+    import _, { isArray } from "lodash";
     import { writable } from "svelte/store";
 
-    let config = $state(defaultWeaponRarityConfigFactory());
+    function getConfigFromURL(): WeaponRarityConfig {
+        let config = defaultWeaponRarityConfigFactory();
+
+        // these are user input and could be literally anything, i.e. an XSS attack
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // get the rarity odds
+        const maybeURIEncodedUnsafeJSON = urlParams.get("rarityOdds");
+
+        if (maybeURIEncodedUnsafeJSON !== null) {
+            const unsafeJSON = JSON.parse(decodeURI(maybeURIEncodedUnsafeJSON));
+            console.log(unsafeJSON);
+
+            function asNumber(x: unknown) {
+                return typeof x === "number" && x >= 0 && x <= 1 ? x : NaN;
+            }
+
+            if (isArray(unsafeJSON)) {
+                const odds: [number, number, number, number] = [
+                    asNumber(unsafeJSON[0]),
+                    asNumber(unsafeJSON[1]),
+                    asNumber(unsafeJSON[2]),
+                    asNumber(unsafeJSON[3]),
+                ];
+                console.log(odds);
+                if (odds.every((x) => !Number.isNaN(x))) {
+                    config = applyOddsToConfig(config, odds);
+                }
+            }
+        }
+
+        return config;
+    }
+
+    const defaultConfig = $state(defaultWeaponRarityConfigFactory());
+    const defaultOdds = $derived(calcOdds(defaultConfig));
+
+    let config = $state(getConfigFromURL());
     const configWritable = writable((() => config)());
 
     configWritable.subscribe((newVal) => {
         config = newVal;
-        // TODO also update the URL
+
+        // if a section of the config is not default, also update the URL
+
+        // only add the id param if it wasn't added already
+        const searchParams = new URLSearchParams(window.location.search);
+
+        const odds = calcOdds(config);
+
+        let changedURL = false;
+
+        const newRarityOdds = _.isEqual(odds, defaultOdds)
+            ? undefined
+            : JSON.stringify(calcOdds(config));
+        if (searchParams.get("rarityOdds") !== newRarityOdds) {
+            if (newRarityOdds === undefined) {
+                searchParams.delete("rarityOdds");
+            } else {
+                searchParams.set("rarityOdds", newRarityOdds);
+            }
+            changedURL = true;
+        }
+
+        if (changedURL) {
+            // and update the URL params to point to its ID
+            // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
+            window.history.pushState(
+                //navigate back to main
+                null,
+                "",
+                `?${searchParams.toString()}`,
+            );
+        }
     });
 </script>
 
