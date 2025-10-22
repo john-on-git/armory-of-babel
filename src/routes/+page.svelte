@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { replaceState } from "$app/navigation";
     import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
@@ -71,12 +72,7 @@
         if (window.location.search !== newQuery) {
             // and update the URL params to point to its ID
             // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
-            window.history.replaceState(
-                //navigate back to main
-                null,
-                "",
-                newQuery,
-            );
+            replaceState(newQuery, {});
         }
     });
 </script>
