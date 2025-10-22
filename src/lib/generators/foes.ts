@@ -49,27 +49,34 @@ export const pluralUnholyFoe = mkGen((rng) => choice([
 ] as const, rng));
 
 export const singularWildAnimalArr = [
-    "a wolf",
-    "a fox",
-    "a bear",
-    "a badger",
-    "a hedgehog",
-    "a python",
-    "a cobra",
-    "an elephant",
-    "an anteater",
-    "a giant ant",
-    "a giant bee",
-    "a giant dragonfly",
-    "a hawk",
-    "an owl",
-    "an eagle",
-    "a seal",
-    "a tiger",
-    "a lion",
-    "a crow"
-] as const;
-export const singularWildAnimal = mkGen((rng) => choice(singularWildAnimalArr, rng));
+    { article: 'a', animal: 'wolf' },
+    { article: 'a', animal: 'fox' },
+    { article: 'a', animal: 'bear' },
+    { article: 'a', animal: 'badger' },
+    { article: 'a', animal: 'hedgehog' },
+    { article: 'a', animal: 'python' },
+    { article: 'a', animal: 'cobra' },
+    { article: 'an', animal: 'elephant' },
+    { article: 'an', animal: 'anteater' },
+    { article: 'a', animal: 'giant ant' },
+    { article: 'a', animal: 'giant bee' },
+    { article: 'a', animal: 'giant dragonfly' },
+    { article: 'a', animal: 'hawk' },
+    { article: 'an', animal: 'owl' },
+    { article: 'an', animal: 'eagle' },
+    { article: 'a', animal: 'seal' },
+    { article: 'a', animal: 'tiger' },
+    { article: 'a', animal: 'lion' },
+    { article: 'an', animal: 'crow' }
+] as const satisfies { article: 'a' | 'an'; animal: string }[];
+
+export const singularWildAnimal = mkGen((rng) => {
+    const { animal, article } = choice(singularWildAnimalArr, rng) ?? singularWildAnimalArr[0];
+    return `${article} ${animal}` as const;
+});
+
+export const singularWildAnimalStructured = mkGen((rng) => choice(singularWildAnimalArr, rng) ?? singularWildAnimalArr[0]);
+
 
 
 const coldAndMagicHornsAndAntlers = [

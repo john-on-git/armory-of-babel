@@ -456,6 +456,8 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
+export type CapitalLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
+
 export type Ephitet = {
     pre: string;
     /**
@@ -465,7 +467,7 @@ export type Ephitet = {
      * 
      * @example "Pterodactly's" alliteratesWith 'T'
      */
-    alliteratesWith?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
+    alliteratesWith?: CapitalLetter;
 } | {
     post: string;
     /**
@@ -476,7 +478,7 @@ export type Ephitet = {
      * 
      * @example "the Lord's Blade" alliteratesWith 'L'
      */
-    alliteratesWith?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
+    alliteratesWith?: CapitalLetter;
 };
 
 export type DescriptorType = 'possession' | 'property';

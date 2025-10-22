@@ -45,16 +45,11 @@ export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPower
     cond: TCond;
 
     constructor(UUID: string, thing: TThing, cond: TCond) {
-        if (allUUIDs.has(UUID)) {
-            throw new Error(`Duplicate UUID "${UUID}", this is likely to cause unexpected behaviour.`);
-        }
-        else {
-            allUUIDs.add(UUID);
+        allUUIDs.add(UUID);
 
-            super(UUID);
-            this.thing = thing;
-            this.cond = cond;
-        }
+        super(UUID);
+        this.thing = thing;
+        this.cond = cond;
     }
 }
 

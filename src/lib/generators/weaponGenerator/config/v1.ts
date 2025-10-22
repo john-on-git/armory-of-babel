@@ -1,10 +1,10 @@
-import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
+import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal, singularWildAnimalStructured } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEnd, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { getBusinessEndDesc, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
+import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -34,8 +34,9 @@ export default {
             "fire" as const,
             "ice" as const,
             "cloud" as const,
-            "dark" as const,
+            "earth" as const,
             "light" as const,
+            "dark" as const,
             "sweet" as const,
             "sour" as const,
             "wizard" as const,
@@ -45,6 +46,42 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            new ProviderElement('streak-indicator',
+                {
+                    yields: 'feature',
+                    generate: (_, weapon) => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` has ${streakCapacityByRarity[weapon.rarity]} magical gems embedded along it`,
+                            plural: ` have ${streakCapacityByRarity[weapon.rarity]} magical gems embedded along them`
+                        }
+                    }),
+                    ephitet: mkGen({ pre: "Bejewelled" }),
+                    applicableTo: { any: ['blade', 'blades', 'body', 'shaft', 'limbs'] }
+                },
+                /**
+                 * Can only be added by the passive power "streak"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('counter-indicator',
+                {
+                    yields: 'feature',
+                    generate: (_, weapon) => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` has ${counterCapacityByRarity[weapon.rarity]} magical gems embedded along it`,
+                            plural: ` have ${counterCapacityByRarity[weapon.rarity]} magical gems embedded along them`
+                        }
+                    }),
+                    ephitet: mkGen({ pre: "Bejewelled" }),
+                    applicableTo: { any: ['blade', 'blades', 'body', 'shaft', 'limbs'] }
+                },
+                /**
+                 * Can only be added by the passive power "counter"
+                 */
+                { never: true }
+            ),
             new ProviderElement('necromantic-runes',
                 {
                     yields: 'feature',
@@ -56,7 +93,7 @@ export default {
                         }
                     }),
                     ephitet: mkGen((rng) => ephBlack.choice(rng)),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 /**
                  * Can only be added by the passive powers "trap-souls", "make-zombie"
@@ -74,7 +111,7 @@ export default {
                         }
                     }),
                     ephitet: mkGen((rng) => [{ pre: 'Mirrored' }, { post: 'of ' }].choice(rng)),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 /**
                  * Can only be added by the passive power "mounted-dismount-resist"
@@ -189,7 +226,7 @@ export default {
                         material: 'telekill alloy',
                         ephitet: mkGen(() => ({ pre: 'Nullifying' }))
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 /**
                  * Can only be added by the passive power "psi-immune"
@@ -207,7 +244,7 @@ export default {
                         },
                         ephitet: mkGen(rng => ephHot.choice(rng))
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -227,7 +264,7 @@ export default {
                         },
                         ephitet: mkGen((rng) => ephHot.choice(rng))
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -246,7 +283,7 @@ export default {
                         },
                         ephitet: mkGen(rng => ephCold.choice(rng))
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -304,7 +341,7 @@ export default {
                         MATERIALS.gingerbread,
                     ].choice(rng);
                 },
-                applicableTo: { any: importantPart }
+                applicableTo: { any: businessEnd }
             }, {
                 /**
                  * Can only be added by the passive power "eat-to-heal"
@@ -345,7 +382,7 @@ export default {
                             ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: ` of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -367,7 +404,7 @@ export default {
                             ephitet: mkGen(rng => ephHot.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -389,7 +426,7 @@ export default {
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -411,7 +448,7 @@ export default {
                             ephitet: mkGen(rng => ephPurple.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -433,7 +470,7 @@ export default {
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -455,7 +492,7 @@ export default {
                             ephitet: mkGen(rng => ephRed.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -477,7 +514,7 @@ export default {
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -499,7 +536,7 @@ export default {
                             ephitet: mkGen(rng => ephGreen.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -521,11 +558,11 @@ export default {
                             ephitet: mkGen(rng => [
                                 { pre: 'Atomic' },
                                 { pre: 'Nuclear' },
-                                { pre: 'of the Mushroom Bombs' },
+                                { post: ' of the Mushroom Bombs' },
                             ].choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -547,7 +584,7 @@ export default {
                             ephitet: mkGen(rng => ephGold.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -569,7 +606,7 @@ export default {
                             ephitet: mkGen(rng => ephBlack.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -591,7 +628,7 @@ export default {
                             ephitet: mkGen(rng => ephSky.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -613,7 +650,7 @@ export default {
                             ephitet: mkGen(rng => ephSteampunk.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -635,7 +672,7 @@ export default {
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     /**
@@ -761,7 +798,7 @@ export default {
                             MATERIALS.flint,
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -778,6 +815,7 @@ export default {
                         return [
                             MATERIALS['scarlet steel'],
                             MATERIALS.flint,
+                            MATERIALS.obsidian,
                             MATERIALS.goldPlated,
                             MATERIALS.gold,
                             MATERIALS["rose gold"],
@@ -788,7 +826,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -819,7 +857,7 @@ export default {
                         MISC_DESC_FEATURES.coating.oil,
                         MISC_DESC_FEATURES.coating.flames,
                     ].choice(rng), rng, weapon),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     themes: { any: ['fire'] }
@@ -844,7 +882,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -881,7 +919,7 @@ export default {
                             MATERIALS.glassLikeSteel
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -915,7 +953,7 @@ export default {
                     generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
                         MISC_DESC_FEATURES.coating.pearlescent,
                     ].choice(rng), rng, weapon),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     themes: { any: ['cloud'] }
@@ -945,9 +983,10 @@ export default {
                             MATERIALS.ruby,
                             MATERIALS.sandstone,
                             MATERIALS.sapphire,
+                            MATERIALS.obsidian
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -976,6 +1015,18 @@ export default {
                     shapeFamily: { any: grippedWeaponShapeFamilies }
                 }
             ),
+            new ProviderElement('descriptor-earth-coating',
+                {
+                    yields: 'feature',
+                    generate: (rng, weapon) => genMaybeGen<PartFeature, [Weapon]>([
+                        MISC_DESC_FEATURES.coating.volcanoCracks,
+                    ].choice(rng), rng, weapon),
+                    applicableTo: { any: businessEnd }
+                },
+                {
+                    themes: { any: ['earth'] }
+                }
+            ),
 
             new ProviderElement('material-dark-hard',
                 {
@@ -995,7 +1046,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1056,7 +1107,7 @@ export default {
                             MATERIALS.iceBlood
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1088,7 +1139,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1106,7 +1157,7 @@ export default {
                             MATERIALS.gingerbread,
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1141,7 +1192,7 @@ export default {
                             MATERIALS.acidium
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1172,7 +1223,7 @@ export default {
                         MISC_DESC_FEATURES.coating.acidBurned,
                     ].choice(rng), rng, weapon),
                     applicableTo: {
-                        any: [...importantPart, ...wrappableParts]
+                        any: [...businessEnd, ...wrappableParts]
                     }
                 },
                 {
@@ -1208,7 +1259,7 @@ export default {
                             )
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1295,7 +1346,7 @@ export default {
                             MATERIALS.brass,
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1338,7 +1389,7 @@ export default {
                             MATERIALS.ironWood
                         ].choice(rng);
                     },
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     allowDuplicates: true,
@@ -1423,7 +1474,7 @@ export default {
                         material: "two separate blades (adamant and mythrel), they're intertwined in a spiral pattern",
                         ephitet: { pre: 'Binary' }
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     rarity: {
@@ -1441,7 +1492,7 @@ export default {
                         material: "two separate parts, split down the middle: one half is boreal steel, the other scarlet steel",
                         ephitet: { pre: 'Bifurcated' }
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     rarity: {
@@ -1457,17 +1508,13 @@ export default {
                     yields: 'material',
                     generate: () => ({
                         material: "a glass tank containing an aquarium, the contents seem unaffected by movement",
-                        ephitet: { pre: 'Steamy' }
+                        ephitet: mkGen((rng) => [{ pre: 'Aero-' }, { post: ' of Bliss', alliteratesWith: 'B' } satisfies Ephitet].choice(rng))
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
-                    rarity: {
-                        gte: 'epic'
-                    },
-                    themes: {
-                        all: ['cloud', 'light']
-                    }
+                    themes: { all: ['cloud', 'ice'] },
+                    rarity: { gte: 'epic' }
                 }
             ),
             new ProviderElement('steam-blade',
@@ -1477,7 +1524,7 @@ export default {
                         material: "hollow glass, filled with a roiling mix of magical fire and water",
                         ephitet: { pre: 'Steamy' }
                     }),
-                    applicableTo: { any: importantPart }
+                    applicableTo: { any: businessEnd }
                 },
                 {
                     rarity: {
@@ -1494,15 +1541,15 @@ export default {
                     material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
                     ephitet: { post: ' of the Elemental Lord' }
                 }),
-                applicableTo: { any: importantPart }
+                applicableTo: { any: businessEnd }
             }, {
                 rarity: {
                     gte: 'legendary'
                 },
                 themes: {
-                    all: ['earth', 'cloud', 'fire']
+                    all: ['fire', 'earth', 'cloud', 'ice']
                 },
-                applicableTo: { any: importantPart },
+                applicableTo: { any: businessEnd },
                 isMaterial: true
             }
             ),
@@ -1724,6 +1771,47 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("reveal-hidden",
+                mkGen((_, weapon) => rangedWeaponShapeFamilies.includes(weapon.shape.group as (typeof rangedWeaponShapeFamilies)[number])
+                    ? {
+                        desc: "Revealing Shot",
+                        cost: 1,
+                        additionalNotes: [
+                            "You empower a shot to reveal the unseen. The target cannot be affected by magical illusions, such as invisibility.",
+                            "Targets may save to ignore the effect. Once it's applied, they save at the end of each of their turns, ending it upon a success."
+                        ]
+                    }
+                    : {
+                        desc: "Revealing Flare",
+                        cost: 3,
+                        additionalNotes: [
+                            "You fire a flare from the weapon's tip, which targets everything it illuminates. Target cannot be affected by magical illusions such as invisibility.",
+                            "Targets may save to ignore the effect. Once it's applied, they save at the end of each of their turns, ending it upon a success."
+                        ]
+                    }),
+                {
+                    themes: { any: ["light", "wizard", "fire"] },
+                }
+            ),
+            new ProviderElement('banishment',
+                {
+                    desc: 'Banishment',
+                    cost: 4,
+                },
+                { themes: { any: ['light', 'dark', 'wizard'] } }
+            ),
+            new ProviderElement("stone-prison",
+                {
+                    desc: "Stone Prison",
+                    cost: 2,
+                    additionalNotes: [
+                        "You strike the earth with the weapon, drawing out an earthen chain.",
+                        "It starts attached to the weapon's tip, then transfers to the next character you hit. Whatever the chain is attached to is bound within 30-ft of the origin.",
+                        "The chain has 10,000 HP. It shatters after 24 hours, or when you command it to."
+                    ]
+                },
+                { themes: { any: ["earth"] } }
+            ),
             new ProviderElement("fore-strike",
                 mkGen((_, weapon) => {
                     const rangeByRarity = {
@@ -1739,7 +1827,7 @@ export default {
                         desc: 'Fore!',
                         additionalNotes: [
                             'Upon landing a blow, you empower it with extra force.',
-                            `The target is knocked backwards ${rangeByRarity[weapon.rarity]}-ft. If it causes them to hit something, they take ${textForDamage(modDamage(weapon.damage))} damage.`
+                            `The target is knocked away from you (${rangeByRarity[weapon.rarity]}-ft). If it causes them to hit something, they take ${textForDamage(modDamage(weapon.damage))} damage.`
                         ]
                     }
                 }),
@@ -1935,13 +2023,154 @@ export default {
                     themes: { any: ["dark"] },
                 }
             ),
+            new ProviderElement("spectral-strike",
+                mkGen((_, weapon) => rangedWeaponShapeFamilies.includes(weapon.shape.group as (typeof rangedWeaponShapeFamilies)[number])
+                    ? {
+                        desc: "Spectral Shot",
+                        cost: 2,
+                        additionalNotes: [
+                            "You empower an attack to bypass defenses. During the attack, the weapon (or projectile) can pass through terrain, and bypasses the effects of the target's armor."
+                        ]
+                    }
+                    : {
+                        desc: "Spectral Strike",
+                        cost: 2,
+                        additionalNotes: [
+                            "You empower an attack to bypass defenses. During the attack the weapon can pass through terrain, and bypasses the effects of the target's armor."
+                        ]
+                    }),
+                {
+                    themes: { any: ["dark", "light", "wizard", "cloud"] },
+                }
+            ),
+            new ProviderElement("extra-accuracy-attack",
+                mkGen((_, weapon) => {
+
+                    const bonusByRarity = {
+                        common: "1d4",
+                        uncommon: "1d6",
+                        rare: "1d8",
+                        epic: "1d10",
+                        legendary: "1d12"
+                    } as const satisfies Record<WeaponRarity, `1d${CommonDieSize}`>;
+
+                    const desc = weapon.shape.group === "greataxe (or musket)"
+                        ? "Hold Breath"
+                        : rangedWeaponShapeFamilies.includes(weapon.shape.group as (typeof rangedWeaponShapeFamilies)[number])
+                            ? "Focus Shot"
+                            : "Focus Strike";
+
+                    return {
+                        desc,
+                        cost: 1,
+                        additionalNotes: [
+                            `${weapon.sentient === false ? "The weapon magically sharpens your focus" : "You mentally sync with the weapon"}, granting +${bonusByRarity[weapon.rarity]} to hit this attack.`
+                        ]
+                    };
+                }),
+                {}
+            ),
+            new ProviderElement("extra-damage-attack",
+                mkGen((rng, weapon) => {
+                    const reasonsByTheme = {
+                        fire: ["a burst of fire explodes from the weapon", `the ${getBusinessEndDesc(weapon.shape)} is momentarily superheated`],
+                        ice: [`the ${getBusinessEndDesc(weapon.shape)} momentarily drops to absolute zero`],
+                        cloud: [`lightning sparks from ${getBusinessEndDesc(weapon.shape)}`],
+                        earth: [`magma erupts from ${getBusinessEndDesc(weapon.shape)}`],
+                        light: [`light surrounds ${getBusinessEndDesc(weapon.shape)}`],
+                        dark: [`shadowy tentacles burst from ${getBusinessEndDesc(weapon.shape)}`, `shadows coil around ${getBusinessEndDesc(weapon.shape)}`],
+                        sweet: ["the power of friendship surges within you", `molten caramel whips around ${getBusinessEndDesc(weapon.shape)}`, `magical hearts whip around ${getBusinessEndDesc(weapon.shape)}`, `magical stars whip around ${getBusinessEndDesc(weapon.shape)}`],
+                        sour: [pointedWeaponShapes.includes(weapon.shape.particular as (typeof pointedWeaponShapes)[number]) ? "the weapon injects acid into the target" : "acid oozes from the weapon's surface"],
+                        wizard: ["arcane power surges through the weapon"],
+                        steampunk: ["the weapon produces an explosive blast"],
+                        nature: [`the weapon projects ${(() => {
+                            const { animal } = singularWildAnimalStructured.generate(rng);
+                            return `a spectral ${animal}`;
+                        })()} to attack the target`]
+                    } as const satisfies Record<Theme, string[]>;
+
+                    const numDieByRarity = {
+                        common: [1, 1, 1, 1, 2],
+                        uncommon: [1, 1, 2],
+                        rare: [1, 2, 2],
+                        epic: [2, 2, 3],
+                        legendary: [2, 3]
+                    } as const satisfies Record<WeaponRarity, [number, ...number[]]>;
+                    const dieSizeByRarity = {
+                        common: [6, 6, 6, 6, 8, 8, 10],
+                        uncommon: [6, 6, 8, 8, 8, 8, 10],
+                        rare: [8, 8, 8, 8, 10, 10, 8],
+                        epic: [8, 8, 10, 10, 10, 10, 12],
+                        legendary: [10, 10, 10, 10, 12, 12]
+                    } as const satisfies Record<WeaponRarity, [CommonDieSize, ...CommonDieSize[]]>;
+
+                    const reason = pickForTheme(weapon, reasonsByTheme, rng)?.chosen?.choice(rng) ?? "the power of friendship surges within you";
+
+                    const numDie = numDieByRarity[weapon.rarity].choice(rng);
+                    const dieSize = dieSizeByRarity[weapon.rarity].choice(rng);
+                    const damage = `${numDie}d${dieSize}`;
+
+                    /**
+                     * @example
+                     * [1*6,1*8,1*10,1*12, 2*6,2*8,2*10,2*12, 3*6,3*8,3*10,3*12].map(n => Math.floor(Math.log(n))) === [1,2,2,2, 2,2,2,3, 2,3,3,3]
+                     */
+                    const cost = Math.floor(Math.log(numDie * dieSize));
+
+                    return {
+                        desc: "Empowered Attack",
+                        cost: cost,
+                        additionalNotes: [
+                            `You empower an attack to deal an additional ${damage} damage, as ${reason}.`,
+                        ]
+                    };
+                }),
+                {}
+            ),
+            new ProviderElement("extra-range-attack",
+                mkGen((rng, weapon) => {
+                    const reasonsByTheme = {
+                        fire: [`${getBusinessEndDesc(weapon.shape)} projects a fiery aura`, `${getBusinessEndDesc(weapon.shape)} is engulfed by a larger fiery copy`],
+                        earth: [`${getBusinessEndDesc(weapon.shape)} projects a volcanic aura`, "the weapon's surface cracks and then solidifies in larger form"],
+                        ice: [`razor-sharp snowflakes whip around ${getBusinessEndDesc(weapon.shape)}`, "ice solidifies around the weapon to form a larger copy"],
+                        cloud: [`razor-wind whips around ${getBusinessEndDesc(weapon.shape)}`, `lightning sparks from ${getBusinessEndDesc(weapon.shape)}, forming a larger copy`],
+                        light: [],
+                        dark: ["the weapon is surrounded by a larger shadow of itself"],
+                        wizard: ["motes of arcane energy whip around the weapon", "the weapon projects a larger spectral copy of itself"],
+                        steampunk: ["the weapon transforms into its extended mode"],
+                        sweet: [],
+                        sour: [],
+                        nature: []
+                    } as const satisfies Record<Theme, string[]>;
+
+                    const rangeIncreaseByRarity = {
+                        common: 10,
+                        uncommon: 10,
+                        rare: 10,
+                        epic: 20,
+                        legendary: 20
+                    } as const satisfies Record<WeaponRarity, number>;
+
+                    const choice = pickForTheme(weapon, reasonsByTheme, rng);
+                    const reason = choice.chosen?.choice(rng) ?? "the weapon projects a larger spectral copy of itself";
+
+                    return {
+                        desc: "Distant Strike",
+                        cost: 1,
+                        additionalNotes: [
+                            `For one attack, ${reason}, increasing its range by ${rangeIncreaseByRarity[weapon.rarity]}-ft.`,
+                        ]
+                    };
+                }),
+                { shapeFamily: { none: rangedWeaponShapeFamilies } }
+            ),
             new ProviderElement("mana-vampire-strike",
                 {
                     desc: 'Mana Drain',
                     cost: 5,
                     additionalNotes: [
-                        "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. They expend resources as if the spell was cast.",
-                        "The spell is then stored inside the weapon for you to cast later (at no cost), only one spell can be stored at a time.",
+                        "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. ",
+                        "They expend resources as if the spell was cast, the spell is then stored inside the weapon for you to cast later (at no cost).",
+                        "Only one spell can be stored at a time."
                     ],
                 },
                 {
@@ -2249,13 +2478,8 @@ export default {
                 }
             ),
             new ProviderElement("darkness",
-                {
-                    desc: "Darkness",
-                    cost: 1
-                },
-                {
-                    themes: { any: ["dark"] },
-                }
+                { desc: "Darkness", cost: 1 },
+                { themes: { any: ["dark"] } }
             ),
             new ProviderElement("summon-demon",
                 {
@@ -2606,17 +2830,40 @@ export default {
                     themes: { any: ["nature"] },
                 }
             ),
-            new ProviderElement("vine-hook",
+            new ProviderElement("grappling-hook",
+                mkGen((rng, weapon) => {
+                    interface HookDetails {
+                        /** Sentence (without full stop) that justifies why the hook exists.
+                         */
+                        hookAct: string;
+                        /** Word desccripting the hook, the first letter is a capital leter.
+                         */
+                        hookPluralCap: `${CapitalLetter}${string}`;
+                        /** Title for the ability.
+                         */
+                        title: string;
+                    }
+                    const generic = { hookAct: "The weapon has an integrated grappling hook", hookPluralCap: "Hooks", title: "Grappling Hook" } satisfies HookDetails;
+
+                    const byTheme = {
+                        nature: { hookAct: "Launch a vine from the weapon", hookPluralCap: "Vines", title: "Vine Hook" },
+                        steampunk: generic,
+                    } satisfies Partial<Record<Theme, HookDetails>>;
+
+                    const chosen = pickForTheme(weapon, byTheme, rng).chosen ?? generic;
+
+                    return {
+                        desc: chosen?.title,
+                        cost: 1,
+                        additionalNotes: [
+                            `${chosen.hookAct}. It can stay attached to the weapon at one end, or detach to link two objects together.`,
+                            `${chosen.hookPluralCap} can be up to 50-ft long and are as strong as steel.`,
+                            "Hitting a moving target such as a foe is difficult, it requires an attack at -10 to hit."
+                        ]
+                    };
+                }),
                 {
-                    desc: "Vine Hook",
-                    cost: 1,
-                    additionalNotes: [
-                        "Launch a vine from the weapon. It can stay attached to the weapon at one end, or detach to link two objects together.",
-                        "Vines can be up to 50-ft long and are as strong as steel."
-                    ]
-                },
-                {
-                    themes: { any: ["nature"] },
+                    themes: { any: ["nature", "steampunk"] },
                 }
             ),
             new ProviderElement('jump', {
@@ -2788,7 +3035,7 @@ export default {
                 mkGen((_rng, weapon) => ({
                     desc: "Assassination",
                     cost: 1,
-                    additionalNotes: [`You perform a special sneak attack, targeting an enemy that hasn't noticed you. It deals ${textForDamage(modDamage(weapon.damage, x => x * assassinationDamageMultByRarity[weapon.rarity]))} damage.`]
+                    additionalNotes: [`You perform a special sneak attack, targeting an enemy that hasn't noticed you. It deals ${multName(assassinationDamageMultByRarity[weapon.rarity])} damage.`]
                 })),
                 {
 
@@ -2835,7 +3082,7 @@ export default {
                 cost: 'you choose the number of charges to expend',
                 additionalNotes: [
                     'The weapon has gems embedded throughout. You can expend charges to pry one off.',
-                    'NPCs that see the gem must save or be magically compelled to take it.',
+                    'Characters that see the gem must save or be magically compelled to take it.',
                     'Affects a number of characters equal to the charges expended.'
                 ]
             }, {
@@ -2908,12 +3155,9 @@ export default {
                 cost: 3,
                 additionalNotes: [
                     "Slam the weapon into the ground, emitting a circular shockwave.",
-                    new StringGenerator([
-                        // it deals damage equal to 3x the weapon's
-                        "Characters within 20-ft must save, or be knocked down & take ",
-                        mkGen((_rng, weapon) => textForDamage(modDamage(weapon.damage, x => x * 3))),
-                        " damage"
-                    ])
+                    mkGen((_, weapon) =>
+                        `Characters within 20-ft must save, or be knocked down & take ${textForDamage(modDamage(weapon.damage, x => x * 3))} damage`,
+                    )
                 ]
             }, {
                 themes: { any: ['earth'] },
@@ -2977,7 +3221,7 @@ export default {
                 },
             }),
             new ProviderElement('frostbound', {
-                desc: 'Bind',
+                desc: 'Icebound',
                 cost: 1,
                 additionalNotes: [
                     'Lock a mechanism in place with magical ice as strong as steel.',
@@ -3064,7 +3308,7 @@ export default {
                 desc: 'Smog',
                 cost: 2,
                 additionalNotes: [
-                    'A cloud of black smoke billows from the weapon, filling up to 27,000 ft³. It chokes characters and is highly flammable.'
+                    'A cloud of black smoke billows from the weapon, filling up to 27,000 ft³. It suffocates characters and is highly flammable.'
                 ]
             }, {
                 themes: {
@@ -3075,10 +3319,85 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement('fear-immune',
+                {
+                    miscPower: true,
+                    desc: "While the weapon is drawn the wielder cannot feel fear, and their morale cannot break.",
+                },
+                {
+                    themes: { any: ['fire', 'ice', 'earth', 'cloud', 'light', 'dark', 'sweet', 'sour'] },
+                }
+            ),
+            new ProviderElement("streak",
+                mkGen((_, weapon) => {
+                    return {
+                        miscPower: true,
+                        desc: "Streak.",
+                        additionalNotes: [
+                            "Upon a hit, the weapon gains +1 to hit.",
+                            `It can store up to +${streakCapacityByRarity[weapon.rarity]}, and its gems light up to indicate the current streak.`,
+                            "Upon a miss, the weapon's streak is reset to 0."
+                        ],
+                        descriptorPartGenerator: 'streak-indicator'
+                    };
+                }),
+                {
+                    UUIDs: { none: ["counter"] }
+                }
+            ),
+            new ProviderElement("counter",
+                mkGen((_, weapon) => {
+                    return {
+                        miscPower: true,
+                        desc: "Counter.",
+                        additionalNotes: [
+                            "Upon a miss, the weapon gains 1 Counter.",
+                            "Upon a hit, the wielder may expend all Counter to deal 1d6 additional damage per point expended.",
+                            `It can store up to ${counterCapacityByRarity[weapon.rarity]} Counter, and its gems light up to indicate the current amount.`
+                        ],
+                        descriptorPartGenerator: 'counter-indicator'
+                    };
+                }),
+                {
+                    UUIDs: { none: ["streak"] }
+                }
+            ),
+            new ProviderElement("attack-bubbles",
+                mkGen((_, weapon) => {
+                    const damageByRarity = {
+                        common: "1d4",
+                        uncommon: "1d4",
+                        rare: "1d6",
+                        epic: "1d6",
+                        legendary: "1d8"
+                    } as const satisfies Record<WeaponRarity, `${number}${keyof DamageDice}`>;
+                    return {
+                        miscPower: true,
+                        desc: `Attacks with the weapon release bubbles which fill a 10-ft cube around the wielder. They obscure as mist, and disappear after a round.
+                        If underwater, they explode on contact with foes, dealing ${damageByRarity[weapon.rarity]} to all characters in the cube.`,
+                    };
+                }),
+                {
+                    themes: { all: ['ice', 'cloud'] },
+                    rarity: { gte: 'rare' }
+                }
+            ),
+            new ProviderElement("underwater-propulsion",
+                { miscPower: true, desc: `The weapon functions as a DPV, it can be used to swim as fast as a horse can gallop.`, },
+                { themes: { all: ['ice', 'cloud'] } }
+            ),
+            new ProviderElement("underwater-warrior",
+                { miscPower: true, desc: `For this weapon, the usual maluses for underwater fighting are converted into bonuses.`, },
+                { themes: { all: ['ice', 'cloud'] } }
+            ),
+            new ProviderElement("quick",
+                { miscPower: true, desc: `The wielder can make one more attack than they would normally be able to each turn.` },
+                { shapeFamily: { any: smallDieWeaponShapeFamilies } }
+            ),
             new ProviderElement("weakness-detector",
                 mkGen((_, weapon) => ({
                     miscPower: true,
-                    desc: `When the ${getBusinessEndDesc(weapon.shape)} is coated in the blood of a foe that has an elemental weakness, it glows the color of the element they're weak to. It's as bright as a torch.`,
+                    desc: `When the ${getBusinessEndDesc(weapon.shape)} is coated in the blood of a character with an elemental weakness, it glows the color of the element they're weak to, as bright as a torch.`,
                 })),
                 {
                     themes: { any: ['fire', 'earth', 'cloud', 'ice'] }
@@ -3170,12 +3489,12 @@ export default {
             new ProviderElement("of-x-slaying",
                 mkGen((rng, weapon) => {
                     const bonusByRarity = {
-                        common: '1d4',
-                        uncommon: '1d6',
-                        rare: '1d8',
-                        epic: '2d8',
-                        legendary: '2d8'
-                    } as const satisfies Record<WeaponRarity, `${number}d${CommonDieSize}`>;
+                        common: '1d8',
+                        uncommon: '1d8',
+                        rare: '2d8',
+                        epic: '3d8',
+                        legendary: '3d8'
+                    } as const satisfies Record<WeaponRarity, `${number}d8`>;
 
                     return {
                         miscPower: true,
@@ -3188,6 +3507,7 @@ export default {
                             'demons',
                             ...((weapon.themes.includes('light')) ? ['undead'] : []),
                             ...((weapon.themes.includes('dark')) ? ['angels & gods'] : []),
+                            ...((weapon.themes.includes('nature')) ? ['automatons', 'agents of industry'] : []),
                         ].choice(rng)}.`
                     };
                 }),
@@ -3755,6 +4075,10 @@ export default {
             ),
             new ProviderElement("can-fly",
                 mkGen((rng, weapon) => {
+
+                    /** Note, these all say "using the weapon" instead of "wielding the weapon", to clarify that you can use the ability
+                     *  even when you aren't actually holding it. In 5e this would read "while you are attuned to". 
+                     */
                     const reasonsToFly = {
                         fire: new StringGenerator([
                             "While using the weapon, you can ",
@@ -3783,7 +4107,7 @@ export default {
                                 "wings of black-light",
                                 "a pair of skeletal wings",
                                 "a pair of demonic wings",
-                                "a pair of dark & blood-stained angel wings",
+                                "a pair of dark & tattered angel wings",
                                 "wings made from pure darkness"
                             ].choice(rng)),
                             ". They allow you to fly, as fast as you can walk."

@@ -129,7 +129,7 @@ export const pronounLoc = {
  */
 export function structuredDescToString(weapon: Weapon, _locale: string = 'en-GB') {
 
-    function locWeaponPartName(weaponPart: WeaponPartName) {
+    function locWeaponPartName(weaponPart: WeaponPartName, _locale: string = 'en-GB') {
         switch (weaponPart) {
             case 'axeHead':
             case 'maceHead':
@@ -150,14 +150,14 @@ export function structuredDescToString(weapon: Weapon, _locale: string = 'en-GB'
      */
     function descriptorsOrdering(a: Pick<DescriptorAtom, 'desc'>, b: Pick<DescriptorAtom, 'desc'>): number {
         // try to put descriptors containing colons and commas at the end of the sentence. This makes it read a little more naturally.
-        const prio = (x: Pick<DescriptorAtom, 'desc'>): number =>
+        const priority = (x: Pick<DescriptorAtom, 'desc'>): number =>
             x.desc.includes(':')
-                ? 2 // first colons 
+                ? 2 // colons last 
                 : x.desc.includes(',')
                     ? 1 //then commas
                     : 0; // then default
 
-        return prio(a) - prio(b)
+        return priority(a) - priority(b);
     }
 
     if (weapon.description === null) {
@@ -248,4 +248,48 @@ export function structuredDescToString(weapon: Weapon, _locale: string = 'en-GB'
         }
         return description;
     }
+}
+
+/**
+ * Returns a very vague term for the weapon's shape. 
+ */
+export function veryGenericWeaponShape(shape: WeaponShape) {
+    switch (shape.group) {
+        // bludgeoning
+        case "staff":
+        case "club":
+        case "greatclub":
+        case "mace":
+            return 'hammer';
+        // piercing
+        case "spear":
+        case "lance":
+            return 'lance';
+        // slashing
+        case "dagger":
+        case "dagger (or pistol)":
+        case "sword":
+        case "sword (or bow)":
+        case "sword (or musket)":
+        case "greatsword":
+        case "axe":
+        case "greataxe":
+        case "greataxe (or musket)":
+        case "polearm":
+            return 'blade';
+    }
+}
+
+const multNames = {
+    2: "double",
+    3: "triple",
+    4: "quadruple",
+    5: "quintuple",
+} as const satisfies Record<number, string>;
+
+/**
+ * Return the phrase that means "to multiply by x" i.e. 2 => "double"
+ * @param mult multiplier */
+export function multName(mult: keyof typeof multNames, _locale: string = 'en-GB') {
+    return multNames[mult];
 }
