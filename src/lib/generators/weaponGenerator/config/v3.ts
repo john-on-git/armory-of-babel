@@ -1,7 +1,9 @@
-import { mkGen } from "$lib/generators/recursiveGenerator";
+import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
+import { edgedWeaponShapeFamilies } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { mkWepToGen } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { ActivePower, DamageDice, PassivePower, WeaponPowerCond, WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { mkWepToGen, textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { ActivePower, DamageDice, PassivePower, Theme, WeaponPowerCond, WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import _ from "lodash";
 import type seedrandom from "seedrandom";
 
 export default {
@@ -117,8 +119,8 @@ export default {
                 desc: 'Ultimate Anime Attack',
                 cost: 'all charges',
                 additionalNotes: [
-                    "This attack always hits. It deals damage equal to the weapon's damage × number of remaining charges.",
-                    'Afterwards, the weapon crumbles to dust.'
+                    "This attack always hits. It deals damage = weapon damage × number of charges remaining.",
+                    'Afterwards, the weapon explodes and is destroyed.'
                 ]
             }, {
                 rarity: {
@@ -127,7 +129,7 @@ export default {
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('instant-door', {
                 desc: 'Instant Door',
-                cost: '6',
+                cost: 6,
                 additionalNotes: [
                     "Trace the outline of the doorway on a surface using the weapon. A moment later, it's magically created.",
                     "The door can punch through a thin sheet of metal (except lead), or 10-ft of any other material."
@@ -139,7 +141,7 @@ export default {
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('acid-etch', {
                 desc: 'Spray',
-                cost: '1',
+                cost: 1,
                 additionalNotes: [
                     "The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",
                 ]
@@ -147,6 +149,98 @@ export default {
                 themes: {
                     any: ['sour']
                 }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('radial-slam', {
+                desc: 'Slam',
+                cost: 3,
+                additionalNotes: [
+                    "Slam the weapon into the ground, emitting a circular shockwave.",
+                    (weapon) => {
+                        // it deals damage equal to 3 * the weapon's 
+                        const { as, d6, ...rest } = weapon.damage;
+                        const slamDamage = _.mapValues(
+                            {
+                                d6: 1 + (d6 ?? 0),
+                                ...rest
+                            },
+                            x => x === undefined ? undefined : x * 3
+                        );
+                        return new StringGenerator(["Characters within 20-ft must save, or be knocked down & take ", textForDamage(slamDamage), " damage"])
+                    }
+                ]
+            }, {
+                themes: {
+                    any: ['earth']
+                },
+                UUIDs: {
+                    none: ['linear-slam']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('linear-slam', {
+                desc: 'Slam',
+                cost: 3,
+                additionalNotes: [
+                    "Slam the weapon into the ground, emitting a shockwave that travels straight ahead for 60-ft.",
+                    (weapon) => {
+                        // it deals damage equal to 3 * the weapon's 
+                        const { as, d6, ...rest } = weapon.damage;
+                        const slamDamage = _.mapValues(
+                            {
+                                d6: 1 + (d6 ?? 0),
+                                ...rest
+                            },
+                            x => x === undefined ? undefined : x * 3
+                        );
+                        return new StringGenerator(["Characters hit by the wave must save, or be knocked down & take ", textForDamage(slamDamage), " damage"])
+                    }
+                ]
+            }, {
+                themes: {
+                    any: ['earth']
+                },
+                UUIDs: {
+                    none: ['radial-slam']
+                }
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('metaphysical-edit', {
+                desc: 'Edit',
+                cost: 3,
+                additionalNotes: [
+                    "Strike at the platonic form of an object, removing a letter from its name.",
+                    "It physically transforms into the new object."
+                ]
+            }, {
+                themes: {
+                    any: ['wizard']
+                },
+                shapeFamily: {
+                    any: edgedWeaponShapeFamilies
+                },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('gravity-gun', {
+                desc: 'Kinesis',
+                cost: 1,
+                additionalNotes: [
+                    (weapon) => mkGen((rng) => {
+                        const effects = {
+                            light: 'The weapon emits a tether of luminous energy.',
+                            fire: 'The weapon emit a fiery whip.',
+                            nature: "A sturdy vine grows from the weapon's tip.",
+                            cloud: "The weapon emits a vortex of air."
+                        } satisfies Partial<Record<Theme, string>>;
+
+                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
+
+                        const tetherTheme = effects[supportedThemesOfWeapon.choice(rng)];
+                        //const tetherTheme = typeof chosen === "string" ? chosen : chosen(rng)
+
+                        return `${tetherTheme} It can lift and throw object an weighing up to 500 lbs.`;
+                    })
+                ]
+            }, {
+                themes: {
+                    any: ['light', 'fire', 'nature', 'cloud']
+                },
             })
         ]
     },
@@ -315,25 +409,13 @@ export default {
             new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
                 {
                     miscPower: true,
-                    desc: "Can transform into an pipe."
+                    desc: "Can transform into a smoking pipe."
                 },
                 {
                     rarity: {
                         eq: 'common'
                     },
-                    themes: { any: ['ice'] }
-                }
-            ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
-                {
-                    miscPower: true,
-                    desc: "Can transform into a wooden pipe."
-                },
-                {
-                    rarity: {
-                        eq: 'common'
-                    },
-                    themes: { any: ['ice'] }
+                    themes: { any: ['nature'] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>('shrink-or-grow',
@@ -362,6 +444,34 @@ export default {
                     UUIDs: {
                         none: ['instant-recall']
                     }
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('the-axe',
+                {
+                    miscPower: true,
+                    desc: "The weapon is also a guitar. Your musical skill is doubled when you play it."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    shapeFamily: {
+                        any: ['axe', 'great-axe']
+                    },
+                }
+            ),
+            new ProviderElement<PassivePower, WeaponPowerCond>('the-horn',
+                {
+                    miscPower: true,
+                    desc: "The weapon is also a horn. Your musical skill is doubled when you play it."
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    shapeFamily: {
+                        any: ['club']
+                    },
                 }
             )
         ],

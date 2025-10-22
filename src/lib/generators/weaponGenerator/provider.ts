@@ -2,7 +2,7 @@ import { Patchable } from '$lib/util/versionController';
 import _ from 'lodash';
 import seedrandom from "seedrandom";
 
-export type Quant<T> = { any: T[] } | { all: T[] } | { none: T[] }
+export type Quant<T> = { any: T[] | readonly T[] } | { all: T[] | readonly T[] } | { none: T[] | readonly T[] }
 export function evQuant<T>(req: Quant<T>, actual: T | T[]) {
     const isArray = Array.isArray(actual);
     const eq: (x: T) => boolean = isArray ?

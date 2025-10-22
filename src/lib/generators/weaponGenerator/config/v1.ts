@@ -1060,7 +1060,7 @@ export default {
             new ProviderElement<ActivePower, WeaponPowerCond>("magic-parry",
                 {
                     desc: "Magic Parry",
-                    cost: "equal to spell's level",
+                    cost: "charges equal to spell's level",
                     additionalNotes: [
                         "Deflect a harmful spell that was targeted at you specifically.",
                         "You save. On a success the spell is nullified.",
