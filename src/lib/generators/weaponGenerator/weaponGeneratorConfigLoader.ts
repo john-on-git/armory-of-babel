@@ -413,7 +413,7 @@ export const POSSIBLE_RECHARGE_METHODS = [...mixinRechargeMethods, ...toProvider
         mkGen("all charges after an hour in a sacred space"),
         mkGen("all charges each day at sunrise"),
         new StringGenerator([
-            mkGen("one charge after defeating "),
+            mkGen("one charge each time you defeat a "),
             singularUnholyFoe,
         ])
     ],
@@ -430,7 +430,7 @@ export const POSSIBLE_RECHARGE_METHODS = [...mixinRechargeMethods, ...toProvider
     cloud: [
         mkGen("all charges when struck by lightning"),
         mkGen('all charges when its wielder survives a significant fall'),
-        mkGen('one charge when you kill a winged creature, or all charges if it was also a powerful foe'),
+        mkGen('one charge each time you defeat a winged creature, or all charges if it was also a powerful foe'),
     ],
     wizard: [
         mkGen('one charge when you cast one of your own spells'),

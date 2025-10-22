@@ -1,9 +1,12 @@
 <script>
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
+    import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
+
+    let config = $state(defaultWeaponRarityConfigFactory());
 </script>
 
 <h1>Generator Test</h1>
-<WeaponGenerator />
+<WeaponGenerator {config} />
 
 <style>
     :global(h1, h2) {

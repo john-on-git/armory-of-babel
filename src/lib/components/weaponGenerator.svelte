@@ -1,10 +1,19 @@
 <script lang="ts">
     import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-    import { type Weapon } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
+    import {
+        type Weapon,
+        type WeaponRarityConfig,
+    } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
     import { onMount } from "svelte";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
-    let weapon: Weapon = $state(mkWeapon(getIDFromURL()));
+    interface Props {
+        config?: WeaponRarityConfig;
+    }
+
+    const { config }: Props = $props();
+
+    let weapon: Weapon = $state(mkWeapon(getIDFromURL(), config));
 
     // set up event listeners
     onMount(() => {
