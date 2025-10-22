@@ -101,10 +101,6 @@
                                     req: { id: newReq.id, v: newReq.v },
                                     res: resBody as unknown as GenerateWeaponResponse,
                                 };
-                            } else {
-                                alert(
-                                    `received out of date response for: ${newReq.id} now: ${weaponID}`,
-                                );
                             }
                         }
                     } catch (e) {
