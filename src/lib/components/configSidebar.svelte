@@ -13,10 +13,7 @@
 <Sidebar localStorageKey={"weaponConfigSidebar"}>
     <h2>Generation Parameters</h2>
 
-    <label>
-        Rarity Odds
-        <!--Range Slider here-->
-    </label>
+    <p style="color:red">not implemented</p>
 </Sidebar>
 
 <style>
