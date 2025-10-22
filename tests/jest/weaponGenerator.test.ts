@@ -71,7 +71,10 @@ describe('Weapon Generator', () => {
 
     // it('Manual utility / find a weapon with a particular feature', () => {
     //     function cond(weapon: WeaponViewModel): boolean {
-    //         return weapon.active.powers.some(x => x.desc.includes('Summon Animal'));
+    //         return (
+    //             weapon.passivePowers.some(x => x.desc.includes('pocket plane')) &&
+    //             weapon.passivePowers.some(x => x.desc.includes('into their hand at will'))
+    //         );
     //     }
     //     const start = 0;
     //     const attempts = 10000;
@@ -90,6 +93,6 @@ describe('Weapon Generator', () => {
     //     else {
     //         console.error(JSON.stringify(weapon, undefined, 1));
     //     }
-    //     expect(cond(weapon)).toBe(true);
+    //     expect(cond(weapon)).toBe(false);
     // })
 })
