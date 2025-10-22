@@ -65,6 +65,7 @@ function structureDescFor(shape: WeaponShape) {
             case 'Macuahuitl':
             case 'Nunchuks':
             case 'Meteor Hammer':
+            case 'Flail':
             case 'Double Flail':
             case 'Triple Flail':
             case 'Quadruple Flail':

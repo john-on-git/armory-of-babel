@@ -629,7 +629,7 @@ export const MISC_DESC_FEATURES = {
                 singular: 'a peacock feather pinned to it',
                 plural: 'peacock feathers pinned to them'
             },
-            ephitet: { post: 'of the Peacock' }
+            ephitet: { post: ' of the Peacock' }
 
         }
     },
@@ -696,25 +696,15 @@ export const MISC_DESC_FEATURES = {
                 ephitet: mkGen((rng) => ephRainbow.choice(rng))
             }
         }),
-        squiggles: mkGen((rng, weapon) => {
-            const midRarity = ['lined with silver', 'lined with gold', 'lined with amethyst']
-            const colors = {
-                common: midRarity,
-                uncommon: midRarity,
-                rare: midRarity,
-                epic: [],
-                legendary: [],
-            } satisfies Record<WeaponRarity, string[]>;
-
-            const desc = colors[weapon.rarity].choice(rng);
-
+        squiggles: mkGen((rng) => {
+            const desc = choice(['tin', 'silver', 'gold', 'amethyst', 'sapphire'] as const, rng);
             return {
                 descriptor: {
                     descType: 'property',
-                    singular: ` is covered in squiggly grooves, ${desc}`,
-                    plural: ` are covered in squiggly grooves, ${desc}`
+                    singular: ` is covered in squiggly grooves, lined with ${desc}`,
+                    plural: ` are covered in squiggly grooves, lined with ${desc}`
                 },
-                ephitet: mkGen((rng) => ephRainbow.choice(rng))
+                ephitet: { pre: 'Byzantine' }
             }
         })
     },
