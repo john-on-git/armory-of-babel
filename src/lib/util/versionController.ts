@@ -39,8 +39,18 @@ export abstract class Patchable {
     };
 }
 
+
+export class PrimitiveContainer<T extends string | { toString: () => string }> extends Patchable {
+    value: T;
+
+    constructor(value: T) {
+        super(typeof value === 'string' ? value : value.toString())
+        this.value = value;
+    }
+};
+
 export interface Delta<T extends Patchable> {
-    add?: Iterable<T>;
+    add?: T[];
     remove?: Set<string>;
     modify?: Record<string, RecursivePartial<T>>;
 }

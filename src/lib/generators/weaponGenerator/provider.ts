@@ -1,3 +1,4 @@
+import { Patchable } from '$lib/util/versionController';
 import _ from 'lodash';
 import seedrandom from "seedrandom";
 
@@ -35,9 +36,15 @@ export function evComp<T>(comp: Comp<T>, x: T, ord: (x: T) => number) {
     return true;
 }
 
-export interface ProviderElement<TThing, TCond extends Cond> {
+export class ProviderElement<TThing, TCond extends Cond> extends Patchable {
     thing: TThing;
     cond: TCond;
+
+    constructor(UUID: string, thing: TThing, cond: TCond) {
+        super(UUID);
+        this.thing = thing;
+        this.cond = cond;
+    }
 }
 
 export interface Cond {

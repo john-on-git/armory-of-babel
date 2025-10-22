@@ -1,11 +1,12 @@
 import "$lib/util/choice";
 import '$lib/util/string';
+import type { PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGenerator";
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
 import { ConditionalThingProvider, evComp, evQuant, type ProviderElement, type WithUUID } from "./provider";
 import { defaultWeaponRarityConfigFactory, POSSIBLE_ACTIVE_POWERS, POSSIBLE_OBJECT_ADJECTIVES, POSSIBLE_PASSIVE_POWERS, POSSIBLE_PERSONALITIES, POSSIBLE_RECHARGE_METHODS, POSSIBLE_SHAPES, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type ActivePower, type DamageDice, isRarity, type PassiveBonus, type PassivePower, type Personality, type RechargeMethod, type Theme, themes, type Weapon, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape } from "./weaponGeneratorTypes";
+import { type ActivePower, allThemes, type DamageDice, isRarity, type MiscPower, type PassiveBonus, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape } from "./weaponGeneratorTypes";
 
 export class WeaponFeatureProvider<T extends object> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
     constructor(source: WithUUID<ProviderElement<T, WeaponPowerCond>>[]) {
@@ -39,7 +40,7 @@ export class WeaponFeatureProvider<T extends object> extends ConditionalThingPro
 const personalityProvider = new WeaponFeatureProvider<Personality>(POSSIBLE_PERSONALITIES);
 const rechargeMethodsProvider = new WeaponFeatureProvider<RechargeMethod>(POSSIBLE_RECHARGE_METHODS);
 const activePowersProvider = new WeaponFeatureProvider<ActivePower>(POSSIBLE_ACTIVE_POWERS);
-const passivePowersProvider = new WeaponFeatureProvider<PassivePower>(POSSIBLE_PASSIVE_POWERS);
+const passivePowersProvider = new WeaponFeatureProvider<MiscPower | PrimitiveContainer<string>>(POSSIBLE_PASSIVE_POWERS);
 const shapeProvider = new WeaponFeatureProvider<TGenerator<WeaponShape>>(POSSIBLE_SHAPES);
 
 
@@ -127,7 +128,7 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     };
 
     // draw themes until we have enough to cover our number of powers
-    const unusedThemes = new Set<Theme>(themes); // this could be a provider but whatever go my Set<Theme>
+    const unusedThemes = new Set<Theme>(allThemes); // this could be a provider but whatever go my Set<Theme>
     const minThemes = Math.max(
         1,
         Math.min(
@@ -180,8 +181,8 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     for (let i = 0; i < params.nPassive; i++) {
         const choice = passivePowersProvider.draw(rng, weapon);
         if (choice != undefined) {
-            if ('language' in choice && weapon.sentient) {
-                weapon.sentient.languages.push(choice.desc);
+            if ('value' in choice && weapon.sentient) {
+                weapon.sentient.languages.push(choice.value);
             }
             else if ('miscPower' in choice) {
                 if (choice.desc !== null) {

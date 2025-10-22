@@ -3,9 +3,9 @@ import type { TGenerator } from "../recursiveGenerator";
 import shapes from './config/shapes.json';
 import type { Comp, Cond, Quant } from "./provider";
 
-export const themes = [
+export const allThemes = [
     "fire", "ice",
-    "cloud",
+    "cloud", "earth",
     "dark", "light",
     "sweet", "sour",
     "wizard",
@@ -17,8 +17,9 @@ export const themes = [
     // "jungle",
     // "space"
 ] as const;
-export type Theme = (typeof themes)[number];
-const themesSet = new Set(themes);
+export type Theme = typeof allThemes[number];
+
+const themesSet = new Set(allThemes);
 export const isTheme = (x: unknown): x is Theme => themesSet.has(x as Theme);
 
 export const weaponRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;
@@ -78,7 +79,7 @@ export interface Weapon {
         rechargeMethod: RechargeMethod
         powers: ActivePower[];
     }
-    passivePowers: PassivePower[];
+    passivePowers: MiscPower[];
     sentient: false | {
         personality: Personality[];
         languages: string[];
@@ -113,7 +114,7 @@ export interface WeaponViewModel {
         rechargeMethod: string
         powers: ActivePower[];
     }
-    passivePowers: PassivePower[];
+    passivePowers: MiscPower[];
     sentient: false | {
         personality: string[];
         languages: string[];
@@ -138,7 +139,7 @@ export interface PassiveBonus {
     /**
      * Plus this many to attack and damage
      */
-    plus: number;
+    plus?: number;
 } // TODO
 
 export interface ChargedPower extends Power {
@@ -168,8 +169,7 @@ export interface Language extends Power {
     desc: string;
 }
 
-export type PassivePower = Language | MiscPower;
-export type AnyPower = ActivePower | PassivePower;
+export type AnyPower = ActivePower | MiscPower;
 
 export type WeaponShape = {
     particular: string;
@@ -181,7 +181,7 @@ export interface WeaponPowerCond extends Cond {
     personality?: Quant<Personality>;
     languages?: Quant<string>;
     activePowers?: Quant<ActivePower>;
-    passivePowers?: Quant<PassivePower>;
+    passivePowers?: Quant<MiscPower>;
     shapeFamily?: Quant<WeaponShape['group']>;
     rarity?: Comp<WeaponRarity>;
     isSentient?: boolean;
