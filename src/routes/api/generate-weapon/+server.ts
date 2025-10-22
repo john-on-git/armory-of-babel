@@ -1,8 +1,7 @@
-import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
 import { mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { WeaponRarity, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { StatusCodes } from "http-status-codes";
-import { FEATURE_PROVIDERS_BY_VERSION } from "../../state.svelte";
+import { getFeatureProviderForVersion, LATEST_VERSION_NUM } from "../../state.svelte";
 
 export interface GenerateWeaponRequest {
     id: string;
@@ -30,7 +29,7 @@ function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponR
 
         typeof asReq.v === 'number' &&
         !Number.isNaN(asReq.v) && Number.isFinite(asReq.v) &&
-        asReq.v >= 0 && asReq.v <= weaponFeatureVersionController.getLatestVersionNum()
+        asReq.v >= 0 && asReq.v <= LATEST_VERSION_NUM
     );
 }
 
@@ -48,7 +47,7 @@ export async function GET({ request }: { request: Request, }) {
 
     if (isGenerateWeaponRequest(weaponRequest)) {
 
-        const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, FEATURE_PROVIDERS_BY_VERSION[weaponRequest.v]);
+        const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, getFeatureProviderForVersion(weaponRequest.v));
 
         return new Response(
             JSON.stringify(weaponViewModels),

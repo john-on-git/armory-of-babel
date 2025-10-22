@@ -574,7 +574,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
 
 export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig?: WeaponRarityConfig) {
-    console.clear();
     return {
         weapons: weaponRarities.reduce((acc, rarity) => {
             acc[rarity] = mkWeapon(rngSeed, featureProviders, weaponRarityConfig, rarity).weaponViewModel

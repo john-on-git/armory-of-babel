@@ -539,8 +539,7 @@ export const MISC_DESC_FEATURES = {
                 singular: mkGen((rng) => mkCharms(rng, 'singular')),
                 plural: mkGen((rng) => mkCharms(rng, 'plural')),
 
-            },
-            ephitet: { pre: 'Charming' }
+            }
         },
         shrunken: {
             descriptor: {

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
     import WeaponDisplay from "$lib/components/weaponDisplay.svelte";
-    import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
     import { type WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -12,6 +11,7 @@
         GenerateWeaponRequest,
         GenerateWeaponResponse,
     } from "../../routes/api/generate-weapon/+server";
+    import { LATEST_VERSION_NUM } from "../../routes/state.svelte";
 
     interface Props {
         odds: [number, number, number, number];
@@ -144,15 +144,13 @@
             return maybeNumber;
         } else {
             // get the latest version
-            const latest = weaponVersionController.getLatestVersionNum();
-
             // push it to the URL
             const searchParams = new URLSearchParams(page.url.search);
-            searchParams.set("v", latest.toString());
+            searchParams.set("v", LATEST_VERSION_NUM.toString());
             syncLocationWithURLSearchParams(searchParams, "replace");
 
             // return it
-            return latest;
+            return LATEST_VERSION_NUM;
         }
     }
     function replaceVersionInURL(id: number) {
