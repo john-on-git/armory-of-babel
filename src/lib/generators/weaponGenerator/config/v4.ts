@@ -14,7 +14,7 @@ export default {
                 desc: 'Kinesis',
                 cost: 1,
                 additionalNotes: [
-                    (weapon) => mkGen((rng) => {
+                    mkGen((rng, weapon) => {
                         const effects = {
                             light: 'The weapon emits a tether of luminous energy.',
                             fire: 'The weapon emit a fiery whip.',
