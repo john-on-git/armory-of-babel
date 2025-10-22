@@ -1,6 +1,7 @@
 import type { TGenerator } from "$lib/generators/recursiveGenerator";
+import type { PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
-import type { Comp, Cond, Quant } from "./provider";
+import type { Comp, Cond, ProviderElement, Quant } from "./provider";
 import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
@@ -243,4 +244,18 @@ export interface FeatureProviderCollection {
 
     passivePowerOrLanguageProvider: WeaponFeatureProvider<PassivePower | Language>;
     languageProvider: WeaponFeatureProvider<Language>;
+}
+
+
+export interface WeaponFeaturesTypes {
+    themes: PrimitiveContainer<Theme>;
+    adjectives: ProviderElement<WeaponAdjective, WeaponPowerCond>;
+    personalities: ProviderElement<Personality, WeaponPowerCond>
+
+    rechargeMethods: ProviderElement<RechargeMethod, WeaponPowerCond>;
+    actives: ProviderElement<ActivePower, WeaponPowerCond>;
+
+    passives: ProviderElement<PassivePower, WeaponPowerCond>;
+    languages: ProviderElement<Language, WeaponPowerCond>;
+    shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
 }

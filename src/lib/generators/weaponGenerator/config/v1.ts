@@ -2,9 +2,9 @@ import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/gen
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { ActivePower, PassivePower, Personality, RechargeMethod, Theme, WeaponAdjective, WeaponPowerCond, WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { ActivePower, PassivePower, Personality, RechargeMethod, Theme, WeaponAdjective, WeaponFeaturesTypes, WeaponPowerCond, WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import "$lib/util/string";
-import { PrimitiveContainer } from "$lib/util/versionController";
+import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
 
 const agentOfExtractivism = mkGen((rng) =>
     [
@@ -15,7 +15,7 @@ const agentOfExtractivism = mkGen((rng) =>
     ].choice(rng)
 );
 
-export const v1 = {
+export default {
     themes: {
         add: [
             "fire" as const,
@@ -2038,4 +2038,4 @@ export const v1 = {
             )
         ]
     }
-};
+} satisfies DeltaCollection<WeaponFeaturesTypes>;
