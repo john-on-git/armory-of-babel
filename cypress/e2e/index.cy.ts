@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
+import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
+//import { type GenerateWeaponResponse } from '../../src/routes/api/generate-weapon/+server';
 
 describe("Weapon Generator Main Page", () => {
     beforeEach(() => {
@@ -10,51 +11,57 @@ describe("Weapon Generator Main Page", () => {
             req.reply({
                 statusCode: StatusCodes.OK,
                 body: {
-                    id: `Mock#${req.query['id']}`,
-                    themes: [],
-                    rarity: "rare",
-                    name: `Lighbrandt the Luminous #${req.query['id']}`,
-                    shape: {
-                        particular: "sword",
-                        group: "sword"
-                    },
-                    damage: {
-                        as: 'sword'
-                    },
-                    toHit: 2,
-                    active: {
-                        maxCharges: 999,
-                        rechargeMethod: "a charge every morning",
-                        powers: [
-                            {
-                                desc: "Light Blast",
-                                cost: 2,
-                                additionalNotes: [
-                                    'Summons a blast made of pure light'
+                    weapons: weaponRarities.reduce((acc, rarity) => {
+                        acc[rarity] = {
+                            id: `Mock#${req.query['id']}`,
+                            themes: [],
+                            rarity: rarity,
+                            name: `Lighbrandt the Luminous #${req.query['id']}`,
+                            shape: {
+                                particular: "sword",
+                                group: "sword"
+                            },
+                            damage: {
+                                as: 'sword'
+                            },
+                            toHit: 2,
+                            active: {
+                                maxCharges: 999,
+                                rechargeMethod: "a charge every morning",
+                                powers: [
+                                    {
+                                        desc: "Light Blast",
+                                        cost: 2,
+                                        additionalNotes: [
+                                            'Summons a blast made of pure light'
+                                        ]
+                                    },
+                                    {
+                                        desc: "Light Slash",
+                                        cost: 1,
+                                        additionalNotes: [
+                                            'Summons a blade made of pure light'
+                                        ]
+                                    }
                                 ]
                             },
-                            {
-                                desc: "Light Slash",
-                                cost: 1,
-                                additionalNotes: [
-                                    'Summons a blade made of pure light'
-                                ]
+                            passivePowers: [
+                                {
+                                    desc: "Light Aura",
+                                    additionalNotes: [
+                                        'creates an aura of pure light'
+                                    ]
+                                }],
+                            sentient: {
+                                personality: ['pious', 'good', 'nice'],
+                                languages: ['Common', 'Adamic', 'French'],
+                                chanceOfMakingDemands: 7
                             }
-                        ]
-                    },
-                    passivePowers: [
-                        {
-                            desc: "Light Aura",
-                            additionalNotes: [
-                                'creates an aura of pure light'
-                            ]
-                        }],
-                    sentient: {
-                        personality: ['pious', 'good', 'nice'],
-                        languages: ['Common', 'Adamic', 'French'],
-                        chanceOfMakingDemands: 7
-                    }
-                } satisfies WeaponViewModel
+                        };
+                        return acc;
+                    }, {} as Record<WeaponRarity, WeaponViewModel>),
+                    n: 0.5
+                }
             })
         }).as('generate-weapon');
 
