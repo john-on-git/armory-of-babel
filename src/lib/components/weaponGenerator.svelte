@@ -7,7 +7,7 @@
     import { defaultWeaponRarityConfigFactory } from "../generators/weaponGenerator/weaponGeneratorConfigLoader";
     import type { WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
     import { calcOdds } from "../util/configUtils";
-    import { getOddsFromURL } from "../util/getFromURL";
+    import { getOddsFromURL, isValidOdds } from "../util/getFromURL";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
     let version = $state(getVersionFromURL());
@@ -27,36 +27,43 @@
                 calcOdds(defaultWeaponRarityConfigFactory());
 
             const searchParams = new URLSearchParams(window.location.search);
-            if (searchParams.get("o") === null) {
+            if (!searchParams.has("o")) {
                 searchParams.set("o", odds[0].toFixed(2));
                 for (let i = 1; i < odds.length; i++) {
                     searchParams.append("o", odds[i].toFixed(2));
                 }
             }
-            const { res, forParams } = await (async () => {
-                // take a copy of the parts of the UI state that determine the weapon at the time the request was made
-                const forParams = {
-                    weaponID: weaponID,
-                    version: version,
-                    odds: [...odds],
-                };
+            // take a copy of the parts of the UI state that determine the weapon at the time the request was made
+            const v = searchParams.get("v");
+            const forParams = {
+                weaponID: searchParams.get("id"),
+                version: v !== null ? Number.parseFloat(v) : v,
+                odds: searchParams.getAll("o").map((x) => Number.parseFloat(x)),
+            };
 
-                //make the request
-                const res = await fetch(
-                    `/api/generate-weapon?${searchParams.toString()}`,
-                );
-
-                return { res: res, forParams: forParams };
-            })();
-            if (res.status === StatusCodes.OK) {
-                // if this still matches the UI state
-                if (
-                    _.isEqual(forParams.odds, odds) &&
-                    forParams.version === version &&
-                    forParams.weaponID === weaponID
-                ) {
-                    const resBody = await res.json();
-                    weapon = resBody as unknown as WeaponViewModel;
+            // if these params correspond to a valid weapon, make the call
+            if (
+                forParams.weaponID !== null &&
+                forParams.version !== null &&
+                isValidOdds(forParams.odds)
+            ) {
+                try {
+                    const res = await fetch(
+                        `/api/generate-weapon?${searchParams.toString()}`,
+                    );
+                    if (res.status === StatusCodes.OK) {
+                        // if this still matches the UI state
+                        if (
+                            _.isEqual(forParams.odds, odds) &&
+                            forParams.version === version &&
+                            forParams.weaponID === weaponID
+                        ) {
+                            const resBody = await res.json();
+                            weapon = resBody as unknown as WeaponViewModel;
+                        }
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
             } else {
                 weapon = null;

@@ -4,6 +4,9 @@ import { type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/w
 describe("Weapon Generator Main Page", () => {
     beforeEach(() => {
         cy.intercept('/api/generate-weapon*', (req) => {
+            if (!('id' in req.query) || !('v' in req.query)) {
+                throw new Error(`Frontend violated API contract\n${JSON.stringify(req.query)}`);
+            }
             req.reply({
                 statusCode: StatusCodes.OK,
                 body: {
@@ -21,7 +24,7 @@ describe("Weapon Generator Main Page", () => {
                     toHit: 2,
                     active: {
                         maxCharges: 999,
-                        rechargeMethod: "",
+                        rechargeMethod: "a charge every morning",
                         powers: [
                             {
                                 desc: "Light Blast",
@@ -72,7 +75,7 @@ describe("Weapon Generator Main Page", () => {
     });
 
 
-    it("Should always generate a different weapon each time the clicks the generate button", () => {
+    it("Should always generate a different weapon each time the user clicks the generate button", () => {
 
         // visit the page
         cy.visit("/");
