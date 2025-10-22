@@ -491,14 +491,24 @@ export type DescriptorText = ({
     plural: string | Generator<string, [Weapon, WeaponPartName]>;
 });
 
-export type Material<TArgs extends [Weapon, ...unknown[]] = [Weapon]> = ({ material: string | Generator<string, TArgs> }) & {
+export type PartMaterial<TArgs extends [Weapon, ...unknown[]] = [Weapon]> = ({ material: string | Generator<string, TArgs> }) & {
     ephitet?: Ephitet | Generator<Ephitet, [Weapon]>;
 };
-export type Descriptor<TArgs extends [Weapon, ...unknown[]] = [Weapon]> = ({ descriptor: DescriptorText }) & {
+export type PartFeature<TArgs extends [Weapon, ...unknown[]] = [Weapon]> = ({ descriptor: DescriptorText }) & {
     ephitet?: Ephitet | Generator<Ephitet, TArgs>;
 };
 export type DescriptorGenerator<TArgs extends [Weapon, ...unknown[]] = [Weapon]> =
-    ((Generator<Material<TArgs>, TArgs> & { yields: 'material' }) | (Generator<Descriptor<TArgs>, TArgs> & { yields: 'descriptor' })) & {
+    ((Generator<PartMaterial<TArgs>, TArgs> & {
+        /**
+         * The type of descriptor that the generator will produce. 
+         */
+        yields: 'material'
+    }) | (Generator<PartFeature<TArgs>, TArgs> & {
+        /**
+         * The type of descriptor that the generator will produce. 
+         */
+        yields: 'feature'
+    })) & {
         applicableTo: Quant<WeaponPartName>;
     };
 
