@@ -1,19 +1,24 @@
 import type { WeaponPowerCond } from '$lib/generators/weaponGenerator/weaponGeneratorTypes';
 import { Patchable } from '$lib/util/versionController';
+import _ from 'lodash';
 import seedrandom from "seedrandom";
 
-export type Quant<T> = { any: Set<T> } | { all: Set<T> } | { none: Set<T> }
+export type Quant<T> = { any: T[] | readonly T[] } | { all: T[] | readonly T[] } | { none: T[] | readonly T[] }
 export function evQuant<T>(req: Quant<T>, actual: T | T[]) {
     const isArray = Array.isArray(actual);
+    const eq: (x: T) => boolean = isArray ?
+        (x) => actual.some(y => _.isEqual(x, y)) :
+        (x) => _.isEqual(x, actual);
+    const length = isArray ? actual.length : 1;
 
     if ('any' in req) {
-        return (isArray ? actual.some(x => req.any.has(x)) : req.any.has(actual));
+        return length > 0 && req.any.some(eq);
     }
     else if ('all' in req) {
-        return (isArray ? req.all.isSubsetOf(new Set(actual)) : req.all.has(actual));
+        return length > 0 && req.all.every(eq);
     }
     else if ('none' in req) {
-        return !(isArray ? actual.some(x => req.none.has(x)) : req.none.has(actual));
+        return length === 0 || !req.none.some(eq);
     }
     return true;
 }
