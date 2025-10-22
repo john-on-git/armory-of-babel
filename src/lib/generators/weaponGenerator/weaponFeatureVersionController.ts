@@ -88,9 +88,9 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     },
                     {
                         themes: { any: ['earth'] },
-                        shapeFamily: {
-                            none: ['greatsword', 'greatsword']
-                        },
+                        UUIDs: {
+                            none: ['immovable-bc-weapon-shape']
+                        }
                     }
                 ),
                 new ProviderElement<ActivePower, WeaponPowerCond>('immovable-bc-weapon-shape',
@@ -102,10 +102,12 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         ]
                     },
                     {
-                        themes: { none: ['earth'] },
                         shapeFamily: {
                             any: ['greatsword', 'greatsword']
                         },
+                        UUIDs: {
+                            none: ['immovable-bc-earth']
+                        }
                     }
                 ),
                 new ProviderElement<ActivePower, WeaponPowerCond>('detachable-gems', {
@@ -132,7 +134,10 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'legendary'
                         },
-                        themes: { none: ['wizard'] }
+                        themes: { none: ['wizard'] },
+                        UUIDs: {
+                            none: ['silence-aura', 'fire-aura', 'mist-aura', 'ice-aura']
+                        }
                     }
                 ),
                 new ProviderElement<PassivePower, WeaponPowerCond>('silence-aura',
@@ -144,10 +149,13 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'epic'
                         },
-                        themes: { none: ['wizard', 'fire'] }
+                        themes: { none: ['wizard', 'fire'] },
+                        UUIDs: {
+                            none: ['antimagic-aura', 'fire-aura', 'mist-aura', 'ice-aura']
+                        }
                     }
                 ),
-                new ProviderElement<PassivePower, WeaponPowerCond>('flame-aura',
+                new ProviderElement<PassivePower, WeaponPowerCond>('fire-aura',
                     {
                         miscPower: true,
                         desc: "The weapon emits a 10-ft aura of flames, which sets foes and objects alight. The aura is inactive while the weapon is sheathed."
@@ -156,7 +164,10 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'legendary'
                         },
-                        themes: { any: ['fire'] }
+                        themes: { any: ['fire'] },
+                        UUIDs: {
+                            none: ['silence-aura', 'antimagic-aura', 'mist-aura', 'ice-aura']
+                        }
                     }
                 ),
                 new ProviderElement<PassivePower, WeaponPowerCond>('mist-aura',
@@ -168,7 +179,10 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'legendary'
                         },
-                        themes: { any: ['cloud'] }
+                        themes: { any: ['cloud'] },
+                        UUIDs: {
+                            none: ['silence-aura', 'antimagic-aura', 'fire-aura', 'ice-aura']
+                        }
                     }
                 ),
                 new ProviderElement<PassivePower, WeaponPowerCond>('ice-aura',
@@ -180,7 +194,10 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         rarity: {
                             gte: 'legendary'
                         },
-                        themes: { any: ['ice'] }
+                        themes: { any: ['ice'] },
+                        UUIDs: {
+                            none: ['silence-aura', 'antimagic-aura', 'fire-aura', 'mist-aura']
+                        }
                     }
                 ),
                 new ProviderElement<PassivePower, WeaponPowerCond>(
@@ -288,7 +305,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: { any: ['ice'] }
                     }
                 ),
-                new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
+                new ProviderElement<PassivePower, WeaponPowerCond>('shrink-or-grow',
                     {
                         miscPower: true,
                         desc: "Can transform into a 10-ft pole, or shrink to the size of a toothpick."
@@ -310,10 +327,22 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         },
                         shapeFamily: {
                             none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'greatsword (or musket)']
+                        },
+                        UUIDs: {
+                            none: ['instant-recall']
                         }
                     }
                 )
-            ]
+            ],
+            modify: {
+                'instant-recall': {
+                    cond: {
+                        UUIDs: {
+                            none: ['magic-pocket']
+                        }
+                    }
+                }
+            }
         },
         languages: {},
         shapes: {}

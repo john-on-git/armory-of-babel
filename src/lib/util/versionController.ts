@@ -17,25 +17,43 @@ export abstract class Patchable {
     }
 
     patch(other: RecursivePartial<typeof this>) {
-        function f<T extends object>(target: T, other: RecursivePartial<T>): T {
-            for (const k of Object.keys(other) as (keyof typeof target)[]) {
-                if (other[k] !== undefined) {
-                    if (typeof target[k] === 'object' && target[k] !== null && other[k] !== null) {
-                        // is object
-                        target[k] = f(target[k], other[k]);
+        function f(target: unknown, other: unknown): unknown {
+            if (typeof target === 'object' && target !== null && target !== undefined && typeof other === 'object' && other !== null && other !== undefined) {
+                const targetIsArr = Array.isArray(target);
+                const otherIsArr = Array.isArray(other);
+
+                if (targetIsArr && otherIsArr) {
+                    return other;
+                }
+                else if (!targetIsArr && !otherIsArr) {
+
+                    // they're both objects, so we need to recurse, stitching them together
+                    const acc: Record<string, unknown> = { ...target };
+
+                    for (const k in other) {
+                        if (k in target) {
+                            // if the key is already present in the target, we need to recurse and update anything in the subtree
+                            acc[k] = f(target[k as keyof typeof target], other[k as keyof typeof other]);
+                        }
+                        else {
+                            // otherwise we can just copy all of it over
+                            acc[k] = other[k as keyof typeof other]
+                        }
                     }
-                    else if (typeof target[k] === typeof other[k]) {
-                        // is primitive
-                        target[k] = other[k] as never;
-                    }
-                    else {
-                        throw new Error(`can't patch ${JSON.stringify(other)} onto ${JSON.stringify(target)}, type error`)
-                    }
+                    return acc;
                 }
             }
-            return target;
+            else if (target === undefined || typeof target === typeof other) { // they are both primitives of the same type, so we can patch other on
+                return other;
+            }
+            throw new Error(`can't patch ${JSON.stringify(other)} onto ${JSON.stringify(target)}, type error`);
         }
-        f(this, other);
+
+        // calculate the new patched object, then overwrite this with it
+        const patched = f(this, other) as object;
+        for (const k in this) {
+            this[k as keyof typeof this] = patched[k as keyof typeof patched];
+        }
     };
 }
 
