@@ -125,8 +125,8 @@ describe('VersionController', () => {
         });
 
 
-        expect(myVersionController.getVersion(4)).toBeUndefined();
-        expect(myVersionController.getVersion(-1)).toBeUndefined();
-        expect(myVersionController.getVersion(NaN)).toBeUndefined();
+        expect(() => myVersionController.getVersion(4)).toThrow();
+        expect(() => myVersionController.getVersion(-1)).toThrow();
+        expect(() => myVersionController.getVersion(NaN)).toThrow();
     })
 })

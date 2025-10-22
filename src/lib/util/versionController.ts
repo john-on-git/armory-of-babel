@@ -93,11 +93,10 @@ export class VersionController<
 
     /**
      * get the things for this version
-     * @param v 
+     * @param v the version to get the things for. If v is not a supported version the behaviour of this method is undefined.
      * @returns the things for this version, or undefined if this version does not exist
      */
-    getVersion(v: number): TPost | undefined {
-
+    getVersion(v: number): TPost {
         if (v >= 0 && v < this.deltaCollections.length) {
             // build the base object
             const head = (Object.keys(this.deltaCollections[0]) as (keyof TOut)[]).reduce<TOut>((acc, k) => {
@@ -144,7 +143,7 @@ export class VersionController<
             return this.postGeneration(head);
         }
         else {
-            return undefined;
+            throw new Error('invalid version number');
         }
     }
 }

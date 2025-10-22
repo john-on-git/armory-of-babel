@@ -6,31 +6,31 @@
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
+    import { pushURLSearchParamsToLocation } from "$lib/util/queryString";
     import { onMount, tick } from "svelte";
     import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
     interface Props {
         config?: WeaponRarityConfig;
-        logging?: boolean;
     }
 
-    const { config, logging = false }: Props = $props();
+    const { config }: Props = $props();
 
-    const version = $state(
-        weaponFeatureVersionController.getLatestVersionNum(),
+    const version = writable<number>(getVersionFromURL());
+    let featureProviders = $state(
+        weaponFeatureVersionController.getVersion(
+            weaponFeatureVersionController.getLatestVersionNum(),
+        ),
     );
-    const featureProviders = $derived.by(() => {
-        const featureProviders =
-            weaponFeatureVersionController.getVersion(version);
-        if (featureProviders === undefined) {
-            throw new Error("failed to get weapon features");
-        } else {
-            return featureProviders;
-        }
+    version.subscribe((newVersion) => {
+        // update the view with the new weapon. derived doesn't update when the URL is changed
+        featureProviders =
+            weaponFeatureVersionController.getVersion(newVersion);
     });
 
-    let weapon: Weapon = $derived(
+    let weapon: Weapon = $state(
+        // svelte-ignore state_referenced_locally
         mkWeapon(featureProviders, getIDFromURL(), config),
     );
     const weaponID = writable<string>(getIDFromURL());
@@ -51,7 +51,6 @@
             if (
                 new URLSearchParams(window.location.search).get("id") === null
             ) {
-                console.log("will push id");
                 pushIdToURL(weapon.id);
             }
         });
@@ -77,6 +76,32 @@
             ? maybeNumber.toString()
             : getNewId();
     }
+    /**
+     * Get the version ID associated with the current URL.
+     * If the URL has no 'v' param, its associated with the latest version.
+     */
+    function getVersionFromURL(): number {
+        // this is user input and could be literally anything, i.e. an XSS attack
+        const maybeNumber = Number.parseInt(
+            new URLSearchParams(window.location.search).get("v") ?? "NaN",
+        );
+
+        if (Number.isInteger(maybeNumber)) {
+            // return the existing version num
+            return maybeNumber;
+        } else {
+            // get the latest version
+            const latest = weaponFeatureVersionController.getLatestVersionNum();
+
+            // push it to the URL
+            const searchParams = new URLSearchParams(window.location.search);
+            searchParams.set("v", latest.toString());
+            pushURLSearchParamsToLocation(searchParams);
+
+            // return it
+            return latest;
+        }
+    }
 
     function pushIdToURL(id: string) {
         // only add the id param if it wasn't added already
@@ -99,10 +124,6 @@
      */
     function generateWeapon() {
         pushIdToURL(getNewId());
-
-        if (logging) {
-            console.log("generated weapon", weapon);
-        }
     }
 </script>
 
