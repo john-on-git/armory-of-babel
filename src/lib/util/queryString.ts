@@ -7,6 +7,12 @@ export function pushURLSearchParamsToLocation(searchParams: URLSearchParams) {
         queryNoQuestion.length > 0 ? `?${queryNoQuestion}` : "";
     if (window.location.search !== newQuery) {
         // and update the URL params to point to its ID
-        tick().then(() => replaceState(newQuery, {}));
+        tick().then(() => {
+            replaceState(newQuery, {});
+            tick().then(() => dispatchEvent(new PopStateEvent("popstate", { state: null })));
+        });
+    }
+    else {
+        tick().then(() => dispatchEvent(new PopStateEvent("popstate", { state: null })));
     }
 }

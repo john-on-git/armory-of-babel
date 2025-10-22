@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { pushState } from "$app/navigation";
-    import { weaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
+    import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
     import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import {
         type Weapon,
@@ -8,7 +7,6 @@
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
     import { pushURLSearchParamsToLocation } from "$lib/util/queryString";
     import { onMount, tick } from "svelte";
-    import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
     interface Props {
@@ -17,41 +15,32 @@
 
     const { config }: Props = $props();
 
-    const version = writable<number>(getVersionFromURL());
-    let featureProviders = $state(
-        weaponFeatureVersionController.getVersion(
-            weaponFeatureVersionController.getLatestVersionNum(),
-        ),
-    );
-    version.subscribe((newVersion) => {
-        // update the view with the new weapon. derived doesn't update when the URL is changed
-        featureProviders =
-            weaponFeatureVersionController.getVersion(newVersion);
-    });
+    let version = $state(getVersionFromURL());
+    let weaponID = $state(getIDFromURL());
 
-    let weapon: Weapon = $state(
-        // svelte-ignore state_referenced_locally
-        mkWeapon(featureProviders, getIDFromURL(), config),
+    const featureProviders = $derived(
+        weaponVersionController.getVersion(version),
     );
-    const weaponID = writable<string>(getIDFromURL());
-    weaponID.subscribe((newId) => {
-        // update the view with the new weapon. derived doesn't update when the URL is changed
-        weapon = mkWeapon(featureProviders, newId, config);
-    });
+
+    let weapon: Weapon = $derived(mkWeapon(featureProviders, weaponID, config));
 
     // set up event listeners
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", () => {
-            weaponID.set(getIDFromURL());
+            weaponID = getIDFromURL();
+            version = getVersionFromURL();
         });
 
         tick().then(() => {
-            // and initialize the ID in the URL if it has not been set yet
+            // and initialize any values in the URL that have not been set yet
             if (
                 new URLSearchParams(window.location.search).get("id") === null
             ) {
-                pushIdToURL(weapon.id);
+                pushIdToURL(weaponID);
+            }
+            if (new URLSearchParams(window.location.search).get("v") === null) {
+                pushVersionToURL(version);
             }
         });
     });
@@ -60,21 +49,6 @@
      */
     function getNewId() {
         return Math.floor(Math.random() * 10e19).toString();
-    }
-
-    /**
-     * Get the weapon ID associated with the current URL.
-     * If the URL has no 'id' param, its associated with a random ID.
-     */
-    function getIDFromURL(): string {
-        // this is user input and could be literally anything, i.e. an XSS attack
-        const maybeNumber = Number.parseInt(
-            new URLSearchParams(window.location.search).get("id") ?? "NaN",
-        );
-
-        return Number.isInteger(maybeNumber)
-            ? maybeNumber.toString()
-            : getNewId();
     }
     /**
      * Get the version ID associated with the current URL.
@@ -91,7 +65,7 @@
             return maybeNumber;
         } else {
             // get the latest version
-            const latest = weaponFeatureVersionController.getLatestVersionNum();
+            const latest = weaponVersionController.getLatestVersionNum();
 
             // push it to the URL
             const searchParams = new URLSearchParams(window.location.search);
@@ -102,21 +76,36 @@
             return latest;
         }
     }
+    function pushVersionToURL(id: number) {
+        // only add the id param if it wasn't added already
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("v", id.toString());
 
+        // and update the URL params to point to its ID
+        pushURLSearchParamsToLocation(searchParams);
+    }
+
+    /**
+     * Get the weapon ID associated with the current URL.
+     * If the URL has no 'id' param, its associated with a random ID.
+     */
+    function getIDFromURL(): string {
+        // this is user input and could be literally anything, i.e. an XSS attack
+        const maybeNumber = Number.parseInt(
+            new URLSearchParams(window.location.search).get("id") ?? "NaN",
+        );
+
+        return Number.isInteger(maybeNumber)
+            ? maybeNumber.toString()
+            : getNewId();
+    }
     function pushIdToURL(id: string) {
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set("id", id);
 
         // and update the URL params to point to its ID
-        const queryNoQuestion = searchParams.toString();
-        const newQuery =
-            queryNoQuestion.length > 0 ? `?${queryNoQuestion}` : "";
-        // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
-        if (window.location.search !== newQuery) {
-            pushState(newQuery, {});
-        }
-        dispatchEvent(new PopStateEvent("popstate", { state: null }));
+        pushURLSearchParamsToLocation(searchParams);
     }
 
     /**
