@@ -47,12 +47,12 @@
         const newOdds = calcOdds(config);
 
         if (_.isEqual(newOdds, defaultOdds)) {
-            searchParams.delete("rarityOdds");
+            searchParams.delete("o");
         } else {
-            searchParams.set("rarityOdds", newOdds[0].toFixed(2));
-            searchParams.append("rarityOdds", newOdds[1].toFixed(2));
-            searchParams.append("rarityOdds", newOdds[2].toFixed(2));
-            searchParams.append("rarityOdds", newOdds[3].toFixed(2));
+            searchParams.set("o", newOdds[0].toFixed(2));
+            for (let i = 1; i < newOdds.length; i++) {
+                searchParams.append("o", newOdds[i].toFixed(2));
+            }
         }
         syncLocationWithURLSearchParams(searchParams, "replace");
     });

@@ -3,7 +3,7 @@ import { weaponFeatureVersionController } from "../../../lib/generators/weaponGe
 import { defaultWeaponRarityConfigFactory } from "../../../lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
 import { mkWeapon } from "../../../lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { applyOddsToConfig } from "../../../lib/util/configUtils";
-import { isValidOdd } from "../../../lib/util/getFromURL";
+import { isValidOdds } from "../../../lib/util/getFromURL";
 import { DEFAULT_RARITY_ODDS, FEATURE_PROVIDERS_BY_VERSION } from "./state.svelte";
 
 export interface GenerateWeaponRequest {
@@ -23,8 +23,7 @@ function isGenerateWeaponRequest(maybeReq: unknown): maybeReq is GenerateWeaponR
         asReq.version >= 0 && asReq.version <= weaponFeatureVersionController.getLatestVersionNum() &&
 
         typeof asReq.odds === 'object' &&
-        Array.isArray(asReq.odds) && asReq.odds.length === 4 &&
-        asReq.odds.every(isValidOdd)
+        isValidOdds(asReq.odds)
     );
 }
 
@@ -34,7 +33,7 @@ export async function GET({ request }: { request: Request, }) {
     const location = request.url.slice(iStartOfQuery);
     const params = new URLSearchParams(location);
 
-    const oddsFromParams = params.getAll('rarityOdds').map(x => Number.parseFloat(x));
+    const oddsFromParams = params.getAll('o').map(x => Number.parseFloat(x));
     const v = params.get('v');
 
     const weaponRequest = {

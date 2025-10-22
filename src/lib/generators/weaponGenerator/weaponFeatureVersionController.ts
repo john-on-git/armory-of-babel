@@ -39,8 +39,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
         shapes: {},
         adjectives: {
             add: [
-                new ProviderElement<WeaponAdjective, WeaponPowerCond>('light-white', { desc: 'white' }, { themes: { any: ['light'] } }),
-                new ProviderElement<WeaponAdjective, WeaponPowerCond>('dark-black', { desc: 'black' }, { themes: { any: ['dark'] } }),
+                new ProviderElement<WeaponAdjective, WeaponPowerCond>('pale', { desc: 'pale' }, { themes: { any: ['light'] } }),
             ]
         },
         actives: {
@@ -50,7 +49,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     cost: 1,
                     additionalNotes: [
                         'Lock a mechanism in place with magical ice as strong as steel.',
-                        'It stays frozen for 2d6 * 10 minutes.'
+                        'It stays frozen for 2d6 × 10 minutes.'
                     ]
                 }, {
                     themes: {
@@ -93,22 +92,37 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         any: ['sword (or bow)', 'dagger (or pistol)', 'greatsword (or musket)']
                     }
                 }),
-                new ProviderElement<ActivePower, WeaponPowerCond>('binding-shot', {
-                    desc: 'Blackflame Blast',
+                new ProviderElement<ActivePower, WeaponPowerCond>('black-flame-blast', {
+                    desc: 'Black Flame Blast',
                     cost: 3,
                     additionalNotes: [
-                        'Fire an enchanted shot, which anchors the target to a nearby surface.',
-                        'They are stuck in place until use their turn to save to escape.'
+                        'Summon a 20-ft cone of black flame, which deals 4d6 damage.',
+                        'Damage inflicted by black flames can only be healed by magic.'
                     ]
                 }, {
-                    themes: { all: ['dark', 'fire'] },
-                    shapeFamily: {
-                        any: ['sword (or bow)', 'dagger (or pistol)', 'greatsword (or musket)']
-                    }
+                    themes: { all: ['dark', 'fire'] }
                 })
             ]
         },
-        passives: {},
+        passives: {
+            add: [
+                new ProviderElement<PassivePower, WeaponPowerCond>('weapon-permanently-invisible',
+                    {
+                        miscPower: true,
+                        desc: 'The weapon is completely invisible, except to its wielder.'
+                    },
+                    {
+                        themes: {
+                            any: ['light']
+                        },
+                        rarity: {
+                            gte: 'epic'
+                        },
+                        isSentient: true // If it can't call out to you, how would you know it's there?
+                    }
+                )
+            ]
+        },
         languages: {},
         themes: {},
         personalities: {},
