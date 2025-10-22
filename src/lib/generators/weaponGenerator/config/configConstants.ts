@@ -280,7 +280,7 @@ export const MATERIALS = {
                 case 'orc':
                     return [{ pre: "Orcslayer's" }, { post: ' of Orc City' }].choice(rng);
                 default:
-                    return { post: ` of the ${creature}` };
+                    return [{ pre: `${val}-Slayer's` }].choice(rng);
             }
         }
 
