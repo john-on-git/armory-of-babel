@@ -8,16 +8,17 @@ import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./pr
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
-function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
+function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: DescriptorGenerator & { UUID: string }, weapon: Weapon, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
     function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined, ...[structure, structuredDesc]: ReturnType<typeof structureFor>) {
         const allApplicableParts = _
             .entries(structure)
             .flatMap(([k, parts]) =>
                 parts.filter(part =>
-                    (applicableTo === undefined) || evQuant(applicableTo, part) &&
-                    !checkMaterial || structuredDesc[k as keyof typeof structure][part].material === undefined
+                    ((applicableTo === undefined) || evQuant(applicableTo, part)) &&
+                    (!checkMaterial || structuredDesc[k as keyof typeof structure][part].material === undefined)
                 ).map(part => [k, part]) as [keyof typeof structure, WeaponPartName][]
             );
+        console.log(provider.generate(seedrandom()), applicableTo, allApplicableParts)
         // 2. choose one at random
         return allApplicableParts.choice(rng);
     }
@@ -34,8 +35,8 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         // if we fail to get a part, try to handle it gracefully
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].material = {
-                desc: descriptor.material,
-                ephitet: descriptor.ephitet,
+                desc: genStr(descriptor.material, rng, weapon),
+                ephitet: genStr(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
             };
         }
@@ -46,8 +47,8 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         // if we fail to get a part, try to handle it gracefully
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
-                desc: descriptor.descriptor,
-                ephitet: descriptor.ephitet,
+                desc: genStr(descriptor.descriptor, rng, weapon),
+                ephitet: genStr(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
             });
         }
@@ -60,7 +61,7 @@ function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof str
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
     function textForDamageKey(k: string, v: string | number | undefined): string {
-        if (v === undefined) {
+        if (v === undefined || v === 0) {
             return '';
         }
         else {
@@ -88,7 +89,7 @@ export function textForDamage(damage: DamageDice & { as?: string }) {
             } satisfies Record<keyof typeof damage, number>;
             return ord[k1 as keyof typeof damage] - ord[k2 as keyof typeof damage];
         })
-        .map(([k, v]) => textForDamageKey(k, v)).join(' + ');
+        .map(([k, v]) => textForDamageKey(k, v)).filter(x => x.length > 0).join(' + ');
 }
 
 export function mkWepToGen<T>(x: T | ((rng: seedrandom.PRNG) => T)) {
@@ -153,7 +154,7 @@ function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.
     throw new Error('failed to generate rarity');
 }
 
-export const genStr = (weapon: Weapon, rng: seedrandom.PRNG, x: string | ((weapon: Weapon) => (TGenerator<string>))) => typeof x === 'string' ? x : x(weapon).generate(rng);
+export const genStr = <T extends Array<unknown>>(x: string | ((...args: T) => (TGenerator<string>)), rng: seedrandom.PRNG, ...args: T) => typeof x === 'string' ? x : x(...args).generate(rng);
 
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
@@ -258,7 +259,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             if (choice != undefined) {
                 weapon.sentient.personality.push({
                     ...choice,
-                    desc: genStr(weapon, rng, choice?.desc)
+                    desc: genStr(choice?.desc, rng, weapon)
                 });
             }
         }
@@ -276,7 +277,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 if (choice.desc !== null) {
                     weapon.passivePowers.push({
                         ...choice,
-                        desc: genStr(weapon, rng, choice.desc)
+                        desc: genStr(choice.desc, rng, weapon)
                     });
                 }
                 for (const k in choice.bonus) {
@@ -323,15 +324,15 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     const rechargeMethodChoice = featureProviders.rechargeMethodProvider.draw(rng, weapon);
     weapon.active.rechargeMethod = {
         ...rechargeMethodChoice,
-        desc: genStr(weapon, rng, rechargeMethodChoice.desc)
+        desc: genStr(rechargeMethodChoice.desc, rng, weapon)
     };
     for (let i = 0; i < params.nActive; i++) {
         const choice = featureProviders.activePowerProvider.draw(rng, weapon);
         if (choice != undefined) {
             weapon.active.powers.push({
                 ...choice,
-                desc: genStr(weapon, rng, choice.desc),
-                additionalNotes: choice.additionalNotes?.map(x => genStr(weapon, rng, x))
+                desc: genStr(choice.desc, rng, weapon),
+                additionalNotes: choice.additionalNotes?.map(x => genStr(x, rng, weapon))
             });
 
             if (choice.descriptorPartGenerator) {
@@ -346,8 +347,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             weapon.active.powers.push({
                 ...choice,
                 cost: 'at will',
-                desc: genStr(weapon, rng, choice.desc),
-                additionalNotes: choice.additionalNotes?.map(x => genStr(weapon, rng, x))
+                desc: genStr(choice.desc, rng, weapon),
+                additionalNotes: choice.additionalNotes?.map(x => genStr(x, rng, weapon))
             });
 
             if (choice.descriptorPartGenerator) {
@@ -385,7 +386,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
     for (const featureDescriptorProvider of featureDescriptorProviders) {
-        applyDescriptionPartProvider(rng, featureDescriptorProvider, structure, structuredDesc);
+        applyDescriptionPartProvider(rng, featureDescriptorProvider, weapon, structure, structuredDesc);
 
         nDescriptors++;
         if (nDescriptors >= MAX_DESCRIPTORS) {
@@ -396,18 +397,18 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     // then, apply theme-based descriptors, up to the cap
     while (nDescriptors < MAX_DESCRIPTORS) {
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
-        applyDescriptionPartProvider(rng, descriptorProvider, structure, structuredDesc);
+        applyDescriptionPartProvider(rng, descriptorProvider, weapon, structure, structuredDesc);
         nDescriptors++;
     }
 
     // convert the structured description to a text block
     // (placeholder for now)
-    const description = Object.values(structuredDesc).flatMap((func) => Object.entries(func).flatMap(([partName, part]) => {
+    const description = Object.values(structuredDesc).flatMap((func, i) => Object.entries(func).flatMap(([partName, part]) => {
         const descriptors = part.descriptors.map(z => z.desc).join(' and ');
-        const descriptorsAndMaterial = part.material === undefined ? descriptors : `made of ${part.material.desc}${descriptors.length > 0 ? ', and ' : ''}${descriptors}`;
+        const descriptorsAndMaterial = part.material === undefined ? descriptors : `is made of ${part.material.desc}${descriptors.length > 0 ? ', and ' : ''}${descriptors}`;
 
-        return descriptorsAndMaterial.length > 0 ? `Its ${partName} ${descriptorsAndMaterial}.` : '';
-    })).join('\n');
+        return descriptorsAndMaterial.length > 0 ? `${i == 0 ? 'Its' : 'The'} ${partName} ${descriptorsAndMaterial}.` : '';
+    })).join(' ');
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
     const ephitet = pickEphitet(rng, structuredDesc);
@@ -433,19 +434,19 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         toHit: weapon.toHit,
         active: {
             maxCharges: weapon.active.maxCharges,
-            rechargeMethod: genStr(weapon, rng, weapon.active.rechargeMethod.desc),
+            rechargeMethod: genStr(weapon.active.rechargeMethod.desc, rng, weapon),
             powers: weapon.active.powers.map(power => ({
-                desc: genStr(weapon, rng, power.desc),
+                desc: genStr(power.desc, rng, weapon),
                 cost: power.cost,
-                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(weapon, rng, desc)) })
+                ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(desc, rng, weapon)) })
             }))
         },
         passivePowers: weapon.passivePowers.map(power => ({
-            desc: genStr(weapon, rng, power.desc),
-            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(weapon, rng, desc)) })
+            desc: genStr(power.desc, rng, weapon),
+            ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genStr(desc, rng, weapon)) })
         })),
         sentient: weapon.sentient ? {
-            personality: weapon.sentient.personality.map(x => genStr(weapon, rng, x.desc)),
+            personality: weapon.sentient.personality.map(x => genStr(x.desc, rng, weapon)),
             languages: weapon.sentient.languages,
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
         } : false,

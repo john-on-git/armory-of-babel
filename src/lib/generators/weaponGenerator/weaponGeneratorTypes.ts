@@ -308,6 +308,11 @@ const weaponStructures = {
         holding: ['grip'],
         other: ['shaft', 'pommel']
     },
+    lanceLike: {
+        business: ['tip'],
+        holding: ['grip'],
+        other: ['pommel']
+    },
     spearLike: {
         business: ['tip'],
         holding: ['grip'],
@@ -320,8 +325,8 @@ const weaponStructures = {
     },
     bowSwordLike: {
         business: ['blades'],
-        holding: ['limbs'],
-        other: ['string', 'quiver']
+        holding: ['grip'],
+        other: ['string', 'quiver', 'limbs']
     },
     gunSwordLike: {
         business: ['blade'],
@@ -343,7 +348,7 @@ const shapeToStructure = {
     "greatsword": 'swordLike',
 
     "spear": 'spearLike',
-    "lance": 'spearLike',
+    "lance": 'lanceLike',
     "polearm": 'maceOrAxeLike',
 
     "sword (or bow)": 'bowSwordLike',
@@ -359,7 +364,8 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
-export type DescriptorGenerator = TGenerator<(({ material: string } | { descriptor: string }) & { ephitet: string; })> & {
+export type Descriptor = ({ material: string | ((weapon: Weapon) => TGenerator<string>) } | { descriptor: string | ((weapon: Weapon) => TGenerator<string>) }) & { ephitet: string | ((weapon: Weapon) => TGenerator<string>); };
+export type DescriptorGenerator = TGenerator<Descriptor> & {
     applicableTo?: Quant<WeaponPartName>;
 };
 
