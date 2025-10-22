@@ -203,10 +203,10 @@
     }
 
     :global(.fade-in-1) {
-        animation: 0.666s ease-in 0s 1 fade-in-1 forwards;
+        animation: 1s ease-in 0s 1 fade-in-1 forwards;
     }
     :global(.fade-in-2) {
-        animation: 0.666s ease-in 0s 1 fade-in-2 forwards;
+        animation: 1s ease-in 0s 1 fade-in-2 forwards;
     }
     :global(.fade-out-1) {
         animation: 0.666s ease-out 0s 1 fade-in-1 reverse;
@@ -262,7 +262,10 @@
     }
 
     @keyframes fade-in-1 {
-        from {
+        0% {
+            opacity: 0;
+        }
+        10% {
             opacity: 0;
         }
         to {
@@ -271,7 +274,10 @@
     }
 
     @keyframes fade-in-2 {
-        from {
+        0% {
+            opacity: 0;
+        }
+        10% {
             opacity: 0;
         }
         to {
