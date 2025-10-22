@@ -112,6 +112,18 @@ export default {
                 ]
             }, {
                 themes: { any: ['earth'] },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('ultimate-attack', {
+                desc: 'Ultimate Anime Attack',
+                cost: 'all charges',
+                additionalNotes: [
+                    'This attack always hits. It deals damage equal to the weapon\'s damage × number of remaining charges.',
+                    'Afterwards, the weapon crumbles to dust.'
+                ]
+            }, {
+                rarity: {
+                    lte: 'rare'
+                },
             })
         ]
     },
