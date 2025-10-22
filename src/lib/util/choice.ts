@@ -1,6 +1,6 @@
 import type seedrandom from "seedrandom";
 
-export {}
+export { };
 declare global {
   interface Array<T> {
     /**
@@ -17,18 +17,28 @@ declare global {
     choice: (rng: seedrandom.PRNG) => T;
   }
 }
-if(!Array.prototype.choice) {
-  Array.prototype.choice = function(rng: seedrandom.PRNG) { return this[Math.floor(this.length*rng())]; }
-}
-if(!Set.prototype.choice) {
-  Set.prototype.choice = function(rng: seedrandom.PRNG) { 
-    const choice = Math.floor(this.size*rng()); 
+
+export function choice<T>(set: Set<T>, rng: seedrandom.PRNG): T;
+export function choice<T>(arr: T[] | readonly T[], rng: seedrandom.PRNG): T;
+export function choice<T>(collection: Set<T> | T[] | readonly T[], rng: seedrandom.PRNG): T | undefined {
+  if (collection instanceof Set) {
+    const choice = Math.floor(collection.size * rng());
     let i = 0;
-    for(const x of this) {
-        if(i==choice) {
-          return x;
-        }
-        i++;
+    for (const x of collection) {
+      if (i == choice) {
+        return x;
+      }
+      i++;
     }
   }
+  else {
+    return collection[Math.floor(collection.length * rng())];
+  }
+}
+
+if (!Array.prototype.choice) {
+  Array.prototype.choice = function (rng: seedrandom.PRNG) { return choice(this, rng); }
+}
+if (!Set.prototype.choice) {
+  Set.prototype.choice = function (rng: seedrandom.PRNG) { return choice(this, rng); }
 }

@@ -35,7 +35,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].material = {
                 desc: genStr(descriptor.material, rng, weapon),
-                ephitet: genStr(descriptor.ephitet, rng, weapon),
+                ephitet: 'pre' in descriptor.ephitet ? { pre: genStr(descriptor.ephitet.pre, rng, weapon) } : { post: genStr(descriptor.ephitet.post, rng, weapon) },
                 UUID: provider.UUID
             };
         }
@@ -47,7 +47,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
                 desc: genStr(descriptor.descriptor, rng, weapon),
-                ephitet: genStr(descriptor.ephitet, rng, weapon),
+                ephitet: 'pre' in descriptor.ephitet ? { pre: genStr(descriptor.ephitet.pre, rng, weapon) } : { post: genStr(descriptor.ephitet.post, rng, weapon) },
                 UUID: provider.UUID
             });
         }
@@ -486,13 +486,25 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
     const ephitet = pickEphitet(rng, structuredDesc);
-
-    if (weapon.sentient === false) {
-        weapon.name = `${ephitet} ${weapon.shape.particular} `;
+    if (ephitet === undefined) {
+        weapon.name = weapon.shape.particular;
     }
     else {
-        weapon.name = `${personalName}, the ${ephitet} ${weapon.shape.particular} `
+
+        if (weapon.sentient === false) {
+            weapon.name = 'pre' in ephitet
+                ? `${ephitet.pre} ${weapon.shape.particular}`
+                : `The ${weapon.shape.particular}${ephitet.post} `;
+        }
+        else {
+            const ephitetAndShape = 'pre' in ephitet
+                ? `${ephitet.pre} ${weapon.shape.particular}`
+                : `${weapon.shape.particular}${ephitet.post} `;
+
+            weapon.name = `${personalName}, the ${ephitetAndShape}`
+        }
     }
+
 
     const weaponViewModel = {
         id: weapon.id,

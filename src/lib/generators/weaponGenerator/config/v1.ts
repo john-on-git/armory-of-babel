@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
-import { holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -99,6 +99,29 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('material-fire-holding',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.scorchedWood,
+                            MATERIALS.glass,
+                            MATERIALS.quartz,
+                            MATERIALS.porcelain
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['fire']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
+                    }
+                }
+            ),
 
             new ProviderElement('material-ice-hard-mundane',
                 {
@@ -147,6 +170,27 @@ export default {
                     },
                     rarity: {
                         gte: 'epic',
+                    }
+                }
+            ),
+            new ProviderElement('material-ice-holding',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.ivory,
+                            MATERIALS.pine
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['ice']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
                     }
                 }
             ),
@@ -200,6 +244,32 @@ export default {
                 {
                     themes: {
                         any: ['earth']
+                    }
+                }
+            ),
+            new ProviderElement('material-earth-holding',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.alabaster,
+                            MATERIALS.fossils,
+                            MATERIALS.granite,
+                            MATERIALS.marble,
+                            MATERIALS.onyx,
+                            MATERIALS.quartz,
+                            MATERIALS.sandstone,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['earth']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
                     }
                 }
             ),
@@ -369,6 +439,9 @@ export default {
                 {
                     themes: {
                         any: ['sweet']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
                     }
                 }
             ),
@@ -405,6 +478,9 @@ export default {
                 {
                     themes: {
                         any: ['sour']
+                    },
+                    shapeFamily: {
+                        any: grippedWeaponShapeFamilies
                     }
                 }
             ),
@@ -479,6 +555,20 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('misc-wizard-wrapping',
+                {
+                    generate: () => MISC_DESC_FEATURES.wrap.silkWrap,
+                    applicableTo: {
+                        any: wrappableParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['wizard']
+                    }
+                }
+            ),
+
             new ProviderElement('material-steampunk-hard',
                 {
                     generate: (rng) => {
@@ -499,19 +589,32 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('misc-wizard-wrapping',
+
+            new ProviderElement('material-nature-hard',
                 {
-                    generate: () => MISC_DESC_FEATURES.wrap.silkWrap,
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.oak,
+                            MATERIALS.birch,
+                            MATERIALS.cherry,
+                            MATERIALS.ebonyWood,
+                            MATERIALS.maple,
+                            MATERIALS.ivory,
+                            MATERIALS.beetleShell,
+                            MATERIALS.ironWood
+                        ].choice(rng);
+                    },
                     applicableTo: {
-                        any: wrappableParts
+                        any: importantPart
                     }
                 },
                 {
                     themes: {
-                        any: ['wizard']
+                        any: ['nature']
                     }
                 }
             ),
+
             new ProviderElement('misc-wrapping',
                 {
                     generate: (rng) => [
@@ -591,11 +694,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('',
+            new ProviderElement('light-and-dark-blade',
                 {
                     generate: () => ({
                         material: "two separate blades (adamant and mythrel), they're intertwined in a spiral pattern",
-                        ephitet: 'Binary'
+                        ephitet: { pre: 'Binary' }
                     }),
                     applicableTo: {
                         any: importantPart
@@ -610,11 +713,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('',
+            new ProviderElement('ice-and-fire-blade',
                 {
                     generate: () => ({
                         material: "two separate parts, split down the middle: one half is boreal steel, the other scarlet steel",
-                        ephitet: 'Bifurcated'
+                        ephitet: { pre: 'Bifurcated' }
                     }),
                     applicableTo: {
                         any: importantPart
@@ -629,11 +732,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('',
+            new ProviderElement('steam-blade',
                 {
                     generate: () => ({
                         material: "a roiling mix of magical fire and water (which emits thick clouds of steam)",
-                        ephitet: 'Steamy'
+                        ephitet: { pre: 'Steamy' }
                     }),
                     applicableTo: {
                         any: importantPart
@@ -648,11 +751,11 @@ export default {
                     }
                 }
             ),
-            new ProviderElement('',
+            new ProviderElement('elemental-quadblade',
                 {
                     generate: () => ({
-                        material: "elementally infused metal, split into four distinct sections, representing each of the elements",
-                        ephitet: 'Elemental'
+                        material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
+                        ephitet: { post: 'of the Elemental Lord' }
                     }),
                     applicableTo: {
                         any: importantPart
