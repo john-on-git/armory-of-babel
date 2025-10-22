@@ -60,14 +60,14 @@ export interface Cond {
 export type WithUUID<T extends object> = { UUID: string; } & T;
 
 
-function gatherIDs<T extends object>(x: T, acc: Set<string>): Set<string> {
+export function gatherUUIDs<T extends object>(x: T, acc: Set<string> = new Set<string>()): Set<string> {
     // get all the UUIDs of all patchables in the subtree
     Object.values(x).forEach((x) => {
         if (typeof x === 'object' && x !== null && x !== undefined) {
             if ('UUID' in x) {
                 acc.add(x.UUID);
             }
-            gatherIDs(x, acc);
+            gatherUUIDs(x, acc);
         }
     });
     return acc;
@@ -77,7 +77,7 @@ export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { 
 
     if ('target' in x) {
 
-        const allIDs = gatherIDs(x, new Set());
+        const allIDs = gatherUUIDs(x);
 
         return evQuant(quantUUID, Array.from(allIDs.values()));
     }
@@ -105,7 +105,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
         }
         else {
             //otherwise get all the UUIDs in the target and evaluate the conditions
-            const allIDs = gatherIDs(params, new Set());
+            const allIDs = gatherUUIDs(params);
 
             return (
                 // uniqueness demanded -> no duplicates of this.UUID (de-morgan's)
