@@ -114,7 +114,7 @@ describe('Weapon Generator', () => {
 
     it('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
-            return weapon.rarity === 'legendary' && weapon.isNegative;
+            return weapon.active.powers.some(x => x.desc === "Heal");
         }
         const start = 0;
         const attempts = 10_000;

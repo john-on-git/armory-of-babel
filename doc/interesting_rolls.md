@@ -11,7 +11,9 @@
         - duplicate active
 
 - Negative
-    - Uncommon: http://weapons.vercel.app/?v=0&id=3715&o=0.12&o=0.60&o=0.95&o=0.99
+    - Uncommon: 
+        - http://weapons.vercel.app/?v=0&id=3715&o=0.12&o=0.60&o=0.95&o=0.99
+        - http://weapons.vercel.app/?v=0&id=81725038112706840000&o=0.13&o=0.37&o=0.42&o=0.47
     - Rare: https://weapons.vercel.app/?v=0&id=7433&o=0.12&o=0.47&o=0.95&o=0.99
     - Epic: https://weapons.vercel.app/?v=0&id=7433&o=0.12&o=0.17&o=0.30&o=0.99
     - Legendary: https://weapons.vercel.app/?v=0&id=3715&o=0.12&o=0.17&o=0.30&o=0.35

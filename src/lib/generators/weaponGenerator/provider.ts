@@ -109,10 +109,10 @@ export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { 
 
 
 export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
-    protected source: ProviderElement<TThing, TCond>[];
+    protected source: readonly ProviderElement<TThing, TCond>[];
     protected defaultAllowDuplicates: boolean;
 
-    constructor(source: ProviderElement<TThing, TCond>[], defaultAllowDuplicates = false) {
+    constructor(source: readonly ProviderElement<TThing, TCond>[], defaultAllowDuplicates = false) {
         this.source = source;
         this.defaultAllowDuplicates = defaultAllowDuplicates;
     }
