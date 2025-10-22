@@ -49,6 +49,7 @@ export class ProviderElement<TThing, TCond extends Cond> extends Patchable {
 
 export interface Cond {
     allowDuplicates?: true;
+    UUIDs?: Quant<string>
 }
 
 export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
@@ -59,12 +60,34 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
     }
 
     protected condExecutor(UUID: string, cond: TCond, params: TParams): boolean {
-        function recurse<T extends object>(UUID: string, x: T): boolean {
-            // any entry has this UUID or has an element in its subtree with this UUID
-            return Object.entries(x).some(([k, v]) => (k === 'UUID' && v === UUID) || (typeof v === 'object' && recurse(UUID, v)));
+        function gatherIDs<T extends object>(x: T, acc: Set<string>): Set<string> {
+            // get all the UUIDs of all patchables in the subtree
+            Object.values(x).forEach((x) => {
+                if (typeof x === 'object' && x !== null && x !== undefined) {
+                    if ('UUID' in x) {
+                        acc.add(x.UUID);
+                    }
+                    gatherIDs(x, acc);
+                }
+            });
+            return acc;
         }
-        // unique implies no matching UUID (de-morgan's)
-        return cond.allowDuplicates || !recurse(UUID, params)
+        // if the cond doesn't use either of the conditions that require checking UUIDs, there's no point in checking the params' UUIDs. just return true
+        if (cond.allowDuplicates === true && cond.UUIDs === undefined) {
+            return true;
+        }
+        else {
+            //otherwise get all the UUIDs in the target and evaluate the conditions
+            const allIDs = gatherIDs(params, new Set());
+
+            return (
+                // uniqueness demanded -> no duplicates of this.UUID (de-morgan's)
+                (cond.allowDuplicates || !allIDs.has(UUID)) &&
+
+                // cond.others provided -> cond.others is satisfied (de-morgan's)
+                (cond.UUIDs === undefined || evQuant(cond.UUIDs, Array.from(allIDs.values())))
+            );
+        }
     };
 
     // note that the complexity on this implementation is awful, O(n). it should build a decision tree on construction & be O(1)
