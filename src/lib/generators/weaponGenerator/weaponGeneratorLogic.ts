@@ -232,6 +232,21 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // features may provide pieces of description, which are stored here
     const featureDescriptorProviders: (DescriptorGenerator & { UUID: string })[] = [];
+    /**
+     * Handle a possibly invalid request for a descriptor. Applying the descriptor if it's valid, or ignoring it and printing an error if it isn't.
+     * @param UUID the UUID of the requested descriptor, or undefined if one wasn't requested
+     */
+    function tryPushProvider(UUID: string | undefined) {
+        if (UUID !== undefined) {
+            const requestedPartProvider = featureProviders.descriptorIndex[UUID];
+            if (requestedPartProvider) {
+                featureDescriptorProviders.push(requestedPartProvider);
+            }
+            else {
+                console.error(`\x1b[31mfeature requested the descriptor "${UUID}" but it was falsey: implement this descriptor.`)
+            }
+        }
+    }
 
     const rng = seedrandom(rngSeed);
 
@@ -347,15 +362,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 desc: genMaybeGen(gennedChoice.desc, rng, weapon)
             });
 
-            if (gennedChoice.descriptorPartGenerator) {
-                if (gennedChoice.descriptorPartGenerator in featureProviders.descriptorIndex) {
+            tryPushProvider(gennedChoice.descriptorPartGenerator);
 
-                    featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator]);
-                }
-                else {
-                    console.error(`\x1b[31mfeature requested the non-existent descriptor "${gennedChoice.descriptorPartGenerator}": implement this descriptor.`)
-                }
-            }
             if (gennedChoice.bonus) {
                 applyBonuses(weapon, gennedChoice.bonus);
             }
@@ -377,9 +385,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 ...gennedChoice
             });
 
-            if (gennedChoice.descriptorPartGenerator) {
-                featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator])
-            }
+            tryPushProvider(gennedChoice.descriptorPartGenerator);
 
             if (gennedChoice.bonus) {
                 applyBonuses(weapon, gennedChoice.bonus);
@@ -397,9 +403,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 cost: 'at will',
             });
 
-            if (gennedChoice.descriptorPartGenerator) {
-                featureDescriptorProviders.push(featureProviders.descriptorIndex[gennedChoice.descriptorPartGenerator])
-            }
+            tryPushProvider(gennedChoice.descriptorPartGenerator);
 
             if (gennedChoice.bonus) {
                 applyBonuses(weapon, gennedChoice.bonus);
