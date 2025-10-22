@@ -56,8 +56,6 @@
 
         const odds = calcOdds(config);
 
-        let changedURL = false;
-
         const newRarityOdds = _.isEqual(odds, defaultOdds)
             ? undefined
             : JSON.stringify(calcOdds(config));
@@ -67,17 +65,17 @@
             } else {
                 searchParams.set("rarityOdds", newRarityOdds);
             }
-            changedURL = true;
         }
 
-        if (changedURL) {
+        const newQuery = `?${searchParams.toString()}`;
+        if (window.location.search !== newQuery) {
             // and update the URL params to point to its ID
             // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
-            window.history.pushState(
+            window.history.replaceState(
                 //navigate back to main
                 null,
                 "",
-                `?${searchParams.toString()}`,
+                newQuery,
             );
         }
     });
