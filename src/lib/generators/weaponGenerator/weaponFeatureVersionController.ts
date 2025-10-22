@@ -1,10 +1,11 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { type ActivePower, type Language, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponAdjective, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-import { PrimitiveContainer, VersionController } from "../../util/versionController";
+import { type ActivePower, type FeatureProviderCollection, type Language, type PassivePower, type Personality, type RechargeMethod, type Theme, type WeaponAdjective, type WeaponPowerCond, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPatchableArray } from "../../util/versionController";
+import { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
-type WeaponFeaturesCollection = {
+interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
     adjectives: ProviderElement<WeaponAdjective, WeaponPowerCond>;
     personalities: ProviderElement<Personality, WeaponPowerCond>
@@ -17,7 +18,8 @@ type WeaponFeaturesCollection = {
     shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
 }
 
-const toLang = (theme: Theme, lang: string) => new ProviderElement<Language, WeaponPowerCond>(lang.replaceAll(/\s/, '-').toLowerCase(), { language: true, desc: lang }, {
+
+const toLang = (theme: Theme, lang: string) => new ProviderElement<Language, WeaponPowerCond>(lang.replaceAll(/\s/g, '-').toLowerCase(), { language: true, desc: lang }, {
     themes: {
         any: [theme]
     }
@@ -27,7 +29,8 @@ export function toProviderSource<TKey extends string | number | symbol, T1, T2>(
     return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
 }
 
-export const weaponFeatureVersionController = new VersionController<WeaponFeaturesCollection[keyof WeaponFeaturesCollection], WeaponFeaturesCollection>([
+
+export const weaponFeatureVersionController = new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<DeltaCollection<WeaponFeaturesTypes>>, FeatureProviderCollection>([
     {
         themes: {
             add: [
@@ -583,7 +586,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                     ]
                 }, (theme, personality, i) => {
                     const formatted = personality.capFirst() + '.';
-                    return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/, '-')}-${i}`,
+                    return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, '-')}-${i}`,
                         {
                             desc: mkGen(formatted)
                         },
@@ -1987,4 +1990,15 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
             ]
         }
     }
-]);
+], (x) => {
+    return {
+        themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
+        adjectiveProvider: new WeaponFeatureProvider(x.adjectives),
+        personalityProvider: new WeaponFeatureProvider(x.personalities),
+        shapeProvider: new WeaponFeatureProvider(x.shapes),
+        rechargeMethodProvider: new WeaponFeatureProvider(x.rechargeMethods),
+        activePowerProvider: new WeaponFeatureProvider(x.actives),
+        passivePowerOrLanguageProvider: new WeaponFeatureProvider(x.passives),
+        languageProvider: new WeaponFeatureProvider(x.languages)
+    } satisfies FeatureProviderCollection
+});

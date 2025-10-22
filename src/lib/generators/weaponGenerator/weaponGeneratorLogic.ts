@@ -5,7 +5,7 @@ import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGe
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
 import { ConditionalThingProvider, evComp, evQuant, type ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { allThemes, type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig } from "./weaponGeneratorTypes";
+import { type DamageDice, type FeatureProviderCollection, isRarity, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig } from "./weaponGeneratorTypes";
 
 export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
     constructor(source: ProviderElement<T, WeaponPowerCond>[]) {
@@ -126,7 +126,7 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
     };
 
     // draw themes until we have enough to cover our number of powers
-    const unusedThemes = new Set<Theme>(allThemes); // this could be a provider but whatever go my Set<Theme>
+    const unusedThemes = new Set<Theme>(featureProviders.themeProvider); // this could be a provider but whatever go my Set<Theme>
     const minThemes = Math.max(
         1,
         Math.min(

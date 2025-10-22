@@ -216,7 +216,7 @@ export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 's
 // shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
 
 export interface FeatureProviderCollection {
-    themeProvider: WeaponFeatureProvider<Theme>;
+    themeProvider: Theme[];
     adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>;
     personalityProvider: WeaponFeatureProvider<Personality>;
     shapeProvider: WeaponFeatureProvider<WeaponShape>;
