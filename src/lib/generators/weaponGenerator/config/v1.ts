@@ -4,6 +4,7 @@ import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, mkWepToGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DamageDice, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
 import _ from "lodash";
@@ -90,6 +91,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['nature', 'earth', 'fire']
                     }
@@ -112,6 +114,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['fire']
                     }
@@ -155,6 +158,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['ice']
                     },
@@ -182,6 +186,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['ice']
                     },
@@ -204,6 +209,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['ice']
                     },
@@ -227,6 +233,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['cloud']
                     }
@@ -249,6 +256,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['cloud']
                     },
@@ -287,6 +295,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['earth']
                     }
@@ -310,6 +319,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['earth']
                     },
@@ -334,6 +344,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['dark']
                     },
@@ -357,6 +368,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['dark']
                     },
@@ -380,6 +392,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['dark']
                     },
@@ -401,6 +414,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         all: ['dark', 'ice']
                     }
@@ -422,6 +436,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['light']
                     },
@@ -449,6 +464,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['light']
                     },
@@ -487,6 +503,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['sweet']
                     }
@@ -506,6 +523,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['sweet']
                     },
@@ -528,6 +546,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['sour']
                     }
@@ -545,6 +564,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['sour']
                     },
@@ -569,6 +589,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['wizard']
                     },
@@ -598,6 +619,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['wizard']
                     },
@@ -622,6 +644,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['wizard']
                     },
@@ -643,6 +666,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: false,
                     themes: {
                         all: ['wizard', 'nature']
                     }
@@ -658,7 +682,7 @@ export default {
                 {
                     themes: {
                         any: ['wizard']
-                    }
+                    },
                 }
             ),
 
@@ -677,6 +701,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['steampunk']
                     }
@@ -702,6 +727,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     themes: {
                         any: ['nature']
                     }
@@ -716,10 +742,10 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: false,
                     themes: {
                         any: ['nature', 'wizard', 'sweet']
                     },
-                    allowDuplicates: false
                 }
             ),
 
@@ -740,6 +766,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     shapeFamily: {
                         any: ['staff', 'club']
                     },
@@ -766,6 +793,7 @@ export default {
                     }
                 },
                 {
+                    allowDuplicates: true,
                     shapeFamily: {
                         any: ['staff', 'club']
                     },
@@ -2129,9 +2157,7 @@ export default {
                             cloud: "The weapon emits a vortex of air."
                         } satisfies Partial<Record<Theme, string>>;
 
-                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
-
-                        const tetherTheme = effects[supportedThemesOfWeapon.choice(rng)];
+                        const tetherTheme = pickForTheme(weapon, effects, rng);
                         //const tetherTheme = typeof chosen === "string" ? chosen : chosen(rng)
 
                         return `${tetherTheme} It can lift and throw object an weighing up to 500 lbs.`;
@@ -2247,7 +2273,7 @@ export default {
                     },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("command-critters",
+            new ProviderElement("command-critters",
                 {
                     miscPower: true,
                     desc: "Cute animals follow the wielder's polite requests i.e. cats and forest birds."
@@ -2259,7 +2285,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("detect-unholy",
+            new ProviderElement("detect-unholy",
                 {
                     miscPower: true,
                     desc: "The weapon can telepathically control bees within 100-ft. They can only understand simple commands."
@@ -2281,7 +2307,7 @@ export default {
                     themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("move-silently",
+            new ProviderElement("move-silently",
                 {
                     miscPower: true,
                     desc: "Wielder is able to move completely silently.",
@@ -2299,7 +2325,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("magically-hovers",
+            new ProviderElement("magically-hovers",
                 {
                     miscPower: true,
                     desc: "Can hover in the air to attack for you hands free. Commanding a floating weapon uses the same rules as followers / retainers.",
@@ -2317,7 +2343,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-fire",
+            new ProviderElement("resistance-fire",
                 {
                     miscPower: true,
                     desc: "Wielder takes half damage from fire."
@@ -2330,7 +2356,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-fire",
+            new ProviderElement("immunity-fire",
                 {
 
                     miscPower: true,
@@ -2344,7 +2370,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-fire",
+            new ProviderElement("damage-bonus-fire",
                 {
                     miscPower: true,
                     desc: "Wreathed in flames, glows like a torch",
@@ -2359,7 +2385,7 @@ export default {
                     themes: { any: ["fire"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-blacksmithing",
+            new ProviderElement("expertise-blacksmithing",
                 {
 
                     miscPower: true,
@@ -2371,7 +2397,7 @@ export default {
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-cold",
+            new ProviderElement("resistance-cold",
                 {
 
                     miscPower: true,
@@ -2385,7 +2411,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-cold",
+            new ProviderElement("immunity-cold",
                 {
                     miscPower: true,
                     desc: "Wielder cannot be harmed by ice & cold."
@@ -2395,7 +2421,7 @@ export default {
                     themes: { any: ["ice"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-ice-blunt",
+            new ProviderElement("damage-bonus-ice-blunt",
                 {
                     miscPower: true,
                     desc: "Wreathed in frigid mist.",
@@ -2417,7 +2443,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-ice-sharp",
+            new ProviderElement("damage-bonus-ice-sharp",
                 {
                     miscPower: true,
                     desc: "Wreathed in ice, always frozen into its sheath. Requires a strength save to draw.",
@@ -2439,7 +2465,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("sense-cold-weather",
+            new ProviderElement("sense-cold-weather",
                 {
                     miscPower: true,
                     desc: "1-in-2 chance to sense icy weather before it hits, giving just enough time to escape."
@@ -2449,7 +2475,7 @@ export default {
                     themes: { any: ["ice"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("walk-on-ice",
+            new ProviderElement("walk-on-ice",
                 {
 
                     miscPower: true,
@@ -2460,7 +2486,7 @@ export default {
                     themes: { any: ["ice"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("vibe-menacing",
+            new ProviderElement("vibe-menacing",
                 {
 
                     miscPower: true,
@@ -2470,7 +2496,7 @@ export default {
                     themes: { any: ["dark"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("trap-souls",
+            new ProviderElement("trap-souls",
                 {
 
                     miscPower: true,
@@ -2484,7 +2510,7 @@ export default {
                     themes: { any: ["dark"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("damage-bonus-dark-flame",
+            new ProviderElement("damage-bonus-dark-flame",
                 {
                     miscPower: true,
                     desc: "Wreathed in lightless black flames.",
@@ -2498,7 +2524,7 @@ export default {
                     themes: { any: ["dark"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-radiant",
+            new ProviderElement("resistance-radiant",
                 {
                     miscPower: true,
                     desc: "Wielder takes half damage from rays & beams."
@@ -2511,7 +2537,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-radiant",
+            new ProviderElement("immunity-radiant",
                 {
 
                     miscPower: true,
@@ -2521,7 +2547,7 @@ export default {
                     themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("stats-as-mirror",
+            new ProviderElement("stats-as-mirror",
                 {
                     miscPower: true,
                     desc: "Extremely shiny, functions as a mirror."
@@ -2530,7 +2556,7 @@ export default {
                     themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("vibe-wholesome",
+            new ProviderElement("vibe-wholesome",
                 {
                     miscPower: true,
                     desc: "Wielder has a wholesome aura. Bonus to saves to spread cheer and/or appear nonthreatening."
@@ -2539,7 +2565,7 @@ export default {
                     themes: { any: ["light", "sweet"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("TODO",
+            new ProviderElement("TODO",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert chef.",
@@ -2549,7 +2575,7 @@ export default {
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("magically-learn-dessert-recipes",
+            new ProviderElement("magically-learn-dessert-recipes",
                 {
                     miscPower: true,
                     desc: "The wielder magically knows the recipe of any dessert they taste."
@@ -2558,7 +2584,7 @@ export default {
                     themes: { any: ["sweet"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("eat-to-heal",
+            new ProviderElement("eat-to-heal",
                 {
 
                     miscPower: true,
@@ -2569,7 +2595,7 @@ export default {
                     themes: { any: ["sweet"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-alchemy",
+            new ProviderElement("expertise-alchemy",
                 {
 
                     miscPower: true,
@@ -2580,7 +2606,7 @@ export default {
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("resistance-acid",
+            new ProviderElement("resistance-acid",
                 {
                     miscPower: true,
                     desc: "Wielder takes half damage from corrosive chemicals."
@@ -2593,7 +2619,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-acid",
+            new ProviderElement("immunity-acid",
                 {
                     miscPower: true,
                     desc: "Wielder is immune to the harmful effects of corrosive chemicals."
@@ -2602,7 +2628,7 @@ export default {
                     themes: { any: ["sour"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("tastes-sour",
+            new ProviderElement("tastes-sour",
                 {
                     miscPower: true,
                     desc: "Licking the weapon cures scurvy. It tastes sour."
@@ -2611,7 +2637,7 @@ export default {
                     themes: { any: ["sour"] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-astrology",
+            new ProviderElement("expertise-astrology",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert astrologer.",
@@ -2621,7 +2647,7 @@ export default {
                     isSentient: true
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("fire-magic-projectile",
+            new ProviderElement("fire-magic-projectile",
                 {
                     miscPower: true,
                     desc: "If you are not wounded, the weapon can also fire a spectral copy of itself as a projectile attack. Damage as weapon, range as bow.",
@@ -2633,7 +2659,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("attack-wisps",
+            new ProviderElement("attack-wisps",
                 {
                     miscPower: true,
                     desc: "Each hit you land with the weapon generates a wisp. On your turn, you can launch any number of wisps at no cost. d4 damage, range as bow.",
@@ -2645,7 +2671,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-tinker",
+            new ProviderElement("expertise-tinker",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert tinkerer.",
@@ -2655,7 +2681,7 @@ export default {
                     themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("integrated-compass",
+            new ProviderElement("integrated-compass",
                 {
 
                     miscPower: true,
@@ -2665,7 +2691,7 @@ export default {
                     themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("integrated-clock",
+            new ProviderElement("integrated-clock",
                 {
                     miscPower: true,
                     desc: "A widget on the weapon displays the time."
@@ -2674,16 +2700,7 @@ export default {
                     themes: { any: ["steampunk"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("transform-bouquet",
-                {
-                    miscPower: true,
-                    desc: "Can transform into a bouquet of flowers."
-                },
-                {
-                    themes: { any: ["nature"] },
-                }
-            ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("shoot-water",
+            new ProviderElement("shoot-water",
                 {
                     miscPower: true,
                     desc: "Can shoot an endless stream of water from its tip, pressure as garden hose."
@@ -2692,16 +2709,7 @@ export default {
                     themes: { any: ["cloud"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("transform-umbrella",
-                {
-                    miscPower: true,
-                    desc: "Can transform into an umbrella."
-                },
-                {
-                    themes: { any: ["cloud"] },
-                }
-            ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("stealth-in-rough-weather",
+            new ProviderElement("stealth-in-rough-weather",
                 {
                     miscPower: true,
                     desc: "Wielder gains a stealth bonus during rain & snow, as if invisible.",
@@ -2765,9 +2773,8 @@ export default {
                             " wings. They allow you to fly, as fast as you can walk."
                         ])
                     } as const;
-                    const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in reasonsToFly) as (keyof typeof reasonsToFly)[];
 
-                    const desc = genMaybeGen(reasonsToFly[supportedThemesOfWeapon.choice(rng)], rng);
+                    const desc = genMaybeGen(pickForTheme(weapon, reasonsToFly, rng), rng);
 
                     return {
                         miscPower: true,
@@ -2782,7 +2789,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("immunity-petrify",
+            new ProviderElement("immunity-petrify",
                 {
 
                     miscPower: true,
@@ -2792,16 +2799,7 @@ export default {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("transform-pickaxe",
-                {
-                    miscPower: true,
-                    desc: "Can transform into a pickaxe."
-                },
-                {
-                    themes: { any: ["earth"] },
-                }
-            ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("expertise-jeweller",
+            new ProviderElement("expertise-jeweller",
                 {
                     miscPower: true,
                     desc: "Weapon is an expert jeweller. It can identify any gemstone.",
@@ -2810,7 +2808,7 @@ export default {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("stats-as-shield",
+            new ProviderElement("stats-as-shield",
                 {
                     miscPower: true,
                     desc: "Stats as (function as) a shield."
@@ -2819,7 +2817,7 @@ export default {
                     themes: { any: ["earth"] },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('weapon-permanently-invisible',
+            new ProviderElement('weapon-permanently-invisible',
                 {
                     miscPower: true,
                     desc: 'The weapon is completely invisible, except to its wielder.'
@@ -2834,7 +2832,7 @@ export default {
                     isSentient: true // If it can't call out to you, how will you know it's there?
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('instant-recall',
+            new ProviderElement('instant-recall',
                 {
                     miscPower: true,
                     desc: "The wielder can summon the weapon into their hand at will, so long as it's on the same plane."
@@ -2848,7 +2846,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>("petrify-on-hit",
+            new ProviderElement("petrify-on-hit",
                 {
 
                     miscPower: true,
@@ -2866,7 +2864,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('antimagic-aura',
+            new ProviderElement('antimagic-aura',
                 {
                     miscPower: true,
                     desc: "Magical effects will not function within 10-ft of the weapon, except those generated by it. The aura is inactive while the weapon is sheathed."
@@ -2881,7 +2879,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('silence-aura',
+            new ProviderElement('silence-aura',
                 {
                     miscPower: true,
                     desc: "All sound is erased within 10-ft of the weapon. The aura is inactive while the weapon is sheathed."
@@ -2896,7 +2894,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('fire-aura',
+            new ProviderElement('fire-aura',
                 {
                     miscPower: true,
                     desc: "The weapon emits a 10-ft aura of flames, which sets foes and objects alight. The aura is inactive while the weapon is sheathed."
@@ -2911,7 +2909,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('mist-aura',
+            new ProviderElement('mist-aura',
                 {
                     miscPower: true,
                     desc: "The weapon emits a 30-ft cloud of magical mist, which the wielder can see through clearly. When the weapon is sheathed, the mist is sucked inside."
@@ -2926,7 +2924,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('ice-aura',
+            new ProviderElement('ice-aura',
                 {
                     miscPower: true,
                     desc: "The weapon emits a 30-ft aura of frost. It freezes objects, and foes move half as fast within it. The aura is inactive while the weapon is sheathed."
@@ -2954,66 +2952,61 @@ export default {
                          */
                         featureUUID?: string,
                     };
-                    const weaponEnergyEffect = mkGen((rng, weapon: Weapon): WeaponEnergyEffect => {
-                        const fallBack = {
-                            desc: 'void energy',
-                            featureUUID: 'energy-core-void'
-                        } satisfies WeaponEnergyEffect;
 
-                        const effects = {
-                            fire: {
-                                desc: 'fire',
-                                featureUUID: 'energy-core-fire'
-                            },
-                            ice: {
-                                desc: 'icy wind',
-                                featureUUID: 'energy-core-ice'
-                            },
-                            light: mkGen<WeaponEnergyEffect>((rng) => (([
-                                {
-                                    desc: 'ultraviolet energy',
-                                    featureUUID: 'energy-core-ultraviolet'
-                                },
-                                {
-                                    desc: 'azure energy',
-                                    featureUUID: 'energy-core-azure'
-                                },
-                                {
-                                    desc: 'crimson energy',
-                                    featureUUID: 'energy-core-crimson'
-                                },
-                                {
-                                    desc: 'verdant energy',
-                                    featureUUID: 'energy-core-verdant'
-                                },
-                                {
-                                    desc: 'atomic energy',
-                                    featureUUID: 'energy-core-atomic'
-                                },
-                                {
-                                    desc: 'golden energy',
-                                    featureUUID: 'energy-core-gold'
-                                },
-                            ] satisfies WeaponEnergyEffect[])).choice(rng)),
-                            dark: {
-                                desc: 'dark energy',
-                                featureUUID: 'energy-core-dark'
-                            },
-                            cloud: {
-                                desc: 'lightning',
-                                featureUUID: 'energy-core-aether'
-                            },
-                            steampunk: {
-                                desc: 'lightning',
-                                featureUUID: 'energy-core-steampunk'
-                            },
-                        } satisfies Partial<Record<Theme, WeaponEnergyEffect | TGenerator<WeaponEnergyEffect, [Weapon]>>>;
+                    const fallBack = {
+                        desc: 'void energy',
+                        featureUUID: 'energy-core-void'
+                    } satisfies WeaponEnergyEffect;
 
-                        const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
-                        return genMaybeGen(effects[supportedThemesOfWeapon.choice(rng)], rng) ?? fallBack;
-                    });
-
-                    const { desc, featureUUID } = weaponEnergyEffect.generate(rng, weapon);
+                    const effects = {
+                        fire: {
+                            desc: 'fire',
+                            featureUUID: 'energy-core-fire'
+                        },
+                        ice: {
+                            desc: 'icy wind',
+                            featureUUID: 'energy-core-ice'
+                        },
+                        light: mkGen<WeaponEnergyEffect>((rng) => (([
+                            {
+                                desc: 'ultraviolet energy',
+                                featureUUID: 'energy-core-ultraviolet'
+                            },
+                            {
+                                desc: 'azure energy',
+                                featureUUID: 'energy-core-azure'
+                            },
+                            {
+                                desc: 'crimson energy',
+                                featureUUID: 'energy-core-crimson'
+                            },
+                            {
+                                desc: 'verdant energy',
+                                featureUUID: 'energy-core-verdant'
+                            },
+                            {
+                                desc: 'atomic energy',
+                                featureUUID: 'energy-core-atomic'
+                            },
+                            {
+                                desc: 'golden energy',
+                                featureUUID: 'energy-core-gold'
+                            },
+                        ] satisfies WeaponEnergyEffect[])).choice(rng)),
+                        dark: {
+                            desc: 'dark energy',
+                            featureUUID: 'energy-core-dark'
+                        },
+                        cloud: {
+                            desc: 'lightning',
+                            featureUUID: 'energy-core-aether'
+                        },
+                        steampunk: {
+                            desc: 'lightning',
+                            featureUUID: 'energy-core-steampunk'
+                        },
+                    } satisfies Partial<Record<Theme, WeaponEnergyEffect | TGenerator<WeaponEnergyEffect, [Weapon]>>>;
+                    const { desc, featureUUID } = genMaybeGen(pickForTheme(weapon, effects, rng) ?? fallBack, rng);
 
                     const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
                         common: "1d6",
@@ -3035,7 +3028,7 @@ export default {
                     rarity: { gte: 'epic' }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('warm-to-touch',
+            new ProviderElement('warm-to-touch',
                 {
                     miscPower: true,
                     desc: "The weapon is always warm to the touch."
@@ -3047,7 +3040,7 @@ export default {
                     themes: { any: ['fire'] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('cold-to-touch',
+            new ProviderElement('cold-to-touch',
                 {
                     miscPower: true,
                     desc: "The weapon is always cold to the touch."
@@ -3059,19 +3052,7 @@ export default {
                     themes: { any: ['ice'] }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
-                {
-                    miscPower: true,
-                    desc: "Can transform into a smoking pipe."
-                },
-                {
-                    rarity: {
-                        eq: 'common'
-                    },
-                    themes: { any: ['nature'] }
-                }
-            ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('shrink-or-grow',
+            new ProviderElement('shrink-or-grow',
                 {
                     miscPower: true,
                     desc: "Can transform into a 10-ft pole, or shrink to the size of a toothpick."
@@ -3082,7 +3063,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('magic-pocket',
+            new ProviderElement('magic-pocket',
                 {
                     miscPower: true,
                     desc: "The wielder can banish the weapon to a pocket plane, then withdraw it at will."
@@ -3099,7 +3080,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('the-axe',
+            new ProviderElement('the-axe',
                 {
                     miscPower: true,
                     desc: "The weapon is also a guitar. Your musical skill is doubled when you play it."
@@ -3113,7 +3094,7 @@ export default {
                     },
                 }
             ),
-            new ProviderElement<PassivePower, WeaponPowerCond>('the-horn',
+            new ProviderElement('the-horn',
                 {
                     miscPower: true,
                     desc: "The weapon is also a horn. Your musical skill is doubled when you play it."
@@ -3136,6 +3117,29 @@ export default {
                     themes: {
                         any: ['dark']
                     }
+                }
+            ),
+            new ProviderElement("transform-tool",
+                mkGen((rng, weapon) => {
+                    const toolType = {
+                        ice: ['a set of ice picks', 'a toboggan'] as const,
+                        fire: ['a lighter', 'an empty brass brazier'] as const,
+                        cloud: ['a surfboard', 'an umbrella'] as const,
+                        earth: ['a pickaxe', 'a shovel'] as const,
+                        nature: ['a smoking pipe', 'a bouquet of flowers'] as const,
+                        steampunk: ['a pocket watch', 'a wrench'] as const,
+                        wizard: ['a pocket watch', 'a wrench'] as const,
+                        sweet: ['a whisk', 'an empty biscuit tin']
+                    } satisfies Partial<Record<Theme, string[]>>;
+
+                    const chosenTool = choice(pickForTheme(weapon, toolType, rng), rng);
+                    return {
+                        miscPower: true,
+                        desc: `Can transform into ${chosenTool}.`
+                    }
+                }),
+                {
+                    themes: { any: ["ice", "fire", "cloud", "earth", "nature", "steampunk", "wizard", "sweet"] },
                 }
             ),
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
