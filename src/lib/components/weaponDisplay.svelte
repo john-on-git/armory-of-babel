@@ -1,5 +1,6 @@
 <script lang="ts">
     import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
+    import { textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
     interface Props {
@@ -11,41 +12,15 @@
 
     /** Text for the weapon's damage. i.e. "as sword + d6 + 1"
      */
-    const damageString = $derived.by(() => {
-        const acc = `as ${weapon.damage.as}`;
-        const damageKeys = (
-            Object.keys(weapon.damage) as [keyof (typeof weapon)["damage"]]
-        )
-            .filter((k) => k != "as")
-            .sort((k1, k2) => {
-                const ord = ["d20", "d12", "d10", "d8", "d6", "d4", "const"];
-                return (
-                    ord.findIndex((x) => x === k1) -
-                    ord.findIndex((x) => x === k2)
-                );
-            });
-        return damageKeys.length > 0
-            ? damageKeys.reduce<string>(
-                  (acc, k) =>
-                      (weapon?.damage[k] ?? 0) > 0
-                          ? acc +
-                            ` + ${weapon?.damage[k]}${k === "const" ? "" : k}`
-                          : acc,
-                  acc,
-              )
-            : acc;
-    });
+    const damageString = $derived(textForDamage(weapon.damage));
 
     const toHitString = $derived(
         weapon.toHit > 0 ? ` (+${weapon.toHit} to hit)` : "",
     );
 
     function textForCharges(c: number | string | "at will") {
-        if (c === "at will") {
-            return c;
-        }
         if (typeof c === "string") {
-            return `charges ${c}`;
+            return c;
         } else {
             if (c == 1) {
                 return "1 charge";

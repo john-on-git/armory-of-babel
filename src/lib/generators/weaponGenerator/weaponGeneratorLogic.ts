@@ -7,6 +7,39 @@ import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./pr
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { type DamageDice, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
+export function textForDamage(damage: DamageDice & { as?: string }) {
+    function textForDamageKey(k: string, v: string | number | undefined): string {
+        if (v === undefined) {
+            return '';
+        }
+        else {
+            switch (k) {
+                case 'const':
+                    return v.toString();
+                case 'as':
+                    return `as ${v}`
+                default:
+                    return `${v}${k}`
+            }
+        }
+    }
+    return Object.entries(damage)
+        .sort(([k1, _], [k2, __]) => {
+            const ord = {
+                as: 0,
+                d20: 1,
+                d12: 2,
+                d10: 3,
+                d8: 4,
+                d6: 5,
+                d4: 6,
+                const: 7
+            } satisfies Record<keyof typeof damage, number>;
+            return ord[k1 as keyof typeof damage] - ord[k2 as keyof typeof damage];
+        })
+        .map(([k, v]) => textForDamageKey(k, v)).join(' + ');
+}
+
 export function mkWepToGen<T>(x: T | ((rng: seedrandom.PRNG) => T)) {
     return () => mkGen(x);
 };
