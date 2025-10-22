@@ -47,7 +47,7 @@ export const pluralUnholyFoe = mkGen((rng) => [
     "goblins",
 ].choice(rng));
 
-export const singularWildAnimal = mkGen((rng) => [
+export const singularWildAnimalArr = [
     "a wolf",
     "a fox",
     "a bear",
@@ -67,7 +67,8 @@ export const singularWildAnimal = mkGen((rng) => [
     "a tiger",
     "a lion",
     "a crow"
-].choice(rng))
+] as const;
+export const singularWildAnimal = mkGen((rng) => choice(singularWildAnimalArr, rng));
 
 const coldBiomeHornsAndTusks = [
     ["auroch", "horn"],

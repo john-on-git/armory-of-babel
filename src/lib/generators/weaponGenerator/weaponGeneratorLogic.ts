@@ -1,4 +1,3 @@
-import { dev } from "$app/environment";
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
 import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
 import "$lib/util/choice";
@@ -7,7 +6,7 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, linkingIsOrPossessionFor, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, linkingIsOrPossessionFor, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 /**
  * 
@@ -54,13 +53,13 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
                 }
             }
 
-            if (dev) {
-                for (const atom of [part.material, ...part.descriptors]) {
-                    if (atom !== undefined && /^\s*$/.test(atom.desc)) {
-                        console.error(`\x1b[31mSaw empty description atom: "${atom.desc}" (${atom.UUID})`);
-                    }
-                }
-            }
+            // if (dev) {
+            //     for (const atom of [part.material, ...part.descriptors]) {
+            //         if (atom !== undefined && /^\s*$/.test(atom.desc)) {
+            //             console.error(`\x1b[31mSaw empty description atom: "${atom.desc}" (${atom.UUID})`);
+            //         }
+            //     }
+            // }
 
             const materialStr = part.material === undefined ? '' : `${isAre(partName)} made of ${part.material.desc}${descriptors.length > 1
                 ? ','
@@ -149,8 +148,9 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
     }
 }
 
-function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>[1]) {
-    return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng)?.ephitet;
+function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>[1]): Ephitet | undefined {
+    const maybeEphitets = Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
+    return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng);
 }
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
@@ -491,7 +491,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             2. why are Jest tests crashing?
     */
 
-    const MAX_DESCRIPTORS = 5 + Math.floor(rng() * 2);
+    const MAX_DESCRIPTORS = 3 + Math.floor(rng() * 2);
     let nDescriptors = 0;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
@@ -510,6 +510,12 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
         applyDescriptionPartProvider(rng, descriptorProvider, weapon, structure, weapon.description);
         nDescriptors++;
+    }
+
+    // if it is sentient, also apply eyes and a mouth
+    if (weapon.sentient) {
+        applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-eyes'], weapon, structure, weapon.description);
+        //applyDescriptionPartProvider(rng, featureProviders.descriptorIndex['sentient-mouth'], weapon, structure, weapon.description);
     }
 
     // convert the structured description to a text block

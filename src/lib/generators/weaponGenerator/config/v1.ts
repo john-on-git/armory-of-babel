@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGreen, ephHot, ephRed, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, edgedWeaponShapeFamilies, ephBlack, ephBlue, ephCold, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, mkWepToGen, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type DamageDice, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -34,6 +34,23 @@ export default {
     },
     descriptors: {
         add: [
+            new ProviderElement('sentient-eyes',
+                {
+                    generate: (rng) =>
+                        genMaybeGen([
+                            MISC_DESC_FEATURES.sensorium.eyes.beady,
+                            MISC_DESC_FEATURES.sensorium.eyes.deepSet,
+                            MISC_DESC_FEATURES.sensorium.eyes.animalistic,
+                        ].choice(rng), rng)
+                    ,
+                    applicableTo: {
+                        any: eyeAcceptingParts
+                    }
+                },
+                {
+                    never: true
+                }
+            ),
             new ProviderElement('material-extravagant-hard',
                 {
                     generate: (rng) => {
@@ -809,30 +826,16 @@ export default {
                 }
             ),
 
-            /*TODO
-     
-                // test links are for when weapon themes are  forced = ['light']
-    
-                energy-core-void
-                energy-core-ultraviolet http://localhost:5173/?v=3&id=44174633692741450000&o=0.00&o=0.05&o=0.10&o=0.89 (epic)
-    
-                energy-core-azure
-                energy-core-crimson
-                energy-core-verdant: http://localhost:5173/?v=3&id=50765660529976975000&o=0.00&o=0.05&o=0.10&o=0.89 (legendary)
-                energy-core-atomic
-    
-                energy-core-gold http://localhost:5173/?v=3&id=30740175778699964000&o=0.00&o=0.05&o=0.10&o=0.89 (legendary)
-            */
             new ProviderElement('energy-core-void',
                 {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'possession',
-                                singular: '',
-                                plural: ''
+                                descType: 'property',
+                                singular: " hurts to look at. When it moves it leaves behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles",
+                                plural: " hurt to look at. When they move it leaves  behind a wake of something that you can't quite describe, but it makes your eyes prickle with pins and needles"
                             },
-                            ephitet: { pre: 'TODO' },
+                            ephitet: mkGen((rng, weapon) => [{ pre: weapon.shape.particular }, { post: `of ${weapon.id}` }, { pre: '[Object object]' }].choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -899,9 +902,9 @@ export default {
                             descriptor: {
                                 descType: 'possession',
                                 singular: 'a glass bulb running down the middle (it blasts ultraviolet light in all directions)',
-                                plural: 'glass bulb cylinders running down the middle (blasting ultraviolet light in all directions)'
+                                plural: 'a glass bulb running down the middle (blasting ultraviolet light in all directions)'
                             },
-                            ephitet: { pre: 'TODO' },
+                            ephitet: mkGen((rng) => ephPurple.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -967,8 +970,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: '',
-                                plural: ''
+                                singular: 'channels of brilliant green light, spreading out from its base and across its surface in an organic fractal',
+                                plural: 'channels of brilliant green light, spreading out from their bases and across their surfaces in organic fractals'
                             },
                             ephitet: mkGen((rng) => ephGreen.choice(rng)),
                         }
@@ -1020,7 +1023,7 @@ export default {
                                 singular: "'s criss-crossed by a complex system of geometric lines, which glow with golden energy",
                                 plural: "'re criss-crossed by a complex system of geometric lines, which glow with golden energy"
                             },
-                            ephitet: { pre: 'TODO' },
+                            ephitet: mkGen((rng) => ephGold.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1066,7 +1069,7 @@ export default {
                                 singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
                                 plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
                             },
-                            ephitet: { pre: 'TODO' },
+                            ephitet: mkGen((rng) => ephSky.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -1089,7 +1092,7 @@ export default {
                                 singular: 'a glass tube running down the center (which crackles with electrical energy)',
                                 plural: 'glass tube running down their center (which crackle with electrical energy)'
                             },
-                            ephitet: { pre: 'TODO' },
+                            ephitet: mkGen((rng) => ephSteampunk.choice(rng)),
                         }
                     },
                     applicableTo: {
