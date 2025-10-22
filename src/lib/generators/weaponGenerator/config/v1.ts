@@ -1594,58 +1594,58 @@ export default {
             ...toProviderSource(
                 {
                     fire: [
-                        mkGen("all charges after being superheated"),
+                        "all charges after being superheated",
                     ],
                     ice: [
-                        mkGen("all charges after being cooled to sub-zero"),
-                        mkGen("one charge whenever its wielder builds a snowman"),
-                        mkGen("one charge at the end of each scene where its wielder made an ice pun")
+                        "all charges after being cooled to sub-zero",
+                        "one charge whenever its wielder builds a snowman",
+                        "one charge at the end of each scene where its wielder made an ice pun"
                     ],
                     dark: [
-                        mkGen("one charge upon absorbing a human soul"),
-                        mkGen("one charge at the end of each scene where its wielder destroyed an object unnecessarily"),
-                        mkGen("all charges each day at the witching hour"),
-                        mkGen("one charge when its wielder defenestrates a priest, or all charges if it was a high ranking priest")
+                        "one charge upon absorbing a human soul",
+                        "one charge at the end of each scene where its wielder destroyed an object unnecessarily",
+                        "all charges each day at the witching hour",
+                        "one charge when its wielder defenestrates a priest, or all charges if it was a high ranking priest"
                     ],
                     light: [
-                        mkGen("all charges after an hour in a sacred space"),
-                        mkGen("all charges each day at sunrise"),
+                        "all charges after an hour in a sacred space",
+                        "all charges each day at sunrise",
                         new StringGenerator([
-                            mkGen("one charge each time you defeat "),
+                            "one charge each time you defeat ",
                             singularUnholyFoe,
                         ])
                     ],
                     sweet: [
-                        mkGen("one charge each time it eats an extravagant dessert"),
-                        mkGen("all charges each time its wielder hosts a feast"),
-                        mkGen("one charge each time its wielder gives a well-received compliment")
+                        "one charge each time it eats an extravagant dessert",
+                        "all charges each time its wielder hosts a feast",
+                        "one charge each time its wielder gives a well-received compliment"
                     ],
                     sour: [
-                        mkGen("all charges after an hour immersed in acid"),
-                        mkGen("all charges when used to fell a citrus tree"),
-                        mkGen("one charge each time its wielder insults someone")
+                        "all charges after an hour immersed in acid",
+                        "all charges when used to fell a citrus tree",
+                        "one charge each time its wielder insults someone"
                     ],
                     cloud: [
-                        mkGen("all charges when struck by lightning"),
-                        mkGen("all charges when its wielder survives a significant fall"),
-                        mkGen("one charge each time you defeat a winged creature, or all charges if it was also a powerful foe"),
+                        "all charges when struck by lightning",
+                        "all charges when its wielder survives a significant fall",
+                        "one charge each time you defeat a winged creature, or all charges if it was also a powerful foe",
                     ],
                     wizard: [
-                        mkGen("one charge when you cast one of your own spells"),
-                        mkGen("all charges when its wielder learns a new spell"),
-                        mkGen("all charges when its wielder wins a wizard duel"),
-                        mkGen("one charge when its wielder finishes reading a new book"),
-                        mkGen("all charges when its wielder views the night sky"),
+                        "one charge when you cast one of your own spells",
+                        "all charges when its wielder learns a new spell",
+                        "all charges when its wielder wins a wizard duel",
+                        "one charge when its wielder finishes reading a new book",
+                        "all charges when its wielder views the night sky",
                     ],
                     steampunk: [
-                        mkGen("all charges when its wielder invents something"),
-                        mkGen("all charges when its wielder throws a tea party"),
-                        mkGen("one charge when its wielder breaks news"),
+                        "all charges when its wielder invents something",
+                        "all charges when its wielder throws a tea party",
+                        "one charge when its wielder breaks news",
                     ],
                     earth: [
-                        mkGen("one charge when its wielder throws a rock at something important"),
-                        mkGen("all charges when its wielder meditates atop a mountain"),
-                        mkGen("all charges when driven into the ground while something important is happening")
+                        "one charge when its wielder throws a rock at something important",
+                        "all charges when its wielder meditates atop a mountain",
+                        "all charges when driven into the ground while something important is happening"
                     ],
                     nature: [
                         new StringGenerator(["all charges when its wielder drives ", agentOfExtractivism, " to bankruptcy"])
@@ -2785,7 +2785,7 @@ export default {
                     const [desc, howItsMade, madeOf] = pickForTheme(weapon, effects, rng);
                     return {
                         desc,
-                        cost: `a charge for each month of work that an expert would take to produce a regular version of the structure`,
+                        cost: `a charge for each month of work that an expert would take to produce a regular version of the structure, rounding up`,
                         additionalNotes: [
                             `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}.`,
                             "Only replicates the structure of the object, not any special functions. Its magical nature is obvious at a glance."
