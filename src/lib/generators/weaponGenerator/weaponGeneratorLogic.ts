@@ -5,7 +5,7 @@ import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "../nameGe
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
 import { ConditionalThingProvider, evComp, evQuant, type ProviderElement, type WithUUID } from "./provider";
 import { defaultWeaponRarityConfigFactory, POSSIBLE_ACTIVE_POWERS, POSSIBLE_OBJECT_ADJECTIVES, POSSIBLE_PASSIVE_POWERS, POSSIBLE_PERSONALITIES, POSSIBLE_RECHARGE_METHODS, POSSIBLE_SHAPES, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type ActivePower, type DamageDice, isRarity, type PassiveBonus, type PassivePower, type Personality, type RechargeMethod, type Theme, themes, type Weapon, type WeaponPowerCond, type WeaponPowerCondParams, type WeaponRarity, type WeaponRarityConfig, type WeaponShape } from "./weaponGeneratorTypes";
+import { type ActivePower, type DamageDice, isRarity, type PassiveBonus, type PassivePower, type Personality, type RechargeMethod, type Theme, themes, type Weapon, type WeaponPowerCond, type WeaponPowerCondParams, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape } from "./weaponGeneratorTypes";
 
 export class WeaponFeatureProvider<T extends object> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
     constructor(source: WithUUID<ProviderElement<T, WeaponPowerCond>>[]) {
@@ -69,8 +69,8 @@ export const mkWeapon = (rngSeed: string, weaponRarityConfig: WeaponRarityConfig
     const genStr = (x: string | TGenerator<string>) => typeof x === 'string' ? x : x.generate(rng);
     const generateRarity: (rng: seedrandom.PRNG) => WeaponRarity = (rng) => {
         const n = rng();
-        // sort in ascending order of draw chance
-        const xs = Object.entries(weaponRarityConfig).sort(([_, v1], [__, v2]) => v1.percentile - v2.percentile);
+        // sort the rarities into descending order
+        const xs = (Object.entries(weaponRarityConfig) as [WeaponRarity, typeof weaponRarityConfig[WeaponRarity]][]).sort(weaponRaritiesOrd);
         for (const [k, v] of xs) {
             if (isRarity(k)) {
                 if (n < v.percentile) {

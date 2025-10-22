@@ -22,9 +22,19 @@ const themesSet = new Set(themes);
 export const isTheme = (x: unknown): x is Theme => themesSet.has(x as Theme);
 
 export const weaponRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;
+
 const weaponRaritiesSet = new Set(weaponRarities);
 export type WeaponRarity = (typeof weaponRarities)[number];
 export const isRarity = (x: unknown): x is WeaponRarity => weaponRaritiesSet.has(x as WeaponRarity);
+
+const weaponRaritiesLookup: Record<WeaponRarity, number> = {
+    common: 0,
+    uncommon: 1,
+    rare: 2,
+    epic: 3,
+    legendary: 4
+}
+export const weaponRaritiesOrd = <T>([r1]: [WeaponRarity, T], [r2]: [WeaponRarity, T]) => weaponRaritiesLookup[r2] - weaponRaritiesLookup[r1];
 
 export type WeaponRarityConfig = {
     common: {

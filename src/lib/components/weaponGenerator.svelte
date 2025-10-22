@@ -16,6 +16,12 @@
 
     const { config, logging = false }: Props = $props();
 
+    $effect(() => {
+        if (config !== undefined) {
+            console.log(Object.values(config).map((x) => x.percentile));
+        }
+    });
+
     let weapon: Weapon = $derived(mkWeapon(getIDFromURL(), config));
     const weaponID = writable<string>(getIDFromURL());
     weaponID.subscribe((newId) => {
