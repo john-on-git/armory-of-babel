@@ -2243,6 +2243,31 @@ export default {
                             rarity: {
                                 gte: "rare"
                             }
+                        },
+                        {
+                            particular: "Double Flail",
+                            rarity: {
+                                gte: "rare"
+                            }
+                        },
+                        {
+                            particular: "Triple Flail",
+                            rarity: {
+                                gte: "epic"
+                            }
+                        },
+                        {
+                            particular: "Quadruple Flail",
+                            rarity: {
+                                gte: "legendary"
+                            }
+                        },
+                        {
+                            particular: "Quintuple Flail",
+                            rarity: {
+                                gte: "legendary"
+                            },
+
                         }
                     ],
 

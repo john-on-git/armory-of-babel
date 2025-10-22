@@ -349,7 +349,27 @@ const weaponStructures = {
         business: ['blade'],
         holding: ['grip'],
         other: ['crossguard', 'pommel', 'barrel']
-    }
+    },
+    scytheRifleLike: {
+        business: ['blade'],
+        holding: ['grip'],
+        other: ['shaft', 'pommel', 'barrel']
+    },
+    multiClubLike: {
+        business: ['heads'],
+        holding: ['grip'],
+        other: []
+    },
+    flailLike: {
+        business: ['head'],
+        holding: ['grip'],
+        other: ['chain', 'pommel']
+    },
+    multiFlailLike: {
+        business: ['heads'],
+        holding: ['grip'],
+        other: ['chains', 'pommel']
+    },
 } as const satisfies Record<string, WeaponStructure>;
 
 
@@ -358,7 +378,6 @@ const shapeToStructure = {
     "club": 'clubLike',
     "staff": 'staffLike',
     "sword": 'swordLike',
-    "Macuahuitl": "multiSwordLike",
     "axe": 'axeLike',
     "mace": 'maceLike',
 
@@ -372,7 +391,16 @@ const shapeToStructure = {
     "sword (or bow)": 'bowSwordLike',
     "dagger (or pistol)": 'gunSwordLike',
     "sword (or musket)": 'gunSwordLike',
-    "greataxe (or musket)": "axeLike",
+    "greataxe (or musket)": "scytheRifleLike",
+
+    "Macuahuitl": "multiSwordLike",
+    "Nunchuks": "multiClubLike",
+    "Meteor Hammer": "multiFlailLike",
+    "Double Flail": "multiFlailLike",
+    "Triple Flail": "multiFlailLike",
+    "Quadruple Flail": "multiFlailLike",
+    "Quintuple Flail": "multiFlailLike",
+
 } as const satisfies Record<WeaponShapeGroup | string, keyof typeof weaponStructures>
 
 export type WeaponPartName = (typeof weaponStructures)[keyof (typeof weaponStructures)][keyof (typeof weaponStructures)[keyof (typeof weaponStructures)]][number];
@@ -382,14 +410,14 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
-type Ephitet = {
-    pre: string | TGenerator<string, [Weapon]>;
+export type Ephitet = {
+    pre: string;
 } | {
-    post: string | TGenerator<string, [Weapon]>;
+    post: string;
 };
 
 export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: string | TGenerator<string, [Weapon]> }) & {
-    ephitet: Ephitet;
+    ephitet: Ephitet | TGenerator<Ephitet, [Weapon]>;
 };
 export type DescriptorGenerator<TArgs extends Array<unknown> = []> = TGenerator<Descriptor, TArgs> & {
     applicableTo?: Quant<WeaponPartName>;
@@ -401,6 +429,12 @@ export function structureDescFor(shape: WeaponShape) {
 
         switch (shape.particular) {
             case 'Macuahuitl':
+            case 'Nunchuks':
+            case 'Meteor Hammer':
+            case 'Double Flail':
+            case 'Triple Flail':
+            case 'Quadruple Flail':
+            case 'Quintuple Flail':
                 return weaponStructures[shapeToStructure[shape.particular]];
             default:
                 return weaponStructures[shapeToStructure[shape.group]];
