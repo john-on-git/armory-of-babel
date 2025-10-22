@@ -8,6 +8,8 @@
 
     let { weapon }: Props = $props();
 
+    /** Text for the weapon's damage. i.e. "as sword + d6 + 1"
+     */
     const damageString = $derived.by(() => {
         const acc = `as ${weapon.damage.as}`;
         const damageKeys = (
@@ -151,7 +153,7 @@
                 {#if weapon.active.powers.length !== 0}
                     <WeaponDemandsGenerator
                         weapon={{
-                            // unfortunately we have to unroll it like this for the type of 'sentient' to be picked up
+                            // unfortunately we have to spread it like this for the type of 'sentient' to be picked up
                             ...weapon,
                             sentient: weapon.sentient,
                         }}
