@@ -1,21 +1,26 @@
-<script>
+<script lang="ts">
     import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
     import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
     import { writable } from "svelte/store";
 
     let config = $state(defaultWeaponRarityConfigFactory());
-    const configWritable = writable(config);
+    const configWritable = writable((() => config)());
 
     configWritable.subscribe((newVal) => {
         config = newVal;
+        console.log(
+            Object.entries(newVal)
+                .map(([k, v]) => [k, v.percentile])
+                .flat(),
+        );
         // TODO also update the URL
     });
 </script>
 
 <h1>Generator Test</h1>
 <WeaponGenerator {config} />
-<ConfigSidebar {configWritable} />
+<ConfigSidebar {config} {configWritable} />
 
 <style>
     :global(:root) {

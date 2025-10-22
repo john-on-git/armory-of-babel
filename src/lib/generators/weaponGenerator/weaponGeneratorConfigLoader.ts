@@ -1,4 +1,5 @@
 import seedrandom from "seedrandom";
+import '../../util/string';
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "../foes";
 import { mkGen, StringGenerator, type TGenerator } from "../recursiveGenerator";
 import activePowers from './config/activePowers.json';
