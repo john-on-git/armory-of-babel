@@ -3,11 +3,13 @@ import "$lib/util/choice";
 import type { PRNG } from "seedrandom";
 import { mkGen, StringGenerator } from "./recursiveGenerator";
 
-function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object'>, enbyNames: string[], femmNames: string[], mascNames: string[]) {
+function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object' | 'enby'>, femmNames: string[], mascNames: string[]): string;
+function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object'>, femmNames: string[], mascNames: string[], enbyNames: string[]): string;
+function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object'>, femmNames: string[], mascNames: string[], enbyNames?: string[]): string {
     function getNames(pronouns: Exclude<Pronouns, 'object'>): string[] {
         switch (pronouns) {
             case "enby":
-                return enbyNames;
+                return enbyNames as string[];
             case "femm":
                 return femmNames;
             case "masc":
@@ -19,35 +21,39 @@ function genderedChoice(rng: PRNG, pronouns: Exclude<Pronouns, 'object'>, enbyNa
     return getNames(pronouns).choice(rng);
 }
 
-const angloNamesByPartShortSuffixGenerator = new StringGenerator<[Exclude<Pronouns, 'object'>]>([
-    mkGen(rng => [
-        "vin",
-        "gan",
-        "rron",
-        "sh",
-
+const angloNamesByPartShortSuffixGenerator = mkGen<string, [Exclude<Pronouns, 'object' | 'enby'>]>((...args) => genderedChoice(...args,
+    [
         "rryl",
         "ley",
         "ya",
         "cy",
         "cey",
-    ].choice(rng))
-]);
-const angloNamesByPartLongSuffixGenerator = new StringGenerator<[Exclude<Pronouns, 'object'>]>([
+    ],
+    [
+        "vin",
+        "gan",
+        "rron",
+        "sh",
+    ]));
+
+const angloNamesByPartLongSuffixGenerator = new StringGenerator<[Exclude<Pronouns, 'object' | 'enby'>]>([
     mkGen(rng => ["t", "y", "rr", "nn", "s", "sh"].choice(rng)),
-    mkGen(rng => [
-        "on",
-        "in",
-        "ah",
-        "ley",
-        "leigh",
-        "cy",
-        "cey",
-    ].choice(rng))
+    mkGen((...args) => genderedChoice(...args,
+        [
+            "ah",
+            "ley",
+            "leigh",
+            "cy",
+            "cey",
+        ],
+        [
+            "on",
+            "in",
+        ]))
 ]);
 
 
-export const angloNamesByPartGenerator = new StringGenerator<[Exclude<Pronouns, 'object'>]>([
+export const angloNamesByPartGenerator = new StringGenerator<[Exclude<Pronouns, 'object' | 'enby'>]>([
     mkGen(rng => [
         "A",
         "Cha",
@@ -63,60 +69,65 @@ export const angloNamesByPartGenerator = new StringGenerator<[Exclude<Pronouns, 
     ].choice(rng)),
     mkGen((rng, ...args) => [angloNamesByPartShortSuffixGenerator, angloNamesByPartLongSuffixGenerator].choice(rng).generate(rng, ...args)),
 ]);
-export const angloFirstNameGenerator = mkGen((rng, pronouns: Exclude<Pronouns, 'object'>) => [
-    mkGen((...args: [typeof rng, typeof pronouns]) => genderedChoice(...args,
-        [
-            "Alex",
-            "Sam",
-            "Ellis",
-            "Kai",
-            "Ash",
-            "Charlie",
 
-        ],
-        [
-            "Mary",
-            "Eve",
-            "Ashley",
-            "Alice",
-            "Triss",
-            "Stacy",
-            "Lucy",
-            "Lily",
-            "Rose",
-            "Elizabeth",
-            "Jessica",
-            "Emma",
-            "Abigail",
-            "Megan",
-            "Sarah",
-            "Julia",
-            "Kate",
-            "Karen",
-            "Carol"
-        ],
-        [
-            "Tom",
-            "Richard",
-            "Harry",
-            "Edward",
-            "Jack",
-            "Paul",
-            "George",
-            "Logan",
-            "Ethan",
-            "Bill",
-            "Winston",
-            "Lewis",
-            "Luke",
-            "John",
-            "Peter",
-            "Philip",
-            "Thomas",
-            "Simon",
-            "James",
-            "Andrew"
-        ])),
+const angloFixedNamedGenerator = mkGen((...args: [PRNG, Exclude<Pronouns, 'object'>]) => genderedChoice(...args,
+    [
+        "Mary",
+        "Eve",
+        "Ashley",
+        "Alice",
+        "Triss",
+        "Stacy",
+        "Lucy",
+        "Lily",
+        "Rose",
+        "Elizabeth",
+        "Jessica",
+        "Emma",
+        "Abigail",
+        "Megan",
+        "Sarah",
+        "Julia",
+        "Kate",
+        "Karen",
+        "Carol"
+    ],
+    [
+        "Tom",
+        "Richard",
+        "Harry",
+        "Edward",
+        "Jack",
+        "Paul",
+        "George",
+        "Logan",
+        "Ethan",
+        "Bill",
+        "Winston",
+        "Lewis",
+        "Luke",
+        "John",
+        "Peter",
+        "Philip",
+        "Thomas",
+        "Simon",
+        "James",
+        "Andrew"
+    ],
+    [
+        "Alex",
+        "Sam",
+        "Ellis",
+        "Kai",
+        "Ash",
+        "Charlie",
+    ]));
+
+/**
+ * fixed first name generator lacks support for enby names at the moment.
+ */
+export const angloFirstNameGenerator = mkGen((rng, pronouns: Exclude<Pronouns, 'object'>) => pronouns === 'enby' ? angloFixedNamedGenerator.generate(rng, pronouns) : [
+    angloFixedNamedGenerator,
     angloNamesByPartGenerator
 ].choice(rng).generate(rng, pronouns));
 
@@ -144,9 +155,9 @@ export const grecoRomanFirstNameGenerator = new StringGenerator<[Exclude<Pronoun
     ].choice(rng)),
 
     mkGen((rng, pronouns) => genderedChoice(rng, pronouns,
-        ['e'],
         ["a", "ia", "ina", "ira"],
-        ["ius", "us", "ion", "or"]
+        ["ius", "us", "ion", "or"],
+        ['as', "er"],
     ))
 ]);
 
