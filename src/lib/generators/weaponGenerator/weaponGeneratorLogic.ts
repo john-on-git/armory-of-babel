@@ -603,8 +603,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
         }
         catch (e) {
-            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more 
-            console.error(e);
+            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more
+            if (!silent) {
+                console.error(e);
+            }
             break;
         }
     }
@@ -631,8 +633,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
         }
         catch (e) {
-            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more 
-            console.error(e);
+            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more
+            if (!silent) {
+                console.error(e);
+            }
             break;
         }
     }
@@ -654,8 +658,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             }
         }
         catch (e) {
-            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more 
-            console.error(e);
+            // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more
+            if (!silent) {
+                console.error(e);
+            }
             break;
         }
     }
@@ -679,8 +685,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             applyDescriptionPartProvider(rng, descriptorProvider, weapon, silent);
         }
         catch (e) {
-            // this error is almost definitely "provider failed to draw". It means we don't have enough descriptors. just log it and stop trying to generate any more 
-            console.error(e);
+            // this error is almost definitely "provider failed to draw". It means we don't have enough descriptors. just log it and stop trying to generate any more
+            if (!silent) {
+                console.error(e);
+            }
             break;
         }
         nDescriptors++;

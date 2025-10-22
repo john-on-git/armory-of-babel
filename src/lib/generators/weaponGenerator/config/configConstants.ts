@@ -82,6 +82,10 @@ const simpleMaterials = [
         material: 'scarlet steel',
         ephitet: { pre: 'Scarlet Steel' }
     } as const,
+    {
+        material: 'lumensteel',
+        ephitet: { pre: 'Lumensteel' }
+    } as const,
 
     // cool materials (can be the source of an ephitet)
     ..._.map([
@@ -145,7 +149,7 @@ export const ephCold = [{ pre: "Icebound" }, { pre: "Frostbound" }, { pre: "Frig
 export const ephHot = [{ pre: 'Fiery' }, { pre: 'Blazing' }, { post: ' of the Bonfire Keeper', alliteratesWith: 'B' }, { post: ' of the Scorchlands', alliteratesWith: 'S' }, { pre: 'Burning' }] satisfies Ephitet[];
 export const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
 export const ephSky = [{ pre: 'Cloudborn' }, { pre: 'Zephyr' }, { post: ' of the Zephyr', alliteratesWith: 'Z' }, { post: ' of the Skylands', alliteratesWith: 'S' }, { post: ' of the Cloud Giants', alliteratesWith: 'C' }, { post: ' of the Butterfly Lords', alliteratesWith: 'B' }, { post: ' of the Valkyrie Queen', alliteratesWith: 'V' }] satisfies Ephitet[];
-export const ephWizard = [{ post: ' of the Wizard', alliteratesWith: 'W' }, { post: ' of Stars', alliteratesWith: 'S' }, { post: ' of the Cosmos', alliteratesWith: 'C' }] satisfies Ephitet[];
+export const ephWizard = [{ post: ' of the Wizard', alliteratesWith: 'W' }, { post: ' of the Stars', alliteratesWith: 'S' }, { post: ' of the Cosmos', alliteratesWith: 'C' }] satisfies Ephitet[];
 export const ephExplorer = [{ pre: "Explorer's" }, { pre: "Navigator's" }, { pre: "Pathfinder's" }, { post: ' of the Explorer', alliteratesWith: 'E' }, { post: ' of the Navigator', alliteratesWith: 'N' }] satisfies Ephitet[];
 export const ephSteampunk = [...ephExplorer, { post: ' of the Empire', alliteratesWith: 'E' }, { pre: 'Clockwork' }, { pre: 'Machine' }, { pre: 'Steam-Powered' }, { pre: 'Automatic' }] satisfies Ephitet[];
 
