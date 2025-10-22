@@ -241,11 +241,11 @@ export default {
             new ProviderElement('generic-eyes',
                 {
                     yields: 'feature',
-                    generate: (rng) =>
+                    generate: (rng, weapon) =>
                         genMaybeGen([
                             MISC_DESC_FEATURES.sensorium.eyes.beady,
                             MISC_DESC_FEATURES.sensorium.eyes.deepSet,
-                            MISC_DESC_FEATURES.sensorium.eyes.animalistic,
+                            ...weapon.themes.includes('nature') ? [MISC_DESC_FEATURES.sensorium.eyes.animalistic] : [],
                         ].choice(rng), rng),
                     applicableTo: { any: eyeAcceptingParts }
                 }, { never: true }
@@ -1789,6 +1789,33 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("chaos-cast",
+                {
+                    desc: "Chaos Cast",
+                    cost: 1,
+                    additionalNotes: [
+                        "The weapon casts a randomly chosen spell, centered on the wielder.",
+                        "The spell is cast instantly, and its normal resource costs are ignored.",
+                        "If you are using a magic system with spells levelled 1-9, the spell can be of 1st, 2nd, or 3rd level."
+                    ]
+                },
+                {
+                    shapeFamily: { any: ['staff'] },
+                    themes: { any: ['wizard'] }
+                }
+            ),
+            new ProviderElement("compelled-duel",
+                {
+                    desc: "Compelled Duel",
+                    cost: "at will",
+                    additionalNotes: [
+                        "You challenge another character to a duel, and the weapon's magic compels them to agree.",
+                        "Until one of you is defeated, neither of you can attack any other characters.",
+                        "If both duellists' weapons use charges, the winner's weapon absorbs all charges of the loser's weapon."
+                    ]
+                },
+                { shapeFamily: { any: ['sword', 'sword (or musket)'] } }
+            ),
             new ProviderElement("reveal-hidden",
                 mkGen((_, weapon) => rangedWeaponShapeFamilies.includes(weapon.shape.group as (typeof rangedWeaponShapeFamilies)[number])
                     ? {
@@ -2273,12 +2300,12 @@ export default {
             new ProviderElement("linger-strike",
                 mkGen((rng, weapon) => {
                     const numbersByRarity = {
-                        common: { cost: 2, endChance: 6, damage: 4 },
-                        uncommon: { cost: 2, endChance: 6, damage: 4 },
-                        rare: { cost: 2, endChance: 8, damage: 4 },
-                        epic: { cost: 3, endChance: 10, damage: 4 },
-                        legendary: { cost: 3, endChance: 10, damage: 6 }
-                    } as const satisfies Record<WeaponRarity, { cost: number; endChance: CommonDieSize; damage: CommonDieSize }>;
+                        common: { cost: 2, endChance: [4, 6], damage: [4, 4, 4, 6] },
+                        uncommon: { cost: 2, endChance: [6, 8], damage: [4, 4, 4, 6] },
+                        rare: { cost: 2, endChance: [8, 10], damage: [4, 4, 6] },
+                        epic: { cost: 3, endChance: [10], damage: [4, 6] },
+                        legendary: { cost: 3, endChance: [10], damage: [6] }
+                    } as const satisfies Record<WeaponRarity, { cost: number; endChance: CommonDieSize[]; damage: CommonDieSize[] }>;
 
                     const effects = {
                         fire: { title: "Lingering Flames", desc: "fire" },
@@ -2290,8 +2317,8 @@ export default {
                         desc: effect.title,
                         cost: numbersByRarity[weapon.rarity].cost,
                         additionalNotes: [
-                            `Infuse a strike with lingering ${effect.desc}, dealing d${numbersByRarity[weapon.rarity].damage} damage to the target at the start of each of their turns.`,
-                            `Each time it deals damage, the effect has a 1-in-${numbersByRarity[weapon.rarity].endChance} chance of wearing off.`
+                            `Infuse a strike with lingering ${effect.desc}, dealing d${numbersByRarity[weapon.rarity].damage.choice(rng)} damage to the target at the start of each of their turns.`,
+                            `Each time it deals damage, the effect has a 1-in-${numbersByRarity[weapon.rarity].endChance.choice(rng)} chance of wearing off.`
                         ]
 
                     }
@@ -2588,6 +2615,21 @@ export default {
                 },
                 {
                     themes: { any: ["sweet"] },
+                    UUIDs: { none: ['cast-heal'] }
+                }
+            ),
+            new ProviderElement("cast-heal",
+                mkGen((_, weapon) => ({
+                    desc: "Heal",
+                    cost: 1,
+                    additionalNotes: [
+                        `Motes of light whip around the weapon as it releases a burst of healing energy. It heals ${textForDamage(modDamage(weapon.damage, n => n + weapon.toHit))} HP, range as sling.`,
+                    ]
+                })),
+                {
+                    shapeFamily: { any: bluntWeaponShapeFamilies },
+                    themes: { any: ['light'] },
+                    UUIDs: { none: ['sweetberry'] }
                 }
             ),
             new ProviderElement("sugar-spray",
@@ -2622,7 +2664,7 @@ export default {
                     desc: "Cause Nausea",
                     cost: 1,
                     additionalNotes: [
-                        "Target must save or waste their turn vomiting."
+                        "You wave the weapon at a character. They must save or waste their turn vomiting."
                     ]
                 },
                 {
@@ -3136,7 +3178,7 @@ export default {
                     const wholeAbilityByTheme = {
                         fire: {
                             desc: 'Arc Cutter',
-                            cost: 6,
+                            cost: 5,
                             additionalNotes: [
                                 "A thin blade of fire surges from the weapon's tip, lasting for 1 minute.",
                                 "It can cut through up to a foot of metal (or similar material)."
@@ -3144,7 +3186,7 @@ export default {
                         },
                         sour: {
                             desc: 'Acid Edge',
-                            cost: 6,
+                            cost: 5,
                             additionalNotes: [
                                 "The weapon glows with caustic energy, lasting for 1 minute.",
                                 "It can cut through any organic material, metal, and stone (but not glass)."
@@ -3152,7 +3194,7 @@ export default {
                         },
                         wizard: {
                             desc: 'Instant Door',
-                            cost: 6,
+                            cost: 5,
                             additionalNotes: [
                                 "Trace the outline of the doorway on a surface using the weapon. A moment later, it's magically created.",
                                 "The door can punch through a thin sheet of metal (except lead), or 10-ft of any other material."
@@ -3346,6 +3388,43 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("acrobatic-tool",
+                mkGen((_, weapon) => {
+                    const bonusByRarity = {
+                        common: weapon.isNegative ? 5 : 3,
+                        uncommon: weapon.isNegative ? 5 : 3,
+                        rare: weapon.isNegative ? 6 : 5,
+                        epic: weapon.isNegative ? 6 : 5,
+                        legendary: weapon.isNegative ? 10 : 8
+                    } as const satisfies Record<WeaponRarity, number>;
+
+                    return { miscPower: true, desc: `The wielder gains a +${bonusByRarity[weapon.rarity]} bonus to feats of strength or agility that involve the weapon.`, };
+                }),
+                {
+                    shapeFamily: { any: ['staff'] },
+                    themes: { none: ['wizard'] }
+                }
+            ),
+            new ProviderElement("beheading-strikes",
+                mkGen((_, weapon) => {
+                    const maxHDByRarity = {
+                        common: 1,
+                        uncommon: 2,
+                        rare: 3,
+                        epic: 4,
+                        legendary: 5
+                    } as const satisfies Record<WeaponRarity, number>;
+
+                    const maxHD = weapon.isNegative ? Math.ceil(maxHDByRarity[weapon.rarity] * 1.5) : maxHDByRarity[weapon.rarity];
+
+                    return { miscPower: true, desc: `When this weapon's damage roll is the maximum possible, if the target has ${maxHD}HD or less, they are beheaded and instantly killed.`, };
+                }),
+                { shapeFamily: { any: ['sword', 'sword (or musket)'] } }
+            ),
+            new ProviderElement("stunning-strikes",
+                { miscPower: true, desc: `When this weapon's damage roll is the maximum possible, the target is stunned (if your system has no stun mechanic, they skip their next turn).`, },
+                { shapeFamily: { any: ['mace'] } }
+            ),
             new ProviderElement('fear-immune',
                 {
                     miscPower: true,
@@ -3504,13 +3583,26 @@ export default {
             new ProviderElement("anti-air",
                 {
                     miscPower: true,
-                    desc: `Flying creatures struck by the blade must save or become afflicted, falling to the ground.`,
+                    desc: `Flying creatures shot by the weapon must save or become afflicted, preventing them from flying.`,
                     additionalNotes: [
                         'Victims save at the end of each of their turns, ending the effect on a success.'
                     ]
                 },
                 {
-                    shapeFamily: { any: rangedWeaponShapeFamilies }
+                    shapeFamily: { any: rangedWeaponShapeFamilies },
+                    themes: { any: ['cloud', 'earth'] }
+                }
+            ),
+            new ProviderElement("anti-ground",
+                {
+                    miscPower: true,
+                    desc: `Burrowing creatures hit by the weapon must save or become afflicted, preventing them from digging or burrowing.`,
+                    additionalNotes: [
+                        'Victims save at the end of each of their turns, ending the effect on a success.'
+                    ]
+                },
+                {
+                    themes: { any: ['cloud', 'earth'] }
                 }
             ),
             new ProviderElement("of-x-slaying",
@@ -4508,7 +4600,8 @@ export default {
             ...(["The language of ice & snow."].map(x => toLang("ice", x))),
             ...(["The language of fire."].map(x => toLang("fire", x))),
             ...(["Angelic."].map(x => toLang("light", x))),
-            ...(["Demonic."].map(x => toLang("dark", x)))
+            ...(["Demonic."].map(x => toLang("dark", x))),
+            ...(["Valkyrie."].map(x => toLang("cloud", x))),
         ]
     },
     shapes: {
@@ -4608,6 +4701,7 @@ export default {
                     ],
                     "mace": [
                         "Mace",
+                        "Hammer",
                         "Flail",
                         "Morning-Star",
                         "Shishpar",
