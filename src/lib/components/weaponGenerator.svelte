@@ -5,7 +5,7 @@
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
@@ -28,6 +28,16 @@
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", () => {
             weaponID.set(getIDFromURL());
+        });
+
+        tick().then(() => {
+            // and initialize the ID in the URL if it has not been set yet
+            if (
+                new URLSearchParams(window.location.search).get("id") === null
+            ) {
+                console.log("will push id");
+                pushIdToURL(weapon.id);
+            }
         });
     });
 
@@ -52,13 +62,10 @@
             : getNewId();
     }
 
-    /**
-     * Generate a new weapon, called when the 'generate' button is clicked.
-     */
-    function generateWeapon() {
+    function pushIdToURL(id: string) {
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set("id", getNewId());
+        searchParams.set("id", id);
 
         // and update the URL params to point to its ID
         const queryNoQuestion = searchParams.toString();
@@ -68,12 +75,18 @@
         if (window.location.search !== newQuery) {
             pushState(newQuery, {});
         }
+        dispatchEvent(new PopStateEvent("popstate", { state: null }));
+    }
+
+    /**
+     * Generate a new weapon, called when the page is loaded without an ID in the URL, and when the 'generate' button is clicked.
+     */
+    function generateWeapon() {
+        pushIdToURL(getNewId());
 
         if (logging) {
             console.log("generated weapon", weapon);
         }
-
-        dispatchEvent(new PopStateEvent("popstate", { state: null }));
     }
 </script>
 
