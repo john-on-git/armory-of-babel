@@ -89,7 +89,7 @@ const voidGen = (f: (rng: PRNG) => string) => () => mkGen(f);
 const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as const;
 
 const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
-const ephCold = ["icy", "frigid", "silent", "polar", "Frostbound", "Icebound"];
+const ephCold = ["Icy", "Frigid", "Silent", "polar", "Frostbound", "Icebound"];
 const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian', 'Cambrian'];
 
 const ephTransparent = ['Glass', 'Glassy', 'Translucent', 'Invisible'];
@@ -295,7 +295,7 @@ export const MISC_DESC_FEATURES = {
     wrap: {
         bannerWrap: {
             descriptor: 'has the flag of an ancient realm wrapped around it',
-            ephitet: 'Banner'
+            ephitet: 'Bannered'
         },
         pirateWrap: {
             descriptor: 'has a scrap of a jolly roger wrapped around it',
@@ -314,7 +314,7 @@ export const MISC_DESC_FEATURES = {
             ephitet: 'Golden'
         },
         silkWrap: {
-            descriptor: 'a silk sash wrapped around it',
+            descriptor: 'has a silk sash wrapped around it',
             ephitet: 'Silky'
         },
     },
@@ -322,6 +322,12 @@ export const MISC_DESC_FEATURES = {
 } as const;
 
 // weapon parts
+
+/**
+ * The main / signature part the weapon
+ */
+export const importantPart = ['blade', 'blades', 'tip', 'head', 'body'] as const satisfies WeaponPartName[];
+
 
 /** Parts of a weapon specialised for striking and clashing, usually made of metal.
 */
