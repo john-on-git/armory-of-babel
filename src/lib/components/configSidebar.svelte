@@ -30,7 +30,9 @@
 <Sidebar localStorageKey={"weaponConfigSidebar"}>
     <div class="config-flex">
         <h2>Custom Generation Parameters</h2>
-        <button class="default-button" onclick={resetToDefault}>🗑️</button>
+        <button class="default-button" onclick={resetToDefault}
+            ><i class="fa-solid fa-trash-can"></i></button
+        >
         <div>
             <RaritySlider bind:odds onChange={onOddsChanged} />
         </div>

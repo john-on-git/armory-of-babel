@@ -84,7 +84,7 @@ export default {
                         return [
                             MATERIALS['scarlet steel'],
                             MATERIALS.flint,
-                            MATERIALS["gold-plated"],
+                            MATERIALS.goldPlated,
                             MATERIALS.gold,
                             MATERIALS["rose gold"],
                         ].choice(rng);
@@ -106,7 +106,7 @@ export default {
                         return [
                             MATERIALS["boreal steel"],
                             MATERIALS.silver,
-                            MATERIALS['silver-plated'],
+                            MATERIALS.silverPlated,
                             MATERIALS["white gold"],
                         ].choice(rng);
                     },
@@ -133,7 +133,7 @@ export default {
                             MATERIALS["glass"],
                             MATERIALS["boreal steel"],
                             MATERIALS.silver,
-                            MATERIALS['silver-plated'],
+                            MATERIALS.silverPlated,
                             MATERIALS["white gold"],
                         ].choice(rng);
                     },
@@ -274,7 +274,7 @@ export default {
                         return [
                             MATERIALS["white gold"],
                             MATERIALS.silver,
-                            MATERIALS["silver-plated"],
+                            MATERIALS.silverPlated,
                             MATERIALS.crystal,
                         ].choice(rng);
                     },
@@ -299,7 +299,7 @@ export default {
                             MATERIALS.glass,
                             MATERIALS["white gold"],
                             MATERIALS.silver,
-                            MATERIALS["silver-plated"],
+                            MATERIALS.silverPlated,
                             MATERIALS.mythrel,
                             MATERIALS.crystal,
                             MATERIALS.diamond,
@@ -318,12 +318,29 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('eat-to-heal-forced',
+                {
+                    generate: (rng) => {
+                        return [
+                            MATERIALS.hardCandy,
+                            MATERIALS.rockCandy,
+                            MATERIALS.gingerbread,
+                        ].choice(rng);
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    never: true
+                }
+            ),
 
             new ProviderElement('material-sweet-hard',
                 {
                     generate: (rng) => {
                         return [
-                            MATERIALS["ultrahard candy"]
+                            MATERIALS.hardCandy
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -340,7 +357,9 @@ export default {
                 {
                     generate: (rng) => {
                         return [
-                            MATERIALS.maple
+                            MATERIALS.maple,
+                            MATERIALS.liquoriceRoot,
+                            MATERIALS.dateWood
                         ].choice(rng);
                     },
                     applicableTo: {
@@ -1670,7 +1689,8 @@ export default {
                 {
 
                     miscPower: true,
-                    desc: "Eat business end to heal HP equal to damage roll. Renders weapon unusable until it reforms, 24 hours later."
+                    desc: "Eat business end to heal HP equal to damage roll. Renders weapon unusable until it reforms, 24 hours later.",
+                    descriptorPartGenerator: 'eat-to-heal-forced'
                 },
                 {
                     themes: { any: ["sweet"] }

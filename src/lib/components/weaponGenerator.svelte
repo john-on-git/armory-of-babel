@@ -241,6 +241,10 @@
 <div class="weapon-generator">
     <div class="header">
         <h1>Armory of Babel</h1>
+        <p>
+            This site is under active development. Saved weapons may be lost at
+            any time.
+        </p>
     </div>
     <div class="body">
         <div class="weapon-display-container">
@@ -302,7 +306,7 @@
         height: 7.5vh;
 
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         gap: 10%;
 
         align-items: center;
@@ -363,29 +367,6 @@
         display: flex;
         flex-grow: 1;
         width: 100%;
-    }
-
-    .action-button {
-        position: fixed;
-
-        aspect-ratio: 1;
-
-        background-color: transparent;
-        border: 0 solid transparent;
-
-        padding: 0;
-
-        color: white;
-        opacity: 33%;
-    }
-
-    .action-button:disabled {
-        opacity: 5%;
-        cursor: auto;
-    }
-
-    .action-button:not(:disabled):hover {
-        opacity: 1;
     }
 
     .back-button,

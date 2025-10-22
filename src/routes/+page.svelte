@@ -260,6 +260,42 @@
         animation-direction: reverse;
     }
 
+    :global(.inline-button, .action-button) {
+        aspect-ratio: 1;
+
+        background-color: transparent;
+        border: 0 solid transparent;
+
+        padding: 0;
+
+        opacity: 33%;
+        color: white;
+
+        cursor: pointer;
+    }
+
+    :global(.action-button:disabled, .inline-button:disabled) {
+        opacity: 5%;
+        cursor: auto;
+    }
+
+    :global(
+            .action-button:not(:disabled):hover,
+            .inline-button:not(:disabled):hover
+        ) {
+        opacity: 1;
+    }
+
+    :global(.action-button:active, .inline-button:active) {
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 1pt;
+        paint-order: stroke;
+    }
+
+    :global(.action-button) {
+        position: fixed;
+    }
+
     @keyframes fade-in-1 {
         from {
             opacity: 0;

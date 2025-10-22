@@ -1,4 +1,7 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
+
+    - Weapons with shafts should allow both hard & holding materials on it.
+
     - Oddities.
         - Zelda magic shoot sword ability can roll on ranged weapons. Kinda funny though.
         - Steampunk theme should disallow natural materials.
