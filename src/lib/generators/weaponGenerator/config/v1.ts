@@ -672,7 +672,7 @@ export default {
                         mkGen("all charges after an hour in a sacred space"),
                         mkGen("all charges each day at sunrise"),
                         new StringGenerator([
-                            mkGen("one charge each time you defeat a "),
+                            mkGen("one charge each time you defeat "),
                             singularUnholyFoe,
                         ])
                     ],
