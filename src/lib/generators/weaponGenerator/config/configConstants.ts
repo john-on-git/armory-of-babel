@@ -1,8 +1,8 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
-import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
 import { gatherUUIDs } from "$lib/generators/weaponGenerator/provider";
 import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { Descriptor, DescriptorText, Ephitet, Theme, Weapon, WeaponGivenThemes, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { Descriptor, DescriptorText, Ephitet, Material, Theme, Weapon, WeaponGivenThemes, WeaponPartName, WeaponRarity, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { titleCase } from "$lib/util/string";
 import _ from "lodash";
@@ -116,7 +116,7 @@ const simpleMaterials = [
     ] as const, (metal) => ({
         material: metal,
         ephitet: { pre: titleCase(metal) }
-    } satisfies Descriptor)),
+    } satisfies Material)),
 
     // boring materials (cannot be the source of an ephitet)
     ..._.map([
@@ -127,8 +127,8 @@ const simpleMaterials = [
         'steel',
     ] as const, (metal) => ({
         material: metal,
-    } satisfies Descriptor))
-] satisfies Descriptor[];
+    } satisfies Material))
+] satisfies Material[];
 
 
 const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as const;
@@ -254,7 +254,7 @@ export const MATERIALS = {
         return {
             material: `${creature} ${protrusionName}`,
             ephitet: { post: ` of the ${creature}`, alliteratesWith: creature[0].toUpperCase() }
-        } as Descriptor;
+        } as Material;
     }),
     coldHorn: mkGen((rng) => {
         const [creature, protrusionName] = coldAnimalHorn.generate(rng);
@@ -262,7 +262,7 @@ export const MATERIALS = {
         return {
             material: `${creature} ${protrusionName}`,
             ephitet: { post: ` of the ${creature}`, alliteratesWith: creature[0].toUpperCase() }
-        } as Descriptor;
+        } as Material;
     }),
     magicHorn: mkGen((rng, weapon) => {
         const [creature, protrusionName] = magicAnimalHorn.generate(rng, weapon);
@@ -270,7 +270,7 @@ export const MATERIALS = {
         return {
             material: `${creature} ${protrusionName}`,
             ephitet: { post: ` of the ${creature}`, alliteratesWith: creature[0].toUpperCase() }
-        } as Descriptor;
+        } as Material;
     }),
     darkLeather: mkGen((rng) => {
         const [creature, skinName] = darkAnimalSkin.generate(rng);
@@ -293,7 +293,7 @@ export const MATERIALS = {
         return {
             material: `${creature} ${skinName}`,
             ephitet: ephFor(creature)
-        } as Descriptor;
+        } as Material;
     }),
 
     vitStone: {
@@ -392,16 +392,16 @@ export const MATERIALS = {
         ephitet: mkGen(rng => choice(ephSweet, rng))
     } as const,
 
-    ..._.reduce<(typeof golds)[number], Record<(typeof golds)[number], Descriptor>>(golds, (acc, metal) => {
+    ..._.reduce<(typeof golds)[number], Record<(typeof golds)[number], Material>>(golds, (acc, metal) => {
         acc[metal] = ({
             material: metal,
             ephitet: { pre: 'Golden' }
-        } satisfies Descriptor)
+        } satisfies Material)
         return acc;
-    }, {} as Record<(typeof golds)[number], Descriptor>),
+    }, {} as Record<(typeof golds)[number], Material>),
 
     ..._.mapKeys(simpleMaterials, x => x.material) as Record<(typeof simpleMaterials)[number]['material'], (typeof simpleMaterials)[number]>,
-} as const satisfies Record<string, Descriptor | TGenerator<Descriptor, [Weapon]>>;
+} as const satisfies Record<string, Descriptor | Generator<Descriptor, [Weapon]> | Material | Generator<Material, [Weapon]>>;
 
 const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'fish', 'crustacean', 'lizard', 'dragonfly', 'hummingbird', 'shrew'].choice(rng))]);
 const embeddedArr = [
@@ -794,7 +794,7 @@ export const MISC_DESC_FEATURES = {
         }
     }
 
-} as const satisfies Record<string, Record<string, Descriptor | TGenerator<Descriptor, [Weapon]>> | Record<string, Record<string, Descriptor | TGenerator<Descriptor, [Weapon]>>>>;
+} as const satisfies Record<string, Record<string, Descriptor | Generator<Descriptor, [Weapon]>> | Record<string, Record<string, Descriptor | Generator<Descriptor, [Weapon]>>>>;
 
 
 // weapon parts

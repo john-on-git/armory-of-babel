@@ -1,5 +1,5 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
-import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
 import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
@@ -46,6 +46,7 @@ export default {
         add: [
             new ProviderElement('mirror-finish-forced',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -62,6 +63,7 @@ export default {
                 { never: true }),
             new ProviderElement('mounted-dismount-resist-descriptor-fire',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -81,6 +83,7 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-ice',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -100,6 +103,7 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-dark',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -119,10 +123,11 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-nature',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
-                            singular: " a vine extending from it, which wraps around the grip & base",
+                            singular: " a vine extending from it, which wraps around the grip and base",
                             plural: "lance pommel is not plural"
                         }
                     }),
@@ -138,10 +143,11 @@ export default {
             ),
             new ProviderElement('mounted-dismount-resist-descriptor-generic',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
-                            singular: " a tendril extending from it, which wraps around the grip & base",
+                            singular: " a tendril extending from it, which wraps around the grip and base",
                             plural: "lance pommel is not plural"
                         }
                     }),
@@ -157,6 +163,7 @@ export default {
             ),
             new ProviderElement('generic-eyes',
                 {
+                    yields: 'descriptor',
                     generate: (rng) =>
                         genMaybeGen([
                             MISC_DESC_FEATURES.sensorium.eyes.beady,
@@ -170,6 +177,7 @@ export default {
             ),
             new ProviderElement('material-telekill',
                 {
+                    yields: 'material',
                     generate: () => ({
                         material: 'telekill alloy',
                         ephitet: mkGen(() => ({ pre: 'Nullifying' }))
@@ -183,6 +191,7 @@ export default {
             ),
             new ProviderElement('descriptor-wreathed-fire',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -202,6 +211,7 @@ export default {
             ),
             new ProviderElement('descriptor-wreathed-dark-fire',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -222,6 +232,7 @@ export default {
                 }
             ), new ProviderElement('descriptor-wreathed-ice',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'property',
@@ -243,6 +254,7 @@ export default {
             ),
             new ProviderElement('descriptor-clock-embed-forced',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
@@ -264,6 +276,7 @@ export default {
             ),
             new ProviderElement('descriptor-compass-embed-forced',
                 {
+                    yields: 'descriptor',
                     generate: () => ({
                         descriptor: {
                             descType: 'possession',
@@ -284,6 +297,7 @@ export default {
                 }
             ),
             new ProviderElement('eat-to-heal-forced', {
+                yields: 'material',
                 generate: (rng) => {
                     return [
                         MATERIALS.hardCandy,
@@ -303,6 +317,7 @@ export default {
             ),
 
             new ProviderElement('injector-module-forced', {
+                yields: 'descriptor',
                 generate: () => (
                     {
                         descriptor: {
@@ -324,6 +339,7 @@ export default {
 
             new ProviderElement('energy-core-void',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -347,6 +363,7 @@ export default {
             ),
             new ProviderElement('energy-core-fire',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -370,6 +387,7 @@ export default {
             ),
             new ProviderElement('energy-core-ice',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -393,6 +411,7 @@ export default {
             ),
             new ProviderElement('energy-core-ultraviolet',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -416,6 +435,7 @@ export default {
             ),
             new ProviderElement('energy-core-azure',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -439,6 +459,7 @@ export default {
             ),
             new ProviderElement('energy-core-crimson',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -462,6 +483,7 @@ export default {
             ),
             new ProviderElement('energy-core-verdant',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -485,6 +507,7 @@ export default {
             ),
             new ProviderElement('energy-core-nature',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -508,6 +531,7 @@ export default {
             ),
             new ProviderElement('energy-core-atomic',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -535,6 +559,7 @@ export default {
             ),
             new ProviderElement('energy-core-gold',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -558,6 +583,7 @@ export default {
             ),
             new ProviderElement('energy-core-dark',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -581,6 +607,7 @@ export default {
             ),
             new ProviderElement('energy-core-aether',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -604,6 +631,7 @@ export default {
             ),
             new ProviderElement('energy-core-steampunk',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -627,6 +655,7 @@ export default {
             ),
             new ProviderElement('energy-core-wizard',
                 {
+                    yields: 'descriptor',
                     generate: () => {
                         return {
                             descriptor: {
@@ -678,6 +707,7 @@ export default {
             // ),
             new ProviderElement('descriptor-pommel-embed',
                 {
+                    yields: 'descriptor',
                     generate: (rng, weapon) => {
                         const embedsByTheme = {
                             ice: [
@@ -754,15 +784,12 @@ export default {
                     },
                     themes: {
                         any: ['ice', 'fire', 'cloud', 'earth', 'light', 'dark', 'wizard']
-                    },
-                    applicableTo: {
-                        any: embeddableParts
-                    },
-                    isMaterial: false,
+                    }
                 }
             ),
             new ProviderElement('material-primitive-hard',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.tin,
@@ -779,16 +806,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['nature', 'earth', 'fire']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true,
+                    }
                 }
             ),
 
             new ProviderElement('material-fire-hard',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS['scarlet steel'],
@@ -811,15 +835,12 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['fire']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('material-fire-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => genMaybeGen([
                         MATERIALS.scorchedWood,
                         MATERIALS.glass,
@@ -837,15 +858,12 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('descriptor-fire-coating',
                 {
+                    yields: 'descriptor',
                     generate: (rng, weapon) => genMaybeGen<Descriptor, [Weapon]>([
                         MISC_DESC_FEATURES.coating.oil,
                         MISC_DESC_FEATURES.coating.flames,
@@ -857,16 +875,13 @@ export default {
                 {
                     themes: {
                         any: ['fire']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: false
+                    }
                 }
             ),
 
             new ProviderElement('material-ice-hard',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS["boreal steel"],
@@ -890,16 +905,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['ice']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-ice-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return genMaybeGen([
                             MATERIALS.ivory,
@@ -918,16 +930,13 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-cloud-hard',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS["meteoric iron"],
@@ -943,15 +952,12 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['cloud']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('material-cloud-holding',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return genMaybeGen([
                             MATERIALS.alabaster,
@@ -973,15 +979,12 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('descriptor-cloud-coating',
                 {
+                    yields: 'descriptor',
                     generate: (rng, weapon) => genMaybeGen<Descriptor, [Weapon]>([
                         MISC_DESC_FEATURES.coating.pearlescent,
                     ].choice(rng), rng, weapon),
@@ -992,17 +995,14 @@ export default {
                 {
                     themes: {
                         any: ['cloud']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: false
+                    }
                 }
             ),
 
 
             new ProviderElement('material-earth-hard',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.alabaster,
@@ -1032,15 +1032,12 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['earth']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('material-earth-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.alabaster,
@@ -1063,16 +1060,13 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-dark-hard',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS.obsidian,
@@ -1096,16 +1090,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['dark']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-dark-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return genMaybeGen([
                             MATERIALS.ebonyWood,
@@ -1124,17 +1115,14 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
 
             new ProviderElement('material-light-holding',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return genMaybeGen([
                             MATERIALS.maple,
@@ -1159,16 +1147,13 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-dark-ice',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.iceBlood
@@ -1182,16 +1167,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         all: ['dark', 'ice']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-light-hard',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS.silver,
@@ -1219,16 +1201,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['light']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-sweet-hard',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.hardCandy,
@@ -1245,14 +1224,11 @@ export default {
                     themes: {
                         any: ['sweet']
                     },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
                 }
             ),
             new ProviderElement('material-sweet-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.maple,
@@ -1272,15 +1248,12 @@ export default {
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
                     },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
                 }
             ),
 
             new ProviderElement('material-sour-hard',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.citrine,
@@ -1295,15 +1268,12 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['sour']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('material-sour-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.lemonWood,
@@ -1320,16 +1290,13 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-wizard-hard',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS.crystal,
@@ -1363,16 +1330,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['wizard']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-wizard-holding',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return genMaybeGen([
                             MATERIALS.magicWood,
@@ -1393,11 +1357,7 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
@@ -1417,11 +1377,7 @@ export default {
                     allowDuplicates: false,
                     themes: {
                         all: ['wizard', 'nature']
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('misc-wizard-charm',
@@ -1440,11 +1396,7 @@ export default {
                 {
                     themes: {
                         any: ['wizard']
-                    },
-                    applicableTo: {
-                        any: wrappableParts
-                    },
-                    isMaterial: false
+                    }
                 }
             ),
             new ProviderElement('misc-wizard-coating',
@@ -1462,11 +1414,7 @@ export default {
                 {
                     themes: {
                         any: ['wizard']
-                    },
-                    applicableTo: {
-                        any: wrappableParts
-                    },
-                    isMaterial: false
+                    }
                 }
             ),
 
@@ -1489,16 +1437,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['steampunk']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-steampunk-holding',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return genMaybeGen([
                             MATERIALS.copper,
@@ -1519,15 +1464,12 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('material-nature-hard',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS.oak,
@@ -1548,16 +1490,13 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['nature']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('material-nature-holding',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return genMaybeGen([
                             MATERIALS.oak,
@@ -1581,16 +1520,13 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
 
             new ProviderElement('misc-charm-emojis',
                 {
+                    yields: 'descriptor',
                     generate: () => MISC_DESC_FEATURES.charm.emojis,
                     applicableTo: {
                         any: wrappableParts
@@ -1602,16 +1538,13 @@ export default {
                     allowDuplicates: false,
                     themes: {
                         any: ['nature', 'wizard', 'sweet']
-                    },
-                    applicableTo: {
-                        any: wrappableParts
-                    },
-                    isMaterial: false
+                    }
                 }
             ),
 
             new ProviderElement('club-staff-main-material',
                 {
+                    yields: 'material',
                     generate: (rng, weapon) => {
                         return [
                             MATERIALS.oak,
@@ -1638,15 +1571,12 @@ export default {
                     },
                     rarity: {
                         lte: 'rare',
-                    },
-                    applicableTo: {
-                        any: holdingParts
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('light-and-dark-blade',
                 {
+                    yields: 'material',
                     generate: () => ({
                         material: "two separate blades (adamant and mythrel), they're intertwined in a spiral pattern",
                         ephitet: { pre: 'Binary' }
@@ -1661,15 +1591,12 @@ export default {
                     },
                     themes: {
                         all: ['light', 'dark']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('ice-and-fire-blade',
                 {
+                    yields: 'material',
                     generate: () => ({
                         material: "two separate parts, split down the middle: one half is boreal steel, the other scarlet steel",
                         ephitet: { pre: 'Bifurcated' }
@@ -1684,15 +1611,12 @@ export default {
                     },
                     themes: {
                         all: ['ice', 'fire']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('frutiger-blade',
                 {
+                    yields: 'material',
                     generate: () => ({
                         material: "a glass tank containing an aquarium, the contents seem unaffected by movement",
                         ephitet: { pre: 'Steamy' }
@@ -1707,15 +1631,12 @@ export default {
                     },
                     themes: {
                         all: ['cloud', 'light']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('steam-blade',
                 {
+                    yields: 'material',
                     generate: () => ({
                         material: "hollow glass, filled with a roiling mix of magical fire and water",
                         ephitet: { pre: 'Steamy' }
@@ -1730,14 +1651,11 @@ export default {
                     },
                     themes: {
                         all: ['fire', 'cloud']
-                    },
-                    applicableTo: {
-                        any: importantPart
-                    },
-                    isMaterial: true
+                    }
                 }
             ),
             new ProviderElement('elemental-quadblade', {
+                yields: 'material',
                 generate: () => ({
                     material: "elementally infused metal, split into four distinct sections, each of which represents a different element",
                     ephitet: { post: ' of the Elemental Lord' }
@@ -4218,7 +4136,7 @@ export default {
                     }
                 }
             ),
-            new ProviderElement<TGenerator<PassivePower, [Weapon]>, WeaponPowerCond>(
+            new ProviderElement<Generator<PassivePower, [Weapon]>, WeaponPowerCond>(
                 "death-blast",
                 mkGen<PassivePower, [Weapon]>((rng, weapon) => {
                     const { desc, featureUUID: featureUUID } = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk']>, rng);

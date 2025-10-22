@@ -1,4 +1,4 @@
-import { type TGenerator } from "$lib/generators/recursiveGenerator";
+import { type Generator } from "$lib/generators/recursiveGenerator";
 import { type PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
 import { ProviderElement, type Comp, type Cond, type Quant, type WithUUID } from "./provider";
@@ -156,7 +156,7 @@ export interface WeaponViewModel {
 }
 
 export interface Power {
-    additionalNotes?: (string | (TGenerator<string, [Weapon]>))[];
+    additionalNotes?: (string | (Generator<string, [Weapon]>))[];
 
     /**
      * UUID or UUIDs of the description provider that is applied to weapons with this power
@@ -208,10 +208,10 @@ export interface WeaponAdjective {
     desc: string;
 }
 export interface Personality {
-    desc: string | (TGenerator<string, [Weapon]>);
+    desc: string | (Generator<string, [Weapon]>);
 };
 export interface RechargeMethod {
-    desc: string | (TGenerator<string, [Weapon]>);
+    desc: string | (Generator<string, [Weapon]>);
 }
 
 export interface PassivePower extends Power {
@@ -259,11 +259,6 @@ export interface WeaponPowerCond extends Cond {
     shapeParticular?: Quant<WeaponShape['particular']>;
     rarity?: Comp<WeaponRarity>;
     isSentient?: boolean;
-}
-
-export interface DescriptorCond extends WeaponPowerCond {
-    applicableTo: Quant<WeaponPartName>;
-    isMaterial: boolean;
 }
 
 
@@ -492,16 +487,20 @@ export type DescriptorType = 'possession' | 'property';
  */
 export type DescriptorText = ({
     descType: DescriptorType;
-    singular: string | TGenerator<string, [Weapon, WeaponPartName]>;
-    plural: string | TGenerator<string, [Weapon, WeaponPartName]>;
+    singular: string | Generator<string, [Weapon, WeaponPartName]>;
+    plural: string | Generator<string, [Weapon, WeaponPartName]>;
 });
 
-export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: DescriptorText }) & {
-    ephitet?: Ephitet | TGenerator<Ephitet, [Weapon]>;
+export type Material<TArgs extends [Weapon, ...unknown[]] = [Weapon]> = ({ material: string | Generator<string, TArgs> }) & {
+    ephitet?: Ephitet | Generator<Ephitet, [Weapon]>;
 };
-export type DescriptorGenerator<TArgs extends Array<unknown> = [Weapon]> = TGenerator<Descriptor, TArgs> & {
-    applicableTo?: Quant<WeaponPartName>;
+export type Descriptor<TArgs extends [Weapon, ...unknown[]] = [Weapon]> = ({ descriptor: DescriptorText }) & {
+    ephitet?: Ephitet | Generator<Ephitet, TArgs>;
 };
+export type DescriptorGenerator<TArgs extends [Weapon, ...unknown[]] = [Weapon]> =
+    ((Generator<Material<TArgs>, TArgs> & { yields: 'material' }) | (Generator<Descriptor<TArgs>, TArgs> & { yields: 'descriptor' })) & {
+        applicableTo: Quant<WeaponPartName>;
+    };
 
 /**
  * Woke up mxsterr Freethem. woke u and smell the pronouns.
@@ -543,9 +542,9 @@ export interface FeatureProviderCollection {
     shapeProvider: WeaponFeatureProvider<WeaponShape>;
 
     rechargeMethodProvider: WeaponFeatureProvider<RechargeMethod>;
-    activePowerProvider: WeaponFeatureProvider<ActivePower | TGenerator<ActivePower, [Weapon]>>;
+    activePowerProvider: WeaponFeatureProvider<ActivePower | Generator<ActivePower, [Weapon]>>;
 
-    passivePowerProvider: WeaponFeatureProvider<PassivePower | TGenerator<PassivePower, [Weapon]>>;
+    passivePowerProvider: WeaponFeatureProvider<PassivePower | Generator<PassivePower, [Weapon]>>;
     languageProvider: WeaponFeatureProvider<Language>;
 }
 
@@ -553,13 +552,13 @@ export interface FeatureProviderCollection {
 export interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
     nonRollableDescriptors: ProviderElement<DescriptorGenerator, { never: true }>;
-    descriptors: ProviderElement<DescriptorGenerator, DescriptorCond>;
+    descriptors: ProviderElement<DescriptorGenerator>;
     personalities: ProviderElement<Personality>
 
     rechargeMethods: ProviderElement<RechargeMethod>;
-    actives: ProviderElement<ActivePower | TGenerator<ActivePower, [Weapon]>>;
+    actives: ProviderElement<ActivePower | Generator<ActivePower, [Weapon]>>;
 
-    passives: ProviderElement<PassivePower | TGenerator<PassivePower, [Weapon]>>;
+    passives: ProviderElement<PassivePower | Generator<PassivePower, [Weapon]>>;
     languages: ProviderElement<Language>;
     shapes: ProviderElement<WeaponShape>;
 }
