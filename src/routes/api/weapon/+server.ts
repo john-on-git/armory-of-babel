@@ -1,6 +1,7 @@
 import { dev } from '$app/environment';
 import { mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import type { WeaponRarity, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { error, json } from '@sveltejs/kit';
 import { StatusCodes } from "http-status-codes";
 import { getFeatureProviderForVersion, LATEST_VERSION_NUM } from "../../state.svelte";
 
@@ -52,9 +53,9 @@ export async function GET({ request }: { request: Request, }) {
         // generate the weapon, and silence logging if we are not in dev
         const weaponViewModels = mkWeaponsForAllRarities(weaponRequest.id, getFeatureProviderForVersion(weaponRequest.v), undefined, !dev);
 
-        return new Response(JSON.stringify(weaponViewModels), { status: StatusCodes.OK });
+        return json(weaponViewModels);
     }
     else {
-        return new Response(null, { status: StatusCodes.BAD_REQUEST });
+        return error(StatusCodes.BAD_REQUEST);
     }
 }
