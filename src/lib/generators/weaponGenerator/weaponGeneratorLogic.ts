@@ -20,187 +20,6 @@ export function pickForTheme<TKey extends Theme, TRes>(weapon: Weapon, mapsTo: R
     return mapsTo[(weapon.themes.filter(theme => theme in mapsTo) as (keyof typeof mapsTo)[]).choice(rng)];
 }
 
-function applyBonuses(weapon: Weapon, bonus: PassiveBonus) {
-    for (const k in bonus) {
-        const bonusKind = k as keyof PassiveBonus
-        switch (bonusKind) {
-            case 'addDamageDie':
-                // apply all damage dice to the weapon
-                for (const k in bonus.addDamageDie) {
-                    const die = k as keyof DamageDice;
-                    if (typeof bonus.addDamageDie[die] === 'number') {
-                        if (weapon.damage[die] === undefined) {
-                            weapon.damage[die] = 0;
-                        }
-                        weapon.damage[die] += bonus.addDamageDie[die];
-                    }
-                }
-                break;
-            case "plus":
-                weapon.toHit += bonus.plus ?? 0;
-
-                if (weapon.damage.const === undefined) {
-                    weapon.damage.const = 0;
-                }
-                weapon.damage.const += 1;
-                break;
-            case "addChargedPowers":
-                weapon.params.nActive++;
-                break;
-            default:
-                return bonusKind satisfies never;
-        }
-    }
-}
-
-/**
- * 
- * @param _locale locale to generator the weapon for (not currently implemented)
- * @param weapon A weapon that has a description. If its description is null the behaviour is undefined. 
- */
-function structuredDescToString(_locale: string, weapon: Weapon) {
-
-    if (weapon.description === null) {
-        throw new Error('cannot generate description for a weapon with null description');
-    }
-    else {
-        const parts = Object.values(weapon.description).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
-
-        function usesAnd(desc: WeaponPart) {
-            return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
-        }
-
-        let description = '';
-        let i = 0;
-        let usedAndThisSentence: boolean = false;
-        for (const [partName, part] of parts) {
-            const start = i === 0
-                ? pronounLoc[weapon.pronouns].singular.possessive.capWords()
-                : usedAndThisSentence
-                    ? weapon.pronouns === 'object' ? 'the' : pronounLoc[weapon.pronouns].singular.possessive
-                    : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capWords();
-
-
-            // get all the descriptors, merging together any chains of 'has' / 'have' etc
-            let hasChain = false;
-            const descriptors: string[] = [];
-            if (part.descriptors.length > 0) {
-                // handle the first one separately if there's no material
-                if (part.material === undefined) {
-                    descriptors.push(`${isOrPossessionFor(partName, part.descriptors[0].descType)}${part.descriptors[0].desc}`);
-                    hasChain = part.descriptors[0].descType === 'possession';
-                }
-                for (const descriptor of part.material === undefined ? part.descriptors.slice(1) : part.descriptors) {
-                    // if this is possessive and the previous one was too, omit the possessiveness prefix
-                    descriptors.push(descriptor.descType === 'possession' && hasChain ? descriptor.desc : `${linkingIsOrPossessionFor(partName, descriptor.descType)}${descriptor.desc}`);
-
-                    hasChain = descriptor.descType === 'possession';
-                }
-            }
-
-            // if (dev) {
-            //     for (const atom of [part.material, ...part.descriptors]) {
-            //         if (atom !== undefined && /^\s*$/.test(atom.desc)) {
-            //             console.error(`\x1b[31mSaw empty description atom: "${atom.desc}" (${atom.UUID})`);
-            //         }
-            //     }
-            // }
-
-            const materialStr = part.material === undefined ? '' : `${isAre(partName)} made of ${part.material.desc}${descriptors.length > 1
-                ? ','
-                : descriptors.length === 1
-                    ? `, and `
-                    : ''
-                }`
-
-            // join the descriptors together in a grammatical list: with commas and the word 'and' before the last element
-            const descriptorsStr = descriptors.length > 1
-                ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
-                : descriptors.length === 1
-                    ? `${descriptors[0]}`
-                    : '';
-
-            usedAndThisSentence = usedAndThisSentence || usesAnd(parts[i][1]);
-
-            const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
-
-            // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
-            // but don't merge more than two
-            // otherwise end the current sentence
-            let sentence: string;
-            if (!usedAndThisSentence && (i < parts.length - 1) && !usesAnd(parts[i + 1][1])) {
-                sentence = `${partStr}, and `
-                usedAndThisSentence = true;
-            }
-            else {
-                sentence = `${partStr}.${i === parts.length - 1 ? '' : ' '}`;
-                usedAndThisSentence = false;
-            }
-
-            description += sentence;
-
-            i++;
-        }
-        return description;
-    }
-}
-
-function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon) {
-    function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined) {
-        if (weapon.description === null) {
-            return undefined
-        }
-        else {
-            // get all the parts that we can apply this descriptor to
-            const allApplicableParts = _
-                .values(weapon.description)
-                .flatMap(parts => _.entries(parts).filter(([partName, part]) =>
-                    ((applicableTo === undefined) || evQuant(applicableTo, partName)) &&
-                    (!checkMaterial || part.material === undefined) && // we can't apply a material to a part that already has one
-                    evQuantUUID({ none: [descriptorGenerator.UUID] }, { target: part }))) as [WeaponPartName, WeaponPart][];
-            // 2. choose one at random
-            return allApplicableParts.choice(rng);
-        }
-    }
-
-    // generate the thing.
-    const descriptor = descriptorGenerator.generate(rng, weapon);
-
-    // find the chosen part in structuredDesc and apply the provider's output to it 
-    // if it's a material we also have to filter out parts that already have a material
-    if ('material' in descriptor) {
-
-        const choice = choosePart(rng, true, descriptorGenerator.applicableTo);
-
-        // if we fail to get a part, try to handle it gracefully
-        if (choice !== undefined) {
-            choice[1].material = {
-                desc: genMaybeGen(descriptor.material, rng, weapon),
-                ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
-                UUID: descriptorGenerator.UUID
-            };
-        }
-    }
-    else {
-        const choice = choosePart(rng, false, descriptorGenerator.applicableTo);
-
-        // if we fail to get a part, try to handle it gracefully
-        if (choice !== undefined) {
-            choice[1].descriptors.push({
-                descType: descriptor.descriptor.descType,
-                desc: genMaybeGen(descriptor.descriptor[getPlurality(choice[0])], rng, weapon, choice[0]),
-                ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
-                UUID: descriptorGenerator.UUID
-            });
-        }
-    }
-}
-
-function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>): Ephitet | undefined {
-    const maybeEphitets = Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
-    return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng);
-}
-
 export function textForDamage(damage: DamageDice & { as?: string }) {
     function textForDamageKey(k: string, v: string | number | undefined): string {
         if (v === undefined || v === 0) {
@@ -305,6 +124,188 @@ export function genMaybeGen<T, TArgs extends Array<unknown>>(x: T | ((TGenerator
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
 export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
+
+
+    function applyBonuses(weapon: Weapon, bonus: PassiveBonus) {
+        for (const k in bonus) {
+            const bonusKind = k as keyof PassiveBonus
+            switch (bonusKind) {
+                case 'addDamageDie':
+                    // apply all damage dice to the weapon
+                    for (const k in bonus.addDamageDie) {
+                        const die = k as keyof DamageDice;
+                        if (typeof bonus.addDamageDie[die] === 'number') {
+                            if (weapon.damage[die] === undefined) {
+                                weapon.damage[die] = 0;
+                            }
+                            weapon.damage[die] += bonus.addDamageDie[die];
+                        }
+                    }
+                    break;
+                case "plus":
+                    weapon.toHit += bonus.plus ?? 0;
+
+                    if (weapon.damage.const === undefined) {
+                        weapon.damage.const = 0;
+                    }
+                    weapon.damage.const += 1;
+                    break;
+                case "addChargedPowers":
+                    weapon.params.nActive++;
+                    break;
+                default:
+                    return bonusKind satisfies never;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param _locale locale to generator the weapon for (not currently implemented)
+     * @param weapon A weapon that has a description. If its description is null the behaviour is undefined. 
+     */
+    function structuredDescToString(_locale: string, weapon: Weapon) {
+
+        if (weapon.description === null) {
+            throw new Error('cannot generate description for a weapon with null description');
+        }
+        else {
+            const parts = Object.values(weapon.description).map(xs => Object.entries(xs)).flat().filter(([_, part]) => part.material !== undefined || part.descriptors.length > 0) as [WeaponPartName, WeaponPart][];
+
+            function usesAnd(desc: WeaponPart) {
+                return (desc.material !== undefined && desc.descriptors.length > 0) || desc.descriptors.length > 1;
+            }
+
+            let description = '';
+            let i = 0;
+            let usedAndThisSentence: boolean = false;
+            for (const [partName, part] of parts) {
+                const start = i === 0
+                    ? pronounLoc[weapon.pronouns].singular.possessive.capWords()
+                    : usedAndThisSentence
+                        ? weapon.pronouns === 'object' ? 'the' : pronounLoc[weapon.pronouns].singular.possessive
+                        : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capWords();
+
+
+                // get all the descriptors, merging together any chains of 'has' / 'have' etc
+                let hasChain = false;
+                const descriptors: string[] = [];
+                if (part.descriptors.length > 0) {
+                    // handle the first one separately if there's no material
+                    if (part.material === undefined) {
+                        descriptors.push(`${isOrPossessionFor(partName, part.descriptors[0].descType)}${part.descriptors[0].desc}`);
+                        hasChain = part.descriptors[0].descType === 'possession';
+                    }
+                    for (const descriptor of part.material === undefined ? part.descriptors.slice(1) : part.descriptors) {
+                        // if this is possessive and the previous one was too, omit the possessiveness prefix
+                        descriptors.push(descriptor.descType === 'possession' && hasChain ? descriptor.desc : `${linkingIsOrPossessionFor(partName, descriptor.descType)}${descriptor.desc}`);
+
+                        hasChain = descriptor.descType === 'possession';
+                    }
+                }
+
+                // if (dev) {
+                //     for (const atom of [part.material, ...part.descriptors]) {
+                //         if (atom !== undefined && /^\s*$/.test(atom.desc)) {
+                //             console.error(`\x1b[31mSaw empty description atom: "${atom.desc}" (${atom.UUID})`);
+                //         }
+                //     }
+                // }
+
+                const materialStr = part.material === undefined ? '' : `${isAre(partName)} made of ${part.material.desc}${descriptors.length > 1
+                    ? ','
+                    : descriptors.length === 1
+                        ? `, and `
+                        : ''
+                    }`
+
+                // join the descriptors together in a grammatical list: with commas and the word 'and' before the last element
+                const descriptorsStr = descriptors.length > 1
+                    ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
+                    : descriptors.length === 1
+                        ? `${descriptors[0]}`
+                        : '';
+
+                usedAndThisSentence = usedAndThisSentence || usesAnd(parts[i][1]);
+
+                const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
+
+                // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
+                // but don't merge more than two
+                // otherwise end the current sentence
+                let sentence: string;
+                if (!usedAndThisSentence && (i < parts.length - 1) && !usesAnd(parts[i + 1][1])) {
+                    sentence = `${partStr}, and `
+                    usedAndThisSentence = true;
+                }
+                else {
+                    sentence = `${partStr}.${i === parts.length - 1 ? '' : ' '}`;
+                    usedAndThisSentence = false;
+                }
+
+                description += sentence;
+
+                i++;
+            }
+            return description;
+        }
+    }
+
+    function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator: DescriptorGenerator & { UUID: string }, weapon: Weapon) {
+        function choosePart(rng: seedrandom.PRNG, checkMaterial: boolean, applicableTo: DescriptorGenerator['applicableTo'] | undefined) {
+            if (weapon.description === null) {
+                return undefined
+            }
+            else {
+                // get all the parts that we can apply this descriptor to
+                const allApplicableParts = _
+                    .values(weapon.description)
+                    .flatMap(parts => _.entries(parts).filter(([partName, part]) =>
+                        ((applicableTo === undefined) || evQuant(applicableTo, partName)) &&
+                        (!checkMaterial || part.material === undefined) && // we can't apply a material to a part that already has one
+                        evQuantUUID({ none: [descriptorGenerator.UUID] }, { target: part }))) as [WeaponPartName, WeaponPart][];
+                // 2. choose one at random
+                return allApplicableParts.choice(rng);
+            }
+        }
+
+        // generate the thing.
+        const descriptor = descriptorGenerator.generate(rng, weapon);
+
+        // find the chosen part in structuredDesc and apply the provider's output to it 
+        // if it's a material we also have to filter out parts that already have a material
+        if ('material' in descriptor) {
+
+            const choice = choosePart(rng, true, descriptorGenerator.applicableTo);
+
+            // if we fail to get a part, try to handle it gracefully
+            if (choice !== undefined) {
+                choice[1].material = {
+                    desc: genMaybeGen(descriptor.material, rng, weapon),
+                    ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
+                    UUID: descriptorGenerator.UUID
+                };
+            }
+        }
+        else {
+            const choice = choosePart(rng, false, descriptorGenerator.applicableTo);
+
+            // if we fail to get a part, try to handle it gracefully
+            if (choice !== undefined) {
+                choice[1].descriptors.push({
+                    descType: descriptor.descriptor.descType,
+                    desc: genMaybeGen(descriptor.descriptor[getPlurality(choice[0])], rng, weapon, choice[0]),
+                    ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
+                    UUID: descriptorGenerator.UUID
+                });
+            }
+        }
+    }
+
+    function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureDescFor>): Ephitet | undefined {
+        const maybeEphitets = Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).map(x => x?.ephitet);
+        return (maybeEphitets.filter(x => x !== undefined) as Ephitet[]).choice(rng);
+    }
 
     // features may provide pieces of description, which are stored here
     const featureDescriptorProviders: (DescriptorGenerator & { UUID: string })[] = [];
@@ -581,10 +582,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
             weapon.name = `${personalName}, the ${ephitetAndShape}`;
         }
-    }
-
-    if (weapon.rarity === 'rare') {
-        console.log(JSON.stringify(weapon.description, undefined, 2))
     }
 
     const weaponViewModel = {

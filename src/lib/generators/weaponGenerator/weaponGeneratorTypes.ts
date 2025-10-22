@@ -458,7 +458,7 @@ export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
                 case 'possession':
                     return 'has ';
                 case 'property':
-                    return "it";
+                    return "";
                 case undefined:
                     return '';
                 default:
@@ -469,7 +469,7 @@ export function isOrPossessionFor(name: WeaponPartName, type: DescriptorType) {
                 case 'possession':
                     return 'have ';
                 case 'property':
-                    return "they";
+                    return "";
                 case undefined:
                     return '';
                 default:
