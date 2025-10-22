@@ -6,12 +6,14 @@ import _ from "lodash";
 export function calcOdds(
     config: WeaponRarityConfig,
 ): [number, number, number, number] {
+    console.log('calculated odds');
+    const round = (x: number) => Math.round(x * 100) / 100;
     return [
-        1 - config.uncommon.percentile,
-        1 - config.rare.percentile,
-        1 - config.epic.percentile,
-        1 - config.legendary.percentile,
-    ].map(x => Number(x.toFixed(2))) as [number, number, number, number];
+        round(1 - config.uncommon.percentile),
+        round(1 - config.rare.percentile),
+        round(1 - config.epic.percentile),
+        round(1 - config.legendary.percentile),
+    ] as const;
 }
 
 export function applyOddsToConfig(config: WeaponRarityConfig, odds: [number, number, number, number]) {

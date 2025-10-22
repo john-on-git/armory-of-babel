@@ -1,24 +1,26 @@
 <script lang="ts">
+    import { page } from "$app/state";
     import WeaponDisplay from "$lib/components/weaponDisplay.svelte";
     import { weaponFeatureVersionController as weaponVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
-    import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
     import { type WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-    import { calcOdds } from "$lib/util/configUtils";
-    import { getOddsFromURL } from "$lib/util/getFromURL";
     import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import "@fortawesome/fontawesome-free/css/all.min.css";
     import { StatusCodes } from "http-status-codes";
     import _ from "lodash";
     import { onMount, tick } from "svelte";
-    import { MediaQuery } from "svelte/reactivity";
     import type {
         GenerateWeaponRequest,
         GenerateWeaponResponse,
     } from "../../routes/api/generate-weapon/+server";
 
-    let version = $state(getVersionFromURL());
-    let weaponID = $state(getIDFromURL());
-    let odds = $state(getOddsFromURL());
+    interface Props {
+        odds: [number, number, number, number];
+    }
+
+    const { odds }: Props = $props();
+
+    const version = $derived(getVersionFromURL());
+    const weaponID = $derived(getIDFromURL());
 
     let weaponState = $state<{
         req: GenerateWeaponRequest;
@@ -31,8 +33,6 @@
      * always triggers. fadeLock represents which one it's using
      */
     let fadeLock = $state(false);
-
-    let isLandscape = new MediaQuery("orientation: landscape");
 
     const weapon = $derived.by<WeaponViewModel | null>(() => {
         if (odds === null || !weaponState?.res) {
@@ -56,26 +56,13 @@
         }
     });
 
-    // this is linked to a value stored in history state, see popState listener below. We can't use this value directly / inline, or the UI won't be reactive.
-    let canGoBack = $state(false);
-    let canGoForward = $state(false);
-
     // set up event listeners
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", async () => {
-            canGoBack =
-                history.state["sveltekit:states"].isFirstInHistory === false;
-            canGoForward =
-                history.state["sveltekit:states"].isLastInHistory === false;
-
-            weaponID = getIDFromURL();
-            version = getVersionFromURL();
-            odds =
-                getOddsFromURL() ??
-                calcOdds(defaultWeaponRarityConfigFactory());
-
+            // construct the search params for the API
             const searchParams = new URLSearchParams(window.location.search);
+
             if (!searchParams.has("o")) {
                 searchParams.set("o", odds[0].toFixed(2));
                 for (let i = 1; i < odds.length; i++) {
@@ -130,7 +117,7 @@
             const searchParams = new URLSearchParams(window.location.search);
             // and initialize any values in the URL that have not been set yet
             if (!searchParams.has("id")) {
-                syncIdToURL(weaponID, "replace");
+                pushIdToURL(weaponID, "replace");
             }
             if (!searchParams.has("v")) {
                 replaceVersionInURL(version);
@@ -185,14 +172,15 @@
     function getIDFromURL(): string {
         // this is user input and could be literally anything, i.e. an XSS attack
         const maybeNumber = Number.parseInt(
-            new URLSearchParams(window.location.search).get("id") ?? "NaN",
+            page.url.searchParams.get("id") ?? "NaN",
         );
 
         return Number.isInteger(maybeNumber)
             ? maybeNumber.toString()
             : getNewId();
     }
-    function syncIdToURL(id: string, mode: "push" | "replace" = "push") {
+
+    function pushIdToURL(id: string, mode: "push" | "replace" = "push") {
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set("id", id);
@@ -216,25 +204,7 @@
     function generateWeapon() {
         invalidateCurrentWeapon();
 
-        syncIdToURL(getNewId());
-    }
-
-    /**
-     * go back in history and perform any necessary Svelte state changes
-     */
-    function goBack() {
-        invalidateCurrentWeapon();
-
-        history.back();
-    }
-
-    /**
-     * go forward in history and perform any necessary Svelte state changes
-     */
-    function goForward() {
-        invalidateCurrentWeapon();
-
-        history.forward();
+        pushIdToURL(getNewId());
     }
 </script>
 
@@ -267,30 +237,6 @@
             <i class="fa-solid fa-wand-magic-sparkles"></i>
         {/if}
     </button>
-
-    {#if isLandscape.current}
-        <button
-            class="action-button back-button"
-            data-testid="go-back-button"
-            onclick={goBack}
-            aria-label="go back button"
-            disabled={!canGoBack}
-            hidden
-        >
-            <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <button
-            class="action-button forward-button"
-            data-testid="forward-button"
-            onclick={goForward}
-            aria-label="go forward button"
-            disabled={!canGoForward}
-            hidden
-        >
-            <i class="fa-solid fa-chevron-right"></i>
-        </button>
-    {/if}
 </div>
 
 <style>
@@ -367,19 +313,6 @@
         display: flex;
         flex-grow: 1;
         width: 100%;
-    }
-
-    .back-button,
-    .forward-button {
-        top: 70vh;
-        font-size: 7.5vw;
-    }
-
-    .back-button {
-        left: 1vw;
-    }
-    .forward-button {
-        right: 1vw;
     }
 
     @media (orientation: landscape) {

@@ -1,85 +1,45 @@
 <script lang="ts">
     import ConfigSidebar from "$lib/components/configSidebar.svelte";
     import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
-    import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
-    import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-    import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
     import { getOddsFromURL } from "$lib/util/getFromURL";
-    import {
-        getIsFirstInHistory,
-        getIsLastInHistory,
-        syncLocationWithURLSearchParams,
-    } from "$lib/util/queryString";
-    import _ from "lodash";
     import { writable } from "svelte/store";
 
     import { dev } from "$app/environment";
-    import { replaceState } from "$app/navigation";
+    import { syncLocationWithURLSearchParams } from "$lib/util/queryString";
     import { injectAnalytics } from "@vercel/analytics/sveltekit";
-    import { onMount, tick } from "svelte";
+    import _ from "lodash";
+    import { DEFAULT_RARITY_ODDS } from "./state.svelte";
     injectAnalytics({ mode: dev ? "development" : "production" });
 
-    onMount(() => {
-        tick().then(() => {
-            /**
-             * If the user is arriving at the website for the first time, store some data in the history state.
-             * This is used to disable the back & forward buttons on the first/last page the user navigated to, where clicking it would do nothing
-             * (or worse, navigate away).
-             */
-            replaceState("", {
-                isFirstInHistory: getIsFirstInHistory(),
-                isLastInHistory: getIsLastInHistory(),
-            });
-        });
-    });
-
-    function getConfigFromURL(): WeaponRarityConfig {
-        let config = defaultWeaponRarityConfigFactory();
-
-        // these are user input and could be literally anything, i.e. an XSS attack
-
-        const urlParams = new URLSearchParams(window.location.search);
-
-        const odds = getOddsFromURL(urlParams);
-        if (odds !== null) {
-            config = applyOddsToConfig(config, odds);
-        }
-
-        // get the rarity odds
-
-        return config;
+    function resetToDefault() {
+        odds = DEFAULT_RARITY_ODDS;
     }
 
-    const defaultConfig = $state(defaultWeaponRarityConfigFactory());
-    const defaultOdds = $derived(calcOdds(defaultConfig));
+    let odds = $state(getOddsFromURL() ?? DEFAULT_RARITY_ODDS);
 
-    let config = $state(getConfigFromURL());
-    const configWritable = writable((() => config)());
-
-    configWritable.subscribe((newVal) => {
-        config = newVal;
+    const oddsWritable = writable((() => odds)());
+    oddsWritable.subscribe((newVal) => {
+        odds = newVal;
 
         // if a section of the config is not default, also update the URL
 
         // only add the id param if it wasn't added already
         const searchParams = new URLSearchParams(window.location.search);
 
-        const newOdds = calcOdds(config);
-
-        if (_.isEqual(newOdds, defaultOdds)) {
+        if (_.isEqual(odds, DEFAULT_RARITY_ODDS)) {
             searchParams.delete("o");
         } else {
-            searchParams.set("o", newOdds[0].toFixed(2));
-            for (let i = 1; i < newOdds.length; i++) {
-                searchParams.append("o", newOdds[i].toFixed(2));
+            searchParams.set("o", odds[0].toFixed(2));
+            for (let i = 1; i < odds.length; i++) {
+                searchParams.append("o", odds[i].toFixed(2));
             }
         }
         syncLocationWithURLSearchParams(searchParams, "replace");
     });
 </script>
 
-<WeaponGenerator />
-<ConfigSidebar {config} {configWritable} />
+<WeaponGenerator {odds} />
+<ConfigSidebar {odds} {oddsWritable} {resetToDefault} />
 
 <style>
     :global(body, html) {
