@@ -86,7 +86,7 @@
     use:clickOff
 >
     <button
-        class={`toggle-sidebar-button pin-top-left ${btnVisClass}`}
+        class={`inline-button toggle-sidebar-button pin-top-left ${btnVisClass}`}
         aria-label="config menu"
         onclick={() => setSideBar("open")}
     >
@@ -101,7 +101,7 @@
 <style>
     @media (orientation: landscape) {
         :root {
-            --sidebar-width: 20vw;
+            --sidebar-width: 25vw;
         }
     }
     @media (orientation: portrait) {
