@@ -5,6 +5,7 @@ import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type ActivePower, type DamageDice, type FeatureProviderCollection, type PassivePower, type Theme, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPatchableArray } from "$lib/util/versionController";
+import type seedrandom from "seedrandom";
 
 
 
@@ -77,6 +78,47 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         gte: 'epic'
                     }
                 }),
+                new ProviderElement<ActivePower, WeaponPowerCond>('immovable-bc-earth',
+                    {
+                        desc: 'Immovable',
+                        cost: 1,
+                        additionalNotes: [
+                            "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
+                        ]
+                    },
+                    {
+                        themes: { any: ['earth'] },
+                        shapeFamily: {
+                            none: ['greatsword', 'greatsword']
+                        },
+                    }
+                ),
+                new ProviderElement<ActivePower, WeaponPowerCond>('immovable-bc-weapon-shape',
+                    {
+                        desc: 'Immovable',
+                        cost: 1,
+                        additionalNotes: [
+                            "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
+                        ]
+                    },
+                    {
+                        themes: { none: ['earth'] },
+                        shapeFamily: {
+                            any: ['greatsword', 'greatsword']
+                        },
+                    }
+                ),
+                new ProviderElement<ActivePower, WeaponPowerCond>('detachable-gems', {
+                    desc: 'Gem of Greed',
+                    cost: 'you choose the number of charges to expend',
+                    additionalNotes: [
+                        'The weapon has gems embedded throughout. You can expend charges to pry one off.',
+                        'NPCs that see the gem must save or be magically compelled to take it.',
+                        'Affects a number of characters equal to the charges expended.'
+                    ]
+                }, {
+                    themes: { any: ['earth'] },
+                })
             ]
         },
         passives: {
@@ -120,7 +162,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                 new ProviderElement<PassivePower, WeaponPowerCond>('mist-aura',
                     {
                         miscPower: true,
-                        desc: "The weapon emits a 30-ft aura of magical mist, which the wielder can see through clearly. The aura is inactive while the weapon is sheathed."
+                        desc: "The weapon emits a 30-ft cloud of magical mist, which the wielder can see through clearly. When you sheathe the weapon, the mist is sucked inside."
                     },
                     {
                         rarity: {
@@ -141,11 +183,42 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                         themes: { any: ['ice'] }
                     }
                 ),
-                ...([[['fire'], 'fire'], [['ice'], 'cold'], [['dark'], 'dark energy'], [['light', 'wizard'], 'energy'], [['cloud', 'steampunk'], 'lightning']] satisfies [Theme[], string][]).map(([themes, effect]) => new ProviderElement<PassivePower, WeaponPowerCond>(
-                    `${themes.join('-or-')}-blast`,
+                new ProviderElement<PassivePower, WeaponPowerCond>(
+                    `death-blast`,
                     {
                         miscPower: true,
-                        desc: (weapon) => {
+
+                        desc: (weapon) => mkGen((rng) => {
+                            const cloudOrSteampunkEffect = () => ['lightning', 'steam'].choice(rng)
+                            const effects = {
+                                fire: 'fire',
+                                ice: 'icy wind',
+                                light: (rng: seedrandom.PRNG) => ([
+                                    {
+                                        pred: () => weapon.name.includes('Sapphire'),
+                                        str: 'azure energy'
+                                    },
+                                    {
+                                        pred: () => weapon.name.includes('Ruby'),
+                                        str: 'crimson energy'
+                                    },
+                                    {
+                                        pred: () => weapon.name.includes('Emerald'),
+                                        str: 'verdant energy'
+                                    },
+                                    {
+                                        pred: () => weapon.name.includes('Radium'),
+                                        str: 'atomic energy'
+                                    },
+                                    {
+                                        pred: () => weapon.name.includes('Gold'),
+                                        str: 'golden energy'
+                                    },
+                                ] as { pred: () => boolean, str: string }[]).filter(x => x.pred()).map(x => x.str).choice(rng),
+                                dark: 'dark energy',
+                                cloud: cloudOrSteampunkEffect,
+                                steampunk: cloudOrSteampunkEffect
+                            }
                             const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
                                 common: "1d6",
                                 uncommon: "1d6",
@@ -154,14 +227,92 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
                                 legendary: "2d6"
                             }
 
-                            return mkGen(`Whenever the weapon kills a foe, they explode in a blast of ${effect}. It deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`);
-                        }
+                            const supportedThemesOfWeapon = weapon.themes.filter(theme => theme in effects) as (keyof typeof effects)[];
+
+                            const chosen = effects[supportedThemesOfWeapon.choice(rng)];
+                            const effect = typeof chosen === "string" ? chosen : chosen(rng)
+
+                            return `Whenever the weapon kills a foe, they explode in a blast of ${effect}. It deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`;
+                        })
                     },
                     {
-                        themes: { any: themes },
+                        themes: { any: ['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk'] },
                         rarity: { gte: 'epic' }
                     }
-                ))
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('warm-to-touch',
+                    {
+                        miscPower: true,
+                        desc: "The weapon is always warm to the touch."
+                    },
+                    {
+                        rarity: {
+                            eq: 'common'
+                        },
+                        themes: { any: ['fire'] }
+                    }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('cold-to-touch',
+                    {
+                        miscPower: true,
+                        desc: "The weapon is always cold to the touch."
+                    },
+                    {
+                        rarity: {
+                            eq: 'common'
+                        },
+                        themes: { any: ['ice'] }
+                    }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
+                    {
+                        miscPower: true,
+                        desc: "Can transform into an pipe."
+                    },
+                    {
+                        rarity: {
+                            eq: 'common'
+                        },
+                        themes: { any: ['ice'] }
+                    }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
+                    {
+                        miscPower: true,
+                        desc: "Can transform into a pipe."
+                    },
+                    {
+                        rarity: {
+                            eq: 'common'
+                        },
+                        themes: { any: ['ice'] }
+                    }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
+                    {
+                        miscPower: true,
+                        desc: "Can transform into a 10-ft pole, or shrink to the size of a toothpick."
+                    },
+                    {
+                        shapeFamily: {
+                            any: ['club', 'staff']
+                        }
+                    }
+                ),
+                new ProviderElement<PassivePower, WeaponPowerCond>('magic-pocket',
+                    {
+                        miscPower: true,
+                        desc: "The wielder can banish the weapon to a pocket plane, then withdraw it at will."
+                    },
+                    {
+                        rarity: {
+                            gte: 'epic'
+                        },
+                        shapeFamily: {
+                            none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'greatsword (or musket)']
+                        }
+                    }
+                )
             ]
         },
         languages: {},

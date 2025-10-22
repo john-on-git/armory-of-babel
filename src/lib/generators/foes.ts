@@ -21,7 +21,7 @@ export const singularUnholyFoe = mkGen((rng) => [
     "a ghoul",
     "a wendigo",
     "a skinwalker",
-    
+
     "an automaton",
 
     "an orc",
@@ -39,9 +39,9 @@ export const pluralUnholyFoe = mkGen((rng) => [
     "ghouls",
     "wendigos",
     "skinwalkers",
-    
+
     "automatons",
-    
+
     "orcs",
     "goblins",
 ].choice(rng));
