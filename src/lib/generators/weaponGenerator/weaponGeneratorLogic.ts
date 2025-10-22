@@ -431,7 +431,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             ? pronounLoc[pronouns].singular.possessive.capFirst()
             : usedAndThisSentence
                 ? pronouns === 'object' ? 'the' : pronounLoc[pronouns].singular.possessive
-                : pronouns === 'object' ? 'The' : pronounLoc[pronouns].singular.possessive;
+                : pronouns === 'object' ? 'The' : pronounLoc[pronouns].singular.possessive.capFirst();
 
 
         // get all the descriptors, merging together any chains of 'has'
