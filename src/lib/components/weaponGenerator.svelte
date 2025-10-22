@@ -5,7 +5,7 @@
         type Weapon,
         type WeaponRarityConfig,
     } from "$lib/generators/weaponGenerator/weaponGeneratorTypes.ts";
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { writable } from "svelte/store";
     import WeaponDisplay from "./weaponDisplay.svelte";
 
@@ -26,11 +26,10 @@
     // set up event listeners
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
-        await new Promise(() =>
-            window.addEventListener("popstate", () => {
-                weaponID.set(getIDFromURL());
-            }),
-        ).then(generateWeapon);
+        window.addEventListener("popstate", () => {
+            weaponID.set(getIDFromURL());
+        });
+        tick().then(generateWeapon);
     });
 
     /** Generate a new weapon ID / seed.
@@ -63,7 +62,9 @@
         searchParams.set("id", getNewId());
 
         // and update the URL params to point to its ID
-        const newQuery = `?${searchParams.toString()}`;
+        const queryNoQuestion = searchParams.toString();
+        const newQuery =
+            queryNoQuestion.length > 0 ? `?${queryNoQuestion}` : "";
         // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
         if (window.location.search !== newQuery) {
             pushState(newQuery, {});

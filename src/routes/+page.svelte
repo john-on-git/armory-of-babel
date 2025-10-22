@@ -6,6 +6,7 @@
     import type { WeaponRarityConfig } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
     import { applyOddsToConfig, calcOdds } from "$lib/util/configUtils";
     import _, { isArray } from "lodash";
+    import { tick } from "svelte";
     import { writable } from "svelte/store";
 
     function getConfigFromURL(): WeaponRarityConfig {
@@ -71,8 +72,7 @@
         const newQuery = `?${searchParams.toString()}`;
         if (window.location.search !== newQuery) {
             // and update the URL params to point to its ID
-            // note this doesn't trigger popstate for whatever reason, so we also have to do that manually below
-            replaceState(newQuery, {});
+            tick().then(() => replaceState(newQuery, {}));
         }
     });
 </script>
