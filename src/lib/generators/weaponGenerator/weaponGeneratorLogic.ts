@@ -287,7 +287,11 @@ export function mkWeapon(featureProviders: FeatureProviderCollection, rngSeed: s
             desc: genStr(rng, power.desc),
             additionalNotes: power.additionalNotes === undefined ? undefined : power.additionalNotes.map(desc => genStr(rng, desc))
         })),
-        sentient: false
+        sentient: weapon.sentient ? {
+            personality: weapon.sentient.personality.map(x => genStr(rng, x.desc)),
+            languages: weapon.sentient.languages,
+            chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
+        } : false
     } satisfies WeaponViewModel;
 
     return { weaponViewModel, params };
