@@ -76,6 +76,30 @@
         --color-rare: hsl(212, 74%, 55%);
         --color-epic: hsl(273, 74%, 60%);
         --color-legendary: hsl(51, 84%, 50%);
+
+        --negative-shimmer-angle: 70deg;
+        --negative-shimmer-width: 10rem;
+
+        --color-uncommon-negative-hi: hsl(7, 74%, 55%);
+        --color-uncommon-negative-lo: hsl(7, 67%, 35%);
+
+        --color-rare-negative-hi: hsl(301, 87%, 64%);
+        --color-rare-negative-lo: hsl(301, 61%, 43%);
+
+        --color-epic-negative-hi: hsl(146, 74%, 60%);
+        --color-epic-negative-lo: hsl(155, 80%, 34%);
+
+        --color-legendary-negative-hi: hsl(176, 79%, 68%);
+        --color-legendary-negative-lo: hsl(176, 72%, 39%);
+    }
+
+    @keyframes gradient-scroll-x {
+        0% {
+            background-position-x: 0;
+        }
+        100% {
+            background-position-x: var(--negative-shimmer-width);
+        }
     }
 
     :global(:root) {
@@ -323,5 +347,51 @@
     }
     :global(.weapon-rarity-legendary) {
         color: var(--color-legendary) !important;
+    }
+
+    :global(.weapon-rarity-uncommon-negative) {
+        background-image: linear-gradient(
+            var(--negative-shimmer-angle),
+            var(--color-uncommon-negative-hi),
+            var(--color-uncommon-negative-lo),
+            var(--color-uncommon-negative-hi)
+        ) !important;
+        color: transparent;
+        background-clip: text;
+    }
+    :global(.weapon-rarity-rare-negative) {
+        background-image: linear-gradient(
+            var(--negative-shimmer-angle),
+            var(--color-rare-negative-hi),
+            var(--color-rare-negative-lo),
+            var(--color-rare-negative-hi)
+        ) !important;
+        color: transparent;
+        background-clip: text;
+        animation: linear 1s gradient-scroll-x;
+    }
+    :global(.weapon-rarity-epic-negative) {
+        background-image: linear-gradient(
+            var(--negative-shimmer-angle),
+            var(--color-epic-negative-hi),
+            var(--color-epic-negative-lo),
+            var(--color-epic-negative-hi)
+        ) !important;
+        color: transparent;
+        background-clip: text;
+    }
+    :global(.weapon-rarity-legendary-negative) {
+        background-image: linear-gradient(
+            var(--negative-shimmer-angle),
+            var(--color-legendary-negative-lo),
+            var(--color-legendary-negative-hi),
+            var(--color-legendary-negative-lo)
+        ) !important;
+        color: transparent;
+        background-clip: text;
+    }
+    :global(.weapon-negative) {
+        background-size: var(--negative-shimmer-width);
+        animation: 1.5s linear 0s gradient-scroll-x infinite;
     }
 </style>

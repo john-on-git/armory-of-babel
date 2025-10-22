@@ -884,6 +884,11 @@ export const wrappableParts = ['grip', 'crossguard', 'barrel', 'shaft', 'quiver'
 export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'quiver', 'maceHead', 'maceHeads', 'chain'] as const satisfies WeaponPartName[];
 
 
+/**
+ * Parts of a weapon that visual indicators of a resource can go on.
+ */
+export const counterAcceptingParts = ['blade', 'blades', 'body', 'shaft', 'spearShaft', 'maceHead', 'limbs'] as const satisfies WeaponPartName[];
+
 export const counterCapacityByRarity = {
     common: 2,
     uncommon: 2,

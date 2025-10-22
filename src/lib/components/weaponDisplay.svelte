@@ -43,6 +43,12 @@
             flasher.flash();
         }
     }
+
+    function getTitleColorClass(weapon: WeaponViewModel) {
+        return weapon.isNegative
+            ? (`weapon-rarity-${weapon.rarity}-negative weapon-negative` as const)
+            : (`weapon-rarity-${weapon.rarity}` as const);
+    }
 </script>
 
 <svelte:head>
@@ -55,7 +61,7 @@
 >
     <div class="weapon-generator-title-flex">
         <h2
-            class={`weapon-class weapon-display-title weapon-rarity-${weapon.rarity}`}
+            class={`weapon-class weapon-display-title ${getTitleColorClass(weapon)}`}
             data-testid="weapon-display-title"
         >
             {weapon?.name?.toTitleCase() ?? ""}
@@ -66,8 +72,7 @@
                 onclick={copyWeaponLink}
                 aria-label="copy to clipboard"
             >
-                <i class={`fa-solid fa-link weapon-rarity-${weapon.rarity}`}
-                ></i>
+                <i class={`fa-solid fa-link ${getTitleColorClass(weapon)}`}></i>
             </button>
             <Flasher bind:this={flasher} text={"copied to clipboard"} />
         </div>
