@@ -1,11 +1,10 @@
-import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
-import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
+import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
 import "$lib/util/choice";
 import '$lib/util/string';
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, type Theme, type Weapon, type WeaponAdjective, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, isRarity, type Language, type PassiveBonus, structureFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
     function textForDamageKey(k: string, v: string | number | undefined): string {
@@ -88,34 +87,6 @@ export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, Weapon
     }
 }
 
-const articles = new Set(['the', 'a', 'an', 'by', 'of']);
-function mkNonSentientNameGenerator(adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>, weapon: Weapon, shape: string, rng: seedrandom.PRNG) {
-    return mkGen(() => {
-        const string = new StringGenerator([
-            mkGen((x) => adjectiveProvider.draw(x, weapon).desc),
-            mkGen(' '),
-            mkGen(shape)
-        ])?.generate(rng);
-        return string.split(/\s/).map(x => articles.has(x) ? x : x.capFirst()).join(' ');
-    });
-}
-
-function mkSentientNameGenerator(adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>, weapon: Weapon, shape: string, rng: seedrandom.PRNG) {
-    return mkGen(() => {
-        const string = new StringGenerator([
-            mkGen((rng) => [
-                grecoRomanFirstNameGenerator, angloFirstNameGenerator,
-                // ...(weapon.shape.group in objectifyingNameFor ? [mkObjectifyingNameGenerator(weapon, adjectiveProvider)] : [])
-            ].choice(rng).generate(rng)),
-            mkGen([', ', ', the '].choice(rng)),
-            mkGen((x) => adjectiveProvider.draw(x, weapon).desc),
-            mkGen(' '),
-            mkGen(shape)
-        ])?.generate(rng);
-        return string.split(/\s/).map(x => articles.has(x) ? x : x.capFirst()).join(' ');
-    });
-}
-
 function generateRarity(weaponRarityConfig: WeaponRarityConfig, rng: seedrandom.PRNG): WeaponRarity {
     const n = rng();
     // sort the rarities into descending order
@@ -135,6 +106,9 @@ export const genStr = (weapon: Weapon, rng: seedrandom.PRNG, x: string | ((weapo
 const DEFAULT_CONFIG = defaultWeaponRarityConfigFactory();
 
 export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderCollection, weaponRarityConfig: WeaponRarityConfig = DEFAULT_CONFIG, maybeRarity?: WeaponRarity): { weaponViewModel: WeaponViewModel, params: WeaponGenerationParams } {
+
+    // features may provide pieces of description, which are stored here
+    const descriptionPartProviders: DescriptorGenerator[] = [];
 
     const rng = seedrandom(rngSeed);
 
@@ -221,12 +195,6 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     weapon.shape = featureProviders.shapeProvider.draw(rng, weapon);
     weapon.damage.as = weapon.shape.group;
 
-    // determine name
-    weapon.name = (isSentient
-        ? mkSentientNameGenerator(featureProviders.adjectiveProvider, weapon, weapon.shape.particular, rng)
-        : mkNonSentientNameGenerator(featureProviders.adjectiveProvider, weapon, weapon.shape.particular, rng)
-    ).generate(rng);
-
 
     // determine description
     weapon.description = 'TODO';
@@ -292,6 +260,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 // Or because a language was configured in an invalid way & did not require the weapon to be sentient.
                 throw new Error('Could not assign passive power, config was invalid.');
             }
+
+            if (choice.descriptorPartGenerator) {
+                descriptionPartProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator]);
+            }
         }
     }
 
@@ -309,6 +281,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 desc: genStr(weapon, rng, choice.desc),
                 additionalNotes: choice.additionalNotes?.map(x => genStr(weapon, rng, x))
             });
+
+            if (choice.descriptorPartGenerator) {
+                descriptionPartProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
+            }
         }
     }
 
@@ -321,6 +297,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 desc: genStr(weapon, rng, choice.desc),
                 additionalNotes: choice.additionalNotes?.map(x => genStr(weapon, rng, x))
             });
+
+            if (choice.descriptorPartGenerator) {
+                descriptionPartProviders.push(featureProviders.descriptorIndex[choice.descriptorPartGenerator])
+            }
         }
     }
 
@@ -330,6 +310,28 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             .filter(x => x.cost != 'at will')
             .reduce((acc, x) => Math.max(typeof x.cost === 'string' ? 0 : x.cost, acc), weapon.active.maxCharges);
 
+    // generate the weapon's parts
+    const structure = structureFor(weapon.shape.group);
+    /** 
+        Generate the weapon's description based on its parts.
+        Ideas (???)
+
+        • Some abilites have the side effect of adding a visual feature? Would need to be capped to prevent a sparkledog type situation.
+        • How do we generate the material. Can only really have one or two.
+        • Theme-based? Maybe if there aren't enough from abilities we just keep drawing.
+
+        Ideas (bad)
+        
+        • Each part should be guaranteed at least one feature & material. Nah, kinda too much going on.
+    */
+
+    const MAX_DESCRIPTORS = 5;
+
+    // first, apply any descriptor parts provided by the weapon's features, up to the cap
+
+    // then, apply theme-based descriptor, up to the cap
+
+    // then, generate the weapon's ephitet by picking a descriptor to reference
 
     const weaponViewModel = {
         id: weapon.id,
@@ -355,7 +357,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             personality: weapon.sentient.personality.map(x => genStr(weapon, rng, x.desc)),
             languages: weapon.sentient.languages,
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
-        } : false
+        } : false,
+        description: ""
     } satisfies WeaponViewModel;
 
     return { weaponViewModel, params };

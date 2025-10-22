@@ -1,3 +1,4 @@
+import type { WeaponPowerCond } from '$lib/generators/weaponGenerator/weaponGeneratorTypes';
 import { Patchable } from '$lib/util/versionController';
 import _ from 'lodash';
 import seedrandom from "seedrandom";
@@ -36,7 +37,7 @@ export function evComp<T>(comp: Comp<T>, x: T, ord: (x: T) => number) {
     return true;
 }
 
-export class ProviderElement<TThing, TCond extends Cond> extends Patchable {
+export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPowerCond> extends Patchable {
     thing: TThing;
     cond: TCond;
 

@@ -1,8 +1,10 @@
 import v1 from "$lib/generators/weaponGenerator/config/v1";
 import v2 from "$lib/generators/weaponGenerator/config/v2";
 import v3 from "$lib/generators/weaponGenerator/config/v3";
+import v4 from "$lib/generators/weaponGenerator/config/v4";
+import type { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { type FeatureProviderCollection, type Theme, type WeaponFeaturesTypes } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { type DescriptorGenerator, type FeatureProviderCollection, type Theme, type WeaponFeaturesTypes } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPatchableArray } from "$lib/util/versionController";
 
 
@@ -26,7 +28,11 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
 ], (x) => {
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
-        adjectiveProvider: new WeaponFeatureProvider(x.adjectives),
+        descriptors: new WeaponFeatureProvider(x.descriptors),
+        descriptorIndex: (x.descriptors as ProviderElement<DescriptorGenerator>[]).reduce<Record<string, DescriptorGenerator>>((acc, gen) => {
+            acc[gen.UUID] = gen.thing;
+            return acc;
+        }, {}),
         personalityProvider: new WeaponFeatureProvider(x.personalities),
         shapeProvider: new WeaponFeatureProvider(x.shapes),
         rechargeMethodProvider: new WeaponFeatureProvider(x.rechargeMethods),

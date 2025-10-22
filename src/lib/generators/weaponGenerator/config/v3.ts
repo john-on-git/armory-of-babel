@@ -2,13 +2,14 @@ import { mkGen, StringGenerator } from "$lib/generators/recursiveGenerator";
 import { edgedWeaponShapeFamilies } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { mkWepToGen, textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { ActivePower, DamageDice, PassivePower, Theme, WeaponPowerCond, WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { ActivePower, DamageDice, PassivePower, Theme, WeaponFeaturesTypes, WeaponPowerCond, WeaponRarity } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { DeltaCollection } from "$lib/util/versionController";
 import _ from "lodash";
 import type seedrandom from "seedrandom";
 
 export default {
     themes: {},
-    adjectives: {},
+    descriptors: {},
     personalities: {},
     rechargeMethods: {},
     actives: {
@@ -439,7 +440,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'greatsword (or musket)']
+                        none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)']
                     },
                     UUIDs: {
                         none: ['instant-recall']
@@ -456,7 +457,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        any: ['axe', 'great-axe']
+                        any: ['axe', 'greataxe']
                     },
                 }
             ),
@@ -487,4 +488,4 @@ export default {
     },
     languages: {},
     shapes: {}
-}
+} satisfies DeltaCollection<WeaponFeaturesTypes>;

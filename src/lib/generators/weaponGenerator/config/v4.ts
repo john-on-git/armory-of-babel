@@ -1,10 +1,11 @@
 import { mkGen } from "$lib/generators/recursiveGenerator";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import type { ActivePower, PassivePower, Theme, WeaponPowerCond } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { ActivePower, PassivePower, Theme, WeaponFeaturesTypes, WeaponPowerCond } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import type { DeltaCollection } from "$lib/util/versionController";
 
 export default {
     themes: {},
-    adjectives: {},
+    descriptors: {},
     personalities: {},
     rechargeMethods: {},
     actives: {
@@ -65,4 +66,4 @@ export default {
     },
     languages: {},
     shapes: {}
-}
+} satisfies DeltaCollection<WeaponFeaturesTypes>;

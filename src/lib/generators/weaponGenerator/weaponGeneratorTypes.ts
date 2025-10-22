@@ -1,7 +1,7 @@
-import type { TGenerator } from "$lib/generators/recursiveGenerator";
-import type { PrimitiveContainer } from "$lib/util/versionController";
+import { type TGenerator } from "$lib/generators/recursiveGenerator";
+import { type PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
-import type { Comp, Cond, ProviderElement, Quant } from "./provider";
+import { ProviderElement, type Comp, type Cond, type Quant } from "./provider";
 import type { WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
@@ -122,6 +122,7 @@ export interface WeaponViewModel {
 
     rarity: WeaponRarity;
     name: string;
+    description: string;
 
     damage: DamageDice & { as: string };
     toHit: number;
@@ -144,6 +145,11 @@ export interface WeaponViewModel {
 
 export interface Power {
     additionalNotes?: (string | ((weapon: Weapon) => TGenerator<string>))[];
+
+    /**
+     * UUID of the description provider that is applied to weapons with this power
+     */
+    descriptorPartGenerator?: string;
 }
 
 export interface DamageDice {
@@ -199,9 +205,26 @@ export interface Language extends Power {
 
 export type AnyPower = ActivePower | PassivePower;
 
+export type WeaponShapeGroup =
+    | "dagger"
+    | "club"
+    | "staff"
+    | "sword"
+    | "axe"
+    | "mace"
+    | "greataxe"
+    | "greatsword"
+    | "spear"
+    | "polearm"
+    | "sword (or bow)"
+    | "dagger (or pistol)"
+    | "sword (or musket)"
+    | "greataxe (or musket)";
+
+
 export type WeaponShape = {
     particular: string;
-    group: string;
+    group: WeaponShapeGroup;
 }
 
 export interface WeaponPowerCond extends Cond {
@@ -215,25 +238,125 @@ export interface WeaponPowerCond extends Cond {
     isSentient?: boolean;
 }
 
+
+export interface WeaponPart {
+    /**
+     * Main material of the part, if it's notable.
+     * @example
+     * swordLike.blade.material = 'steel';
+     */
+    material?: string;
+    /**
+     * A list of facts about the physical properties of this part, which could be combined into a sentence.
+     * @example
+     * swordLike.blade.desc = ['spiky', 'encrusted with jewels'];
+     */
+    descriptors: string[];
+}
+
+export type DescriptorGenerator = TGenerator<{ material: string } | { descriptor: string }>;
+
+
+interface WeaponStructure {
+    /**
+     * The part(s) of the weapon that hurt people.
+     */
+    business: [string, ...string[]];
+
+    /**
+     * The part(s) of the weapon that you hold.
+     */
+    holding: [string, ...string[]];
+
+    /**
+     * All other parts.
+     */
+    other: string[]
+}
+
+const weaponStructures = {
+    swordLike: {
+        business: ['blade'],
+        holding: ['grip'],
+        other: ['crossguard', 'pommel']
+    },
+    maceOrAxeLike: {
+        business: ['head'],
+        holding: ['grip'],
+        other: ['shaft', 'pommel']
+    },
+    spearLike: {
+        business: ['tip'],
+        holding: ['grip'],
+        other: ['shaft', 'pommel']
+    },
+    clubOrStaffLike: {
+        business: ['body'],
+        holding: ['body'],
+        other: []
+    },
+    bowSwordLike: {
+        business: ['blades'],
+        holding: ['limbs'],
+        other: ['string', 'quiver']
+    },
+    gunSwordLike: {
+        business: ['blade'],
+        holding: ['grip'],
+        other: ['crossguard', 'pommel', 'barrel']
+    }
+} as const satisfies Record<string, WeaponStructure>;
+
+
+const shapeToStructure = {
+    "dagger": "swordLike",
+    "club": 'clubOrStaffLike',
+    "staff": 'clubOrStaffLike',
+    "sword": 'swordLike',
+    "axe": 'maceOrAxeLike',
+    "mace": 'maceOrAxeLike',
+
+    "greataxe": 'swordLike',
+    "greatsword": 'swordLike',
+
+    "spear": 'spearLike',
+    "polearm": 'maceOrAxeLike',
+
+    "sword (or bow)": 'bowSwordLike',
+    "dagger (or pistol)": 'gunSwordLike',
+    "sword (or musket)": 'gunSwordLike',
+    "greataxe (or musket)": "maceOrAxeLike",
+} as const satisfies Record<WeaponShapeGroup, keyof typeof weaponStructures>
+
+export function structureFor<T extends WeaponShapeGroup>(shape: T) {
+    return weaponStructures[shapeToStructure[shape]];
+}
+
+
 /**
  * TODO this should really just accept weapon
+ * (what did he mean by this?)
  */
 export type WeaponPowerCondParams = Pick<Weapon, 'active' | 'passivePowers' | 'sentient' | 'rarity' | 'themes' | 'shape'>
 
 // themes: PrimitiveContainer<Theme>;
-// adjectives: ProviderElement<WeaponAdjective, WeaponPowerCond>;
-// personalities: ProviderElement<Personality, WeaponPowerCond>
+// adjectives: ProviderElement<WeaponAdjective;
+// personalities: ProviderElement<Personality
 
-// rechargeMethods: ProviderElement<RechargeMethod, WeaponPowerCond>;
-// actives: ProviderElement<ActivePower, WeaponPowerCond>;
+// rechargeMethods: ProviderElement<RechargeMethod;
+// actives: ProviderElement<ActivePower;
 
-// passives: ProviderElement<MiscPower, WeaponPowerCond>;
-// languages: ProviderElement<Language, WeaponPowerCond>;
-// shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
+// passives: ProviderElement<MiscPower;
+// languages: ProviderElement<Language;
+// shapes: ProviderElement<WeaponShape;
 
 export interface FeatureProviderCollection {
     themeProvider: Theme[];
-    adjectiveProvider: WeaponFeatureProvider<WeaponAdjective>;
+    descriptors: WeaponFeatureProvider<DescriptorGenerator>;
+    /**
+     * Descriptor generator indexed by UUID. This allows features to apply specific descriptors, ignoring the usual conditions.
+     */
+    descriptorIndex: Record<string, DescriptorGenerator>;
     personalityProvider: WeaponFeatureProvider<Personality>;
     shapeProvider: WeaponFeatureProvider<WeaponShape>;
 
@@ -247,13 +370,13 @@ export interface FeatureProviderCollection {
 
 export interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
-    adjectives: ProviderElement<WeaponAdjective, WeaponPowerCond>;
-    personalities: ProviderElement<Personality, WeaponPowerCond>
+    descriptors: ProviderElement<DescriptorGenerator>;
+    personalities: ProviderElement<Personality>
 
-    rechargeMethods: ProviderElement<RechargeMethod, WeaponPowerCond>;
-    actives: ProviderElement<ActivePower, WeaponPowerCond>;
+    rechargeMethods: ProviderElement<RechargeMethod>;
+    actives: ProviderElement<ActivePower>;
 
-    passives: ProviderElement<PassivePower, WeaponPowerCond>;
-    languages: ProviderElement<Language, WeaponPowerCond>;
-    shapes: ProviderElement<WeaponShape, WeaponPowerCond>;
+    passives: ProviderElement<PassivePower>;
+    languages: ProviderElement<Language>;
+    shapes: ProviderElement<WeaponShape>;
 }
