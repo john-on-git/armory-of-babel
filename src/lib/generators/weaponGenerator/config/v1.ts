@@ -2,8 +2,8 @@ import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/gen
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { genMaybeGen, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -17,6 +17,15 @@ const agentOfExtractivism = mkGen((rng) =>
         "a poacher"
     ].choice(rng)
 );
+
+
+const assassinationDamageMultByRarity = {
+    common: 2,
+    uncommon: 2,
+    rare: 3,
+    epic: 3,
+    legendary: 4
+} as const satisfies Record<WeaponRarity, number>;
 
 export default {
     themes: {
@@ -35,17 +44,109 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            new ProviderElement('mounted-dismount-resist-descriptor-fire',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: " glows with dim orange light",
+                            plural: "lance pommel is not plural"
+                        }
+                    }),
+                    ephitet: mkGen((rng) => ephHot.choice(rng)),
+                    applicableTo: {
+                        any: ['pommel']
+                    }
+                },
+                /**
+                 * Can only be added by the passive power "mounted-dismount-resist"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('mounted-dismount-resist-descriptor-ice',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: " is freezing cold to the touch",
+                            plural: "lance pommel is not plural"
+                        }
+                    }),
+                    ephitet: mkGen((rng) => ephCold.choice(rng)),
+                    applicableTo: {
+                        any: ['pommel']
+                    }
+                },
+                /**
+                 * Can only be added by the passive power "mounted-dismount-resist"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('mounted-dismount-resist-descriptor-dark',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: " emits shadowy mist",
+                            plural: "lance pommel is not plural"
+                        }
+                    }),
+                    ephitet: mkGen((rng) => ephBlack.choice(rng)),
+                    applicableTo: {
+                        any: ['pommel']
+                    }
+                },
+                /**
+                 * Can only be added by the passive power "mounted-dismount-resist"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('mounted-dismount-resist-descriptor-nature',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'possession',
+                            singular: " a vine extending from it, which wraps around the grip & base",
+                            plural: "lance pommel is not plural"
+                        }
+                    }),
+                    ephitet: { pre: 'Ivy' },
+                    applicableTo: {
+                        any: ['pommel']
+                    }
+                },
+                /**
+                 * Can only be added by the passive power "mounted-dismount-resist"
+                 */
+                { never: true }
+            ),
+            new ProviderElement('mounted-dismount-resist-descriptor-generic',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'possession',
+                            singular: " a tendril extending from it, which wraps around the grip & base",
+                            plural: "lance pommel is not plural"
+                        }
+                    }),
+                    ephitet: { pre: 'Tendrilous' },
+                    applicableTo: {
+                        any: ['pommel']
+                    }
+                },
+                /**
+                 * Can only be added by the passive power "mounted-dismount-resist"
+                 */
+                { never: true }
+            ),
             new ProviderElement('vampire-mouth',
                 {
                     generate: () => MISC_DESC_FEATURES.sensorium.mouth.vampire,
-                    ephitet: '',
+                    ephitet: { pre: 'Vampiric' },
                     applicableTo: {
                         any: mouthAcceptingParts
                     }
-                },
-                {
-                    never: true
-                }
+                }, { never: true }
             ),
             new ProviderElement('generic-eyes',
                 {
@@ -54,16 +155,29 @@ export default {
                             MISC_DESC_FEATURES.sensorium.eyes.beady,
                             MISC_DESC_FEATURES.sensorium.eyes.deepSet,
                             MISC_DESC_FEATURES.sensorium.eyes.animalistic,
-                        ].choice(rng), rng)
-                    ,
+                        ].choice(rng), rng),
                     applicableTo: {
                         any: eyeAcceptingParts
                     }
-                },
+                }, { never: true }
+            ),
+            new ProviderElement('generic-mouth',
                 {
-                    never: true
-                }
-            ), new ProviderElement('material-telekill',
+                    generate: (rng, weapon) =>
+                        genMaybeGen([
+                            ...(
+                                weapon.themes.includes('dark')
+                                    ? [MISC_DESC_FEATURES.sensorium.mouth.eldritch]
+                                    : []
+                            ),
+                            MISC_DESC_FEATURES.sensorium.mouth.generic,
+                        ].choice(rng), rng),
+                    applicableTo: {
+                        any: mouthAcceptingParts
+                    }
+                }, { never: true }
+            ),
+            new ProviderElement('material-telekill',
                 {
                     generate: () => ({
                         material: 'telekill alloy',
@@ -71,12 +185,10 @@ export default {
                     }),
                     applicableTo: { any: importantPart }
                 },
-                {
-                    /**
-                     * Can only be added by the passive power "psi-immune"
-                     */
-                    never: true
-                }
+                /**
+                 * Can only be added by the passive power "psi-immune"
+                 */
+                { never: true }
             ),
             new ProviderElement('descriptor-wreathed-fire',
                 {
@@ -1663,6 +1775,39 @@ export default {
     },
     actives: {
         add: [
+            new ProviderElement("shuffle",
+                mkGen((rng, weapon) => {
+                    const numTargetsByRarity = {
+                        common: 2,
+                        uncommon: 4,
+                        rare: 4,
+                        epic: 4,
+                        legendary: 4,
+                    } as const satisfies Record<WeaponRarity, number>;
+
+                    const byTheme = {
+                        cloud: {
+                            desc: 'Gust of the Fox King',
+                            additionalNotes: [`Magical mist sweeps in, briefly obscuring the scene. When it dissipates, up to ${numTargetsByRarity[weapon.rarity]} characters of your choice have switched places.`]
+                        },
+
+                        wizard: {
+                            desc: 'Switch Trick',
+                            additionalNotes: [`You point the weapon at up to ${numTargetsByRarity[weapon.rarity]} characters of your choice. They switch places in a flash of smoke.`]
+                        }
+                    } as const satisfies Partial<Record<Theme, Pick<ActivePower, 'additionalNotes' | 'desc'>>>;
+
+                    return {
+                        cost: 3,
+                        ...pickForTheme(weapon, byTheme, rng) ?? byTheme['cloud']
+                    }
+                }),
+                {
+                    themes: {
+                        any: ['cloud', 'wizard']
+                    }
+                }
+            ),
             new ProviderElement("stasis",
                 mkGen((rng, weapon) => {
                     const byTheme = {
@@ -1680,11 +1825,16 @@ export default {
                                 "You imprison the target in a block of eternal ice, which magically freezes them until it's destroyed.",
                                 mkGen((__, weapon) => {
                                     // It has HP equal to 3x the weapon's damage
+                                    const { as, d6, ...rest } = weapon.damage;
                                     const iceHP = _.mapValues(
-                                        _.omit(weapon.damage, ['as']),
+                                        {
+                                            d6: 1 + (d6 ?? 0),
+                                            ...rest
+                                        },
                                         x => x === undefined ? undefined : x * 3
                                     );
-                                    return `It has ${textForDamage(iceHP)}.`;
+
+                                    return `It has ${textForDamage(iceHP)} hit points, and is as strong as steel.`;
                                 })
                             ]
                         }
@@ -1698,15 +1848,6 @@ export default {
                 {
                     themes: { any: ["dark", "ice"] },
                 }
-            ),
-            new ProviderElement("spin-attack",
-                {
-                    desc: "Spin Attack",
-                    cost: 3,
-                    additionalNotes: [
-                        "Make an attack against every character in the weapon's melee range."
-                    ]
-                }, {}
             ),
             new ProviderElement("turn-ethereal",
                 {
@@ -1759,8 +1900,8 @@ export default {
                     desc: 'Life Drain',
                     cost: 3,
                     additionalNotes: [
-                        "Upon landing a blow, you empower it to drain the target's life force. You regain HP (or equivalent stat) equal to the damage dealt.",
-                        "HP gained in this way can heal you over your natural cap, but any HP over the cap is lost at the end of the scene."
+                        "Upon landing a blow, you empower it to drain the target's life force. You regain HP equal to the damage dealt.",
+                        "HP gained in this way can heal you over your natural cap, but any HP over the cap is lost at the end of the scene.",
                     ],
                     descriptorPartGenerator: 'vampire-mouth'
                 },
@@ -2042,6 +2183,9 @@ export default {
                     themes: { any: ["dark"] },
                     rarity: {
                         gte: "uncommon"
+                    },
+                    UUIDs: {
+                        none: ['summon-demon']
                     }
                 }
             ),
@@ -2078,6 +2222,9 @@ export default {
                     themes: { any: ["dark"] },
                     rarity: {
                         gte: "epic"
+                    },
+                    UUIDs: {
+                        none: ['commune-demon']
                     }
                 }
             ),
@@ -2567,9 +2714,7 @@ export default {
 
                         desc: 'Summon Animal',
                         cost: 5,
-                        additionalNotes: [
-                            `Call ${quantity}${allAnimals.choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`
-                        ]
+                        additionalNotes: [`Call ${quantity}${allAnimals.choice(rng)} to your aid. ${quantity === '' ? 'It returns' : 'They return'} to nature at the end of the scene.`]
                     }
                 }), {
                 themes: {
@@ -2585,9 +2730,7 @@ export default {
             new ProviderElement('immovable-bc-earth', {
                 desc: 'Immovable',
                 cost: 1,
-                additionalNotes: [
-                    "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
-                ]
+                additionalNotes: ["If something attempts to move you against your will, you can expend a charge to be unaffected by it."]
             },
                 {
                     themes: { any: ['earth'] },
@@ -2599,17 +2742,67 @@ export default {
             new ProviderElement('immovable-bc-weapon-shape', {
                 desc: 'Immovable',
                 cost: 1,
-                additionalNotes: [
-                    "If something attempts to move you against your will, you can expend a charge to be unaffected by it."
-                ]
+                additionalNotes: ["If something attempts to move you against your will, you can expend a charge to be unaffected by it."]
             },
                 {
                     shapeFamily: {
-                        any: ['greatsword', 'greatsword']
+                        any: ['greatsword', 'greataxe']
                     },
                     UUIDs: {
                         none: ['immovable-bc-earth']
                     }
+                }
+            ),
+            new ProviderElement("assassinate-lethal",
+                mkGen((_rng, weapon) => ({
+                    desc: "Assassination",
+                    cost: 1,
+                    additionalNotes: [`You perform a special sneak attack, targeting an enemy that hasn't noticed you. It deals ${textForDamage(modDamage(weapon.damage, x => x * assassinationDamageMultByRarity[weapon.rarity]))} damage.`]
+                })),
+                {
+
+                    shapeFamily: {
+                        any: ['dagger']
+                    },
+                }
+            ),
+            new ProviderElement("assassinate-nonlethal",
+                mkGen((_rng, weapon) => ({
+                    desc: "Assassination",
+                    cost: 1,
+                    additionalNotes: [`You perform a special sneak attack, targeting an enemy that hasn't noticed you. If their HP is ${maxDamage(modDamage(weapon.damage, x => x * assassinationDamageMultByRarity[weapon.rarity]))} or less, they are knocked unconscious.`]
+                })),
+                {
+
+                    shapeFamily: {
+                        any: ['club']
+                    },
+                }
+            ),
+            new ProviderElement("lance-charge",
+                mkGen((_rng) => ({
+                    desc: "Tilt",
+                    cost: 3,
+                    additionalNotes: ["You charge forward, moving as far as you're allowed in a single direction.", "You can move through other foes even if you wouldn't normally be able to, making an attack against each foe you moved through.", "Can only be used when you are mounted, and have not yet moved during your turn."]
+                })),
+                {
+
+                    shapeFamily: {
+                        any: ['lance']
+                    },
+                }
+            ),
+            new ProviderElement("spin-attack",
+                {
+                    desc: "Spin Attack",
+                    cost: 3,
+                    additionalNotes: ["Make an attack against every character in the weapon's melee range."]
+                },
+                {
+
+                    shapeFamily: {
+                        any: ['greataxe', 'greataxe (or musket)', 'polearm'] //2h axe-like
+                    },
                 }
             ),
             new ProviderElement('detachable-gems', {
@@ -2683,9 +2876,7 @@ export default {
             new ProviderElement('acid-etch', {
                 desc: 'Spray',
                 cost: 1,
-                additionalNotes: [
-                    "The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",
-                ]
+                additionalNotes: ["The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",]
             }, {
                 themes: {
                     any: ['sour']
@@ -2696,20 +2887,12 @@ export default {
                 cost: 3,
                 additionalNotes: [
                     "Slam the weapon into the ground, emitting a circular shockwave.",
-                    new StringGenerator(["Characters within 20-ft must save, or be knocked down & take ", mkGen((_rng, weapon) => {
-                        // it deals damage equal to 3 * the weapon's 
-                        const { as, d6, ...rest } = weapon.damage;
-                        const slamDamage = _.mapValues(
-                            {
-                                d6: 1 + (d6 ?? 0),
-                                ...rest
-                            },
-                            x => x === undefined ? undefined : x * 3
-                        );
-
-                        return textForDamage(slamDamage)
-                    }), " damage"])
-
+                    new StringGenerator([
+                        // it deals damage equal to 3x the weapon's
+                        "Characters within 20-ft must save, or be knocked down & take ",
+                        mkGen((_rng, weapon) => textForDamage(modDamage(weapon.damage, x => x * 3))),
+                        " damage"
+                    ])
                 ]
             }, {
                 themes: {
@@ -2724,18 +2907,12 @@ export default {
                 cost: 3,
                 additionalNotes: [
                     "Slam the weapon into the ground, emitting a shockwave that travels straight ahead for 60-ft.",
-                    new StringGenerator(["Characters hit by the wave must save, or be knocked down & take ", mkGen((_rng, weapon) => {
-                        // it deals damage equal to 3 * the weapon's 
-                        const { as, d6, ...rest } = weapon.damage;
-                        const slamDamage = _.mapValues(
-                            {
-                                d6: 1 + (d6 ?? 0),
-                                ...rest
-                            },
-                            x => x === undefined ? undefined : x * 3
-                        );
-                        return textForDamage(slamDamage)
-                    }), " damage"])
+                    new StringGenerator([
+                        // it deals damage equal to 3x the weapon's
+                        "Characters within 20-ft must save, or be knocked down & take ",
+                        mkGen((_rng, weapon) => textForDamage(modDamage(weapon.damage, x => x * 3))),
+                        " damage"
+                    ])
                 ]
             }, {
                 themes: {
@@ -2845,7 +3022,7 @@ export default {
                 themes: { all: ['dark', 'fire'] }
             }),
 
-            new ProviderElement("summon-structure0",
+            new ProviderElement("summon-structure",
                 mkGen((rng, weapon) => {
                     const effects = {
                         ice: ['Ice Maker', 'Call forth a tempest of frigid air, which freezes into', 'of solid ice'],
@@ -2864,7 +3041,7 @@ export default {
                         cost: `a charge per month that an expert would need to produce a regular version of the object, rounding up`,
                         additionalNotes: [
                             `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}. Initially intangible, it finishes solidifying at the start of your next turn.`,
-                            "Only replicates the structure of the object, not any special functions. Its magical nature is obvious at a glance."
+                            "Only replicates the form of the object, not any special functions. Its magical nature is obvious at a glance."
                         ]
                     }
                 }),
@@ -2887,17 +3064,112 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("move-silently",
+                {
+                    miscPower: true,
+                    desc: "Wielder is able to move completely silently.",
+                },
+                {
+
+                    shapeFamily: {
+                        any: [
+                            "dagger",
+                            "club"
+                        ]
+                    },
+                    rarity: {
+                        gte: "epic"
+                    }
+                }
+            ),
+            new ProviderElement("formation-fighting",
+                mkGen((_rng) => {
+                    return {
+                        miscPower: true,
+                        desc: `If you are within melee range of an ally wielding a polearm, both of you gain an effective bonus to your armor equivalent to using a shield.`,
+                    }
+                }),
+                {
+                    shapeFamily: { any: ["polearm"] },
+                    rarity: { gte: "epic" }
+                }
+            ),
+            new ProviderElement("mounted-dismount-resist",
+                mkGen((rng, weapon) => {
+                    const hpByRarity = {
+                        common: 10,
+                        uncommon: 20,
+                        rare: 30,
+                        epic: 40,
+                        legendary: 50
+                    } satisfies Record<WeaponRarity, number>;
+
+                    const descByTheme = {
+                        fire: { partialDesc: "metal extends from the pommel", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-fire" },
+                        ice: { partialDesc: "magical ice freezes around your body and your mount's,", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-ice" },
+                        dark: { partialDesc: "shadowy tentacles extend from the pommel to wrap around your body and your mount's,", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-dark" },
+                        nature: { partialDesc: "the vine on the pommel wraps around your body and your mount's,", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-nature" }
+                    } satisfies Partial<Record<Theme, { partialDesc: string; partialDescriptionPartGenerator: string }>>;
+
+                    const { partialDesc, partialDescriptionPartGenerator } = pickForTheme(weapon, descByTheme, rng) ?? {
+                        partialDesc: "the tendril on the weapon's pommel extends to wrap,", partialDescriptionPartGenerator: "mounted-dismount-resist-descriptor-generic"
+                    };
+                    return {
+                        miscPower: true,
+                        desc: `While mounted, ${partialDesc} to wrap around your body and your mount's preventing you from being forcibly dismounted. It has ${hpByRarity} HP, and regrows after feeding the weapon.`,
+                        descriptorPartGenerator: ['mouth-generic', partialDescriptionPartGenerator]
+                    }
+                }),
+                {
+                    shapeFamily: { any: ["lance"] },
+                }
+            ),
+            new ProviderElement("bonus-vs-stronger",
+                mkGen((__, weapon) => {
+                    const bonusByRarity = {
+                        common: 5,
+                        uncommon: 2,
+                        rare: 3,
+                        epic: 4,
+                        legendary: 5
+                    } as const satisfies Record<WeaponRarity, number>;
+
+                    return {
+                        miscPower: true,
+                        desc: `+${bonusByRarity[weapon.rarity]} to hit and damage vs foes stronger than the wielder.`
+                    };
+                }),
+                {
+                    UUIDs: { none: ['bonus-vs-weaker'] }
+                }
+            ),
+            new ProviderElement("bonus-vs-weaker",
+                mkGen((__, weapon) => {
+                    const bonusByRarity = {
+                        common: 1,
+                        uncommon: 2,
+                        rare: 3,
+                        epic: 4,
+                        legendary: 5
+                    } as const satisfies Record<WeaponRarity, number>;
+
+                    return {
+                        miscPower: true,
+                        desc: `+${bonusByRarity[weapon.rarity]} to hit and damage vs foes weaker than the wielder.`
+                    };
+                }),
+                {
+                    themes: { none: ["light"], },
+                    UUIDs: { none: ['bonus-vs-stronger'] }
+                }
+            ),
             new ProviderElement("blade-of-truth",
                 {
                     miscPower: true,
                     desc: "Characters touching the weapon cannot lie."
                 }, {
-                themes: {
-                    any: ["light"],
-                },
-                rarity: {
-                    gte: 'epic'
-                }
+                themes: { any: ["light"], },
+                rarity: { gte: 'epic' }
             }
             ),
             new ProviderElement("potion-resistant",
@@ -2975,40 +3247,15 @@ export default {
                     themes: { any: ["light"] }
                 }
             ),
-            new ProviderElement("move-silently",
-                {
-                    miscPower: true,
-                    desc: "Wielder is able to move completely silently.",
-                },
-                {
-
-                    shapeFamily: {
-                        any: [
-                            "dagger",
-                            "club"
-                        ]
-                    },
-                    rarity: {
-                        gte: "epic"
-                    }
-                }
-            ),
             new ProviderElement("magically-hovers",
                 {
                     miscPower: true,
                     desc: "Can hover in the air to attack for you hands free. Commanding a floating weapon uses the same rules as followers / retainers.",
                 },
                 {
-
-                    rarity: {
-                        gte: "rare"
-                    },
-                    themes: {
-                        any: [
-                            "cloud",
-                            "wizard"
-                        ]
-                    }
+                    rarity: { gte: "rare" },
+                    themes: { any: ["cloud", "wizard"] },
+                    shapeFamily: { none: ['lance', ...twoHandedWeaponShapeFamilies] }
                 }
             ),
             new ProviderElement("resistance-fire",
@@ -3019,9 +3266,7 @@ export default {
                 {
 
                     themes: { any: ["fire"] },
-                    rarity: {
-                        lte: "uncommon"
-                    }
+                    rarity: { lte: "uncommon" }
                 }
             ),
             new ProviderElement("immunity-fire",
@@ -3033,9 +3278,7 @@ export default {
                 {
 
                     themes: { any: ["fire"] },
-                    rarity: {
-                        gte: "rare"
-                    }
+                    rarity: { gte: "rare" }
                 }
             ),
             new ProviderElement("damage-bonus-fire",
@@ -3731,13 +3974,13 @@ export default {
                     } satisfies Partial<Record<Theme, WeaponEnergyEffect | TGenerator<WeaponEnergyEffect, [Weapon]>>>;
                     const { desc, featureUUID } = genMaybeGen(pickForTheme(weapon, effects, rng) ?? fallBack, rng);
 
-                    const damageByRarity: Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`> = {
+                    const damageByRarity = {
                         common: "1d6",
                         uncommon: "1d6",
                         rare: "1d6",
                         epic: "1d6",
                         legendary: "2d6"
-                    }
+                    } as const satisfies Record<WeaponRarity, `${number}${keyof Omit<DamageDice, 'const'>}`>;
 
                     return {
                         miscPower: true,
@@ -3887,8 +4130,15 @@ export default {
     },
     shapes: {
         add: [
-            ...toProviderSource<string, (Pick<WeaponShape, "particular"> & WeaponPowerCond) | string, WeaponShape>(
+            ...toProviderSource(
                 {
+                    "greatclub": [
+                        "Greathammer",
+                        "Greatclub",
+                        "Eveningstar",
+                        "Lucerne",
+                        "Kanabo",
+                    ],
                     "club": [
                         {
                             particular: "Club",
@@ -4095,7 +4345,10 @@ export default {
                             }
                         }
                     ]
-                }, (k, shapeOrShapename) => {
+                } satisfies
+                Record<WeaponShapeGroup, ((Pick<WeaponShape, "particular"> & WeaponPowerCond) | string)[]> as
+                Record<WeaponShapeGroup, ((Pick<WeaponShape, "particular"> & WeaponPowerCond) | string)[]>,
+                (k, shapeOrShapename) => {
                     switch (typeof shapeOrShapename) {
                         case "string":
                             return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k}-${shapeOrShapename.toLocaleLowerCase()}`,
@@ -4109,7 +4362,7 @@ export default {
                             );
                         case "object":
                             {
-                                const shape = shapeOrShapename as WeaponShape & WeaponPowerCond;
+                                const shape = shapeOrShapename;
                                 if (shape !== null) {
                                     return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k.replaceAll(/\s/g, "-")}-${shape.particular.toLocaleLowerCase()}`,
                                         {

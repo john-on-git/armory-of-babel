@@ -158,14 +158,15 @@ export interface Power {
     additionalNotes?: (string | (TGenerator<string, [Weapon]>))[];
 
     /**
-     * UUID of the description provider that is applied to weapons with this power
+     * UUID or UUIDs of the description provider that is applied to weapons with this power
      */
-    descriptorPartGenerator?: string;
+    descriptorPartGenerator?: string | string[];
 
     bonus?: PassiveBonus;
 }
 
-export type CommonDieSize = 4 | 6 | 8 | 10 | 12 | 20;
+export const commonDieSizes = [4, 6, 8, 10, 12, 20] as const satisfies number[];
+export type CommonDieSize = (typeof commonDieSizes)[number];
 export type DamageDice = {
     const?: number;
 } & {
@@ -232,6 +233,7 @@ export type WeaponShapeGroup =
     | "mace"
     | "greataxe"
     | "greatsword"
+    | "greatclub"
     | "spear"
     | "lance"
     | "polearm"
@@ -352,7 +354,7 @@ export const weaponStructures = {
     staffLike: {
         business: [],
         holding: ['body'],
-        other: ['orb']
+        other: []
     },
     lanceLike: {
         business: ['tip'],
@@ -419,6 +421,7 @@ export const shapeToStructure = {
     "axe": 'axeLike',
     "mace": 'maceLike',
 
+    "greatclub": 'clubLike',
     "greataxe": 'axeLike',
     "greatsword": 'swordLike',
 
