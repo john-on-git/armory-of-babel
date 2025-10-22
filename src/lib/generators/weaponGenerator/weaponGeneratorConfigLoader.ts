@@ -1,6 +1,6 @@
+import { mkGen, type TGenerator } from "$lib/generators/recursiveGenerator";
+import '$lib/util/string';
 import seedrandom from "seedrandom";
-import '../../util/string';
-import { mkGen, type TGenerator } from "../recursiveGenerator";
 import type { WeaponRarity, WeaponRarityConfig } from "./weaponGeneratorTypes";
 
 

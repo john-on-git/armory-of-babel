@@ -1,6 +1,6 @@
 <script lang="ts">
     import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
-    import type { WeaponViewModel } from "../generators/weaponGenerator/weaponGeneratorTypes";
+    import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
     interface Props {
         weapon: WeaponViewModel;
