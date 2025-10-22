@@ -34,22 +34,27 @@
 </div>
 
 <style>
-    .sidebar-content,
-    .toggle-sidebar-button {
-        background-color: #ffffff66;
+    :root {
+        --sidebar-width: 20vw;
+        --sidebar-color: #ffffff66;
     }
     .sidebar-content {
-        width: 10vw;
+        background-color: var(--sidebar-color);
+
+        width: var(--sidebar-width);
+        padding: 1rem;
+
+        height: 100%;
     }
     .sidebar {
         height: 100%;
-
-        margin-top: 1rem;
 
         display: flex;
         align-items: flex-start;
     }
     .toggle-sidebar-button {
+        background-color: var(--sidebar-color);
+
         display: flex;
         align-items: center;
         justify-content: center;
@@ -58,8 +63,9 @@
         aspect-ratio: 1 / 1;
         font-size: 2rem;
 
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
+        margin-top: 0;
+        border-radius: 0;
+        border-bottom-right-radius: 10pt;
     }
     .pin-top-left {
         position: fixed;
@@ -75,12 +81,12 @@
     }
 
     .out-initial {
-        left: -10vw;
+        left: calc(-1 * var(--sidebar-width));
     }
 
     @keyframes slide-in-left {
         from {
-            left: -10vw;
+            left: calc(-1 * var(--sidebar-width));
         }
         to {
             left: 0;
@@ -92,7 +98,7 @@
             left: 0;
         }
         to {
-            left: -10vw;
+            left: calc(-1 * var(--sidebar-width));
         }
     }
 </style>
