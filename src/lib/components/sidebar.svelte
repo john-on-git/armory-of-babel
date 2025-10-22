@@ -5,28 +5,94 @@
         sidebarContent: Snippet;
     }
 
+    // there's a third state for when the sidebar has never been interacted with.
+    // this prevents it from animating on mount
+    type SideBarState = "initial" | "open" | "closed";
+    const ANIM_CLASS_BY_STATE: Record<SideBarState, string> = {
+        initial: "out-initial",
+        open: "slide-in-left",
+        closed: "slide-out-left",
+    };
+
     const { sidebarContent }: Props = $props();
 
-    let expanded = $state(false);
+    let sidebarState: SideBarState = $state("initial");
 
     function toggleExpanded() {
-        expanded = !expanded;
+        // open the sidebar if it's 'initial' or 'closed';
+        sidebarState = sidebarState === "open" ? "closed" : "open";
     }
 </script>
 
-{#if expanded}
-    <div class="sidebar">
-        {@render sidebarContent?.()}
-    </div>
-{:else}
-    <button onclick={toggleExpanded}>open sidebar</button>
-{/if}
+<div class={`sidebar pin-top-left ${ANIM_CLASS_BY_STATE[sidebarState]}`}>
+    {#if sidebarState}
+        <div class="sidebar-content">
+            {@render sidebarContent?.()}
+        </div>
+    {/if}
+    <button class="toggle-sidebar-button" onclick={toggleExpanded}>☰</button>
+</div>
 
 <style>
+    .sidebar-content,
+    .toggle-sidebar-button {
+        background-color: #ffffff66;
+    }
+    .sidebar-content {
+        width: 10vw;
+    }
     .sidebar {
         height: 100%;
+
+        margin-top: 1rem;
+
+        display: flex;
+        align-items: flex-start;
+    }
+    .toggle-sidebar-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0.5rem;
+        aspect-ratio: 1 / 1;
+        font-size: 2rem;
+
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .pin-top-left {
         position: fixed;
         top: 0;
         left: 0;
+    }
+
+    .slide-in-left {
+        animation: 0.5s ease-in 0s 1 normal forwards running slide-in-left;
+    }
+    .slide-out-left {
+        animation: 0.5s ease-in 0s 1 normal forwards running slide-out-left;
+    }
+
+    .out-initial {
+        left: -10vw;
+    }
+
+    @keyframes slide-in-left {
+        from {
+            left: -10vw;
+        }
+        to {
+            left: 0;
+        }
+    }
+
+    @keyframes slide-out-left {
+        from {
+            left: 0;
+        }
+        to {
+            left: -10vw;
+        }
     }
 </style>
