@@ -9,7 +9,7 @@
         odds: [number, number, number, number];
     }
 
-    let { odds = $bindable([0, 0, 0, 0]) }: Props = $props();
+    let { odds = $bindable() }: Props = $props();
 
     const raritySliderStyles = $derived.by(() => {
         return `background-image: linear-gradient(
@@ -60,23 +60,23 @@
         );
     }
 
-    function percentageChance(rarity: WeaponRarity) {
-        function chance(rarity: WeaponRarity) {
-            switch (rarity) {
-                case "common":
-                    return odds[0]; // - 0
-                case "uncommon":
-                    return odds[1] - odds[0];
-                case "rare":
-                    return odds[2] - odds[1];
-                case "epic":
-                    return odds[3] - odds[2];
-                case "legendary":
-                    return 1 - odds[3];
-                default:
-                    return rarity satisfies never;
-            }
+    function chance(rarity: WeaponRarity) {
+        switch (rarity) {
+            case "common":
+                return odds[0]; // - 0
+            case "uncommon":
+                return odds[1] - odds[0];
+            case "rare":
+                return odds[2] - odds[1];
+            case "epic":
+                return odds[3] - odds[2];
+            case "legendary":
+                return 1 - odds[3];
+            default:
+                return rarity satisfies never;
         }
+    }
+    function percentageChance(rarity: WeaponRarity) {
         return Math.round(chance(rarity) * 100);
     }
 </script>
