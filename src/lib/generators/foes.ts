@@ -93,5 +93,20 @@ const hotBiomeHornsAndAntlers = [
     ["demon", "horn"]
 ] as const satisfies [string, string][];
 
+const evilSkinAnimals = [
+    ["human", "skin"],
+    ["elf", "skin"],
+    ["orc", "skin"],
+    ["dwarf", "skin"],
+    ["monkey", "skin"],
+    ["sea turtle", "leather"],
+    ["seal", "fur"],
+    ["black bear", "fur"],
+    ["seal", "fur"],
+    ["crocodile", "skin"],
+    ["cobra", "skin"],
+] as const satisfies [string, string][];
+
 export const coldBiomeHorn = mkGen((rng) => choice(coldBiomeHornsAndTusks, rng));
 export const hotBiomeHorn = mkGen((rng) => choice(hotBiomeHornsAndAntlers, rng));
+export const darkAnimalSkin = mkGen((rng) => choice(evilSkinAnimals, rng));

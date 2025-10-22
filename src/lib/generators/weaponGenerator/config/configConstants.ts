@@ -1,8 +1,9 @@
-import { coldBiomeHorn as coldAnimalHorn, coldBiomeHorn as hotAnimalHorn } from "$lib/generators/foes";
+import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
 import type { Descriptor, Ephitet, Weapon, WeaponPartName, WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { capFirst } from "$lib/util/string";
 import _ from "lodash";
+import type { PRNG } from "seedrandom";
 
 // shapes
 
@@ -17,6 +18,32 @@ export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe
 export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Keyblade", "Transforming Sniper Scythle"];
 
 // reused descriptors and materials
+const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
+    const options = ['a smiling face', 'a sad face', 'an angry face', "a dizzy face", "a melting face", "an imp's head", "a cat's head", "a sun with a face", "a moon with a face"];
+    const nCharms = ([1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3] satisfies (1 | 2 | 3)[]).choice(rng);
+    const chosenOptions = new Array(nCharms).fill(null).map(() => {
+        // choose an element, and remove it from the array to prevent duplicates
+        const iChoice = Math.floor(options.length * rng());
+        return options.splice(iChoice, 1);
+    });
+    switch (nCharms) {
+        case 1:
+            return {
+                singular: `has a miniature bust affixed to it (${chosenOptions[0]})`,
+                plural: `have a pair of miniature busts affixed to them (${chosenOptions[0]} and ${chosenOptions[1]})`,
+            }[quantity];
+        case 2:
+            return {
+                singular: `has a pair of miniature busts affixed to it (${chosenOptions[0]} and ${chosenOptions[1]})`,
+                plural: `have a pair of miniature busts affixed to them (${chosenOptions[0]} and ${chosenOptions[1]})`,
+            }[quantity];
+        case 3:
+            return {
+                singular: `has a cluster of miniature busts affixed to it (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`,
+                plural: `have a cluster of miniature busts affixed to them (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`,
+            }[quantity];
+    }
+}
 
 /**
  * Descriptors that are a material, where the ephitet is exactly the material's name (but with the first letter of each word capitalised).
@@ -86,22 +113,22 @@ const simpleMaterials = [
 const golds = ['gold', 'rose gold', 'white gold', 'purple gold', 'blue gold'] as const;
 
 const ephSharp = ['Vorpal', 'Razor', 'Jagged', 'Agonizing', 'Spiked'];
-const ephCold = [{ pre: "Icy" }, { pre: "Frigid" }, { pre: "Silent" }, { post: "of the North Star" }, { pre: "Frostbound" }, { pre: "Icebound" }] as Ephitet[];
-const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian', 'Cambrian'];
+const ephCold = [{ pre: "Icy" }, { pre: "Frigid" }, { pre: "Silent" }, { post: "of the North Star" }, { pre: "Frostbound" }, { pre: "Icebound" }] satisfies Ephitet[];
+const ephOld = ['Ancient', 'Abyssal', 'Primeval', 'Enduring', 'Primordial', 'Antediluvian'];
 
-const ephTransparent = ['Glass', 'Glassy', 'Translucent', 'Invisible'];
-const ephGlowy = ['Brilliant', 'Radiant', 'Luminous', 'Glowing', 'Prismatic'];
+const ephTransparent = [{ pre: 'Glass' }, { post: 'of Glass' }, { pre: 'Translucent' }] satisfies Ephitet[];
+const ephGlowy = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Luminous' }, { pre: 'Glowing' }, { pre: 'Prismatic' }];
 
 const ephWhite = ['White', 'Pale', 'Fair', 'Lucent', 'Pallid', 'Ivory'];
-const ephBlack = ['Dark', 'Stygian', 'Abyssal', 'Chaos', 'Chaotic', 'Shadow-Wreathed'];
-const ephRed = [{ pre: 'Crimson' }, { pre: 'Bloodied' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ', Herald of the King in Red' }] as Ephitet[];
+const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: 'of Chaos' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }];
+const ephRed = [{ pre: 'Crimson' }, { pre: 'Bloodied' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ', Herald of the King in Red' }] satisfies Ephitet[];
 const ephRainbow = ['Prismatic', 'Rainbow', 'Variegated', 'Multicolored', 'Kaleidosopic', 'Polychromatic']
 
 
 export const MATERIALS = {
     lemonWood: {
         material: 'lemon tree wood',
-        ephitet: { pre: 'Lemony' }
+        ephitet: mkGen((rng) => [{ pre: 'Lemony' }, { post: 'of the Lemon Lord' }].choice(rng))
     } as const,
     oak: {
         material: 'oak wood',
@@ -129,7 +156,7 @@ export const MATERIALS = {
     } as const,
     ebonyWood: {
         material: 'ebony wood',
-        ephitet: mkGen((rng) => ({ pre: ephBlack.choice(rng) }))
+        ephitet: mkGen((rng) => ephBlack.choice(rng))
     } as const,
     bloodWood: {
         material: 'bloodwood',
@@ -138,6 +165,14 @@ export const MATERIALS = {
     ironWood: {
         material: 'ironwood',
         ephitet: { pre: 'Iron' }
+    } as const,
+    aetherWood: {
+        material: 'wood from a sky-land tree',
+        ephitet: mkGen((rng) => [{ post: 'of the Skylands' }, { post: 'of the Skies' }].choice(rng))
+    } as const,
+    heavenlyPeachWood: {
+        material: 'wood from a heavenly peach tree',
+        ephitet: mkGen((rng) => [{ pre: "Jade Emperor's" }].choice(rng))
     } as const,
     scorchedWood: {
         material: 'scorched wood',
@@ -173,6 +208,14 @@ export const MATERIALS = {
             ephitet: { post: `of the ${creature.capFirst()}` }
         } as Descriptor;
     }),
+    darkLeather: mkGen((rng) => {
+        const [creature, skinName] = darkAnimalSkin.generate(rng);
+
+        return {
+            material: `${creature} ${skinName}`,
+            ephitet: { post: `of the ${creature.capFirst()}` }
+        } as Descriptor;
+    }),
 
     silverPlated: {
         material: 'silver-plated steel',
@@ -184,23 +227,23 @@ export const MATERIALS = {
     } as const,
     glass: {
         material: 'glass',
-        ephitet: mkGen((rng) => ({ pre: ephTransparent.choice(rng) }))
+        ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
     glassLikeSteel: {
         material: 'glass-like-steel',
-        ephitet: mkGen((rng) => ({ pre: ephTransparent.choice(rng) }))
+        ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
     force: {
         material: 'magical force',
-        ephitet: mkGen((rng) => ({ pre: ephTransparent.choice(rng) }))
+        ephitet: mkGen((rng) => ephTransparent.choice(rng))
     } as const,
     light: {
-        material: 'light',
-        ephitet: mkGen((rng) => ({ pre: ephGlowy.choice(rng) }))
+        material: 'pure light',
+        ephitet: mkGen((rng) => ephGlowy.choice(rng))
     } as const,
     darkness: {
-        material: 'darkness',
-        ephitet: mkGen((rng) => ({ pre: ephBlack.choice(rng) }))
+        material: 'pure darkness',
+        ephitet: mkGen((rng) => ephBlack.choice(rng))
     } as const,
 
     razors: {
@@ -280,110 +323,153 @@ export const MISC_DESC_FEATURES = {
             acc[thing] = (
                 typeof ephitet === 'string'
                     ? ({
-                        descriptor: `${thing} embedded in it`,
+                        descriptor: {
+                            singular: `${thing} embedded in it`,
+                            plural: `each have ${thing} embedded in them`
+                        },
                         ephitet: { pre: ephitet }
                     })
                     : ({
-                        descriptor: `${thing} embedded in it`,
+                        descriptor: {
+                            singular: `${thing} embedded in it`,
+                            plural: `each have ${thing} embedded in them`
+                        },
                         ephitet: mkGen((rng) => ephitet.choice(rng))
                     })) satisfies Descriptor;
             return acc;
         }, {} as Record<(typeof embeddedArr)[number][0], Descriptor>),
         amber: {
-            descriptor: amberGen,
+            descriptor: {
+                quantityless: amberGen
+            },
             ephitet: mkGen((rng) => ({ pre: ephOld.choice(rng) }))
         } as Descriptor
     },
     charm: {
         puritySeal: {
-            descriptor: 'has a piece of scripture affixed to it with a wax seal',
+            descriptor: {
+                singular: 'has pieces of scripture affixed to it, each with a wax seal',
+                plural: 'have pieces of scripture affixed to them, each with a wax seal',
+            },
             ephitet: { pre: 'Sanctified' }
         },
         emojis: {
-            descriptor: mkGen((rng) => {
-                const options = ['a smiling face', 'a sad face', 'an angry face', "a dizzy face", "a melting face", "an imp's head", "a cat's head", "a sun with a face", "a moon with a face", "the north wind"];
-                const nCharms = ([1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3] satisfies (1 | 2 | 3)[]).choice(rng);
-                const chosenOptions = new Array(nCharms).fill(null).map(() => {
-                    // choose an element, and remove it from the array to prevent duplicates
-                    const iChoice = Math.floor(options.length * rng());
-                    return options.splice(iChoice, 1);
-                });
+            descriptor: {
+                singular: mkGen((rng) => mkCharms(rng, 'singular')),
+                plural: mkGen((rng) => mkCharms(rng, 'plural')),
 
-                switch (nCharms) {
-                    case 1:
-                        return `has a miniature bust affixed to it (${chosenOptions[0]})`;
-                    case 2:
-                        return `has a pair of miniature busts affixed to it (${chosenOptions[0]} and ${chosenOptions[1]})`;
-                    case 3:
-                        return `has a cluster of miniature busts affixed to it (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`;
-                }
-            }),
+            },
             ephitet: { pre: 'Charming' }
         },
         shrunken: {
-            descriptor: 'has a shrunken head tied to it',
+            descriptor: {
+                singular: 'has a shrunken head tied to it',
+                plural: 'each have a shrunken head tied to them',
+            },
             ephitet: { pre: 'Headhunter' }
         },
     },
     coating: {
         glitter: {
-            descriptor: 'has small flecks of glitter embedded just below the surface',
+            descriptor: {
+                singular: 'has small flecks of glitter embedded just below the surface',
+                plural: 'have small flecks of glitter embedded just below the surface',
+            },
             ephitet: { pre: 'Glittering' }
         },
         caseHardened: {
-            descriptor: "is split into multicolored regions with psychedelic shapes",
+            descriptor: {
+                singular: "is split into multicolored regions with psychedelic shapes",
+                plural: "are split into multicolored regions with psychedelic shapes",
+            },
             ephitet: { pre: 'Case Hardened' }
         },
         oil: {
-            descriptor: 'shines like a rainbow when viewed from the right angle',
+            descriptor: {
+                singular: 'shines like a rainbow when viewed from the right angle',
+                plural: 'shine like a rainbow when viewed from the right angle',
+            },
             ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
         },
         pearlescent: {
-            descriptor: 'changes between pink and blue depending on the viewing angle',
+            descriptor: {
+                singular: 'changes between pink and blue depending on the viewing angle',
+                plural: 'change between pink and blue depending on the viewing angle'
+            },
             ephitet: mkGen((rng) => ({ pre: ephRainbow.choice(rng) }))
         }
     },
     wrap: {
         bannerWrap: {
-            descriptor: 'has the flag of an ancient realm wrapped around it',
+            descriptor: {
+                singular: 'has the flag of an ancient realm wrapped around it',
+                plural: 'have the flags of ancient realms wrapped around them',
+            },
             ephitet: { pre: 'Bannered' }
         },
         pirateWrap: {
-            descriptor: 'has a scrap of a jolly roger wrapped around it',
+            descriptor: {
+                singular: 'has a scrap of a jolly roger wrapped around it',
+                plural: 'have the scraps of a jolly roger wrapped around them',
+            },
             ephitet: { pre: "Pirate" }
         },
         beadsWrap: {
-            descriptor: 'has a string of glass beads wrapped around it',
+            descriptor: {
+                singular: 'has a chain of glass beads wrapped around it',
+                plural: 'have glass beads dangling from them'
+            },
             ephitet: { pre: 'Beaded' }
         },
         silverChainWrap: {
-            descriptor: 'has a small silver chain wrapped around it',
-            ephitet: { pre: 'Chained' }
+            descriptor: {
+                singular: 'has intricate silver chains wrapped around it',
+                plural: 'have intricate silver chains wrapped around them',
+            },
+            ephitet: { pre: 'Silver' }
         },
         goldChainWrap: {
-            descriptor: 'has a small gold chain wrapped around it',
-            ephitet: { pre: 'Chained' }
+            descriptor: {
+                singular: 'has intricate golden chains wrapped around it',
+                plural: 'have intricate golden chains wrapped around them',
+            },
+            ephitet: { pre: 'Gilded' }
         },
         ironChain: {
-            descriptor: 'has an iron chain wrapped around it',
+            descriptor: {
+                singular: 'has iron chains wrapped around it',
+                plural: 'have iron chains wrapped around them',
+            },
             ephitet: { pre: 'Chained' }
         },
         amethystChain: {
-            descriptor: 'has an amethyst bracelet wrapped around it',
+            descriptor: {
+                singular: 'has an amethyst bracelet wrapped around it',
+                plural: 'have amethyst bracelet bracelets wrapped around them',
+            },
             ephitet: { pre: 'Chained' }
         },
         anyJewelChain: {
-            descriptor: new StringGenerator(['has a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
+            descriptor: {
+                singular: new StringGenerator(['has a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
+                plural: new StringGenerator(['have ', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelets wrapped around them']),
+            },
             ephitet: { pre: 'Bejewelled' }
         },
         silkWrap: {
-            descriptor: 'has a silk sash wrapped around it',
+            descriptor: {
+                singular: 'has a silk sash wrapped around it',
+                plural: 'have silk sashes wrapped around them'
+            },
             ephitet: { pre: 'Silken' }
         },
     },
     glyph: {
         oldCoatOfArms: {
-            descriptor: 'has the coat of arms of an ancient dynasty emblazoned on it',
+            descriptor: {
+                singular: 'has the coat of arms of an ancient dynasty emblazoned on it',
+                plural: 'each have the coat of arms of an ancient dynasty emblazoned on them',
+            },
             ephitet: { pre: 'Heraldic' }
         },
     }
