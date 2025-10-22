@@ -117,13 +117,36 @@ export default {
                 desc: 'Ultimate Anime Attack',
                 cost: 'all charges',
                 additionalNotes: [
-                    'This attack always hits. It deals damage equal to the weapon\'s damage × number of remaining charges.',
+                    "This attack always hits. It deals damage equal to the weapon's damage × number of remaining charges.",
                     'Afterwards, the weapon crumbles to dust.'
                 ]
             }, {
                 rarity: {
                     lte: 'rare'
                 },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('instant-door', {
+                desc: 'Instant Door',
+                cost: '6',
+                additionalNotes: [
+                    "Trace the outline of the doorway on a surface using the weapon. A moment later, it's magically created.",
+                    "The door can punch through a thin sheet of metal (except lead), or 10-ft of any other material."
+                ]
+            }, {
+                rarity: {
+                    gte: 'rare'
+                },
+            }),
+            new ProviderElement<ActivePower, WeaponPowerCond>('acid-etch', {
+                desc: 'Spray',
+                cost: '1',
+                additionalNotes: [
+                    "The weapon sprays acid in a precise pattern, etching an image of your choice onto a surface.",
+                ]
+            }, {
+                themes: {
+                    any: ['sour']
+                }
             })
         ]
     },
