@@ -14,7 +14,7 @@ describe('Weapon Generator', () => {
 
     it('1. Always generates a weapon with a number of active abilities matching its params.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon, params } = mkWeapon(weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], i.toString());
+            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             expect(weapon.active.powers.length).toBe(params.nActive + params.nUnlimitedActive);
         }
@@ -22,7 +22,7 @@ describe('Weapon Generator', () => {
 
     it('2. Always generates a weapon with a number of passive abilities matching its params.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon, params } = mkWeapon(weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], i.toString());
+            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             // number of languages (excluding the standard option, common). languages are a kind of passive powers
             const nAdditionalLanguages = (weapon.sentient ? weapon.sentient.languages.length - 1 : 0);
@@ -33,7 +33,7 @@ describe('Weapon Generator', () => {
 
     it('3. Always generates a weapon with a number of charges matching its params, or its most expensive ability, whichever is higher.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon, params } = mkWeapon(weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], i.toString());
+            const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             const expected = weapon.active.powers.reduce<number>((acc, x) => Math.max(acc, typeof x.cost === 'string' ? 0 : x.cost), params.nCharges);
 
@@ -43,7 +43,7 @@ describe('Weapon Generator', () => {
 
     it('4. Always generates a weapon with enough charges to use any of its actives at least once.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon } = mkWeapon(weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], i.toString());
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             weapon.active.powers.map(x => expect(typeof x.cost === 'string' ? 0 : x.cost).toBeLessThanOrEqual(weapon.active.maxCharges));
         }
@@ -51,20 +51,20 @@ describe('Weapon Generator', () => {
 
     it('5. Always generates a weapon that deals damage.', () => {
         for (let i = 0; i < nRuns; i++) {
-            const { weaponViewModel: weapon } = mkWeapon(weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], i.toString());
+            const { weaponViewModel: weapon } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
             expect((Object.values(weapon.damage) as (string | number)[]).some((x) => typeof (x) === 'string' || x > 0)).toBe(true);
         }
     })
 
     it('6. The weapon that corresponds to a particular set of args is fixed and never changes, even when the software is updated.', () => {
-        expect(mkWeapon(weaponFeaturesByVersion[0], 'test1').weaponViewModel).toEqual(
+        expect(mkWeapon('test1', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
             { id: "test1", themes: ["nature"], rarity: "uncommon", name: "Oak Epee", shape: { particular: "Epee", group: "sword", UUID: "sword-Epee" }, damage: { as: "sword", const: 1 }, toHit: 1, active: { maxCharges: 4, rechargeMethod: "all charges when its wielder drives a poacher to bankruptcy", powers: [] }, passivePowers: [{ desc: "Can transform into a bouquet of flowers." }], sentient: false }
         );
-        expect(mkWeapon(weaponFeaturesByVersion[0], 'test2').weaponViewModel).toEqual(
+        expect(mkWeapon('test2', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
             { id: "test2", themes: ["steampunk"], rarity: "common", name: "Pine Longsword", shape: { particular: "Longsword", group: "sword", UUID: "sword-Longsword" }, damage: { as: "sword", const: 0 }, toHit: 0, active: { maxCharges: 0, rechargeMethod: "all charges when its wielder throws a tea party", powers: [] }, passivePowers: [{ desc: "A widget on the weapon displays the time." }], sentient: false }
         );
-        expect(mkWeapon(weaponFeaturesByVersion[0], 'test3').weaponViewModel).toEqual(
+        expect(mkWeapon('test3', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
             { id: "test3", themes: ["ice", "light", "dark"], rarity: "legendary", name: "Moronius, Lumensteel Flail", shape: { particular: "Flail", group: "mace", UUID: "mace-Flail" }, damage: { as: "mace", const: 3 }, toHit: 3, active: { maxCharges: 6, rechargeMethod: "one charge each time you defeat a an orc", powers: [{ desc: "Summon Ice Elemental", cost: 6, additionalNotes: ["Dissipates after 1 hour."] }, { desc: "Commune With Divinity", cost: 4 }, { desc: "Commune With Demon", cost: "at will" }] }, passivePowers: [{ desc: "Wielder is immune to the harmful effects of rays & beams." }, { desc: "1-in-2 chance to sense icy weather before it hits, giving just enough time to escape." }, { desc: "Menacing aura. Bonus to saves to frighten & intimidate." }], sentient: { personality: ["Pitiless.", "Tries to act mysterious."], languages: ["Common."], chanceOfMakingDemands: 8 } }
         );
     })
