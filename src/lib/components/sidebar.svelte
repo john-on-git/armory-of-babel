@@ -11,10 +11,10 @@
     // this prevents it from animating on mount
     type SideBarState = "initOpen" | "initClosed" | "open" | "closed";
     const ANIM_CLASS_BY_STATE: Record<SideBarState, string> = {
-        initOpen: "in-initial",
-        initClosed: "out-initial",
-        open: "slide-in-left",
-        closed: "slide-out-left",
+        initOpen: "in",
+        initClosed: "out",
+        open: "in sidebar-transition",
+        closed: "out sidebar-transition",
     };
     const ADD_INITIAL: Record<SideBarState, SideBarState> = {
         initOpen: "initOpen",
@@ -38,11 +38,11 @@
     const btnVisClass = $derived.by(() => {
         switch (sidebarState) {
             case "initOpen":
-                return "display-none";
+                return "opacity-0";
             case "open":
-                return "fade-out-fast";
+                return "opacity-0 fade-fast";
             case "closed":
-                return "fade-in-fast";
+                return "fade-fast";
             case "initClosed":
                 return "";
         }
@@ -130,6 +130,11 @@
         display: flex;
         align-items: flex-start;
     }
+
+    .sidebar-transition {
+        transition: left 0.25s ease-in;
+    }
+
     .toggle-sidebar-button {
         display: flex;
         align-items: center;
@@ -141,6 +146,8 @@
 
         margin-top: 0;
         background-color: transparent;
+
+        transition: opacity 0.25s ease-in;
     }
     .pin-top-left {
         position: fixed;
@@ -148,36 +155,14 @@
         left: 0;
     }
 
-    .slide-in-left {
-        animation: 0.5s ease-in 0s 1 normal forwards running slide-in-left;
-    }
-    .slide-out-left {
-        animation: 0.5s ease-in 0s 1 normal forwards running slide-out-left;
-    }
-
-    .out-initial {
+    .out {
         left: calc(-1 * var(--sidebar-width));
     }
-
-    @keyframes slide-in-left {
-        from {
-            left: calc(-1 * var(--sidebar-width));
-        }
-        to {
-            left: 0;
-        }
+    .in {
+        left: 0;
     }
 
-    @keyframes slide-out-left {
-        from {
-            left: 0;
-        }
-        to {
-            left: calc(-1 * var(--sidebar-width));
-        }
-    }
-
-    .display-none {
-        display: none;
+    .opacity-0 {
+        opacity: 0;
     }
 </style>
