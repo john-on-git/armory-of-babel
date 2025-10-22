@@ -5,15 +5,17 @@
     import { writable } from "svelte/store";
 
     let config = $state(defaultWeaponRarityConfigFactory());
+    $effect(() =>
+        console.log(
+            Object.entries(config)
+                .map(([k, v]) => [k, v.percentile])
+                .flat(),
+        ),
+    );
     const configWritable = writable((() => config)());
 
     configWritable.subscribe((newVal) => {
         config = newVal;
-        console.log(
-            Object.entries(newVal)
-                .map(([k, v]) => [k, v.percentile])
-                .flat(),
-        );
         // TODO also update the URL
     });
 </script>
