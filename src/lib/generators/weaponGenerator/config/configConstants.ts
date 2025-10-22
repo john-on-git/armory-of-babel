@@ -614,11 +614,11 @@ export const MISC_DESC_FEATURES = {
         }),
         pearlescent: mkGen((rng, weapon) => {
             const gradients = {
-                common: ['pink and white', 'blue and white', 'yellow and white'],
+                common: ['pink and white', 'blue and white', 'yellow and white', 'green and white'],
                 uncommon: ['green and blue', 'red and yellow', 'pink and purple'],
                 rare: ['pink and blue', 'green and pink'],
-                epic: ['purple and orange', 'cyan and orange', 'yellow and blue'],
-                legendary: ['pink, yellow, and blue', 'cyan, blue, and purple', 'purple, green, and blue']
+                epic: ['purple and orange', 'cyan and pink', 'pink and orange', 'yellow and blue'],
+                legendary: ['cyan, pink, and yellow', 'red, green, and blue', 'purple, green, and blue', 'pink, white, and blue', 'orange, white, and pink']
             } satisfies Record<WeaponRarity, string[]>;
 
             const gradient = gradients[weapon.rarity].choice(rng);
