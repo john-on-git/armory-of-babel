@@ -22,22 +22,31 @@
         open: "initOpen",
         closed: "initClosed",
     };
-    const INVERT: Record<SideBarState, SideBarState> = {
-        initOpen: "closed",
-        initClosed: "open",
-        open: "closed",
-        closed: "open",
-    };
 
     const { children, localStorageKey }: Props = $props();
 
     // track the open / closed state of the sidebar, linking it to local storage
-    let sidebarState: SideBarState = $state("initClosed");
+    let sidebarState = $state<SideBarState>("initClosed");
     const sidebarStorage = writable<SideBarState>(
         localStorage.getItem(localStorageKey) === "initOpen"
             ? "initOpen"
             : "initClosed",
     );
+    const sidebarOpen = $derived(
+        sidebarState === "initOpen" || sidebarState === "open",
+    );
+    const btnVisClass = $derived.by(() => {
+        switch (sidebarState) {
+            case "initOpen":
+                return "display-none";
+            case "open":
+                return "fade-out-fast";
+            case "closed":
+                return "fade-in-fast";
+            case "initClosed":
+                return "";
+        }
+    });
 
     sidebarStorage.subscribe((newVal) => {
         // update the value in state and local storage
@@ -45,19 +54,48 @@
         sidebarState = newVal;
     });
 
-    function toggleExpanded() {
-        // open the sidebar if it's 'initial' or 'closed';
-        sidebarStorage.update((prevVal) => INVERT[prevVal]);
+    // function toggleExpanded() {
+    //     const INVERT: Record<SideBarState, SideBarState> = {
+    //         initOpen: "closed",
+    //         initClosed: "open",
+    //         open: "closed",
+    //         closed: "open",
+    //     };
+    //     // open the sidebar if it's 'initial' or 'closed';
+    //     sidebarStorage.update((prevVal) => INVERT[prevVal]);
+    // }
+    function setSideBar(newState: "open" | "closed") {
+        sidebarStorage.set(newState);
+    }
+
+    function clickOff(node: Node) {
+        document.body.addEventListener("click", (event) => {
+            if (
+                sidebarOpen &&
+                event.target instanceof Node &&
+                !node.contains(event.target)
+            ) {
+                setSideBar("closed");
+            }
+        });
     }
 </script>
 
-<div class={`sidebar pin-top-left ${ANIM_CLASS_BY_STATE[sidebarState]}`}>
-    {#if sidebarState}
-        <div class="sidebar-content">
-            {@render children?.()}
-        </div>
-    {/if}
-    <button class="toggle-sidebar-button" onclick={toggleExpanded}>☰</button>
+<div
+    class={`sidebar pin-top-left ${ANIM_CLASS_BY_STATE[sidebarState]}`}
+    use:clickOff
+>
+    <button
+        class={`toggle-sidebar-button pin-top-left ${btnVisClass}`}
+        aria-label="config menu"
+        onclick={() => setSideBar("open")}
+    >
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="sidebar-content">
+        {@render children?.()}
+    </div>
 </div>
 
 <style>
@@ -76,8 +114,7 @@
         --sidebar-color: #4e4e4ecc;
     }
 
-    .sidebar-content,
-    .toggle-sidebar-button {
+    .sidebar-content {
         background-color: var(--sidebar-color);
         backdrop-filter: blur(2pt);
     }
@@ -100,11 +137,10 @@
 
         padding: 0.5rem;
         aspect-ratio: 1 / 1;
-        font-size: 2rem;
+        font-size: 2.5rem;
 
         margin-top: 0;
-        border-radius: 0;
-        border-bottom-right-radius: 8px;
+        background-color: transparent;
     }
     .pin-top-left {
         position: fixed;
@@ -139,5 +175,9 @@
         to {
             left: calc(-1 * var(--sidebar-width));
         }
+    }
+
+    .display-none {
+        display: none;
     }
 </style>

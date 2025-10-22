@@ -212,12 +212,14 @@
         font-family: inherit;
         background-color: #1a1a1a;
         cursor: pointer;
+    }
+    :global(.default-button) {
         transition: border-color 0.25s;
     }
-    :global(button:hover) {
-        border-color: #ffffff47;
+    :global(.default-button:hover) {
+        border-color: #ffffffa9;
     }
-    :global(button:focus, button:focus-visible) {
+    :global(.default-button:focus, .default-button:focus-visible) {
         outline: 4px auto -webkit-focus-ring-color;
     }
 
@@ -241,10 +243,21 @@
     }
 
     :global(.fade-in-1) {
-        animation: 0.666s ease-in 0s 1 fade-in-1;
+        animation: 0.666s ease-in 0s 1 fade-in-1 forwards;
     }
     :global(.fade-in-2) {
-        animation: 0.666s ease-in 0s 1 fade-in-2;
+        animation: 0.666s ease-in 0s 1 fade-in-2 forwards;
+    }
+    :global(.fade-out) {
+        animation: 0.666s ease-in 0s 1 fade-in-2 forwards;
+        animation-direction: reverse;
+    }
+    :global(.fade-in-fast) {
+        animation: 0.2s ease-in 0s 1 fade-in-1 forwards;
+    }
+    :global(.fade-out-fast) {
+        animation: 0.2s ease-in 0s 1 fade-in-2 forwards;
+        animation-direction: reverse;
     }
 
     @keyframes fade-in-1 {
