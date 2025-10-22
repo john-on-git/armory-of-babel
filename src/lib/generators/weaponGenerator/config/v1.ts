@@ -689,7 +689,7 @@ export default {
                         return [
                             MATERIALS.oak,
                             MATERIALS.birch,
-                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryNormal : MATERIALS.cherryAnime,
+                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
                             MATERIALS.maple,
                             MATERIALS.ivory,
@@ -718,7 +718,8 @@ export default {
                 {
                     themes: {
                         any: ['nature', 'wizard', 'sweet']
-                    }
+                    },
+                    allowDuplicates: false
                 }
             ),
 
@@ -729,7 +730,7 @@ export default {
                             MATERIALS.oak,
                             MATERIALS.pine,
                             MATERIALS.birch,
-                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryNormal : MATERIALS.cherryAnime,
+                            animeWeaponShapes.includes(weapon.shape.particular) ? MATERIALS.cherryAnime : MATERIALS.cherryNormal,
                             MATERIALS.ebonyWood,
                             MATERIALS.ironWood,
                         ].choice(rng);
@@ -2198,7 +2199,32 @@ export default {
                 ]
             }, {
                 themes: { all: ['dark', 'fire'] }
-            })
+            }),
+
+            new ProviderElement("summon-structure0",
+                mkGen((rng, weapon) => {
+                    const effects = {
+                        fire: ['Pile of Glass', 'Molten glass bursts from the weapon, levitating into place to form', 'entirely of glass'],
+                        ice: ['Ice maker', 'Call forth a tempest of frigid air, which freezes into', 'of solid ice'],
+                        dark: ['Dark Reflection', 'Rivers of shadow burst from the weapon, forming into', 'of pure darkness'],
+                        light: ['Fantasy Form', 'Light emanates from the weapon, forming', 'of hard-light'],
+                        wizard: ['Creation', 'Magically summon', 'of partially opaque magical force'],
+                        sweet: ['Caramel Creation', 'Threads of molten sugar burst from the weapon, spining into', 'of solid sugar'],
+                    } as const satisfies Partial<Record<Theme, [string, string, string]>>;
+                    const [desc, howItsMade, madeOf] = pickForTheme(weapon, effects, rng);
+                    return {
+                        desc,
+                        cost: `a charge for each month of work that an expert would take to produce a regular version of the structure`,
+                        additionalNotes: [
+                            `${howItsMade} a facsimile of an object of your choice. It's made ${madeOf}.`,
+                            "Only replicates the structure of the object, not any special functions. Its magical nature is obvious at a glance."
+                        ]
+                    }
+                }),
+                {
+                    themes: { any: ["fire", "ice", "dark", "light", "wizard", "sweet"] },
+                }
+            ),
         ]
     },
     passives: {
@@ -3100,7 +3126,18 @@ export default {
                         any: ['club']
                     },
                 }
-            )
+            ),
+            new ProviderElement('slenderblade',
+                {
+                    miscPower: true,
+                    desc: "A mass of shadowy tentacles form around the wielder's shoulders. They function as an additional pair of arms."
+                },
+                {
+                    themes: {
+                        any: ['dark']
+                    }
+                }
+            ),
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
             //     {
 

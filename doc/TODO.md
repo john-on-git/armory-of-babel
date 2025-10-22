@@ -2,6 +2,8 @@
 
     - Weapons with shafts should allow both hard & holding materials on it.
 
+    - 400 page for invalid weapons
+
     - Oddities.
         - Zelda magic shoot sword ability can roll on ranged weapons. Kinda funny though.
         - Steampunk theme should disallow natural materials.
