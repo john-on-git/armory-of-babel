@@ -60,33 +60,74 @@ describe("Weapon Generator Main Page", () => {
 
     });
 
-    it("Should always display the same weapon as before when the user refreshes the page", () => {
+    it("When the user refreshes the page, it should always display the same weapon as before.", () => {
 
         // visit the page
         cy.visit("/");
 
         // wait for the weapon to load for the first time
-        cy.getByTestId('weapon-display').should('be.visible').invoke('html').then((weaponName) => {
+        cy.getByTestId('weapon-display').should('be.visible').invoke('html').then(($weapon) => {
 
             // refresh, and the HTML representation should not have changed
             cy.reload();
-            cy.getByTestId('weapon-display').should('be.visible').and('have.html', weaponName);
+            cy.getByTestId('weapon-display').should('be.visible').and('have.html', $weapon);
         });
     });
 
 
-    it("Should always generate a different weapon each time the user clicks the generate button", () => {
+    it("It should always generate a different weapon each time the user clicks the generate button", () => {
 
         // visit the page
         cy.visit("/");
 
         // wait for the weapon to load for the first time
-        cy.getByTestId('weapon-display').should('be.visible').invoke('html').then((weaponName) => {
+        cy.getByTestId('weapon-display').should('be.visible').invoke('html').then(($weapon) => {
 
             // generate a new weapon, and the HTML representation of the weapon should have changed
             cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
 
-            cy.getByTestId('weapon-display').should('be.visible').and('not.have.html', weaponName);
+            cy.getByTestId('weapon-display').should('be.visible').and('not.have.html', $weapon);
         });
+    });
+
+
+    it("The app should add weapons to the users browser history.", () => {
+
+        // visit the page
+        cy.visit("/");
+
+        // wait for the weapon to load for the first time
+        cy.getByTestId('weapon-display').should('be.visible').invoke('html').then(($firstWeapon) => {
+
+            // generate a new weapon, and the HTML representation of the weapon should have changed
+            cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
+            cy.getByTestId('weapon-display').should('be.visible').and('not.have.html', $firstWeapon).invoke('html').then(($secondWeapon) => {
+
+                // then go backwards to the original weapon, and the HTML represenation should be back to what it was before 
+                cy.go('back');
+                cy.getByTestId('weapon-display').should('be.visible').and('have.html', $firstWeapon);
+
+                // then go forwards, and we should be back to the second weapon again
+                cy.go('forward');
+                cy.getByTestId('weapon-display').should('be.visible').and('have.html', $secondWeapon);
+            })
+
+        });
+    });
+
+
+
+    it("The app should replace the current entry in the user's browser history if (and only if) this is the first time it is loaded.", () => {
+
+        // visit the page
+        cy.visit("/");
+
+        // wait for the weapon to load for the first time
+        cy.getByTestId('weapon-display').should('be.visible');
+
+        // then try to go back, which should fail because there's nothing in the history, leaving us at the same page
+        cy.location().then((prevLoc) => {
+            cy.go('back').location().should((newLoc) => expect(newLoc.href).to.be.eq(prevLoc.href))
+        })
     });
 });
