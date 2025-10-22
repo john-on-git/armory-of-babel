@@ -22,7 +22,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['nature'])
+                    any: ['nature']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('summon-animal-weak', {
@@ -43,7 +43,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['nature'])
+                    any: ['nature']
                 },
                 rarity: {
                     lte: 'rare'
@@ -67,7 +67,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['nature'])
+                    any: ['nature']
                 },
                 rarity: {
                     gte: 'epic'
@@ -82,9 +82,9 @@ export default {
                     ]
                 },
                 {
-                    themes: { any: new Set(['earth']) },
+                    themes: { any: ['earth'] },
                     UUIDs: {
-                        none: new Set(['immovable-bc-weapon-shape'])
+                        none: ['immovable-bc-weapon-shape']
                     }
                 }
             ),
@@ -98,10 +98,10 @@ export default {
                 },
                 {
                     shapeFamily: {
-                        any: new Set(['greatsword', 'greatsword'])
+                        any: ['greatsword', 'greatsword']
                     },
                     UUIDs: {
-                        none: new Set(['immovable-bc-earth'])
+                        none: ['immovable-bc-earth']
                     }
                 }
             ),
@@ -114,7 +114,7 @@ export default {
                     'Affects a number of characters equal to the charges expended.'
                 ]
             }, {
-                themes: { any: new Set(['earth']) },
+                themes: { any: ['earth'] },
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('ultimate-attack', {
                 desc: 'Ultimate Anime Attack',
@@ -148,7 +148,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['sour'])
+                    any: ['sour']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('radial-slam', {
@@ -171,10 +171,10 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['earth'])
+                    any: ['earth']
                 },
                 UUIDs: {
-                    none: new Set(['linear-slam'])
+                    none: ['linear-slam']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('linear-slam', {
@@ -197,10 +197,10 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['earth'])
+                    any: ['earth']
                 },
                 UUIDs: {
-                    none: new Set(['radial-slam'])
+                    none: ['radial-slam']
                 }
             }),
             new ProviderElement<ActivePower, WeaponPowerCond>('metaphysical-edit', {
@@ -212,7 +212,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['wizard'])
+                    any: ['wizard']
                 },
                 shapeFamily: {
                     any: edgedWeaponShapeFamilies
@@ -240,7 +240,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['light', 'fire', 'nature', 'cloud'])
+                    any: ['light', 'fire', 'nature', 'cloud']
                 },
             })
         ]
@@ -256,9 +256,9 @@ export default {
                     rarity: {
                         gte: 'legendary'
                     },
-                    themes: { none: new Set(['wizard']) },
+                    themes: { none: ['wizard'] },
                     UUIDs: {
-                        none: new Set(['silence-aura', 'fire-aura', 'mist-aura', 'ice-aura'])
+                        none: ['silence-aura', 'fire-aura', 'mist-aura', 'ice-aura']
                     }
                 }
             ),
@@ -271,9 +271,9 @@ export default {
                     rarity: {
                         gte: 'epic'
                     },
-                    themes: { none: new Set(['wizard', 'fire']) },
+                    themes: { none: ['wizard', 'fire'] },
                     UUIDs: {
-                        none: new Set(['antimagic-aura', 'fire-aura', 'mist-aura', 'ice-aura'])
+                        none: ['antimagic-aura', 'fire-aura', 'mist-aura', 'ice-aura']
                     }
                 }
             ),
@@ -286,9 +286,9 @@ export default {
                     rarity: {
                         gte: 'legendary'
                     },
-                    themes: { any: new Set(['fire']) },
+                    themes: { any: ['fire'] },
                     UUIDs: {
-                        none: new Set(['silence-aura', 'antimagic-aura', 'mist-aura', 'ice-aura'])
+                        none: ['silence-aura', 'antimagic-aura', 'mist-aura', 'ice-aura']
                     }
                 }
             ),
@@ -301,9 +301,9 @@ export default {
                     rarity: {
                         gte: 'legendary'
                     },
-                    themes: { any: new Set(['cloud']) },
+                    themes: { any: ['cloud'] },
                     UUIDs: {
-                        none: new Set(['silence-aura', 'antimagic-aura', 'fire-aura', 'ice-aura'])
+                        none: ['silence-aura', 'antimagic-aura', 'fire-aura', 'ice-aura']
                     }
                 }
             ),
@@ -316,9 +316,9 @@ export default {
                     rarity: {
                         gte: 'legendary'
                     },
-                    themes: { any: new Set(['ice']) },
+                    themes: { any: ['ice'] },
                     UUIDs: {
-                        none: new Set(['silence-aura', 'antimagic-aura', 'fire-aura', 'mist-aura'])
+                        none: ['silence-aura', 'antimagic-aura', 'fire-aura', 'mist-aura']
                     }
                 }
             ),
@@ -379,7 +379,7 @@ export default {
                     })
                 },
                 {
-                    themes: { any: new Set(['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk']) },
+                    themes: { any: ['fire', 'ice', 'light', 'dark', 'cloud', 'steampunk'] },
                     rarity: { gte: 'epic' }
                 }
             ),
@@ -392,7 +392,7 @@ export default {
                     rarity: {
                         eq: 'common'
                     },
-                    themes: { any: new Set(['fire']) }
+                    themes: { any: ['fire'] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>('cold-to-touch',
@@ -404,7 +404,7 @@ export default {
                     rarity: {
                         eq: 'common'
                     },
-                    themes: { any: new Set(['ice']) }
+                    themes: { any: ['ice'] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>('transform-pipe',
@@ -416,7 +416,7 @@ export default {
                     rarity: {
                         eq: 'common'
                     },
-                    themes: { any: new Set(['nature']) }
+                    themes: { any: ['nature'] }
                 }
             ),
             new ProviderElement<PassivePower, WeaponPowerCond>('shrink-or-grow',
@@ -426,7 +426,7 @@ export default {
                 },
                 {
                     shapeFamily: {
-                        any: new Set(['club', 'staff'])
+                        any: ['club', 'staff']
                     }
                 }
             ),
@@ -440,10 +440,10 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        none: new Set(['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'])
+                        none: ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)']
                     },
                     UUIDs: {
-                        none: new Set(['instant-recall'])
+                        none: ['instant-recall']
                     }
                 }
             ),
@@ -457,7 +457,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        any: new Set(['axe', 'greataxe'])
+                        any: ['axe', 'greataxe']
                     },
                 }
             ),
@@ -471,7 +471,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        any: new Set(['club'])
+                        any: ['club']
                     },
                 }
             )
@@ -480,7 +480,7 @@ export default {
             'instant-recall': {
                 cond: {
                     UUIDs: {
-                        none: new Set(['magic-pocket'])
+                        none: ['magic-pocket']
                     }
                 }
             }

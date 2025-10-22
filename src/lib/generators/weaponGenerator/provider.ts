@@ -5,17 +5,15 @@ import seedrandom from "seedrandom";
 export type Quant<T> = { any: Set<T> } | { all: Set<T> } | { none: Set<T> }
 export function evQuant<T>(req: Quant<T>, actual: T | T[]) {
     const isArray = Array.isArray(actual);
-    const length = isArray ? actual.length : 1;
-
 
     if ('any' in req) {
-        return length > 0 && (isArray ? actual.some(x => req.any.has(x)) : req.any.has(actual));
+        return (isArray ? actual.some(x => req.any.has(x)) : req.any.has(actual));
     }
     else if ('all' in req) {
-        return length > 0 && (isArray ? actual.every(x => req.all.has(x)) : req.all.has(actual));
+        return (isArray ? req.all.isSubsetOf(new Set(actual)) : req.all.has(actual));
     }
     else if ('none' in req) {
-        return length === 0 || !(isArray ? actual.some(x => req.none.has(x)) : req.none.has(actual));
+        return !(isArray ? actual.some(x => req.none.has(x)) : req.none.has(actual));
     }
     return true;
 }

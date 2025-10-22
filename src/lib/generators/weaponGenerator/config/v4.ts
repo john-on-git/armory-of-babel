@@ -32,7 +32,7 @@ export default {
                 ]
             }, {
                 themes: {
-                    any: new Set(['light', 'fire', 'nature', 'cloud'])
+                    any: ['light', 'fire', 'nature', 'cloud']
                 },
             })
         ]
@@ -49,7 +49,7 @@ export default {
                         gte: 'epic'
                     },
                     shapeFamily: {
-                        any: new Set(['club'])
+                        any: ['club']
                     },
                 }
             )
@@ -58,7 +58,7 @@ export default {
             'instant-recall': {
                 cond: {
                     UUIDs: {
-                        none: new Set(['magic-pocket'])
+                        none: ['magic-pocket']
                     }
                 }
             }
