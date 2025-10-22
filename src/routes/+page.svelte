@@ -19,11 +19,47 @@
 
 <style>
     :global(:root) {
+        --bg-dark: #242424;
+
         --color-common: white;
         --color-uncommon: hsl(108, 74%, 50%);
         --color-rare: hsl(212, 74%, 55%);
         --color-epic: hsl(273, 74%, 60%);
         --color-legendary: hsl(51, 84%, 50%);
+    }
+
+    :global(:root) {
+        font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        font-weight: 400;
+
+        color-scheme: light dark;
+        color: rgba(255, 255, 255, 0.87);
+        background-color: var(--bg-dark);
+
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        height: 100%;
+    }
+
+    :global(*) {
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :global(#sveltekit-body) {
+        flex-grow: 1;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        margin-bottom: 10pt;
+
+        position: relative;
     }
 
     :global(h1, h2) {
@@ -90,6 +126,16 @@
         padding: 2em;
     }
 
+    :global(.bold) {
+        font-weight: bold;
+    }
+    :global(.italic) {
+        font-style: italic;
+    }
+    :global(.underline) {
+        text-decoration: underline;
+    }
+
     :global(button) {
         border-radius: 8px;
         border: 2pt solid transparent;
@@ -152,5 +198,21 @@
         to {
             opacity: 1;
         }
+    }
+
+    :global(.weapon-rarity-common) {
+        color: white;
+    }
+    :global(.weapon-rarity-uncommon) {
+        color: var(--color-uncommon);
+    }
+    :global(.weapon-rarity-rare) {
+        color: var(--color-rare);
+    }
+    :global(.weapon-rarity-epic) {
+        color: var(--color-epic);
+    }
+    :global(.weapon-rarity-legendary) {
+        color: var(--color-legendary);
     }
 </style>

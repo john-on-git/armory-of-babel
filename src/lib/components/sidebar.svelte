@@ -43,7 +43,6 @@
         // update the value in state and local storage
         localStorage.setItem(localStorageKey, ADD_INITIAL[newVal]);
         sidebarState = newVal;
-        console.log(newVal);
     });
 
     function toggleExpanded() {
@@ -95,7 +94,7 @@
 
         margin-top: 0;
         border-radius: 0;
-        border-bottom-right-radius: 10pt;
+        border-bottom-right-radius: 8px;
     }
     .pin-top-left {
         position: fixed;

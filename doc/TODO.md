@@ -4,6 +4,7 @@
 
     - Bugs.
         - Broken weapon @ 60724988481853520000
+        - Weapon ID doesn't sync with URL on page load 
 
     - Generator setup.
         - So, currently there's just one weapon type that's got things with generators inside them.
@@ -43,6 +44,7 @@
         - Descriptions.                                 HARD LONG   4
         - Automated Testing.                            HARD LONG   ~
     - Advanced.
+        - add @vercel/analytics                         EASY SHORT  3
         - User configuration menu & settings.           EASY SHORT  4
         - Bookmark weapons functionality.               EASY SHORT  3
         - Automated Testing.                            HARD SHORT  ~
