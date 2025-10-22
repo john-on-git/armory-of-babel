@@ -15,8 +15,8 @@
     const raritySliderStyles = $derived.by(() => {
         return `background-image: linear-gradient(
             to right,
-            var(--color-common) 0%,
-            var(--color-common) ${odds[0] * 100}%,
+            var(--color-foreground) 0%,
+            var(--color-foreground) ${odds[0] * 100}%,
             
             var(--color-uncommon) ${odds[0] * 100}%,
             var(--color-uncommon) ${odds[1] * 100}%,
@@ -103,13 +103,25 @@
 />
 
 <style>
-    :global(.rangeSlider) {
-        --handle: #373737;
-        --handle-focus: white;
-        --handle-border: white;
-
-        --roundel-shine: #ffffff41;
+    @media (prefers-color-scheme: light) {
+        :root {
+            --sidebar-color: #00000020;
+        }
+        :global(.rangeSlider) {
+            --handle: #e9e9e9;
+            --handle-focus: #373737;
+            --handle-border: #373737;
+        }
     }
+
+    @media (prefers-color-scheme: dark) {
+        :global(.rangeSlider) {
+            --handle: #373737;
+            --handle-focus: white;
+            --handle-border: white;
+        }
+    }
+
     .rarity-slider-label {
         display: flex;
         gap: 1rem;
@@ -118,17 +130,5 @@
     }
     .rarity-odds-label-title {
         font-weight: bold;
-    }
-    .rarity-odds-label-percentages {
-        background-color: #373737;
-
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-
-        border-radius: 8px;
-        border-bottom: 1pt solid var(--bg-dark);
-        border-left: 1pt solid var(--bg-dark);
     }
 </style>
