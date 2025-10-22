@@ -341,7 +341,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
      * Note, since it's possible for powers to increase the number of powers, this could still theoretically fail, but it's not very likely.
      */
     const unusedThemes = new Set<Theme>(featureProviders.themeProvider); // this could be a provider but whatever go my Set<Theme>
-    const minThemes = (params.nActive + params.nPassive + params.nUnlimitedActive) >= 3 ? Math.ceil(rng() * 2) : 1;
+    const minThemes =
+        (params.nActive + params.nPassive + params.nUnlimitedActive) >= 3
+            ? Math.ceil(rng() * 2)
+            : 1;
 
     while (
         weapon.themes.length < minThemes ||

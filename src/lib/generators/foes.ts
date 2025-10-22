@@ -11,7 +11,7 @@ export const pluralHolyFoe = mkGen((rng) => [
     "priests",
 ].choice(rng))
 
-export const singularUnholyFoe = mkGen((rng) => [
+export const singularUnholyFoe = mkGen((rng) => choice([
     "a satanist",
     "a cannibal",
     "a demon",
@@ -27,9 +27,9 @@ export const singularUnholyFoe = mkGen((rng) => [
 
     "an orc",
     "a goblin"
-].choice(rng));
+] as const, rng));
 
-export const pluralUnholyFoe = mkGen((rng) => [
+export const pluralUnholyFoe = mkGen((rng) => choice([
     "satanists",
     "cannibals",
     "demons",
@@ -45,7 +45,7 @@ export const pluralUnholyFoe = mkGen((rng) => [
 
     "orcs",
     "goblins",
-].choice(rng));
+] as const, rng));
 
 export const singularWildAnimalArr = [
     "a wolf",

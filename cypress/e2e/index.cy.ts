@@ -16,10 +16,7 @@ describe("Weapon Generator Main Page", () => {
                             themes: [],
                             rarity: rarity,
                             name: `Lighbrandt the Luminous #${req.query['id']}`,
-                            shape: {
-                                particular: "sword",
-                                group: "sword"
-                            },
+                            description: '',
                             damage: {
                                 as: 'sword'
                             },
@@ -54,7 +51,7 @@ describe("Weapon Generator Main Page", () => {
                             sentient: {
                                 personality: ['pious', 'good', 'nice'],
                                 languages: ['Common', 'Adamic', 'French'],
-                                chanceOfMakingDemands: 7
+                                chanceOfMakingDemands: 6
                             }
                         };
                         return acc;
