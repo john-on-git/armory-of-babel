@@ -8,7 +8,7 @@ import _ from "lodash";
 import seedrandom, { type PRNG } from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { commonDieSizes, type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { commonDieSizes, type DamageDice, type DescriptorCond, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 /**
  * Get the maximum amount of damage that can be dealt by a given roll.
@@ -120,12 +120,12 @@ export function toProviderSource<TKey extends string | number | symbol, T1, T2>(
 }
 
 
-export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCond, WeaponPowerCondParams> {
-    constructor(source: ProviderElement<T, WeaponPowerCond>[], defaultAllowDuplicates = false) {
+export class WeaponFeatureProvider<T, TCond extends WeaponPowerCond = WeaponPowerCond, TParams extends WeaponPowerCondParams = WeaponPowerCondParams, TProviderElement extends ProviderElement<T, TCond> = ProviderElement<T, TCond>> extends ConditionalThingProvider<T, TCond, TParams> {
+    constructor(source: TProviderElement[], defaultAllowDuplicates = false) {
         super(source, defaultAllowDuplicates);
     }
 
-    protected override condExecutor(UUID: string, cond: WeaponPowerCond, params: WeaponPowerCondParams): boolean {
+    protected override condExecutor(UUID: string, cond: TCond, params: TParams): boolean {
 
         const ord = (x: WeaponRarity) => ({
             common: 0,
@@ -147,6 +147,38 @@ export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, Weapon
             (!cond.shapeFamily || evQuant(cond.shapeFamily, params.shape.group)) && // shapes OK
             (!cond.shapeParticular || evQuant(cond.shapeParticular, params.shape.particular)) // shape particular OK
         );
+    }
+}
+
+export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerator, DescriptorCond, DescriptorCondParams> {
+    constructor(source: ProviderElement<DescriptorGenerator, DescriptorCond>[], defaultAllowDuplicates = false) {
+        super(source, defaultAllowDuplicates);
+    }
+
+    /**
+     * Returns true if it's possible to place the descriptor on the weapon.
+     * should really be based on it & not its cond, so I suppose this is not really quite right...
+     */
+    protected placementIsPossible(cond: DescriptorCond, params: DescriptorCondParams): boolean {
+        function entries<K extends string, V>(x: Record<K, V> | null): [K, V][] {
+            return x === null ? [] : _.entries(x) as [K, V][];
+        }
+        function vals<T>(x: Record<string | number | symbol, T> | null): T[] {
+            return x === null ? [] : _.values(x);
+        }
+
+        // there must be least one part (some) part that can accept the element 
+        return vals(params.description).flatMap(entries).some(([k, v]) => {
+            // the element must be applicable to this part, and if the element is a material the part can't already have a material
+            return evQuant(cond.applicableTo, k) && (!cond.isMaterial || v.material === undefined)
+        });
+    }
+
+    protected override condExecutor(UUID: string, cond: DescriptorCond, params: DescriptorCondParams): boolean {
+        return (
+            super.condExecutor(UUID, cond, params) &&
+            this.placementIsPossible(cond, params) // placement possible
+        )
     }
 }
 
@@ -274,7 +306,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator:
             };
         }
         else if (!silent) {
-            console.error('\x1b[31mfailed to get a part for', descriptorGenerator.UUID);
+            console.error(weapon.rarity, '\x1b[31mfailed to get a part for', descriptorGenerator.UUID);
         }
     }
     else {
@@ -290,7 +322,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, descriptorGenerator:
             });
         }
         else if (!silent) {
-            console.error('\x1b[31mfailed to get a part for', descriptorGenerator.UUID);
+            console.error(weapon.rarity, '\x1b[31mfailed to get a part for', descriptorGenerator.UUID);
         }
     }
 }
@@ -544,9 +576,17 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // first, apply theme-based descriptors, up to the cap
     while (nDescriptors < maxDescriptors) {
-        const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
-
-        applyDescriptionPartProvider(rng, descriptorProvider, weapon, silent);
+        // TODO, in order to stop all misses, we need to 
+        // draw based on what it's applicable to, and whether it's a material
+        try {
+            const descriptorProvider = featureProviders.descriptors.draw(rng, weapon);
+            applyDescriptionPartProvider(rng, descriptorProvider, weapon, silent);
+        }
+        catch (e) {
+            // this error is almost definitely "provider failed to draw". It means we don't have enough descriptors. just log it and stop trying to generate any more 
+            console.error(e);
+            break;
+        }
         nDescriptors++;
     }
 

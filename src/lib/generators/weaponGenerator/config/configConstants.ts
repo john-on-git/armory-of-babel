@@ -443,7 +443,7 @@ const eyeStructureGenSingular = mkGen((rng, weapon: Weapon) => [
     `a pair of eyes: they're ${eyeColorGen.generate(rng, weapon)}`,
     `three eyes mounted on it in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
     `four eyes mounted on it, in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
-    ...(weapon.themes.includes('dark') ? [
+    ...(weapon?.themes?.includes?.('dark') ? [
         `a cluster of eyes on it: they're ${eyeColorGen.generate(rng, weapon)}`,
         `eyes dotted randomly across it: they're ${eyeColorGen.generate(rng, weapon)}`,
     ] : []),
@@ -454,7 +454,7 @@ const eyeStructureGenPlural = mkGen((rng, weapon: Weapon) => [
     `a pair of eyes mounted on them: they're ${eyeColorGen.generate(rng, weapon)}`,
     `three eyes mounted on them in a triangle: they're ${eyeColorGen.generate(rng, weapon)}`,
     `four eyes mounted on them in two sets: they're ${eyeColorGen.generate(rng, weapon)}`,
-    ...(weapon.themes.includes('dark') ? [
+    ...(weapon?.themes?.includes?.('dark') ? [
         `a cluster of eyes on them: they're ${eyeColorGen.generate(rng, weapon)}`,
         `eyes dotted randomly across them: they're ${eyeColorGen.generate(rng, weapon)}`
     ] : []),
@@ -704,9 +704,55 @@ export const MISC_DESC_FEATURES = {
                     singular: ` is covered in squiggly grooves, lined with ${desc}`,
                     plural: ` are covered in squiggly grooves, lined with ${desc}`
                 },
-                ephitet: { pre: 'Byzantine' }
+                ephitet: { pre: 'Byzantine' } as Ephitet
             }
-        })
+        }),
+        celestialEngraving: mkGen(rng => ({
+            descriptor: {
+                descType: 'property',
+                singular: ` is engraved with depictions of the stars`,
+                plural: ` are engraved with depictions of the stars`
+            },
+            ephitet: choice(ephWizard, rng) as Ephitet
+        })),
+        wizardEngraving: mkGen((rng, weapon) => {
+            const magi = choice([
+                'a wizard', 'a sorcerer', 'an enchantress', 'a magi',
+                ...(weapon?.themes?.includes?.('dark') ? ['a dark magician', 'a witch'] : []),
+                ...(weapon?.themes?.includes?.('fire') ? ['a pyromancer'] : []),
+                ...(weapon?.themes?.includes?.('ice') ? ['a cryomancer'] : []),
+                ...(weapon?.themes?.includes?.('cloud') ? ['a hydromancer'] : []),
+            ] as const, rng);
+
+            return {
+                descriptor: {
+                    descType: 'property',
+                    singular: ` is engraved with a portrait of ${magi}`,
+                    plural: ` are engraved with depictions of duelling wizards`
+                },
+                ephitet: choice(ephWizard, rng) as Ephitet
+            }
+        }),
+        animalEngraving: mkGen((rng, weapon) => {
+            const pluralAnimal = choice([
+                "dogs", "cats", "parrots", "owls", "mice", "snails", "bears", "loins", "badgers", "foxes", "spiders",
+                ...(weapon?.themes?.includes?.('dark') ? ['crocodiles', 'sharks', 'snakes'] : []),
+                ...(weapon?.themes?.includes?.('cloud') ? ["fish", "whales"] : []),
+                ...(weapon?.themes?.includes?.('fire') ? ["rhinos", "gazelles", "buffallos", "impalas", "ibexes", "zebras", "giraffes", "crocodiles"] : []),
+                ...(weapon?.themes?.includes?.('ice') ? ["aurochs", "mammoths", "mountain goats", "walruses", "narwhals", "reindeer"] : []),
+            ] as const, rng);
+
+            return {
+                descriptor: {
+                    descType: 'property',
+                    singular: ` is engraved with depictions of dancing ${pluralAnimal}`,
+                    plural: ` are engraved with depictions of dancing ${pluralAnimal}`
+                },
+                ephitet: choice(ephWizard, rng) as Ephitet
+            }
+        }),
+        // warriorEngraving: {},
+        // tricksterEngraving: {},
     },
     glyph: {
         oldCoatOfArms: {

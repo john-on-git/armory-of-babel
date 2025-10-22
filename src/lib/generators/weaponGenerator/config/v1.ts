@@ -755,6 +755,10 @@ export default {
                     themes: {
                         any: ['ice', 'fire', 'cloud', 'earth', 'light', 'dark', 'wizard']
                     },
+                    applicableTo: {
+                        any: embeddableParts
+                    },
+                    isMaterial: false,
                 }
             ),
             new ProviderElement('material-primitive-hard',
@@ -775,7 +779,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['nature', 'earth', 'fire']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true,
                 }
             ),
 
@@ -803,7 +811,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['fire']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('material-fire-holding',
@@ -825,7 +837,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('descriptor-fire-coating',
@@ -842,6 +858,10 @@ export default {
                     themes: {
                         any: ['fire']
                     },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: false
                 }
             ),
 
@@ -871,6 +891,10 @@ export default {
                     themes: {
                         any: ['ice']
                     },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -894,7 +918,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -915,7 +943,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['cloud']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('material-cloud-holding',
@@ -941,7 +973,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('descriptor-cloud-coating',
@@ -957,6 +993,10 @@ export default {
                     themes: {
                         any: ['cloud']
                     },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: false
                 }
             ),
 
@@ -992,7 +1032,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['earth']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('material-earth-holding',
@@ -1019,7 +1063,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1049,6 +1097,10 @@ export default {
                     themes: {
                         any: ['dark']
                     },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1072,7 +1124,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1103,7 +1159,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1122,7 +1182,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         all: ['dark', 'ice']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1156,6 +1220,10 @@ export default {
                     themes: {
                         any: ['light']
                     },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1176,7 +1244,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['sweet']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('material-sweet-holding',
@@ -1199,7 +1271,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1219,7 +1295,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['sour']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('material-sour-holding',
@@ -1240,7 +1320,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1279,7 +1363,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['wizard']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1305,12 +1393,17 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
             new ProviderElement('material-wizard-nature',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.wiseWood,
@@ -1324,11 +1417,16 @@ export default {
                     allowDuplicates: false,
                     themes: {
                         all: ['wizard', 'nature']
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('misc-wizard-charm',
                 {
+                    yields: 'descriptor',
                     generate: (rng) => [
                         MISC_DESC_FEATURES.charm.silkWrap,
                         MISC_DESC_FEATURES.charm.amethystChain,
@@ -1343,13 +1441,20 @@ export default {
                     themes: {
                         any: ['wizard']
                     },
+                    applicableTo: {
+                        any: wrappableParts
+                    },
+                    isMaterial: false
                 }
             ),
             new ProviderElement('misc-wizard-coating',
                 {
-                    generate: (rng) => genMaybeGen([
-                        MISC_DESC_FEATURES.coating.squiggles
-                    ].choice(rng), rng),
+                    yields: 'descriptor',
+                    generate: (rng, weapon) => genMaybeGen([
+                        MISC_DESC_FEATURES.coating.squiggles,
+                        MISC_DESC_FEATURES.coating.celestialEngraving,
+                        MISC_DESC_FEATURES.coating.wizardEngraving,
+                    ].choice(rng), rng, weapon),
                     applicableTo: {
                         any: wrappableParts
                     }
@@ -1358,11 +1463,16 @@ export default {
                     themes: {
                         any: ['wizard']
                     },
+                    applicableTo: {
+                        any: wrappableParts
+                    },
+                    isMaterial: false
                 }
             ),
 
             new ProviderElement('material-steampunk-hard',
                 {
+                    yields: 'material',
                     generate: (rng) => {
                         return [
                             MATERIALS.clockwork,
@@ -1379,7 +1489,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['steampunk']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1405,7 +1519,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('material-nature-hard',
@@ -1430,7 +1548,11 @@ export default {
                     allowDuplicates: true,
                     themes: {
                         any: ['nature']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1459,7 +1581,11 @@ export default {
                     },
                     shapeFamily: {
                         any: grippedWeaponShapeFamilies
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
 
@@ -1477,6 +1603,10 @@ export default {
                     themes: {
                         any: ['nature', 'wizard', 'sweet']
                     },
+                    applicableTo: {
+                        any: wrappableParts
+                    },
+                    isMaterial: false
                 }
             ),
 
@@ -1508,7 +1638,11 @@ export default {
                     },
                     rarity: {
                         lte: 'rare',
-                    }
+                    },
+                    applicableTo: {
+                        any: holdingParts
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('light-and-dark-blade',
@@ -1527,7 +1661,11 @@ export default {
                     },
                     themes: {
                         all: ['light', 'dark']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('ice-and-fire-blade',
@@ -1546,7 +1684,11 @@ export default {
                     },
                     themes: {
                         all: ['ice', 'fire']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('frutiger-blade',
@@ -1565,7 +1707,11 @@ export default {
                     },
                     themes: {
                         all: ['cloud', 'light']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('steam-blade',
@@ -1584,7 +1730,11 @@ export default {
                     },
                     themes: {
                         all: ['fire', 'cloud']
-                    }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    },
+                    isMaterial: true
                 }
             ),
             new ProviderElement('elemental-quadblade', {
@@ -1601,7 +1751,11 @@ export default {
                 },
                 themes: {
                     all: ['earth', 'cloud', 'fire']
-                }
+                },
+                applicableTo: {
+                    any: importantPart
+                },
+                isMaterial: true
             }
             ),
         ]

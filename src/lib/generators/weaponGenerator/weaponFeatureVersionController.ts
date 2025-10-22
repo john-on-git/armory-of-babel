@@ -1,6 +1,6 @@
 import v1 from "$lib/generators/weaponGenerator/config/v1";
 import type { ProviderElement } from "$lib/generators/weaponGenerator/provider";
-import { WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { DescriptorProvider, WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { type DescriptorGenerator, type FeatureProviderCollection, type Theme, type WeaponFeaturesTypes } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPatchableArray } from "$lib/util/versionController";
 
@@ -32,7 +32,7 @@ export const getWeaponFeatureVersionController = () => new VersionController<Wea
     )
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
-        descriptors: new WeaponFeatureProvider(x.descriptors),
+        descriptors: new DescriptorProvider(x.descriptors),
         descriptorIndex: ([...(x.descriptors as ProviderElement<DescriptorGenerator>[]), ...x.nonRollableDescriptors as ProviderElement<DescriptorGenerator>[]]).reduce<Record<string, DescriptorGenerator & { UUID: string }>>((acc, gen) => {
             acc[gen.UUID] = {
                 ...gen.thing,
