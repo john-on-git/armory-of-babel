@@ -60,60 +60,62 @@
     onMount(async () => {
         // listen for any future changes in the URL, ensuring that the weapon always conforms to it
         window.addEventListener("popstate", async () => {
+            console.log("popstate", getIDFromURL());
             weaponID = getIDFromURL();
             version = getVersionFromURL();
 
-            // construct the search params for the API
-            const searchParams = new URLSearchParams(page.url.search);
+            tick().then(async () => {
+                // construct the search params for the API
+                const searchParams = new URLSearchParams();
 
-            if (!searchParams.has("o")) {
                 searchParams.set("o", odds[0].toFixed(2));
                 for (let i = 1; i < odds.length; i++) {
                     searchParams.append("o", odds[i].toFixed(2));
                 }
-            }
-            // take a copy of the parts of the UI state that determine the weapon at the time the request was made
-            const v = searchParams.get("v");
-            const newReq = {
-                id: searchParams.get("id"),
-                v: v === null ? NaN : Number.parseInt(v),
-            };
+                searchParams.set("v", version.toString());
+                searchParams.set("id", weaponID);
 
-            // if these params correspond to a valid set of weapons, and it isn't the currently held set of weapons, make the call
-            if (
-                newReq.id !== null &&
-                newReq.v !== null &&
-                !_.isEqual(newReq, weaponState?.req)
-            ) {
-                try {
-                    // take just the ID & version from the current searchParams, to post to the API
-                    const filteredParams = new URLSearchParams(
-                        _.pick(Object.fromEntries(searchParams.entries()), [
-                            "id",
-                            "v",
-                        ]),
-                    );
-                    const res = await fetch(
-                        `/api/generate-weapon?${filteredParams}`,
-                    );
-                    if (res.status === StatusCodes.OK) {
-                        // if this still matches the UI state
-                        if (newReq.v === version && newReq.id === weaponID) {
-                            const resBody = await res.json();
-                            weaponState = {
-                                req: { id: newReq.id, v: newReq.v },
-                                res: resBody as unknown as GenerateWeaponResponse,
-                            };
+                const newReq = {
+                    id: weaponID,
+                    v: version,
+                };
+
+                // if these params correspond to a valid set of weapons, and it isn't the currently held set of weapons, make the call
+                if (
+                    newReq.id !== null &&
+                    newReq.v !== null &&
+                    !_.isEqual(newReq, weaponState?.req)
+                ) {
+                    try {
+                        const res = await fetch(
+                            `/api/generate-weapon?${searchParams}`,
+                        );
+                        if (res.status === StatusCodes.OK) {
+                            // if this still matches the UI state
+                            if (
+                                newReq.v === version &&
+                                newReq.id === weaponID
+                            ) {
+                                const resBody = await res.json();
+                                weaponState = {
+                                    req: { id: newReq.id, v: newReq.v },
+                                    res: resBody as unknown as GenerateWeaponResponse,
+                                };
+                            } else {
+                                alert(
+                                    `received out of date response for: ${newReq.id} now: ${weaponID}`,
+                                );
+                            }
                         }
+                    } catch (e) {
+                        console.error(e);
+                        weaponState = {
+                            req: { id: newReq.id, v: newReq.v },
+                            res: undefined,
+                        };
                     }
-                } catch (e) {
-                    console.error(e);
-                    weaponState = {
-                        req: { id: newReq.id, v: newReq.v },
-                        res: undefined,
-                    };
                 }
-            }
+            });
         });
 
         tick().then(() => {
@@ -139,7 +141,7 @@
     function getVersionFromURL(): number {
         // this is user input and could be literally anything, i.e. an XSS attack
         const maybeNumber = Number.parseInt(
-            page.url.searchParams.get("v") ?? "NaN",
+            new URLSearchParams(window.location.search).get("v") ?? "NaN",
         );
 
         if (Number.isInteger(maybeNumber)) {
@@ -174,7 +176,7 @@
     function getIDFromURL(): string {
         // this is user input and could be literally anything, i.e. an XSS attack
         const maybeNumber = Number.parseInt(
-            page.url.searchParams.get("id") ?? "NaN",
+            new URLSearchParams(window.location.search).get("id") ?? "NaN",
         );
 
         return Number.isInteger(maybeNumber)
@@ -183,6 +185,8 @@
     }
 
     function pushIdToURL(id: string, mode: "push" | "replace" = "push") {
+        console.log("will push Id", id);
+
         const searchParams = new URLSearchParams(page.url.search);
         searchParams.set("id", id);
 
