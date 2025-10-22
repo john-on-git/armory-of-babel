@@ -243,20 +243,38 @@ export interface WeaponPowerCond extends Cond {
 export interface WeaponPart {
     /**
      * Main material of the part, if it's notable.
-     * @example
-     * swordLike.blade.material = 'steel';
      */
     material?: {
+        /**
+         * Text of the material in the description.
+         * @example
+         * const example = 'steel';
+         */
         desc: string;
+        /**
+         * Ephitet used for this description.
+         * @example
+         * const example = 'steely';
+         */
+        ephitet: string;
         UUID: string;
     };
     /**
      * A list of facts about the physical properties of this part, which could be combined into a sentence.
-     * @example
-     * swordLike.blade.desc = ['spiky', 'encrusted with jewels'];
      */
     descriptors: {
+        /**
+         * Text of the material in the description.
+         * @example
+         * const example = 'encrusted with jewels';
+         */
         desc: string;
+        /**
+         * Ephitet used for this description.
+         * @example
+         * const example = 'jewel-encrusted';
+         */
+        ephitet: string;
         UUID: string;
     }[];
 }
@@ -341,7 +359,7 @@ export type StructuredDescription = {
     other: Record<WeaponPartName, WeaponPart>;
 };
 
-export type DescriptorGenerator = TGenerator<({ material: string } | { descriptor: string })> & {
+export type DescriptorGenerator = TGenerator<(({ material: string } | { descriptor: string }) & { ephitet: string; })> & {
     applicableTo?: Quant<WeaponPartName>;
 };
 

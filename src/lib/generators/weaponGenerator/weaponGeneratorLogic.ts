@@ -35,6 +35,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].material = {
                 desc: descriptor.material,
+                ephitet: descriptor.ephitet,
                 UUID: provider.UUID
             };
         }
@@ -46,6 +47,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
                 desc: descriptor.descriptor,
+                ephitet: descriptor.ephitet,
                 UUID: provider.UUID
             });
         }
@@ -53,7 +55,7 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
 }
 
 function pickEphitet(rng: seedrandom.PRNG, structuredDesc: ReturnType<typeof structureFor>[1]) {
-    return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng)?.desc;
+    return Object.values(structuredDesc).flatMap((x) => Object.values(x).flatMap(y => 'material' in y ? [y.material, ...y.descriptors] : y.descriptors)).choice(rng)?.ephitet;
 }
 
 export function textForDamage(damage: DamageDice & { as?: string }) {
@@ -372,9 +374,13 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         Ideas (bad)
         
         • Each part should be guaranteed at least one feature & material. Nah, kinda too much going on.
+
+        TODO: 
+            1. formatting descriptions for display
+            2. why are Jest tests crashing?
     */
 
-    const MAX_DESCRIPTORS = 3;
+    const MAX_DESCRIPTORS = 1 + Math.floor(rng() * 3);
     let nDescriptors = 0;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
@@ -396,7 +402,12 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // convert the structured description to a text block
     // (placeholder for now)
-    const description = JSON.stringify(structuredDesc);
+    const description = Object.values(structuredDesc).flatMap((func) => Object.entries(func).flatMap(([partName, part]) => {
+        const descriptors = part.descriptors.map(z => z.desc).join(' and ');
+        const descriptorsAndMaterial = part.material === undefined ? descriptors : `made of ${part.material.desc}${descriptors.length > 0 ? ', and ' : ''}${descriptors}`;
+
+        return descriptorsAndMaterial.length > 0 ? `Its ${partName} ${descriptorsAndMaterial}.` : '';
+    })).join('\n');
 
     // then, generate the weapon's name, choosing an ephitet by picking a random descriptor to reference
     const ephitet = pickEphitet(rng, structuredDesc);
