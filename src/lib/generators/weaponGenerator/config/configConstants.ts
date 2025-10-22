@@ -742,7 +742,7 @@ export const MISC_DESC_FEATURES = {
         }),
         animalEngraving: mkGen((rng, weapon) => {
             const pluralAnimal = choice([
-                "dogs", "cats", "parrots", "owls", "mice", "snails", "bears", "loins", "badgers", "foxes", "spiders",
+                "dogs", "cats", "parrots", "owls", "mice", "snails", "bears", "lions", "badgers", "foxes", "spiders",
                 ...(weapon?.themes?.includes?.('dark') ? ['crocodiles', 'sharks', 'snakes'] : []),
                 ...(weapon?.themes?.includes?.('cloud') ? ["fish", "whales"] : []),
                 ...(weapon?.themes?.includes?.('fire') ? ["rhinos", "gazelles", "buffallos", "impalas", "ibexes", "zebras", "giraffes", "crocodiles"] : []),
@@ -859,7 +859,7 @@ export const allParts = ['barrel', 'blade', 'blades', 'body', 'crossguard', 'gri
 /**
  * The main / signature part the weapon
  */
-export const businessEnd = ['blade', 'blades', 'tip', 'prongs', 'axeHead', 'maceHead', 'maceHeads', 'body'] as const satisfies WeaponPartName[];
+export const businessEndParts = ['blade', 'blades', 'tip', 'prongs', 'axeHead', 'maceHead', 'maceHeads', 'body'] as const satisfies WeaponPartName[];
 
 
 /** Parts of a weapon specialised for striking and clashing, usually made of metal.
