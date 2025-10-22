@@ -1345,6 +1345,21 @@ export default {
                     },
                 }
             ),
+            new ProviderElement('misc-wizard-coating',
+                {
+                    generate: (rng) => genMaybeGen([
+                        MISC_DESC_FEATURES.coating.squiggles
+                    ].choice(rng), rng),
+                    applicableTo: {
+                        any: wrappableParts
+                    }
+                },
+                {
+                    themes: {
+                        any: ['wizard']
+                    },
+                }
+            ),
 
             new ProviderElement('material-steampunk-hard',
                 {
