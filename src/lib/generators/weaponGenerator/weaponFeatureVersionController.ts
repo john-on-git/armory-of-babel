@@ -33,7 +33,7 @@ export const weaponFeatureVersionController = new VersionController<WeaponFeatur
         shapeProvider: new WeaponFeatureProvider(x.shapes),
         rechargeMethodProvider: new WeaponFeatureProvider(x.rechargeMethods),
         activePowerProvider: new WeaponFeatureProvider(x.actives),
-        passivePowerOrLanguageProvider: new WeaponFeatureProvider(x.passives),
+        passivePowerProvider: new WeaponFeatureProvider(x.passives),
         languageProvider: new WeaponFeatureProvider(x.languages)
     } satisfies FeatureProviderCollection
 });

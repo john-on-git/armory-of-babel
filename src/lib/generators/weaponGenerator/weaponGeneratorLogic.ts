@@ -378,7 +378,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
     while (
         weapon.themes.length < minThemes ||
         featureProviders.activePowerProvider.available(weapon).size < params.nActive + params.nUnlimitedActive ||
-        featureProviders.passivePowerOrLanguageProvider.available(weapon).size < params.nPassive
+        featureProviders.passivePowerProvider.available(weapon).size < params.nPassive
     ) {
         const choice = unusedThemes.choice(rng);
         if (choice != undefined) {
@@ -419,25 +419,15 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
     // draw passive powers
     for (let i = 0; i < params.nPassive; i++) {
-        const choice = featureProviders.passivePowerOrLanguageProvider.draw(rng, weapon);
+        const choice = featureProviders.passivePowerProvider.draw(rng, weapon);
         const gennedChoice = genMaybeGen(choice, rng, weapon);
         if (gennedChoice != undefined) {
-            if ('language' in gennedChoice && weapon.sentient) {
-                weapon.sentient.languages.push(gennedChoice.desc);
-            }
-            else if ('miscPower' in gennedChoice) {
-                if (gennedChoice.desc !== null) {
-                    weapon.passivePowers.push({
-                        UUID: choice.UUID,
-                        ...gennedChoice,
-                        desc: genMaybeGen(gennedChoice.desc, rng, weapon)
-                    });
-                }
-            }
-            else {
-                // Probably because a passive power was missing a type key.
-                // Or because a language was configured in an invalid way & did not require the weapon to be sentient.
-                throw new Error('Could not assign passive power, config was invalid.');
+            if (gennedChoice.desc !== null) {
+                weapon.passivePowers.push({
+                    UUID: choice.UUID,
+                    ...gennedChoice,
+                    desc: genMaybeGen(gennedChoice.desc, rng, weapon)
+                });
             }
 
             if (gennedChoice.descriptorPartGenerator) {
@@ -599,8 +589,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                 ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
             }))
         },
-        passivePowers: weapon.passivePowers.map(power => ({
-            desc: power.desc,
+        passivePowers: weapon.passivePowers.filter(power => power.desc !== undefined).map(power => ({
+            desc: power.desc as string,
             ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
         })),
         sentient: weapon.sentient ? {

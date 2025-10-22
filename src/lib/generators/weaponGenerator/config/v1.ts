@@ -1082,6 +1082,68 @@ export default {
 
 
 
+            new ProviderElement('descriptor-wreathed-fire',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` is wreathed in flames`,
+                            plural: ` are wreathed in flames`,
+                        },
+                        ephitet: mkGen((rng) => ephHot.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power "integrated-clock"
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('descriptor-wreathed-dark-fire',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` is wreathed in lightless black flames`,
+                            plural: ` are wreathed in lightless black flames`,
+                        },
+                        ephitet: mkGen((rng) => ephHot.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive power ""
+                     */
+                    never: true
+                }
+            ), new ProviderElement('descriptor-wreathed-ice',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: ` is wreathed in icy mist`,
+                            plural: ` are wreathed in icy mist`,
+                        },
+                        ephitet: mkGen((rng) => ephCold.choice(rng))
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * Can only be added by the passive powers "damage-bonus-ice" & "damage-bonus-ice-blunt"
+                     */
+                    never: true
+                }
+            ),
             new ProviderElement('descriptor-clock-embed-forced',
                 {
                     generate: () => ({
@@ -2742,16 +2804,19 @@ export default {
             new ProviderElement("damage-bonus-fire",
                 {
                     miscPower: true,
-                    desc: "Wreathed in flames, glows like a torch",
                     bonus: {
                         addDamageDie: {
                             d6: 1
                         }
-                    }
+                    },
+                    descriptorPartGenerator: 'descriptor-wreathed-fire'
                 },
                 {
 
-                    themes: { any: ["fire"] }
+                    themes: { any: ["fire"] },
+                    UUIDs: {
+                        none: ['damage-bonus-dark-fire', 'damage-bonus-ice', 'damage-bonus-ice-blunt']
+                    }
                 }
             ),
             new ProviderElement("expertise-blacksmithing",
@@ -2793,12 +2858,13 @@ export default {
             new ProviderElement("damage-bonus-ice-blunt",
                 {
                     miscPower: true,
-                    desc: "Wreathed in frigid mist.",
+                    desc: undefined,
                     bonus: {
                         addDamageDie: {
                             d6: 1
                         }
                     },
+                    descriptorPartGenerator: 'descriptor-wreathed-ice'
                 },
                 {
 
@@ -2809,6 +2875,9 @@ export default {
                             "sword",
                             "greatsword"
                         ]
+                    },
+                    UUIDs: {
+                        none: ['damage-bonus-dark-fire', 'damage-bonus-ice', 'damage-bonus-dark-fire']
                     }
                 }
             ),
@@ -2821,6 +2890,7 @@ export default {
                             d10: 1
                         }
                     },
+                    descriptorPartGenerator: 'wreathed-ice'
                 },
                 {
 
@@ -2831,6 +2901,9 @@ export default {
                             "sword",
                             "greatsword"
                         ]
+                    },
+                    UUIDs: {
+                        none: ['damage-bonus-fire', 'damage-bonus-dark-fire', 'damage-bonus-ice-blunt']
                     }
                 }
             ),
@@ -2885,15 +2958,18 @@ export default {
             new ProviderElement("damage-bonus-dark-flame",
                 {
                     miscPower: true,
-                    desc: "Wreathed in lightless black flames.",
                     bonus: {
                         addDamageDie: {
                             d6: 1
                         }
-                    }
+                    },
+                    descriptorPartGenerator: 'descriptor-wreathed-dark-fire'
                 },
                 {
-                    themes: { any: ["dark"] }
+                    themes: { any: ["dark"] },
+                    UUIDs: {
+                        none: ['damage-bonus-fire', 'damage-bonus-ice', 'damage-bonus-ice-blunt']
+                    }
                 }
             ),
             new ProviderElement("resistance-radiant",
