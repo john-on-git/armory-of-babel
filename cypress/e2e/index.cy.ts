@@ -118,23 +118,26 @@ describe("Weapon Generator Main Page", () => {
 
 
     it("The app should replace the current entry in the user's browser history if (and only if) this is the first time it is loaded.", () => {
+        // keep track of the initial location for assertions later
+        cy.location().then((initialLocation) => {
 
-        // visit the page, then wait for the weapon to load for the first time
-        cy.visit("/");
-        cy.getByTestId('weapon-display').should('be.visible');
-
-        // keep track of the location
-        cy.location().then((firstWeaponLoc) => {
-
-            // generate a new weapon, then wait for that to load
-            cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
+            // visit the page, then wait for the weapon to load for the first time
+            cy.visit("/");
             cy.getByTestId('weapon-display').should('be.visible');
 
-            // navigate backwards in history, which should send us back to the first weapon
-            cy.go('back').location().should((loc) => expect(loc.href).to.be.eq(firstWeaponLoc.href));
+            // keep track of that location too
+            cy.location().then((firstWeaponLoc) => {
 
-            // then do it again, which should send us to about:black (because this is the start of history)
-            cy.go('back').location().should((loc) => expect(loc.href).to.be.eq('about:blank'));
+                // generate a new weapon, then wait for that to load
+                cy.getByTestId("weapon-generator-generate-button").should("be.visible").click();
+                cy.getByTestId('weapon-display').should('be.visible');
+
+                // navigate backwards in history, which should send us back to the first weapon
+                cy.go('back').location().should((loc) => expect(loc.href).to.be.eq(firstWeaponLoc.href));
+
+                // then do it again, which should send us to the initial location (i.e. about:blank on FireFox)
+                cy.go('back').location().should((loc) => expect(loc.href).to.be.eq(initialLocation.href));
+            })
         })
     });
 });
