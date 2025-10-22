@@ -8,7 +8,7 @@ import _ from "lodash";
 import seedrandom, { type PRNG } from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { commonDieSizes, type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { commonDieSizes, type DamageDice, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 /**
  * Get the maximum amount of damage that can be dealt by a given roll.
@@ -626,11 +626,15 @@ export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: Featu
  * @param rng rng source to use
  * @returns an option of mapsTo that matches one of the Themes of weapon
  */
-export function pickForTheme<TKey extends Theme, TRes>(weapon: Weapon, mapsTo: Record<TKey, TRes>, rng: PRNG): TRes {
-    return mapsTo[(weapon.themes.filter(theme => theme in mapsTo) as (keyof typeof mapsTo)[]).choice(rng)];
+export function pickForTheme<TTheme extends Theme, TOut, TWeapon extends Weapon>(weapon: TWeapon, mapsTo: Record<TTheme, TOut>, rng: PRNG): TWeapon extends WeaponGivenThemes<[TTheme]> ? { chosen: TOut, theme: TWeapon['themes'][number] } : { chosen: TOut | undefined, theme: TWeapon['themes'][number] | undefined } {
+    const chosenTheme = (weapon.themes.filter(theme => theme in mapsTo)).choice(rng) as TTheme;
+    return {
+        chosen: mapsTo[chosenTheme],
+        theme: chosenTheme
+    } as TWeapon extends WeaponGivenThemes<[TTheme]> ? { chosen: TOut, theme: TWeapon['themes'][number] } : { chosen: TOut | undefined, theme: TWeapon['themes'][number] | undefined };
 }
 
-export function textForDamage(damage: DamageDice & { as?: string }) {
+export function textForDamage(damage: DamageDice & { as?: string }): string {
     function textForDamageKey(k: string, v: string | number | undefined): string {
         if (v === undefined || v === 0) {
             return '';

@@ -10,7 +10,7 @@ export interface LeafGenerator<T, TArgs extends Array<unknown> = []> {
 export function mkGen<T, TArgs extends Array<unknown> = []>(x: T | ((rng: seedrandom.PRNG, ...args: TArgs) => T)): LeafGenerator<T, TArgs> {
     return x instanceof Function ? { generate: x } : { generate: () => x };
 }
-export type TGenerator<T, TArgs extends Array<unknown> = []> = LeafGenerator<T, TArgs> | RecursiveGenerator<T, TArgs>;
+export type TGenerator<T, TArgs extends unknown[] = []> = LeafGenerator<T, TArgs> | RecursiveGenerator<T, TArgs>;
 
 export abstract class RecursiveGenerator<T, TArgs extends Array<unknown> = [], TSubArgs extends TArgs = TArgs> {
     children: (TGenerator<T, TSubArgs>)[];

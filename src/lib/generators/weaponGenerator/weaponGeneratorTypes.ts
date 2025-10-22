@@ -107,6 +107,7 @@ export interface Weapon {
     themes: Theme[],
     params: WeaponGenerationParams
 }
+export type WeaponGivenThemes<TThemes extends Theme[]> = Omit<Weapon, 'themes'> & { themes: TThemes };
 
 interface PowerView {
     additionalNotes?: string[];
