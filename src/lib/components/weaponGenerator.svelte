@@ -271,6 +271,7 @@
             onclick={goBack}
             aria-label="go back button"
             disabled={!canGoBack}
+            hidden
         >
             <i class="fa-solid fa-chevron-left"></i>
         </button>
@@ -281,6 +282,7 @@
             onclick={goForward}
             aria-label="go forward button"
             disabled={!canGoForward}
+            hidden
         >
             <i class="fa-solid fa-chevron-right"></i>
         </button>
