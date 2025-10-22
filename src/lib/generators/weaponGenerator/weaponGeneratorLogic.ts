@@ -7,7 +7,7 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { type DamageDice, type DescriptorGenerator, type FeatureProviderCollection, getPlurality, isAre, isOrPossessionFor, isRarity, type Language, linkingIsOrPossessionFor, type PassiveBonus, pronounLoc, type Pronouns, structureDescFor, type Theme, type Weapon, type WeaponGenerationParams, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 /**
  * 
@@ -37,17 +37,20 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
                     : weapon.pronouns === 'object' ? 'The' : pronounLoc[weapon.pronouns].singular.possessive.capFirst();
 
 
-            // get all the descriptors, merging together any chains of 'has' TODO this would need to take into account has/have
+            // get all the descriptors, merging together any chains of 'has' / 'have' etc
             let hasChain = false;
             const descriptors: string[] = [];
-            for (const descriptor of part.descriptors) {
-                const hasHas = descriptor.desc.startsWith('has ');
-                if (hasChain) {
-                    descriptors.push(hasHas ? `${descriptor.desc.slice(4)}` : descriptor.desc);
+            if (part.descriptors.length > 0) {
+                // handle the first one separately if there's no material
+                if (part.material === undefined) {
+                    descriptors.push(`${isOrPossessionFor(partName, part.descriptors[0].descType)}${part.descriptors[0].desc}`);
+                    hasChain = part.descriptors[0].descType === 'possession';
                 }
-                else {
-                    hasChain = hasHas;
-                    descriptors.push(descriptor.desc);
+                for (const descriptor of part.material === undefined ? part.descriptors.slice(1) : part.descriptors) {
+                    // if this is possessive and the previous one was too, omit the possessiveness prefix
+                    descriptors.push(descriptor.descType === 'possession' && hasChain ? descriptor.desc : `${linkingIsOrPossessionFor(partName, descriptor.descType)}${descriptor.desc}`);
+
+                    hasChain = descriptor.descType === 'possession';
                 }
             }
 
@@ -59,10 +62,10 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
                 }
             }
 
-            const materialStr = part.material === undefined ? '' : ` made of ${part.material.desc}${descriptors.length > 1
+            const materialStr = part.material === undefined ? '' : `${isAre(partName)} made of ${part.material.desc}${descriptors.length > 1
                 ? ','
-                : descriptors.length > 0
-                    ? `, and ${isOrPossessionFor(partName, part.descriptors[0].atomType)}`
+                : descriptors.length === 1
+                    ? `, and `
                     : ''
                 }`
 
@@ -70,12 +73,12 @@ function structuredDescToString(_locale: string, weapon: Weapon) {
             const descriptorsStr = descriptors.length > 1
                 ? ` ${descriptors.slice(0, -1).join(', ')}, and ${descriptors[descriptors.length - 1]}`
                 : descriptors.length === 1
-                    ? ` ${descriptors[0]}`
+                    ? `${descriptors[0]}`
                     : '';
 
             usedAndThisSentence = usedAndThisSentence || descriptorsStr.length > 1 || (descriptorsStr.length === 1 && part.material !== undefined);
 
-            const partStr = `${start} ${partName} ${isAre(partName)}${materialStr}${descriptorsStr}`;
+            const partStr = `${start} ${partName} ${materialStr}${descriptorsStr}`;
 
             // if there's another part after this one, and it will not use the word 'and', merge it into this sentence
             // but don't merge more than two
@@ -137,8 +140,8 @@ function applyDescriptionPartProvider(rng: seedrandom.PRNG, provider: Descriptor
         if (targetPart !== undefined) {
             const desc = genMaybeGen(descriptor.descriptor, rng, weapon);
             structuredDesc[targetPart[0]][targetPart[1]].descriptors.push({
-                atomType: 'descType' in desc ? desc.descType : undefined,
-                desc: 'quantityless' in desc ? genMaybeGen(desc.quantityless, rng, weapon) : genMaybeGen(desc[getPlurality(targetPart[1])], rng, weapon),
+                descType: desc.descType,
+                desc: genMaybeGen(desc[getPlurality(targetPart[1])], rng, weapon, targetPart[1]),
                 ephitet: genMaybeGen(descriptor.ephitet, rng, weapon),
                 UUID: provider.UUID
             });
@@ -488,7 +491,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             2. why are Jest tests crashing?
     */
 
-    const MAX_DESCRIPTORS = 2 + Math.floor(rng() * 2);
+    const MAX_DESCRIPTORS = 5 + Math.floor(rng() * 2);
     let nDescriptors = 0;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
