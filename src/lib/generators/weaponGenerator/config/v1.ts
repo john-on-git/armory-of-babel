@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimal } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type TGenerator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts } from "$lib/generators/weaponGenerator/config/configConstants";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, eyeAcceptingParts, grippedWeaponShapeFamilies, holdingParts, importantPart, MATERIALS, MISC_DESC_FEATURES, mouthAcceptingParts, pickOrLinkWithEnergyCore, pointedWeaponShapes, shapeFamiliesWithoutPommels, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstants";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { genMaybeGen, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, lt, type ActivePower, type CommonDieSize, type DamageDice, type Descriptor, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -44,6 +44,22 @@ export default {
     },
     nonRollableDescriptors: {
         add: [
+            new ProviderElement('mirror-finish-forced',
+                {
+                    generate: () => ({
+                        descriptor: {
+                            descType: 'property',
+                            singular: " is polished to a mirror finish",
+                            plural: " are "
+                        }
+                    }),
+                    ephitet: mkGen((rng) => [{ pre: 'Mirrored' }, { post: 'of ' }].choice(rng)),
+                    applicableTo: { any: importantPart }
+                },
+                /**
+                 * Can only be added by the passive power "mounted-dismount-resist"
+                 */
+                { never: true }),
             new ProviderElement('mounted-dismount-resist-descriptor-fire',
                 {
                     generate: () => ({
@@ -59,7 +75,7 @@ export default {
                     }
                 },
                 /**
-                 * Can only be added by the passive power "mounted-dismount-resist"
+                 * Can only be added by the passive power "stats-as-mirror"
                  */
                 { never: true }
             ),
@@ -360,8 +376,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'a superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
-                                plural: 'a superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
+                                singular: 'a superheated section running down the middle of it, which emits dim orange light, hissing subtly as you move it around',
+                                plural: 'a superheated section in the middle of them, which emit dim orange light, hissing subtly as you move them around',
                             },
                             ephitet: mkGen(rng => ephHot.choice(rng)),
                         }
@@ -383,8 +399,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
-                                plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
+                                singular: 'a large crystal orb embedded in it, containing a howling blizzard',
+                                plural: 'a set of large crystal orbs embedded in them, containing a welter of winter weather'
                             },
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
@@ -406,8 +422,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'a glass bulb running down the middle (it blasts ultraviolet light in all directions)',
-                                plural: 'a glass bulb running down the middle (blasting ultraviolet light in all directions)'
+                                singular: 'a glass bulb running down the middle which blasts ultraviolet light in all directions',
+                                plural: 'a glass bulb running down the middle which blast ultraviolet light in all directions'
                             },
                             ephitet: mkGen(rng => ephPurple.choice(rng)),
                         }
@@ -429,8 +445,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'a river of sapphire curling through its center (waves of light ebb and flow within it)',
-                                plural: 'rivers of sapphire curling through them (waves of light ebb and flow within)'
+                                singular: 'a river of sapphire curling through its center, waves of light ebb and flow within it',
+                                plural: 'rivers of sapphire curling through them, waves of light ebb and flow within'
                             },
                             ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
@@ -452,8 +468,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: mkGen((_, __, partName) => ` is partially transparent, revealing luminous red veins which emit a gentle crimson glow that diffuses through the ${partName}`),
-                                plural: mkGen((_, __, partName) => ` are partially transparent, revealing luminous red veins, which spread a gentle crimson glow throughout the ${partName}`)
+                                singular: mkGen((_, __) => ` is partially transparent, revealing luminous red veins which emit a diffuse crimson glow`),
+                                plural: mkGen((_, __) => ` are partially transparent, revealing luminous red veins, which spread a diffuse crimson glow`)
                             },
                             ephitet: mkGen(rng => ephRed.choice(rng)),
                         }
@@ -571,8 +587,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'property',
-                                singular: " is shaped like a corkscrew (which surrounds a bolt of dark energy, crackling eternally at its center)",
-                                plural: " are shaped like corkscrews (each surrounds a bolt of dark energy, crackling eternally at its center)"
+                                singular: " is shaped like a corkscrew, with a bolt of dark energy crackling eternally at its center",
+                                plural: " are shaped like corkscrews, each has a bolt of dark energy crackling eternally at its center"
                             },
                             ephitet: mkGen(rng => ephBlack.choice(rng)),
                         }
@@ -594,8 +610,8 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'a large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
-                                plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
+                                singular: 'a large crack running down the middle of it, the edges glow with sky-blue energy, occasionally sparking with electricity',
+                                plural: 'a large crack running down the middle of them, their edges glow with sky-blue energy, occasionally sparking with electricity'
                             },
                             ephitet: mkGen(rng => ephSky.choice(rng)),
                         }
@@ -617,10 +633,33 @@ export default {
                         return {
                             descriptor: {
                                 descType: 'possession',
-                                singular: 'a glass tube running down the center (which crackles with electrical energy)',
-                                plural: 'glass tube running down their center (which crackle with electrical energy)'
+                                singular: 'a glass tube running down the center, which crackles with electrical energy',
+                                plural: 'glass tube running down their center, which crackle with electrical energy'
                             },
                             ephitet: mkGen(rng => ephSteampunk.choice(rng)),
+                        }
+                    },
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    /**
+                     * can be added by powers that call the function pickOrLinkWithEnergyCore
+                     */
+                    never: true
+                }
+            ),
+            new ProviderElement('energy-core-wizard',
+                {
+                    generate: () => {
+                        return {
+                            descriptor: {
+                                descType: 'possession',
+                                singular: 'a dense network of magical runes carved across it, which glows with arcane energy',
+                                plural: 'magical runes carved across them, which glow with arcane energy'
+                            },
+                            ephitet: mkGen(rng => ephBlue.choice(rng)),
                         }
                     },
                     applicableTo: {
@@ -716,8 +755,8 @@ export default {
                             ],
                             sour: [
                                 MISC_DESC_FEATURES.embedded["a citrine"],
-                                MISC_DESC_FEATURES.embedded["acid diamond"],
-                                MISC_DESC_FEATURES.embedded["toxic pearl"]
+                                MISC_DESC_FEATURES.embedded["an acid diamond"],
+                                MISC_DESC_FEATURES.embedded["a toxic pearl"]
                             ],
                             wizard: [
                                 MISC_DESC_FEATURES.embedded["an amethyst"],
@@ -1802,13 +1841,37 @@ export default {
                 mkGen((rng, weapon) => {
 
                     const damage = textForDamage(modDamage(weapon.damage, x => 3 * x));
-                    const core = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire', 'ice', 'light', 'dark', 'wizard', 'cloud', 'steampunk']>, rng);
+                    const core = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['fire' | 'ice' | 'light' | 'dark' | 'wizard' | 'cloud' | 'steampunk']>, rng);
+
+                    const projectileByTheme = {
+                        ice: "a snowflake shuriken",
+                        fire: "a fiery chakram",
+                        cloud: "a pressurized stream of water, razor-sharp",
+                        steampunk: "an arc of electricity",
+                        light: `a wave of ${core.theme}`,
+                        dark: `a wave of ${core.theme}`,
+                        wizard: `a wave of ${core.theme}`,
+                        void: `a wave of ${core.theme}`,
+                        nature: `a wave of ${core.theme}`
+                    } as const satisfies Record<PossibleCoreThemes | 'void', string>;
+
+                    const titleByTheme = {
+                        fire: "Ring of Fire",
+                        ice: "Ice Blast",
+                        cloud: "Pressure Washer",
+                        steampunk: "Arc Blast",
+                        nature: `${core.adj} Blast`,
+                        light: `${core.adj} Blast`,
+                        dark: `${core.adj} Blast`,
+                        wizard: `${core.adj} Blast`,
+                        void: `${core.adj} Blast`
+                    } as const satisfies Record<PossibleCoreThemes | 'void', string>;
 
                     return {
                         cost: 2,
 
-                        desc: `${core.adj} Blast`,
-                        additionalNotes: [`You strike at the air, summoning a wave of ${core.desc}.`, `It deals ${damage} damage, range as bow.`],
+                        desc: titleByTheme[core.theme],
+                        additionalNotes: [`You strike at the air, launching ${projectileByTheme[core.theme]}.`, `It deals ${damage} damage, range as sling.`],
                         descriptorPartGenerator: core.featureUUID
                     }
                 }),
@@ -2826,7 +2889,7 @@ export default {
                 mkGen((_rng) => ({
                     desc: "Tilt",
                     cost: 3,
-                    additionalNotes: ["You charge forward, moving as far as you're allowed in a single direction.", "You can move through other foes even if you wouldn't normally be able to, making an attack against each foe you moved through.", "Can only be used when you are mounted, and have not yet moved during your turn."]
+                    additionalNotes: ["Upon landing a blow, you empower it with extra force. If the target is a rider they are forcibly dismounted, otherwise they are knocked over."]
                 })),
                 {
 
@@ -2986,22 +3049,22 @@ export default {
                     const coreChoice = pickOrLinkWithEnergyCore(weapon as WeaponGivenThemes<['light' | 'fire' | 'nature' | 'cloud']>, rng);
 
                     const effects = {
-                        light: `The weapon emits a tether of ${coreChoice.desc}.`,
-
+                        ice: `The weapon emits a vortex of ${coreChoice.desc}`,
                         fire: 'The weapon emit a fiery whip.',
-
+                        light: `The weapon emits a tether of ${coreChoice.desc}.`,
+                        dark: `The weapon emits a tether of ${coreChoice.desc}`,
+                        wizard: "A hand made of magical force extends from the weapon's tip.",
+                        steampunk: "A compartment opens at the weapon's tip, revealing a spring-loaded hand.",
                         nature: "A sturdy vine grows from the weapon's tip.",
-
                         cloud: "The weapon emits a vortex of air.",
 
-                        void: 'The weapon emits a tether of void energy.'
-
-                    } as const satisfies Partial<Record<Theme | 'void', string>>;
+                        void: 'The weapon emits a tether of void energy.',
+                    } as const satisfies Record<PossibleCoreThemes | 'void', string>;
 
                     return {
                         desc: 'Kinesis',
                         cost: 1,
-                        additionalNotes: [`${effects[coreChoice.theme]} It can lift and throw an object weighing up to 500 lbs.`],
+                        additionalNotes: [`${effects[coreChoice.theme]} It can lift and throw an object within 60-ft, weighing up to 500 lbs.`],
                         descriptorPartGenerator: coreChoice.featureUUID
                     }
                 }), {
@@ -3543,7 +3606,8 @@ export default {
             new ProviderElement("stats-as-mirror",
                 {
                     miscPower: true,
-                    desc: "Extremely shiny, functions as a mirror."
+                    desc: "Extremely shiny, functions as a mirror.",
+                    descriptorPartGenerator: 'mirror-finish-forced'
                 },
                 {
                     themes: { any: ["light"] }
