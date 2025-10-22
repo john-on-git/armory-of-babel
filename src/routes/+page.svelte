@@ -222,6 +222,9 @@
     }
 
     @media (prefers-color-scheme: light) {
+        :global(i) {
+            color: black;
+        }
         :global(:root) {
             color: #213547;
             background-color: #ffffff;

@@ -189,13 +189,6 @@
         flex-basis: 0;
     }
 
-    .weapon-display-powers {
-        flex-grow: 2;
-    }
-    .weapon-display-sentient-info {
-        flex-grow: 1;
-    }
-
     .weapon-display {
         width: 100%;
 
@@ -224,6 +217,21 @@
         }
     }
 
+    .weapon-display-powers,
+    .weapon-display-sentient-info {
+    }
+
+    .weapon-display-powers {
+        flex-grow: 2;
+    }
+    .weapon-display-sentient-info {
+        padding: 10pt;
+        flex-grow: 1;
+        border-radius: 8px;
+
+        background-color: hsla(0, 0%, 100%, 1.5%);
+    }
+
     .weapon-generator-list-item {
         margin-left: 20pt;
         margin-top: 10pt;
@@ -245,12 +253,6 @@
     .weapon-damage-title {
         font-weight: bold;
         text-decoration: underline;
-    }
-    .weapon-display-sentient-info {
-        border: 2pt solid #ffffff47;
-        border-radius: 8px;
-
-        padding: 10pt;
     }
     .weapon-display-sentient-info-title {
         text-align: center;
