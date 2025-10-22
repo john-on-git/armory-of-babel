@@ -13,8 +13,6 @@ export default {
         /*TODO
  
             energy-core-void
-            energy-core-fire
-            energy-core-ice
             energy-core-ultraviolet
 
             energy-core-azure
@@ -23,9 +21,6 @@ export default {
             energy-core-atomic
 
             energy-core-gold
-            energy-core-dark
-            energy-core-aether
-            energy-core-steampunk
         */
         add: [
             new ProviderElement('energy-core-void',
@@ -51,7 +46,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'has',
+                                singular: 'superheated section running down the middle of it (which emits dim orange light, hissing subtly as you move it around)',
+                                plural: 'superheated section in the middle of them (which emit dim orange light, hissing subtly as you move them around)',
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -70,7 +69,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'has',
+                                singular: 'a large crystal orb embedded in it (which contains a howling blizzard)',
+                                plural: 'a set of large crystal orbs embedded in them (contain a welter of winter weather)'
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -165,7 +168,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'has',
+                                singular: 'an integrated nuclear reactor which gives it a healthy glow',
+                                plural: 'an integrated nuclear reactor which gives them a healthy glow'
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -203,7 +210,10 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                singular: 'is shaped like a corkscrew (which surrounds a bolt of dark energy, eternally crackling at its center)',
+                                plural: 'are shaped like corkscrews (each surrounds a bolt of dark energy, eternally crackling at its center)'
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -222,7 +232,11 @@ export default {
                 {
                     generate: () => {
                         return {
-                            descriptor: { singular: '', plural: '' },
+                            descriptor: {
+                                descType: 'has',
+                                singular: 'large crack running down the middle of it (the edges glow with sky-blue energy, occasionally sparking with electricity)',
+                                plural: 'a large crack running down the middle of them (their edges glow with sky-blue energy, and  occasionally sparki with electricity)'
+                            },
                             ephitet: { pre: '' },
                         }
                     },
@@ -242,8 +256,9 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                singular: 'has a glass section running down the center, which crackles with electrical energy',
-                                plural: 'each have glass sections running down their center, which crackles with electrical energ'
+                                descType: 'has',
+                                singular: 'glass section running down the center (which crackles with electrical energy)',
+                                plural: 'glass sections running down their center (which crackle with electrical energy)'
                             },
                             ephitet: { pre: '' },
                         }
@@ -660,7 +675,7 @@ export default {
                     return {
                         miscPower: true,
 
-                        desc: `Anything killed by the weapon explodes in a blast of ${desc}.The blast deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`,
+                        desc: `Anything killed by the weapon explodes in a blast of ${desc}. The blast deals ${damageByRarity[weapon.rarity]} damage, with a range of 10-ft.`,
                         descriptorPartGenerator: featureUUID
                     }
                 }),

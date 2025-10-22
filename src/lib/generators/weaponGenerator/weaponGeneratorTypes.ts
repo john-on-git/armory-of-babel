@@ -243,6 +243,7 @@ export interface WeaponPowerCond extends Cond {
 
 
 interface WeaponPartAtom {
+    atomType?: 'has' | 'is';
     /**
      * Text of the element in the description.
      * @example
@@ -432,9 +433,9 @@ export function getPlurality(name: WeaponPartName) {
 export function isAre(name: WeaponPartName) {
     switch (getPlurality(name)) {
         case 'singular':
-            return 'are';
-        case 'plural':
             return 'is';
+        case 'plural':
+            return 'are';
     }
 }
 export function hasHave(name: WeaponPartName) {
@@ -446,16 +447,35 @@ export function hasHave(name: WeaponPartName) {
     }
 }
 
-export function itTheyFor(name: WeaponPartName) {
-    switch (getPlurality(name)) {
+export function isOrPossessionFor(name: WeaponPartName, type: 'has' | 'is' | undefined) {
+    const plurality = getPlurality(name);
+    switch (plurality) {
         case 'singular':
-            return 'they';
+            switch (type) {
+                case 'has':
+                    return 'it has';
+                case 'is':
+                    return "it's";
+                case undefined:
+                    return '';
+                default:
+                    return type satisfies never;
+            }
         case 'plural':
-            return 'it';
+            switch (type) {
+                case 'has':
+                    return 'they each have';
+                case 'is':
+                    return "they're";
+                case undefined:
+                    return '';
+                default:
+                    return type satisfies never;
+            }
+        default:
+            return plurality satisfies never;
     }
 }
-
-
 
 export function structureDescFor(shape: WeaponShape) {
     function getStructure(shape: WeaponShape) {
@@ -520,12 +540,13 @@ export type Ephitet = {
  * possession: usually a sub-part. It has jewels in it.
  * quantityless: singular and plural are both the same
  */
-export type DescriptorText = {
+export type DescriptorText = ({
+    descType?: 'has' | 'is';
     singular: string | TGenerator<string, [Weapon]>;
     plural: string | TGenerator<string, [Weapon]>;
 } | {
     quantityless: string | TGenerator<string, [Weapon]>;
-};
+});
 
 export type Descriptor = ({ material: string | TGenerator<string, [Weapon]> } | { descriptor: DescriptorText }) & {
     ephitet: Ephitet | TGenerator<Ephitet, [Weapon]>;
