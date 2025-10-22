@@ -567,6 +567,71 @@ export const MISC_DESC_FEATURES = {
             },
             ephitet: { pre: 'Headhunter' }
         },
+        beadsWrap: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'a chain of glass beads wrapped around it',
+                plural: 'glass beads dangling from them'
+            },
+            ephitet: { pre: 'Beaded' }
+        },
+        silverChainWrap: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'intricate silver chains wrapped around it',
+                plural: 'intricate silver chains wrapped around them',
+            },
+            ephitet: { pre: 'Silver' }
+        },
+        goldChainWrap: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'intricate golden chains wrapped around it',
+                plural: 'intricate golden chains wrapped around them',
+            },
+            ephitet: { pre: 'Gilded' }
+        },
+        ironChain: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'iron chains wrapped around it',
+                plural: 'iron chains wrapped around them',
+            },
+            ephitet: { pre: 'Chained' }
+        },
+        amethystChain: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'an amethyst bracelet wrapped around it',
+                plural: 'amethyst bracelet bracelets wrapped around them',
+            },
+            ephitet: { pre: 'Chained' }
+        },
+        anyJewelChain: {
+            descriptor: {
+                descType: 'possession',
+                singular: new StringGenerator(['a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
+                plural: new StringGenerator(['', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelets wrapped around them']),
+            },
+            ephitet: { pre: 'Bejewelled' }
+        },
+        silkWrap: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'a silk sash wrapped around it',
+                plural: 'silk sashes wrapped around them'
+            },
+            ephitet: { pre: 'Silken' }
+        },
+        peacockFeather: {
+            descriptor: {
+                descType: 'possession',
+                singular: 'a peacock feather pinned to it',
+                plural: 'peacock feathers pinned to them'
+            },
+            ephitet: { post: 'of the Peacock' }
+
+        }
     },
     coating: {
         glitter: {
@@ -630,81 +695,28 @@ export const MISC_DESC_FEATURES = {
                 },
                 ephitet: mkGen((rng) => ephRainbow.choice(rng))
             }
+        }),
+        squiggles: mkGen((rng, weapon) => {
+            const midRarity = ['lined with silver', 'lined with gold', 'lined with amethyst']
+            const colors = {
+                common: midRarity,
+                uncommon: midRarity,
+                rare: midRarity,
+                epic: [],
+                legendary: [],
+            } satisfies Record<WeaponRarity, string[]>;
+
+            const desc = colors[weapon.rarity].choice(rng);
+
+            return {
+                descriptor: {
+                    descType: 'property',
+                    singular: ` is covered in squiggly grooves, ${desc}`,
+                    plural: ` are covered in squiggly grooves, ${desc}`
+                },
+                ephitet: mkGen((rng) => ephRainbow.choice(rng))
+            }
         })
-    },
-    wrap: {
-        bannerWrap: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'the flag of an ancient realm wrapped around it',
-                plural: 'the flags of ancient realms wrapped around them',
-            },
-            ephitet: { pre: 'Bannered' }
-        },
-        pirateWrap: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'a scrap of a jolly roger wrapped around it',
-                plural: 'the scraps of a jolly roger wrapped around them',
-            },
-            ephitet: { pre: "Pirate" }
-        },
-        beadsWrap: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'a chain of glass beads wrapped around it',
-                plural: 'glass beads dangling from them'
-            },
-            ephitet: { pre: 'Beaded' }
-        },
-        silverChainWrap: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'intricate silver chains wrapped around it',
-                plural: 'intricate silver chains wrapped around them',
-            },
-            ephitet: { pre: 'Silver' }
-        },
-        goldChainWrap: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'intricate golden chains wrapped around it',
-                plural: 'intricate golden chains wrapped around them',
-            },
-            ephitet: { pre: 'Gilded' }
-        },
-        ironChain: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'iron chains wrapped around it',
-                plural: 'iron chains wrapped around them',
-            },
-            ephitet: { pre: 'Chained' }
-        },
-        amethystChain: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'an amethyst bracelet wrapped around it',
-                plural: 'amethyst bracelet bracelets wrapped around them',
-            },
-            ephitet: { pre: 'Chained' }
-        },
-        anyJewelChain: {
-            descriptor: {
-                descType: 'possession',
-                singular: new StringGenerator(['a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
-                plural: new StringGenerator(['', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelets wrapped around them']),
-            },
-            ephitet: { pre: 'Bejewelled' }
-        },
-        silkWrap: {
-            descriptor: {
-                descType: 'possession',
-                singular: 'a silk sash wrapped around it',
-                plural: 'silk sashes wrapped around them'
-            },
-            ephitet: { pre: 'Silken' }
-        },
     },
     glyph: {
         oldCoatOfArms: {
@@ -715,6 +727,10 @@ export const MISC_DESC_FEATURES = {
             },
             ephitet: { pre: 'Heraldic' }
         },
+        // TODO
+        // artDeco: {},
+        // artNoveau: {},
+        // islamicGeometric: {}
     },
     sensorium: {
         eyes: {
@@ -782,7 +798,57 @@ export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'q
 
 
 
-type WeaponEnergyCore = {
+type GroupElement = {
+    /**
+     * UUID of the feature associated with this thing.
+     */
+    featureUUID: string;
+};
+/**
+ * This function that enables descriptors to coordinate with other similar descriptors that may already be on a weapon.
+ * @param source 
+ * @parma maxInGroup ther
+ * @param weapon 
+ * @param rng 
+ * @returns 
+ */
+export function pickOrLinkWithElement<TElem extends GroupElement = { featureUUID: string }, TTheme extends Theme = Theme, TSource extends Record<TTheme, TElem | TElem[]> = Record<TTheme, TElem | TElem[]>,>(source: TSource, maxInGroup: number, fallback: TElem, weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): TElem & { theme: keyof TSource | 'void' } {
+
+    function tryGetExisting(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>): (TElem & { theme: TTheme })[] {
+        const flatElem = [];
+        for (const [k, v] of _.entries<TElem>(source)) {
+            if (v instanceof Array) {
+                v.forEach(core => flatElem.push({ ...core, theme: k as TTheme }))
+            }
+            else {
+                flatElem.push({ ...v, theme: k as TTheme });
+            }
+        }
+
+        // get a random core that is already present on the weapon. 
+        // so long as this function is the only way to acquire a core, there should only ever be zero-or-one cores on the weapon
+        const weaponUUIDs = gatherUUIDs(weapon);
+
+        return flatElem.filter(x => weaponUUIDs.has(x.featureUUID));
+    }
+
+    function getNewCore(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (TElem & { theme: TTheme | 'void' }) {
+        const { chosen, theme } = pickForTheme(weapon, source, rng);
+        const chosenOrFallBack = chosen ?? { ...fallback, theme: 'void' };
+        return { ...(chosenOrFallBack instanceof Array ? chosenOrFallBack.choice(rng) : chosenOrFallBack), theme: theme ?? 'void' };
+    }
+
+    // get all the existing elements
+    const existing = tryGetExisting(weapon);
+
+    /* If the number of elements in this group that are already present on the weapon is at-or-over the maximum, pick one of the existing ones.
+     * Otherwise generate a new one.
+     */
+    return existing.length >= maxInGroup ? existing.choice(rng) : getNewCore(weapon, rng);
+}
+
+
+interface WeaponEnergyCore extends GroupElement {
     /**
      * Adjective for the effect, for active power titles.
      */
@@ -792,13 +858,8 @@ type WeaponEnergyCore = {
      * @example
      * "ultraviolet energy", "ice wind", "fire"
      */
-    desc: string,
-    /**
-     * UUID of the feature that should be added to the weapon, if any.
-     */
-    featureUUID?: string,
+    desc: string;
 };
-
 
 const wizardColoredEnergy = [
     {
@@ -816,7 +877,8 @@ const wizardColoredEnergy = [
         desc: 'golden energy',
         featureUUID: 'energy-core-gold'
     },
-];
+] satisfies WeaponEnergyCore[];
+
 const cores = {
     ice: {
         adj: 'Icy',
@@ -881,40 +943,13 @@ export type PossibleCoreThemes = keyof typeof cores;
 /**
  * If the weapon already has an energy core, get that one. Otherwise roll one at random.
  */
-export function pickOrLinkWithEnergyCore<TTheme extends PossibleCoreThemes>(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): WeaponEnergyCore & { theme: PossibleCoreThemes | 'void' } {
-
-
-    const fallBack = {
+export function pickOrLinkWithEnergyCore(weapon: WeaponGivenThemes<[keyof typeof cores, ...(keyof typeof cores)[]]>, rng: PRNG) {
+    const fallback = {
         adj: 'Void',
         desc: 'void energy',
         featureUUID: 'energy-core-void'
     } as const satisfies WeaponEnergyCore;
 
 
-
-    function tryGetExistingCore(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (WeaponEnergyCore & { theme: TTheme }) | undefined {
-        const flatCores = [];
-        for (const [k, v] of _.entries(cores)) {
-            if (v instanceof Array) {
-                v.forEach(core => flatCores.push({ ...core, theme: k as PossibleCoreThemes }))
-            }
-            else {
-                flatCores.push({ ...v, theme: k as PossibleCoreThemes });
-            }
-        }
-
-        // get a random core that is already present on the weapon. 
-        // so long as this function is the only way to acquire a core, there should only ever be zero-or-one cores on the weapon
-        const weaponUUIDs = gatherUUIDs(weapon);
-
-        return flatCores.filter(x => weaponUUIDs.has(x.featureUUID)).choice(rng) as (WeaponEnergyCore & { theme: TTheme }) ?? undefined;
-    }
-
-    function getNewCore(weapon: WeaponGivenThemes<[TTheme, ...TTheme[]]>, rng: PRNG): (WeaponEnergyCore & { theme: TTheme | 'void' }) {
-        const { chosen, theme } = pickForTheme(weapon, cores, rng);
-        const chosenOrFallBack = chosen ?? fallBack;
-        return { ...(chosenOrFallBack instanceof Array ? chosenOrFallBack.choice(rng) : chosenOrFallBack), theme: theme ?? 'void' };
-    }
-
-    return tryGetExistingCore(weapon, rng) ?? getNewCore(weapon, rng);
+    return pickOrLinkWithElement<WeaponEnergyCore, keyof typeof cores>(cores, 1, fallback, weapon, rng)
 }

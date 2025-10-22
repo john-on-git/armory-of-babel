@@ -60,17 +60,32 @@ export interface Cond {
 export type WithUUID<T extends object> = { UUID: string; } & T;
 
 
-export function gatherUUIDs<T extends object>(x: T, acc: Set<string> = new Set<string>()): Set<string> {
-    // get all the UUIDs of all patchables in the subtree
+/**
+ * Get the values of all properties in this object, and all its children, with a given key (by iterating depth-first).
+ * @param property the key to get values of
+ * @param x the object
+ * @param acc accumulator to gather the values inside
+ * @returns the accumualtor, modified such that it contains all the values in the subtree
+ */
+export function gatherProperties<T extends object>(property: string | number | symbol, x: T, acc: Set<string> = new Set<string>()): Set<string> {
     Object.values(x).forEach((x) => {
         if (typeof x === 'object' && x !== null && x !== undefined) {
-            if ('UUID' in x) {
+            if (property in x) {
                 acc.add(x.UUID);
             }
-            gatherUUIDs(x, acc);
+            gatherProperties(x, acc);
         }
     });
     return acc;
+}
+
+/**
+ * get all the UUIDs of all patchables in the subtree.
+ * @param args 
+ * @returns 
+ */
+export function gatherUUIDs<T extends object>(x: T, acc: Set<string> = new Set<string>()): Set<string> {
+    return gatherProperties('UUID', x, acc);
 }
 
 export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { set: Set<string> }) {
