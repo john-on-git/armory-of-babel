@@ -96,7 +96,7 @@
                         {#each weapon.active.powers as power}
                             <div class="weapon-generator-list-item">
                                 <p>
-                                    {`${(power.desc as string).capFirst()} (${textForCharges(power.cost)}).`}
+                                    {`${(power.desc as string).capWords()} (${textForCharges(power.cost)}).`}
                                 </p>
                                 {#if power.additionalNotes}
                                     <div>
