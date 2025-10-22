@@ -155,15 +155,15 @@ export default {
                  */
                 { never: true }
             ),
-            new ProviderElement('vampire-mouth',
-                {
-                    generate: () => MISC_DESC_FEATURES.sensorium.mouth.vampire,
-                    ephitet: { pre: 'Vampiric' },
-                    applicableTo: {
-                        any: mouthAcceptingParts
-                    }
-                }, { never: true }
-            ),
+            // new ProviderElement('vampire-mouth',
+            //     {
+            //         generate: () => MISC_DESC_FEATURES.sensorium.mouth.vampire,
+            //         ephitet: { pre: 'Vampiric' },
+            //         applicableTo: {
+            //             any: mouthAcceptingParts
+            //         }
+            //     }, { never: true }
+            // ),
             new ProviderElement('generic-eyes',
                 {
                     generate: (rng) =>
@@ -1990,7 +1990,7 @@ export default {
                         "Upon landing a blow, you empower it to steal magic from the target's mind. Choose one of their spells at random. They expend resources as if the spell was cast.",
                         "The spell is then stored inside the weapon for you to cast later (at no cost), only one spell can be stored at a time.",
                     ],
-                    descriptorPartGenerator: 'vampire-mouth'
+                    // descriptorPartGenerator: 'vampire-mouth'
                 },
                 {
                     themes: {
@@ -2009,7 +2009,7 @@ export default {
                         "Upon landing a blow, you empower it to drain the target's life force. You regain HP equal to the damage dealt.",
                         "HP gained in this way can heal you over your natural cap, but any HP over the cap is lost at the end of the scene.",
                     ],
-                    descriptorPartGenerator: 'vampire-mouth'
+                    // descriptorPartGenerator: 'vampire-mouth'
                 },
                 {
                     themes: {
@@ -3300,17 +3300,6 @@ export default {
                 rarity: { gte: 'epic' }
             }
             ),
-            new ProviderElement("potion-resistant",
-                {
-                    miscPower: true,
-                    desc: "The effects of harmful potions and poisons on the wielder are halved.",
-                },
-                {
-                    themes: {
-                        any: ["wizard", "sour"],
-                    },
-                }
-            ),
             new ProviderElement("psi-immune",
                 {
                     miscPower: true,
@@ -4177,7 +4166,18 @@ export default {
                 shapeParticular: {
                     any: pointedWeaponShapes
                 }
-            })
+            }),
+            new ProviderElement("potion-resistant",
+                {
+                    miscPower: true,
+                    desc: "Poisons (and potions) that are delivered using the weapon have their effects doubled.",
+                },
+                {
+                    themes: {
+                        any: ["sour"],
+                    },
+                }
+            ),
             // new ProviderElement<MiscPower, WeaponPowerCond>("TODO",
             //     {
 
