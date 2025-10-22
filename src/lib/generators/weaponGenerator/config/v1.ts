@@ -1009,6 +1009,9 @@ export const v1 = {
                 },
                 {
                     themes: { any: ['sour'] },
+                    rarity: {
+                        lte: 'uncommon'
+                    }
                 }
             ),
             new ProviderElement<ActivePower, WeaponPowerCond>('cause-nausea',
@@ -1496,7 +1499,11 @@ export const v1 = {
                 {
 
                     miscPower: true,
-                    desc: "Traps the souls of its victims. They haunt the weapon, and obey the wielder's commands."
+                    desc: "Traps the souls of its victims.",
+                    additionalNotes: [
+                        "Their ghosts are bound to the weapon, and obey the wielder's commands.",
+                        'Can store up to 4 ghosts, and starts with 1d4 already inside.'
+                    ]
                 },
                 {
                     themes: { any: ['dark'] }

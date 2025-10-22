@@ -1,13 +1,5 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
     - Bugs.
-        - API blasting
-            - Main culprit is that it makes a call every time the odds (and other config) change, and this is kind of unavoidable
-                - The generate-weapon API should not be parameterised on rarity,
-                  instead it should just return a dict of weapons with these parameters, keyed by rarity.
-                  And then the UI holds this and just displays the active one.
-                - We could also have it only call when you stop adjusting the rarity but the UX on that is worse IMO
-            - local caching for weapons
-            - sort out the bad performance on providers
 
     - Generator setup.
         - Configuration.
@@ -30,11 +22,21 @@
         - Descriptions.                                 HARD LONG   4
         - Automated Testing.                            HARD LONG   ~
     - Advanced.
-        - ~~add @vercel/analytics                         EASY SHORT  3~~
         - Bookmark weapons functionality.               EASY SHORT  3
         - Automated Testing.                            EASY LONG  ~
+            - WIP
+            - TODO UI test for weapon exists regression
 
 - Done
+    - Bugs
+        - ~~API blasting~~
+            - Main culprit is that it makes a call every time the odds (and other config) change, and this is kind of unavoidable
+                - The generate-weapon API should not be parameterised on rarity,
+                  instead it should just return a dict of weapons with these parameters, keyed by rarity.
+                  And then the UI holds this and just displays the active one.
+                - We could also have it only call when you stop adjusting the rarity but the UX on that is worse IMO
+            - local caching for weapons
+            - sort out the bad performance on providers
     - Basic Functionality
         - ~~Version control for features.~~
             - ~~There should be a piece of state: v or version
@@ -66,3 +68,5 @@
             - ", and a charge when one of its demands is fulfilled."
             - 1-in-x to make demands
             - demand generator
+    - Advanced.
+        - ~~add @vercel/analytics                         EASY SHORT  3~~
