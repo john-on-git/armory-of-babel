@@ -447,8 +447,25 @@ export type StructuredDescription = {
 
 export type Ephitet = {
     pre: string;
+    /**
+     * If the ephitet's first letter is pronounced in an atypical way, this property allows overriding the alliteration behaviour.
+     * i.e.
+     * @example "Candied" alliteratesWith 'K'
+     * 
+     * @example "Pterodactly's" alliteratesWith 'T'
+     */
+    alliteratesWith?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
 } | {
     post: string;
+    /**
+     * If the ephitet starts with a linking phrase i.e. "of", "of the", it should provide the first letter of the real content here. 
+     * If this property is not provided, the ephitet will not be prioritised when it alliterates.
+     * i.e.
+     * @example "of the Fire" alliteratesWith 'F'
+     * 
+     * @example "the Lord's Blade" alliteratesWith 'L'
+     */
+    alliteratesWith?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
 };
 
 export type DescriptorType = 'possession' | 'property';
