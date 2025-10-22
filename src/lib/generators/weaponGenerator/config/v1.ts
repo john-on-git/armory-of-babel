@@ -36,16 +36,32 @@ export default {
             new ProviderElement('metal-extravagant',
                 {
                     generate: (rng) => {
-                        return {
-                            material: [
-                                'silver',
-                                'gold',
-                                'purple gold',
-                                'rose gold',
-                                'platinum',
-                                'palladium',
-                            ].choice(rng)
-                        }
+                        return [
+                            {
+                                material: 'silver',
+                                ephitet: 'Silver',
+                            },
+                            {
+                                material: 'gold',
+                                ephitet: 'Golden',
+                            },
+                            {
+                                material: 'purple gold',
+                                ephitet: 'Golden',
+                            },
+                            {
+                                material: 'rose gold',
+                                ephitet: 'Gold',
+                            },
+                            {
+                                material: 'platinum',
+                                ephitet: 'Platinum',
+                            },
+                            {
+                                material: 'palladium',
+                                ephitet: 'Palladium',
+                            }
+                        ].choice(rng);
                     },
                     applicableTo: {
                         any: ['barrel', 'blade', 'blades', 'tip', 'head', 'crossguard', 'pommel']
@@ -54,13 +70,16 @@ export default {
                 {
                     shapeFamily: {
                         any: sharpWeaponShapeFamilies
+                    },
+                    themes: {
+                        none: ['nature']
                     }
                 }
             ),
-            ...(['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].map((x) =>
-                new ProviderElement(`test-${x}`,
+            ...(['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].map((color) =>
+                new ProviderElement(`test-${color}`,
                     {
-                        generate: () => ({ descriptor: x })
+                        generate: () => ({ descriptor: `is ${color}`, ephitet: `${color.capFirst()}ish` })
                     },
                     {}
                 )))
