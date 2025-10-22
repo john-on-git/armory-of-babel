@@ -380,7 +380,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             2. why are Jest tests crashing?
     */
 
-    const MAX_DESCRIPTORS = 1 + Math.floor(rng() * 3);
+    const MAX_DESCRIPTORS = 2 + Math.floor(rng() * 2);
     let nDescriptors = 0;
 
     // first, apply any descriptor parts provided by the weapon's features, up to the cap
@@ -451,7 +451,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         const materialStr = part.material === undefined ? '' : ` is made of ${part.material.desc}${descriptors.length > 1
             ? ','
             : descriptors.length > 0
-                ? ` and`
+                ? `, and`
                 : ''
             }`
 

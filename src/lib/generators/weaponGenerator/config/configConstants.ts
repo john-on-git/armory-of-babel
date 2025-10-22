@@ -21,7 +21,7 @@ export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 's
 const simpleMaterials = [
     {
         material: 'black iron',
-        ephitet: 'Black Iron'
+        ephitet: 'Black-Iron'
     } as const,
     {
         material: 'meteoric iron',
@@ -273,11 +273,11 @@ export const MISC_DESC_FEATURES = {
 
                 switch (nCharms) {
                     case 1:
-                        return `has a miniature bust affixed to it, depicting ${chosenOptions[0]}`;
+                        return `has a miniature bust affixed to it (${chosenOptions[0]})`;
                     case 2:
-                        return `has a pair of miniature busts affixed to it, depicting ${chosenOptions[0]} and ${chosenOptions[1]}`;
+                        return `has a pair of miniature busts affixed to it (${chosenOptions[0]} and ${chosenOptions[1]})`;
                     case 3:
-                        return `has a cluster of miniature busts affixed to it: ${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]}`;
+                        return `has a cluster of miniature busts affixed to it (${chosenOptions[0]}, ${chosenOptions[1]}, and ${chosenOptions[2]})`;
                 }
             }),
             ephitet: 'Charming'
@@ -343,6 +343,12 @@ export const MISC_DESC_FEATURES = {
             ephitet: 'Silken'
         },
     },
+    glyph: {
+        oldCoatOfArms: {
+            descriptor: 'has the coat of arms of an ancient dynasty emblazoned on it',
+            ephitet: 'Heraldic'
+        },
+    }
 
 } as const satisfies Record<string, Record<string, Descriptor>>;
 

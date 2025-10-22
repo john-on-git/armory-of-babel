@@ -286,7 +286,10 @@
         opacity: 1;
     }
 
-    :global(.action-button:active, .inline-button:active) {
+    :global(
+            .action-button:not(:disabled):active,
+            .inline-button:not(:disabled):active
+        ) {
         -webkit-text-fill-color: transparent;
         -webkit-text-stroke: 1pt;
         paint-order: stroke;

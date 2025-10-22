@@ -591,6 +591,82 @@ export default {
                     }
                 }
             ),
+            new ProviderElement('',
+                {
+                    generate: () => ({
+                        material: "two separate blades (adamant and mythrel), they're intertwined in a spiral pattern",
+                        ephitet: 'Binary'
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    themes: {
+                        all: ['light', 'dark']
+                    }
+                }
+            ),
+            new ProviderElement('',
+                {
+                    generate: () => ({
+                        material: "two separate parts, split down the middle: one half is boreal steel, the other scarlet steel",
+                        ephitet: 'Bifurcated'
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    themes: {
+                        all: ['light', 'dark']
+                    }
+                }
+            ),
+            new ProviderElement('',
+                {
+                    generate: () => ({
+                        material: "a roiling mix of magical fire and water (which emits thick clouds of steam)",
+                        ephitet: 'Steamy'
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    rarity: {
+                        gte: 'epic'
+                    },
+                    themes: {
+                        all: ['fire', 'cloud']
+                    }
+                }
+            ),
+            new ProviderElement('',
+                {
+                    generate: () => ({
+                        material: "elementally infused metal, split into four distinct sections, representing each of the elements",
+                        ephitet: 'Elemental'
+                    }),
+                    applicableTo: {
+                        any: importantPart
+                    }
+                },
+                {
+                    rarity: {
+                        gte: 'legendary'
+                    },
+                    themes: {
+                        all: ['earth', 'cloud', 'fire']
+                    }
+                }
+            )
         ]
     },
     personalities: {

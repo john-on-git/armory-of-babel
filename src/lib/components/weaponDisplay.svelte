@@ -1,4 +1,7 @@
 <script lang="ts">
+    import Toaster, {
+        type ToasterInteface,
+    } from "$lib/components/Toaster.svelte";
     import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
     import { textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -9,6 +12,8 @@
     }
 
     let { weapon, fadeLock }: Props = $props();
+
+    let toaster: ToasterInteface;
 
     /** Text for the weapon's damage. i.e. "as sword + d6 + 1"
      */
@@ -32,6 +37,10 @@
 
     function copyWeaponLink() {
         navigator.clipboard.writeText(window.location.href);
+
+        if (toaster !== undefined) {
+            toaster.toast("copied to clipboard");
+        }
     }
 </script>
 
@@ -46,14 +55,16 @@
         >
             {weapon?.name ?? ""}
         </h2>
-        <button
-            class={`inline-button copy-weapon-link weapon-rarity-${weapon.rarity}`}
-            onclick={copyWeaponLink}
-            aria-label="copy to clipboard"
-            title="copy to clipboard"
-        >
-            <i class="fa-solid fa-link"></i>
-        </button>
+        <div class="link-container">
+            <button
+                class={`inline-button copy-weapon-link weapon-rarity-${weapon.rarity}`}
+                onclick={copyWeaponLink}
+                aria-label="copy to clipboard"
+            >
+                <i class="fa-solid fa-link"></i>
+            </button>
+            <Toaster bind:this={toaster} />
+        </div>
     </div>
     <div class="weapon-display-body" data-test>
         <div class="weapon-display-nonsentient">
@@ -275,6 +286,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 1rem;
     }
 
     .weapon-damage {
@@ -283,7 +295,14 @@
     }
 
     .copy-weapon-link {
-        margin-left: 1rem;
         font-size: 2.5rem;
+    }
+
+    .link-container {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        gap: 1rem;
+        position: relative;
     }
 </style>
