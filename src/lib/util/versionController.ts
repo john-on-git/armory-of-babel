@@ -87,6 +87,10 @@ export class VersionController<
         this.postGeneration = postGeneration;
     }
 
+    getLatestVersionNum(): number {
+        return this.deltaCollections.length - 1;
+    }
+
     /**
      * get the things for this version
      * @param v 
