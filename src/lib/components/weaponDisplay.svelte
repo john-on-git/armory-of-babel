@@ -6,6 +6,7 @@
     import { pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
     import { textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import { MediaQuery } from "svelte/reactivity";
 
     interface Props {
         weapon: WeaponViewModel;
@@ -14,7 +15,9 @@
 
     let { weapon, fadeLock }: Props = $props();
 
-    let flasher: FlasherInterface;
+    let flasher: FlasherInterface | null = $state(null);
+
+    const isPortrait = new MediaQuery("orientation:portrait").current;
 
     /** Text for the weapon's damage. i.e. "as sword + d6 + 1"
      */
@@ -39,7 +42,7 @@
     function copyWeaponLink() {
         navigator.clipboard.writeText(window.location.href);
 
-        if (flasher !== undefined) {
+        if (flasher !== null) {
             flasher.flash();
         }
     }
@@ -74,7 +77,12 @@
             >
                 <i class={`fa-solid fa-link ${getTitleColorClass(weapon)}`}></i>
             </button>
-            <Flasher bind:this={flasher} text={"copied to clipboard"} />
+            {#if !isPortrait}
+                {{
+                    // Include a notification when copying the ID, only if we're on desktop (my phone already has a notification like this)
+                }}
+                <Flasher bind:this={flasher} text={"copied to clipboard"} />
+            {/if}
         </div>
     </div>
     <div class="weapon-display-body" data-test>
