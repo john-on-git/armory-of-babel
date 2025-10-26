@@ -4067,7 +4067,7 @@ export default {
             new ProviderElement("laser-pointer",
                 {
                     miscPower: true,
-                    desc: "There's a button on the side of the weapon. Pressing it causes a the tip to emit a harmless beam of light.",
+                    desc: "There's a button on the side of the weapon. Pressing it causes the weapon's tip to emit a harmless beam of light.",
                 },
                 {
                     themes: { any: ['light', 'wizard', 'steampunk'] }
