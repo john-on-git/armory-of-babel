@@ -78,9 +78,7 @@
                 <i class={`fa-solid fa-link ${getTitleColorClass(weapon)}`}></i>
             </button>
             {#if !isPortrait}
-                {{
-                    // Include a notification when copying the ID, only if we're on desktop (my phone already has a notification like this)
-                }}
+                <!-- Include a notification when copying the ID, only if we're on desktop (my phone already has a notification like this) -->
                 <Flasher bind:this={flasher} text={"copied to clipboard"} />
             {/if}
         </div>
