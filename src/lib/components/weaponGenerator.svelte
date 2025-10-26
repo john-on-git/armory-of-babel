@@ -169,9 +169,8 @@
      */
     function getIDFromURL(): string {
         // this is user input and could be literally anything, i.e. an XSS attack
-        const maybeNumber = Number.parseInt(
-            new URLSearchParams(window.location.search).get("id") ?? "NaN",
-        );
+        const maybeStr = new URLSearchParams(window.location.search).get("id");
+        const maybeNumber = maybeStr ? Number.parseInt(maybeStr) : NaN;
 
         return Number.isInteger(maybeNumber)
             ? maybeNumber.toString()
