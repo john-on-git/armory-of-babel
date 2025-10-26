@@ -356,7 +356,7 @@ export default {
                             ephitet: { pre: 'Ivy' },
                         }
                     }),
-                    applicableTo: { any: ['pommel'] }
+                    applicableTo: { any: ['pommel', 'maceHeads', 'limbs', 'spearShaft'] }
                 },
                 /**
                  * Can only be added by the passive powers "mounted-dismount-resist", "disarm-immune"

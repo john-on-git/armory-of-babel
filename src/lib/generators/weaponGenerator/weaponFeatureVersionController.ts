@@ -7,21 +7,23 @@ import { PrimitiveContainer, VersionController, type DeltaCollection, type ToPat
 
 
 
-export const getWeaponFeatureVersionController = () => new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<WeaponFeaturesTypes>, FeatureProviderCollection>([
+export const getWeaponFeatureVersionController = (silent = true) => new VersionController<WeaponFeaturesTypes, DeltaCollection<WeaponFeaturesTypes>, ToPatchableArray<WeaponFeaturesTypes>, FeatureProviderCollection>([
     v1,
     v2
 ], (x) => {
-    console.log(
-        "Loaded\n",
-        ((x.themes as Array<unknown>).length), 'Themes\n',
-        (x.descriptors as Array<unknown>).length + (x.nonRollableDescriptors as Array<unknown>).length, 'Descriptors\n',
-        (x.personalities as Array<unknown>).length, 'Personalities\n',
-        (x.shapes as Array<unknown>).length, 'Shapes\n',
-        (x.rechargeMethods as Array<unknown>).length, 'Recharge Methods\n',
-        (x.actives as Array<unknown>).length, 'Active Powers\n',
-        (x.passives as Array<unknown>).length, 'Passive powers\n',
-        (x.languages as Array<unknown>).length, 'Languages\n',
-    )
+    if (!silent) {
+        console.log(
+            "Loaded\n",
+            ((x.themes as Array<unknown>).length), 'Themes\n',
+            (x.descriptors as Array<unknown>).length + (x.nonRollableDescriptors as Array<unknown>).length, 'Descriptors\n',
+            (x.personalities as Array<unknown>).length, 'Personalities\n',
+            (x.shapes as Array<unknown>).length, 'Shapes\n',
+            (x.rechargeMethods as Array<unknown>).length, 'Recharge Methods\n',
+            (x.actives as Array<unknown>).length, 'Active Powers\n',
+            (x.passives as Array<unknown>).length, 'Passive powers\n',
+            (x.languages as Array<unknown>).length, 'Languages\n',
+        )
+    }
     return {
         themeProvider: (x.themes as PrimitiveContainer<Theme>[]).map(x => x.value),
         descriptors: new DescriptorProvider(x.descriptors),
