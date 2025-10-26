@@ -163,7 +163,7 @@ export default {
                         const partials = [
                             {
                                 descType: 'property',
-                                singular: " is surronded by a subtle field of shimmering air",
+                                singular: " is surrounded by a subtle field of shimmering air",
                                 plural: " are surrounded by a subtle field of shimmering air"
                             },
                             {
