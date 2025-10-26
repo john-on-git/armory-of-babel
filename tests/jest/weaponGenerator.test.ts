@@ -87,20 +87,20 @@ describe('Weapon Generator', () => {
         }
     });
 
-    it('8. Never generates a weapon that contains text that is an indicator of broken functionality', () => {
+    it.skip('8. Never generates a weapon that contains text that is an indicator of broken functionality', () => {
         // i.e. "undefined", "[object ", "null"
 
         // TODO, will probably mean removing the joke names on the void core ephitets
     })
 
-    it('9. TODO Weapons never contain two components with the same UUID, unless that component is marked non-unique.', () => {
+    it.skip('9. TODO Weapons never contain two components with the same UUID, unless that component is marked non-unique.', () => {
         // for (let i = 0; i < nRuns; i++) {
         //     const { weaponViewModel: weapon, params } = mkWeapon(i.toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1]);
 
         // }
     });
 
-    it('10. The weapon that corresponds to a particular set of parameters is fixed and never changes, even when the software is updated.', () => {
+    it.skip('10. The weapon that corresponds to a particular set of parameters is fixed and never changes, even when the software is updated.', () => {
         // expect(mkWeapon('test1', weaponFeaturesByVersion[0]).weaponViewModel).toEqual(
         //     { id: "test1", themes: ["nature"], rarity: "uncommon", name: "Oak Epee", damage: { as: "sword", const: 1 }, toHit: 1, active: { maxCharges: 4, rechargeMethod: "all charges when its wielder drives a poacher to bankruptcy", powers: [] }, passivePowers: [{ desc: "Can transform into a bouquet of flowers." }], sentient: false }
         // );
@@ -114,10 +114,10 @@ describe('Weapon Generator', () => {
 
     it('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
-            return weapon.active.powers.filter((x) => x.desc === "Wrap" || x.desc === "Animal Transformation").length === 2;
+            return weapon.passivePowers.some((x) => x.desc.startsWith("Pricking a sleeping person with the weapon"));
         }
-        const start = 20_000;
-        const attempts = 1;
+        const start = 0;
+        const attempts = 10_000;
 
         const end = start + attempts;
         let i = start;

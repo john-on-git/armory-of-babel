@@ -791,7 +791,7 @@ export function mkWeaponsForAllRarities(rngSeed: string, featureProviders: Featu
  * Draw a theme from a record of things organised by theme, based on a weapon with Themes.
  * Records used by this function should have their keys ordered in the same order as the Theme union type, or the behaviour is undefined.
  * @param weapon pick an option based on the themes of this weapon
- * @param mapsTo options to pick from
+ * @param mapsTo options to pick from, it does not need to support all possible themes
  * @param rng rng source to use
  * @returns an option of mapsTo that matches one of the Themes of weapon
  */

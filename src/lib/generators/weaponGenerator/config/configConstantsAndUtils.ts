@@ -27,7 +27,7 @@ export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)"
 /**
  * Weapon shape families that usually have a small damage die, like d4 or d6.
  */
-export const smallDieWeaponShapeFamilies = ['dagger', 'club'] as const satisfies WeaponShapeGroup[];
+export const smallDieWeaponShapeFamilies = ['dagger', 'dagger (or pistol)', 'club'] as const satisfies WeaponShapeGroup[];
 
 export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies WeaponShapeGroup[];
 
@@ -62,6 +62,19 @@ const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
     }
 }
 
+const nonPreciousStone = [
+    'sandstone',
+    'granite',
+    'alabaster',
+    'marble',
+    'sandstone',
+    'flint',
+    'obsidian',
+    'basalt',
+    'quartz',
+    'crystal',
+] as const satisfies string[];
+
 /**
  * Descriptors that are a material, where the ephitet is exactly the material's name (but with the first letter of each word capitalised).
  */
@@ -87,18 +100,9 @@ const simpleMaterials = [
         ephitet: { pre: 'Lumensteel' }
     } as const,
 
-    // cool materials (can be the source of an ephitet)
+    // interesting materials (can be the source of an ephitet)
     ..._.map([
-
-        'sandstone',
-        'granite',
-        'alabaster',
-        'marble',
-        'sandstone',
-        'flint',
-        'obsidian',
-        'basalt',
-
+        ...nonPreciousStone,
         'terracotta',
         'porcelain',
 
@@ -110,14 +114,12 @@ const simpleMaterials = [
 
         'gingerbread',
 
-        'quartz',
         'diamond',
         'ruby',
         'emerald',
         'sapphire',
         'onyx',
         'amethyst',
-        'crystal',
         'citrine',
 
         'mythrel',
@@ -401,6 +403,23 @@ export const MATERIALS = {
         ephitet: mkGen(rng => choice(ephSweet, rng))
     } as const,
 
+    geodeAmethyst: {
+        material: 'an amethyst geode',
+        ephitet: mkGen(rng => choice(ephPurple, rng))
+    } as const,
+    geodeQuartz: {
+        material: 'a quartz geode',
+        ephitet: mkGen(rng => choice(ephWhite, rng))
+    } as const,
+    geodeChalcedony: {
+        material: 'a chalcedony geode',
+        ephitet: mkGen(rng => choice(ephRed, rng))
+    } as const,
+    geodeVermarine: {
+        material: 'a vermarine geode',
+        ephitet: mkGen(rng => choice(ephRed, rng))
+    } as const,
+
     ..._.reduce<(typeof golds)[number], Record<(typeof golds)[number], PartMaterial>>(golds, (acc, metal) => {
         acc[metal] = ({
             material: metal,
@@ -409,7 +428,12 @@ export const MATERIALS = {
         return acc;
     }, {} as Record<(typeof golds)[number], PartMaterial>),
 
+    // simple materials
     ..._.mapKeys(simpleMaterials, x => x.material) as Record<(typeof simpleMaterials)[number]['material'], (typeof simpleMaterials)[number]>,
+    // Chunk of X 
+    ..._.chain(nonPreciousStone).keyBy(material => `${material}Chunk`).mapValues(material => ({
+        material: `a single chunk of ${material}`,
+    })).value() as Record<`${(typeof nonPreciousStone)[number]}Chunk`, PartMaterial>
 } as const satisfies Record<string, PartFeature | Generator<PartFeature, [Weapon]> | PartMaterial | Generator<PartMaterial, [Weapon]>>;
 
 const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'fish', 'crustacean', 'lizard', 'dragonfly', 'hummingbird', 'shrew'].choice(rng))]);
@@ -419,6 +443,7 @@ const embeddedArr = [
     ["a tiger's eye stone", ephRed],
     ['an opal', ephHot],
     ['a piece of carnelian', ephRed],
+    ['a piece of chalcedony', ephRed],
 
     ["a citrine", ephGold],
     ["a topaz", ephGold],
@@ -665,12 +690,12 @@ export const MISC_DESC_FEATURES = {
                 { singular: `a skull`, plural: `skulls`, ephitets: ephBlack },
                 { singular: `a razor blade`, plural: `razor blades`, ephitets: [{ pre: "Cenobite's" }] },
                 { singular: `a scary face`, plural: `scary faces`, ephitets: [{ pre: "Cenobite's" }] },
-                { singular: `a pill`, plural: ``, ephitets: [{ pre: "Party" }] },
+                { singular: `claw marks`, plural: `claw marks`, ephitets: [{ pre: "Party" }] },
                 { singular: `a demon`, plural: `demons`, ephitets: ephDemon },
                 { singular: `an inverted religious symbol`, plural: `inverted religious symbols`, ephitets: ephDemon },
-                { singular: `a raised fist`, plural: `raised fists`, ephitets: [{ pre: "Rebel's Own" }] },
+                { singular: `a raised fist`, plural: `raised fists`, ephitets: [{ pre: "Rebel's Own" }, { post: "of Anarchy", alliteratesWith: "A" }] },
                 { singular: `a raven`, plural: `ravens`, ephitets: [{ pre: "Raven" }] as Ephitet[] },
-            ] as const satisfies { singular: `a ${string}` | `an ${string}`, plural: string; ephitets: Ephitet[] }[], rng);
+            ] as const satisfies { singular: string, plural: string; ephitets: Ephitet[] }[], rng);
 
             return {
                 descriptor: {
@@ -1108,10 +1133,12 @@ const cores = {
     }
 } as const satisfies Partial<Record<Theme, WeaponEnergyCore | WeaponEnergyCore[]>>;
 
-export type PossibleCoreThemes = keyof typeof cores;
+export type PossibleCoreThemes = keyof typeof cores | 'void';
 
 /**
  * If the weapon already has an energy core, get that one. Otherwise roll one at random.
+ * Note that if you are linking with an energy core, you must support all energy core themes even if they are not included by the ability's cond.
+ * Because the weapon could have been given the core for another theme by a different abililty. 
  */
 export function pickOrLinkWithEnergyCore(rng: PRNG, weapon: Weapon) {
     const fallback = {
