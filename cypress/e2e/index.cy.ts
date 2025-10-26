@@ -1,10 +1,10 @@
+import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '$lib/generators/weaponGenerator/weaponGeneratorTypes';
 import { StatusCodes } from 'http-status-codes';
-import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
 
 describe("Weapon Generator Main Page", () => {
     beforeEach(() => {
         cy.intercept('/api/generate-weapon*', (req) => {
-            if (!('id' in req.query) || !('v' in req.query)) {
+            if (!('id' in req.query) || !('v' in req.query) || (Object.keys(req.query).length !== 2)) {
                 throw new Error(`Frontend violated API contract\n${JSON.stringify(req.query)}`);
             }
             req.reply({
@@ -16,6 +16,8 @@ describe("Weapon Generator Main Page", () => {
                             themes: [],
                             rarity: rarity,
                             name: `Lighbrandt the Luminous #${req.query['id']}`,
+                            pronouns: 'enby',
+                            isNegative: false,
                             description: '',
                             damage: {
                                 as: 'sword'
