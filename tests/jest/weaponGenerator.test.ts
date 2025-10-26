@@ -112,7 +112,7 @@ describe('Weapon Generator', () => {
         // );
     });
 
-    it('Manual utility / find a weapon with a particular feature', () => {
+    it.skip('Manual utility / find a weapon with a particular feature', () => {
         function cond(weapon: WeaponViewModel): boolean {
             return weapon.passivePowers.some((x) => x.desc.startsWith("Pricking a sleeping person with the weapon"));
         }
