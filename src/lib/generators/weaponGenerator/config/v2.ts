@@ -1,10 +1,6 @@
 import type { WeaponFeaturesTypes } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import type { DeltaCollection } from "$lib/util/versionController";
 
-/**
- * Remember to also pass in the new version in weaponFeatureVersionController.ts
-*/
-
 export default {
     themes: {},
     descriptors: {},

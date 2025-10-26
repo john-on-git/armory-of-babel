@@ -163,7 +163,7 @@ export default {
                         const partials = [
                             {
                                 descType: 'property',
-                                singular: " is surronded by a subtle field of shimmering air",
+                                singular: " is surrounded by a subtle field of shimmering air",
                                 plural: " are surrounded by a subtle field of shimmering air"
                             },
                             {
@@ -2469,7 +2469,7 @@ export default {
                     const byTheme = {
                         cloud: {
                             desc: 'Gust of the Fox King',
-                            additionalNotes: [`Magical mist sweeps in, briefly obscuring the scene. When it dissipates, up to ${numTargetsByRarity[weapon.rarity]} characters of your choice have switched places.`]
+                            additionalNotes: [`The weapon spews a magical mist, briefly obscuring the scene. When it dissipates, up to ${numTargetsByRarity[weapon.rarity]} characters of your choice have switched places.`]
                         },
 
                         wizard: {

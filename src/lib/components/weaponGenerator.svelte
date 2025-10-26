@@ -181,6 +181,7 @@
     function pushIdToURL(id: string, mode: "push" | "replace" = "push") {
         const searchParams = new URLSearchParams(page.url.search);
         searchParams.set("id", id);
+        searchParams.set("v", LATEST_VERSION_NUM.toString());
 
         // and update the URL params to point to its ID
         syncLocationWithURLSearchParams(searchParams, mode);
@@ -200,7 +201,6 @@
      */
     function generateWeapon() {
         invalidateCurrentWeapon();
-        replaceVersionInURL(LATEST_VERSION_NUM);
         pushIdToURL(getNewId());
     }
 </script>
