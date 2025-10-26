@@ -1,8 +1,9 @@
+import { dev } from "$app/environment";
 import { getWeaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
 import { defaultWeaponRarityConfigFactory } from "$lib/generators/weaponGenerator/weaponGeneratorConfigLoader";
 import { calcOdds } from "$lib/util/configUtils";
 
-export const WEAPON_FEATURE_VERSION_CONTROLLER = $state(getWeaponFeatureVersionController());
+export const WEAPON_FEATURE_VERSION_CONTROLLER = $state(getWeaponFeatureVersionController(!dev));
 export const LATEST_VERSION_NUM = $state(WEAPON_FEATURE_VERSION_CONTROLLER.getLatestVersionNum());
 
 const WEAPON_FEATURES_BY_VERSION = $derived(new Array(WEAPON_FEATURE_VERSION_CONTROLLER.getLatestVersionNum() + 1).fill(null).map((_, i) => WEAPON_FEATURE_VERSION_CONTROLLER.getVersion(i)));
