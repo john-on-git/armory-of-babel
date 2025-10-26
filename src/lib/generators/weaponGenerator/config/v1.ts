@@ -356,7 +356,7 @@ export default {
                             ephitet: { pre: 'Ivy' },
                         }
                     }),
-                    applicableTo: { any: ['pommel'] }
+                    applicableTo: { any: ['pommel', 'maceHeads', 'limbs', 'spearShaft'] }
                 },
                 /**
                  * Can only be added by the passive powers "mounted-dismount-resist", "disarm-immune"
@@ -2093,9 +2093,9 @@ export default {
                             {
                                 desc: "Anbaric Armor",
                                 additionalNotes: [
-                                    "The weapon zaps another character with static electricity, charging them until the end of the scene (or until they move).",
+                                    "The weapon zaps another character, charging them with static electricity.",
                                     "A powerful static force repels anything physical within 10-ft of them, and blocks projectiles in or out.",
-                                    "However, if they move, they take 3d6 damage as the energy discharges." // Kaya, stay
+                                    "However, if they move, they take 3d6 damage as the energy discharges. The charge dissipates at the end of the scene" // Kaya, stay
                                 ],
                             }
                         ],
@@ -4067,7 +4067,7 @@ export default {
             new ProviderElement("laser-pointer",
                 {
                     miscPower: true,
-                    desc: "There's a button on the side of the weapon. Pressing it causes the weapon's tip to emit a harmless beam of light.",
+                    desc: "There's a button on the side of the weapon. Pressing it causes a the tip to emit a harmless beam of light.",
                 },
                 {
                     themes: { any: ['light', 'wizard', 'steampunk'] }
