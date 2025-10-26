@@ -50,7 +50,7 @@
 </script>
 
 <WeaponGenerator {odds} />
-<ConfigSidebar {odds} {oddsWritable} {resetToDefault} />
+<ConfigSidebar bind:odds {oddsWritable} {resetToDefault} />
 
 <style>
     :global(body, html) {

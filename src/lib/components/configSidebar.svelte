@@ -11,7 +11,7 @@
         resetToDefault: () => void;
     }
 
-    let { odds, oddsWritable, resetToDefault }: Props = $props();
+    let { odds = $bindable(), oddsWritable, resetToDefault }: Props = $props();
 
     const oddsAreDefault = $derived(_.isEqual(odds, DEFAULT_RARITY_ODDS));
 
