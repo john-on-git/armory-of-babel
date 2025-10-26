@@ -57,7 +57,7 @@ export default {
                             ephitet: mkGen((rng) => ephWizard.choice(rng)),
                         }
                     }),
-                    applicableTo: { any: counterAcceptingParts }
+                    applicableTo: { any: businessEndParts }
                 },
                 /**
                  * Can only be added by the passive power "damage-bonus-wizard"
