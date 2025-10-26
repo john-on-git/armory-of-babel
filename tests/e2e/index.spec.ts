@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { StatusCodes } from 'http-status-codes';
-import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
+import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
 
 const baseURL = 'http://localhost:5173';
 
