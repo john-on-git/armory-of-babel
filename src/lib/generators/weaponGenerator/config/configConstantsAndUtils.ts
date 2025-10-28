@@ -24,6 +24,7 @@ export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe
 export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
 export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)", "sword (or musket)", "greataxe (or musket)"] as const satisfies WeaponShapeGroup[];
 
+
 /**
  * Weapon shape families that usually have a small damage die, like d4 or d6.
  */
@@ -33,6 +34,16 @@ export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies 
 
 export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Kanabo", "Keyblade", "Transforming Sniper Scythle"] as const;
 export const pointedWeaponShapes = ['Stiletto', 'Dirk', 'Rapier', 'Foil', 'Epee', 'Spear', 'Trident', 'Bident', 'Pike', 'Lance'] as const;
+/**
+ * Weapons with one or more big roundish heads.
+ */
+export const hammerlikeWeaponShapes = ["Meteor Hammer", "Mace", "Hammer", "Flail", "Double Flail", "Triple Flail", "Quadruple Flail", "Quintuple Flail", "Morning-Star", 'Eveningstar', 'Greathammer'] as const;
+
+/**
+ * Weapons with a single big roundish head that could be replaced with a geode.
+ * Weapons with multiple heads aren't supported because materials only have one plurality tense (skill issue).
+ */
+export const geodablelikeWeaponShapes = ["Mace", "Hammer", "Flail", "Morning-Star", 'Eveningstar', 'Greathammer'] as const;
 
 // reused descriptors and materials
 const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
@@ -403,6 +414,9 @@ export const MATERIALS = {
         ephitet: mkGen(rng => choice(ephSweet, rng))
     } as const,
 
+    /**
+     * These geode ones will be gramatically incorrect
+     */
     geodeAmethyst: {
         material: 'an amethyst geode',
         ephitet: mkGen(rng => choice(ephPurple, rng))

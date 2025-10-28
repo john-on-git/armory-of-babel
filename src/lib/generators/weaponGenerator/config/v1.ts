@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodablelikeWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, hasUUIDs, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
@@ -819,7 +819,7 @@ export default {
                             descriptor: {
                                 descType: 'possession',
                                 singular: 'a glass tube running down the center, which crackles with electrical energy',
-                                plural: 'glass tube running down their center, which crackle with electrical energy'
+                                plural: 'a glass tube running down their center, which crackle with electrical energy'
                             },
                             ephitet: mkGen(rng => ephSteampunk.choice(rng)),
                         }
@@ -1127,10 +1127,12 @@ export default {
                                     MATERIALS.obsidianChunk,
                                     MATERIALS.alabasterChunk,
                                     MATERIALS.sandstoneChunk,
-                                    MATERIALS.geodeQuartz,
-                                    MATERIALS.geodeAmethyst,
-                                    MATERIALS.geodeChalcedony,
-                                    MATERIALS.geodeVermarine,
+                                    ...geodablelikeWeaponShapes.includes(weapon.shape.particular as (typeof geodablelikeWeaponShapes)[number]) ? [
+                                        MATERIALS.geodeQuartz,
+                                        MATERIALS.geodeAmethyst,
+                                        MATERIALS.geodeChalcedony,
+                                        MATERIALS.geodeVermarine,
+                                    ] : []
                                 ]
                                 : [
                                     MATERIALS.alabaster,
