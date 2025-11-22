@@ -1574,7 +1574,11 @@ export default {
                             MATERIALS.maple,
                             MATERIALS.ivory,
                             MATERIALS.beetleShell,
-                            MATERIALS.ironWood
+                            MATERIALS.ironWood,
+                            ...weapon.shape.group === 'spear' ? [
+                                MATERIALS.thyrsusPinecone,
+                                MATERIALS.thyrsusFennel,
+                            ] : []
                         ].choice(rng);
                     },
                     applicableTo: { any: businessEndParts }
@@ -4476,6 +4480,7 @@ export default {
                             'giants',
                             'shapeshifters',
                             'fae',
+                            'ghosts',
                             'extraplanar creatures',
                             'demons',
                             ...((weapon.themes.includes('light')) ? ['undead'] : []),

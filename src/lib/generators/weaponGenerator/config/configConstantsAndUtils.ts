@@ -415,7 +415,7 @@ export const MATERIALS = {
     } as const,
 
     /**
-     * These geode ones will be gramatically incorrect
+     * These ones will be gramatically incorrect for plural parts
      */
     geodeAmethyst: {
         material: 'an amethyst geode',
@@ -432,6 +432,16 @@ export const MATERIALS = {
     geodeVermarine: {
         material: 'a vermarine geode',
         ephitet: mkGen(rng => choice(ephRed, rng))
+    } as const,
+
+    // same as above, incorrect for plrual
+    thyrsusPinecone: {
+        material: 'a sharpened pine cone',
+        ephitet: { post: ' of the Tundra', alliteratesWith: 'T' }
+    } as const,
+    thyrsusFennel: {
+        material: 'tightly coiled fennel',
+        ephitet: { post: 'of Dionysus', alliteratesWith: 'D' }
     } as const,
 
     ..._.reduce<(typeof golds)[number], Record<(typeof golds)[number], PartMaterial>>(golds, (acc, metal) => {
@@ -678,11 +688,9 @@ export const MISC_DESC_FEATURES = {
                 { phrase: `word "Pain"`, ephitets: [{ pre: "Cenobite's" }] as Ephitet[] },
                 { phrase: `word "Blood"`, ephitets: [{ pre: "Cenobite's" }] },
                 { phrase: `word "Drugs"`, ephitets: [{ pre: "Party" }] },
-                { phrase: `phrase "Like for Satan"`, ephitets: ephDemon },
                 { phrase: `phrase "Hail Satan"`, ephitets: ephDemon },
                 { phrase: `number "666"`, ephitets: ephDemon },
                 { phrase: `word "Chaos"`, ephitets: ephBlack },
-                { phrase: `phrase "ANARCHY 4EVR"`, ephitets: [{ post: "of Anarchy", alliteratesWith: "A" }] },
                 { phrase: `phrase "Forged to Kill"`, ephitets: [{ post: " of War" }] },
                 // bit too silly
                 // { phrase: `phrase "Emo Vibes Only"`, ephitets: [{ pre: "Emo" }] },
@@ -707,7 +715,6 @@ export const MISC_DESC_FEATURES = {
                 { singular: `claw marks`, plural: `claw marks`, ephitets: [{ pre: "Party" }] },
                 { singular: `a demon`, plural: `demons`, ephitets: ephDemon },
                 { singular: `an inverted religious symbol`, plural: `inverted religious symbols`, ephitets: ephDemon },
-                { singular: `a raised fist`, plural: `raised fists`, ephitets: [{ pre: "Rebel's Own" }, { post: "of Anarchy", alliteratesWith: "A" }] },
                 { singular: `a raven`, plural: `ravens`, ephitets: [{ pre: "Raven" }] as Ephitet[] },
             ] as const satisfies { singular: string, plural: string; ephitets: Ephitet[] }[], rng);
 
