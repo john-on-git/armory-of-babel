@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodablelikeWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, rangedWeaponShapeFamilies, shapeFamiliesWithoutPommels, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodablelikeWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, pomelledWeaponShapeFamilies, rangedWeaponShapeFamilies, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, hasUUIDs, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
@@ -931,7 +931,7 @@ export default {
                     applicableTo: { any: embeddableParts }
                 },
                 {
-                    shapeFamily: { none: shapeFamiliesWithoutPommels },
+                    shapeFamily: { any: pomelledWeaponShapeFamilies },
                     themes: {
                         any: ['ice', 'fire', 'cloud', 'earth', 'light', 'dark', 'wizard']
                     }
@@ -2222,7 +2222,7 @@ export default {
                         ice: [{ additional: "A sphere of ice" }],
                         cloud: [{ desc: "Ball Lightning", additional: "A ball of lightning" }],
                         light: [{ desc: `${core.adj} Pursuer`, additional: `An orb of ${core.desc}` }],
-                        dark: [{ desc: "Annihilation", additional: "A black hole" }, { desc: "You're Next", additional: "A large shadowy head emerges from the ground in front of you.", noHover: true }],
+                        dark: [{ desc: "Annihilation", additional: "A black hole" }, { desc: "You're Next", additional: "A large shadowy head emerges from the ground in front of you", noHover: true }],
                         wizard: [{ desc: "Ominous Orb", additional: `An orb of ${core.desc}` }],
                         sour: [{ additional: "A sphere of toxic waste" }],
                         steampunk: [{ additional: "A globe of steam" }],
@@ -3264,7 +3264,7 @@ export default {
                     } satisfies Partial<Record<Theme, { partialDesc: string; partialDescriptionPartGenerator: string }>>;
 
                     const { partialDesc, partialDescriptionPartGenerator } = pickForTheme(weapon, partialAbilitiesByTheme, rng).chosen ?? {
-                        partialDesc: "the tendril on the weapon's pommel grips around your forearm", partialDescriptionPartGenerator: "gripping-tentacle-descriptor-generic"
+                        partialDesc: "the tendril on the weapon grips around your forearm", partialDescriptionPartGenerator: "gripping-tentacle-descriptor-generic"
                     };
                     return {
                         desc: `Deny Disarm`,
@@ -3276,6 +3276,9 @@ export default {
                     }
                 }),
                 {
+                    shapeFamily: {
+                        any: pomelledWeaponShapeFamilies
+                    }
                 }
             ),
             new ProviderElement("parry",
@@ -4953,7 +4956,7 @@ export default {
                 },
                 {
                     themes: { any: ["steampunk"] },
-                    shapeFamily: { none: shapeFamiliesWithoutPommels },
+                    shapeFamily: { any: pomelledWeaponShapeFamilies },
                     UUIDs: { none: ['integrated-clock'] }
                 }
             ),
@@ -4965,7 +4968,7 @@ export default {
                 },
                 {
                     themes: { any: ["steampunk"] },
-                    shapeFamily: { none: shapeFamiliesWithoutPommels },
+                    shapeFamily: { any: pomelledWeaponShapeFamilies },
                     UUIDs: { none: ['integrated-compass'] }
                 }
             ),

@@ -20,7 +20,12 @@ export const bluntWeaponShapeFamilies = ['club', 'mace', 'staff', 'greatclub'] a
 export const pointedWeaponShapeFamilies = ['spear', 'lance'] as const satisfies WeaponShapeGroup[];
 
 export const swordlikeWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)'] as const satisfies WeaponShapeGroup[];
-export const grippedWeaponShapeFamilies = ['dagger', 'sword', 'greatsword', 'axe', 'greataxe', 'polearm', 'sword (or bow)', 'dagger (or pistol)', 'sword (or musket)', 'greataxe (or musket)', 'club', 'mace', 'greatclub'] as const satisfies WeaponShapeGroup[];
+export const axelikeWeaponShapeFamilies = ['axe', 'greataxe'] as const satisfies WeaponShapeGroup[]; // excludes 'greataxe (or musket)' as that one has only one particular, which is a scythe
+export const grippedWeaponShapeFamilies = [...swordlikeWeaponShapeFamilies, ...axelikeWeaponShapeFamilies, 'club', 'mace', 'greatclub'] as const satisfies WeaponShapeGroup[];
+/**
+ * Weapon shape families guaranteed to have a pommel.
+ */
+export const pomelledWeaponShapeFamilies = [...swordlikeWeaponShapeFamilies, ...axelikeWeaponShapeFamilies, 'lance'] as const satisfies WeaponShapeGroup[];
 export const twoHandedWeaponShapeFamilies = ['staff', 'spear', 'polearm', 'greataxe', 'greatsword', 'sword (or musket)', 'greataxe (or musket)'] as const satisfies WeaponShapeGroup[]
 export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)", "sword (or musket)", "greataxe (or musket)"] as const satisfies WeaponShapeGroup[];
 
@@ -30,18 +35,15 @@ export const rangedWeaponShapeFamilies = ["dagger (or pistol)", "sword (or bow)"
  */
 export const smallDieWeaponShapeFamilies = ['dagger', 'dagger (or pistol)', 'club'] as const satisfies WeaponShapeGroup[];
 
-export const shapeFamiliesWithoutPommels = ['club', 'staff'] as const satisfies WeaponShapeGroup[];
-
 export const animeWeaponShapes = ['Tanto', 'Katana', "Naginata", "Nodachi", "Kanabo", "Keyblade", "Transforming Sniper Scythle"] as const;
 export const pointedWeaponShapes = ['Stiletto', 'Dirk', 'Rapier', 'Foil', 'Epee', 'Spear', 'Trident', 'Bident', 'Pike', 'Lance'] as const;
 /**
  * Weapons with one or more big roundish heads.
  */
 export const hammerlikeWeaponShapes = ["Meteor Hammer", "Mace", "Hammer", "Flail", "Double Flail", "Triple Flail", "Quadruple Flail", "Quintuple Flail", "Morning-Star", 'Eveningstar', 'Greathammer'] as const;
-
 /**
  * Weapons with a single big roundish head that could be replaced with a geode.
- * Weapons with multiple heads aren't supported because materials only have one plurality tense (skill issue).
+ * Weapons with multiple heads aren't supported because materials only have one plurality (skill issue).
  */
 export const geodablelikeWeaponShapes = ["Mace", "Hammer", "Flail", "Morning-Star", 'Eveningstar', 'Greathammer'] as const;
 

@@ -429,7 +429,7 @@ export const weaponStructures = {
     meteorHammerLike: {
         business: ['maceHeads'],
         holding: ['grip'],
-        other: ['chain', 'pommel']
+        other: ['chain']
     },
     multiFlailLike: {
         business: ['maceHeads'],
