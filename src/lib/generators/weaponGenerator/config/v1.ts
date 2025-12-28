@@ -4095,17 +4095,15 @@ export default {
             new ProviderElement("damage-boost-on-kill",
                 mkGen((rng, weapon) => {
                     const damageBoostByRarity = {
-                        common: [4, 6],
-                        uncommon: [4, 6, 8],
-                        rare: [4, 6, 8, 10],
-                        epic: [6, 8, 10, 12],
-                        legendary: [8, 10, 12]
-                    } satisfies Record<WeaponRarity, CommonDieSize[]>;
-                    const damageDie = damageBoostByRarity[weapon.rarity].choice(rng);
+                        rare: ["2d6", "2d8", "2d10"],
+                        epic: ["3d6", "3d8", "3d10", "2d12"],
+                        legendary: ["3d10", "3d12"]
+                    } satisfies Record<Extract<WeaponRarity, 'rare' | 'epic' | 'legendary'>, `${number}d${CommonDieSize}`[]>;
+                    const damage = (damageBoostByRarity[weapon.rarity as keyof typeof damageBoostByRarity] ?? ['Weapon < Rare! This is a bug, please report me.']).choice(rng);
 
                     return {
                         miscPower: true,
-                        desc: `Whenever the wielder defeats a foe, the weapon gains 1d${damageDie} damage until the end of their turn (stacks).`,
+                        desc: `Whenever the wielder defeats a foe, the weapon gains ${damage} damage until the end of their turn (stacks).`,
                     }
                 }),
                 {
