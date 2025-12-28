@@ -108,7 +108,8 @@
             --sidebar-color: #00000020;
         }
         :global(.rangeSlider) {
-            --handle: #e9e9e9;
+            --handle: #99a2a2;
+            --handle-inactive: #99a2a2;
             --handle-focus: #373737;
             --handle-border: #373737;
         }
@@ -116,7 +117,8 @@
 
     @media (prefers-color-scheme: dark) {
         :global(.rangeSlider) {
-            --handle: #373737;
+            --handle: #99a2a2;
+            --handle-inactive: #99a2a2;
             --handle-focus: white;
             --handle-border: white;
         }
