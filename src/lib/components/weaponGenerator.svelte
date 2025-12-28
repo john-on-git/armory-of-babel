@@ -116,12 +116,14 @@
 
         tick().then(() => {
             // and initialize any values in the URL that have not been set yet
+            const searchParams = new URLSearchParams(page.url.search);
             if (!page.url.searchParams.has("id")) {
-                pushIdToURL(weaponID, "replace");
+                searchParams.set("id", getNewId());
             }
             if (!page.url.searchParams.has("v")) {
-                replaceVersionInURL(version);
+                searchParams.set("v", LATEST_VERSION_NUM.toString());
             }
+            syncLocationWithURLSearchParams(searchParams, "replace");
         });
     });
 
@@ -144,23 +146,9 @@
             // return the existing version num
             return maybeNumber;
         } else {
-            // get the latest version
-            // push it to the URL
-            const searchParams = new URLSearchParams(page.url.search);
-            searchParams.set("v", LATEST_VERSION_NUM.toString());
-            syncLocationWithURLSearchParams(searchParams, "replace");
-
             // return it
             return LATEST_VERSION_NUM;
         }
-    }
-    function replaceVersionInURL(id: number) {
-        // only add the id param if it wasn't added already
-        const searchParams = new URLSearchParams(page.url.search);
-        searchParams.set("v", id.toString());
-
-        // and update the URL params to point to its ID
-        syncLocationWithURLSearchParams(searchParams, "replace");
     }
 
     /**
@@ -177,15 +165,6 @@
             : getNewId();
     }
 
-    function pushIdToURL(id: string, mode: "push" | "replace" = "push") {
-        const searchParams = new URLSearchParams(page.url.search);
-        searchParams.set("id", id);
-        searchParams.set("v", LATEST_VERSION_NUM.toString());
-
-        // and update the URL params to point to its ID
-        syncLocationWithURLSearchParams(searchParams, mode);
-    }
-
     /**
      * Remove all the UI state related to the current weapon, in preparation for the UI binding to a new weapon.
      */
@@ -199,8 +178,16 @@
      * Generate a new weapon, called when the page is loaded without an ID in the URL, and when the 'generate' button is clicked.
      */
     function generateWeapon() {
+        // immediately remove the old weapon to put the UI in a loading state
         invalidateCurrentWeapon();
-        pushIdToURL(getNewId());
+
+        // update the state, syncing it with the URL
+        const searchParams = new URLSearchParams(page.url.search);
+
+        searchParams.set("id", getNewId());
+        searchParams.set("v", LATEST_VERSION_NUM.toString());
+
+        syncLocationWithURLSearchParams(searchParams, "push");
     }
 </script>
 
