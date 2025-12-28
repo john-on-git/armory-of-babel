@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
 import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodablelikeWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, pomelledWeaponShapeFamilies, rangedWeaponShapeFamilies, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodableWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, pomelledWeaponShapeFamilies, rangedWeaponShapeFamilies, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, hasUUIDs, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
@@ -1127,7 +1127,7 @@ export default {
                                     MATERIALS.obsidianChunk,
                                     MATERIALS.alabasterChunk,
                                     MATERIALS.sandstoneChunk,
-                                    ...geodablelikeWeaponShapes.includes(weapon.shape.particular as (typeof geodablelikeWeaponShapes)[number]) ? [
+                                    ...geodableWeaponShapes.includes(weapon.shape.particular as (typeof geodableWeaponShapes)[number]) ? [
                                         MATERIALS.geodeQuartz,
                                         MATERIALS.geodeAmethyst,
                                         MATERIALS.geodeChalcedony,

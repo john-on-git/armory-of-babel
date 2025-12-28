@@ -45,7 +45,7 @@ export const hammerlikeWeaponShapes = ["Meteor Hammer", "Mace", "Hammer", "Flail
  * Weapons with a single big roundish head that could be replaced with a geode.
  * Weapons with multiple heads aren't supported because materials only have one plurality (skill issue).
  */
-export const geodablelikeWeaponShapes = ["Mace", "Hammer", "Flail", "Morning-Star", 'Eveningstar', 'Greathammer'] as const;
+export const geodableWeaponShapes = ["Mace", "Hammer", "Flail", "Morning-Star", 'Eveningstar', 'Greathammer'] as const;
 
 // reused descriptors and materials
 const mkCharms = (rng: PRNG, quantity: 'singular' | 'plural') => {
@@ -176,7 +176,7 @@ export const adjLight = [{ pre: 'Brilliant' }, { pre: 'Radiant' }, { pre: 'Lumin
 export const ephDemon = [{ pre: "Demonic" }, { pre: "Demonologist's" }, { pre: "Satanic" }, { pre: "Satanist's" }] as const satisfies Ephitet[];
 export const ephWhite = [{ pre: 'White' }, { pre: 'Pale' }, { pre: 'Fair' }, { pre: 'Lucent' }, { pre: 'Pallid' }, { pre: 'Ivory' }, { pre: 'Moonlit' }, { pre: 'Moonlight' }, { post: ' of Selene', alliteratesWith: 'S' }] satisfies Ephitet[];
 export const ephBlack = [{ pre: 'Dark' }, { pre: 'Stygian' }, { pre: 'Abyssal' }, { post: ' of Chaos', alliteratesWith: 'C' }, { pre: 'Chaotic' }, { pre: 'Shadow-Wreathed' }, { post: ' of Shadows', alliteratesWith: 'S' }, { post: ' of Dusk', alliteratesWith: 'D' }] satisfies Ephitet[];
-export const ephRainbow = [{ pre: 'Prismatic' }, { post: ' of Rainbows', alliteratesWith: 'R' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
+export const ephRainbow = [{ pre: 'Prismatic' }, { pre: 'Rainbow' }, { pre: 'Variegated' }, { pre: 'Multicolored' }, { pre: 'Kaleidosopic' }, { pre: 'Polychromatic' }] satisfies Ephitet[];
 
 export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood-Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
 
@@ -416,21 +416,26 @@ export const MATERIALS = {
         ephitet: mkGen(rng => choice(ephSweet, rng))
     } as const,
 
-    /**
-     * These ones will be gramatically incorrect for plural parts
+    /** Will be gramatically incorrect for plural parts
      */
     geodeAmethyst: {
         material: 'an amethyst geode',
         ephitet: mkGen(rng => choice(ephPurple, rng))
     } as const,
+    /** Will be gramatically incorrect for plural parts
+     */
     geodeQuartz: {
         material: 'a quartz geode',
         ephitet: mkGen(rng => choice(ephWhite, rng))
     } as const,
+    /** Will be gramatically incorrect for plural parts
+     */
     geodeChalcedony: {
         material: 'a chalcedony geode',
         ephitet: mkGen(rng => choice(ephRed, rng))
     } as const,
+    /** Will be gramatically incorrect for plural parts
+     */
     geodeVermarine: {
         material: 'a vermarine geode',
         ephitet: mkGen(rng => choice(ephRed, rng))
