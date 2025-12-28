@@ -6,7 +6,7 @@
   "prepare": "svelte-kit sync",
   "scripts": {
     "dev": "vite dev",
-    "test": "jest",
+    "test": "jest && playwright test",
     "build": "vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",

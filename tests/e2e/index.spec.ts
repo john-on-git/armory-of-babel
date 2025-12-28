@@ -72,7 +72,7 @@ test("When the user refreshes the page, it should always display the same weapon
 
     // visit the page, then wait for the weapon to load for the first time
     await page.goto(`${baseURL}/`);
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
+    expect(page.getByTestId('weapon-display')).toBeVisible();
 
     // refresh, and the HTML representation should not have changed
     const htmlBefore = await page.getByTestId('weapon-display').innerHTML();
@@ -82,7 +82,7 @@ test("When the user refreshes the page, it should always display the same weapon
     await expect(page.getByTestId('weapon-display')).toBeVisible();
 
     // the HTML should be identical
-    expect(htmlBefore === await page.getByTestId('weapon-display').innerHTML());
+    expect(await page.getByTestId('weapon-display').innerHTML()).toBe(htmlBefore);
 });
 
 
@@ -100,7 +100,7 @@ test("It should always generate a different weapon each time the user clicks the
     await expect(page.getByTestId('weapon-display')).toBeVisible();
 
     // the HTML should be different
-    expect(htmlBefore !== await page.getByTestId('weapon-display').innerHTML());
+    expect(await page.getByTestId('weapon-display').innerHTML()).not.toBe(htmlBefore);
 });
 
 
@@ -116,8 +116,8 @@ test("The app should add weapons to the users browser history.", async ({ page }
     await expect(page.getByTestId('weapon-display')).toBeVisible();
 
     // the HTML should be different
-    expect(firstWeapon !== await page.getByTestId('weapon-display').innerHTML());
     const secondWeapon = await page.getByTestId('weapon-display').innerHTML();
+    expect(firstWeapon).not.toBe(secondWeapon);
 
     // then go back, and we should be back to the first weapon
     await page.goBack();
@@ -126,12 +126,11 @@ test("The app should add weapons to the users browser history.", async ({ page }
     await expect(page.getByTestId('weapon-display')).toBeVisible();
 
     // the HTML should reset back to match the original
-    expect(firstWeapon === await page.getByTestId('weapon-display').innerHTML());
+    expect(await page.getByTestId('weapon-display').innerHTML()).toBe(firstWeapon);
 
     // then go forward, and we should be back to the second weapon
     await page.goForward();
-
-    expect(secondWeapon === await page.getByTestId('weapon-display').innerHTML());
+    expect(await page.getByTestId('weapon-display').innerHTML()).toBe(secondWeapon);
 });
 
 
