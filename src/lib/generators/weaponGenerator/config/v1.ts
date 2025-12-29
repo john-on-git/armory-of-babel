@@ -1866,7 +1866,6 @@ export default {
             ...toProviderSource({
                 fire: [
                     "compassionate",
-                    "flirty",
                     "standoffish",
                     "short fuse",
                 ],
