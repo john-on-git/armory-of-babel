@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { StatusCodes } from 'http-status-codes';
 import { weaponRarities, type WeaponRarity, type WeaponViewModel } from '../../src/lib/generators/weaponGenerator/weaponGeneratorTypes';
 
@@ -68,100 +68,97 @@ test.beforeEach(async ({ context }) => {
 
 });
 
+async function expectWeaponVisible(page: Page) {
+    // moved into a function so we can easily change the assertions
+    return await expect(page.getByTestId('weapon-display')).toBeVisible({ timeout: 10000 });
+}
+
 test("When the user refreshes the page, it should always display the same weapon as before.", async ({ page }) => {
 
     // visit the page, then wait for the weapon to load for the first time
-    await page.goto(`${baseURL}/`);
-    expect(page.getByTestId('weapon-display')).toBeVisible();
+    await page.goto(baseURL);
+    await expectWeaponVisible(page);
+    const htmlBefore = await page.getByTestId('weapon-display').innerHTML();
 
     // refresh, and the HTML representation should not have changed
-    const htmlBefore = await page.getByTestId('weapon-display').innerHTML();
     await page.reload();
-
-    // wait for the weapon to reload for the first time
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
-
-    // the HTML should be identical
-    expect(await page.getByTestId('weapon-display').innerHTML()).toBe(htmlBefore);
+    await expectWeaponVisible(page);
+    await expect(page.getByTestId('weapon-display')).toHaveJSProperty('innerHTML', htmlBefore);
 });
 
 
 test("It should always generate a different weapon each time the user clicks the generate button", async ({ page }) => {
 
     // visit the page, then wait for the weapon to load for the first time
-    await page.goto(`${baseURL}/`);
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
-
-
-    // generate a new weapon, and the HTML representation of the weapon should have changed
+    await page.goto(baseURL);
+    await expectWeaponVisible(page);
     const htmlBefore = await page.getByTestId('weapon-display').innerHTML();
 
+    // generate a new weapon, and the HTML representation of the weapon should have changed
     await page.getByTestId("weapon-generator-generate-button").click();
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
+    await expectWeaponVisible(page);
+    const htmlAfter = await page.getByTestId('weapon-display').innerHTML();
 
     // the HTML should be different
-    expect(await page.getByTestId('weapon-display').innerHTML()).not.toBe(htmlBefore);
+    expect(htmlAfter).not.toBe(htmlBefore);
 });
 
 
-test("The app should add weapons to the users browser history.", async ({ page }) => {
+test("The user should be able to navigate backwards and forwards using their native browser history functionality.", async ({ page }) => {
 
     // visit the page, then wait for the weapon to load for the first time
-    await page.goto(`${baseURL}/`);
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
+    await page.goto(baseURL);
+    await expectWeaponVisible(page);
+    const firstWeapon = await page.getByTestId('weapon-display').innerHTML();
 
     // generate a new weapon, and the HTML representation of the weapon should have changed
-    const firstWeapon = await page.getByTestId('weapon-display').innerHTML();
     await page.getByTestId("weapon-generator-generate-button").click();
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
+    await expectWeaponVisible(page);
+    const secondWeapon = await page.getByTestId('weapon-display').innerHTML();
 
     // the HTML should be different
-    const secondWeapon = await page.getByTestId('weapon-display').innerHTML();
     expect(firstWeapon).not.toBe(secondWeapon);
 
     // then go back, and we should be back to the first weapon
     await page.goBack();
-
-    // wait for the weapon to reload
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
-
-    // the HTML should reset back to match the original
-    expect(await page.getByTestId('weapon-display').innerHTML()).toBe(firstWeapon);
+    await expectWeaponVisible(page);
+    await expect(page.getByTestId('weapon-display')).toHaveJSProperty('innerHTML', firstWeapon);
 
     // then go forward, and we should be back to the second weapon
     await page.goForward();
-    expect(await page.getByTestId('weapon-display').innerHTML()).toBe(secondWeapon);
+    await expectWeaponVisible(page);
+    await expect(page.getByTestId('weapon-display')).toHaveJSProperty('innerHTML', secondWeapon);
 });
 
 
 
-test("The app should replace the current entry in the user's browser history if (and only if) this is the first time it is loaded. Otherwise, it should push to history.", async ({ page }) => {
-    // keep track of the initial location for assertions later
-    const initialLocation = page.url();
-
+test("The app should store the weapon state in the URL.", async ({ page }) => {
     // visit the page, then wait for the weapon to load for the first time
-    await page.goto(`${baseURL}/`);
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
-
-    // keep track of that location too
+    await page.goto(baseURL);
+    await expectWeaponVisible(page);
     const firstWeaponLocation = page.url();
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
-    // generate a new weapon, then wait for that to load. this should add another history entry
+    // generate another weapon, then wait for that to load. this should add another history entry
     await page.getByTestId("weapon-generator-generate-button").click();
-    await expect(page.getByTestId('weapon-display')).toBeVisible();
+    await expectWeaponVisible(page);
     const secondWeaponLocation = page.url();
 
+    // each weapon should have a unique URL
+    expect(firstWeaponLocation).not.toBe(secondWeaponLocation);
 
     // navigate backwards in history, which should send us back to the first weapon
     await page.goBack();
-    expect(firstWeaponLocation === page.url());
+    expect(page.url()).toBe(firstWeaponLocation);
+
     // navigate forwards, which should send us back to the second weapon
     await page.goForward();
-    expect(secondWeaponLocation === page.url());
+    expect(page.url()).toBe(secondWeaponLocation);
+
     // navigate backwards, which should send us back to the first weapon again
     await page.goBack();
-    expect(firstWeaponLocation === page.url());
-    // then navigate backwards again, which should send us to the initial location (i.e. about:blank on FireFox)
-    await page.goBack();
-    expect(initialLocation === page.url());
+    expect(page.url()).toBe(firstWeaponLocation);
+
+    // it should not be possible to navigate backwards any further
+    expect(await page.goBack()).toBe(null);
 });
