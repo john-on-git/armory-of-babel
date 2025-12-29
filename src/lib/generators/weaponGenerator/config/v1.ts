@@ -2902,7 +2902,7 @@ export default {
                                 epic: 100,
                                 legendary: 120
                             } as const satisfies Record<WeaponRarity, number>;
-                            return `A wave of frost emanates from the weapon. Surfaces and bodies of liquid within a ${rangeByRarity[weapon.rarity]}-ft radius freeze into a solid sheet of ice.`;
+                            return `A wave of frost emanates from the weapon. Surfaces and bodies of liquid within a ${rangeByRarity[weapon.rarity]}-ft radius freeze into a sheet of ice. The wielder decides how thick the ice is (max 1-ft).`;
                         })
                     ]
 
