@@ -1,5 +1,5 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
-import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
+import { mkGen, type Generator } from "$lib/generators/recursiveGenerator";
 import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodableWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, pomelledWeaponShapeFamilies, rangedWeaponShapeFamilies, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
@@ -3877,12 +3877,10 @@ export default {
                 cost: 3,
                 additionalNotes: [
                     "Slam the weapon into the ground, emitting a shockwave that travels straight ahead for 60-ft.",
-                    new StringGenerator([
-                        // it deals damage equal to 3x the weapon's
-                        "Characters within 20-ft must save, or be knocked down & take ",
-                        mkGen((_rng, weapon) => textForDamage(modDamage(weapon.damage, x => x * 3))),
-                        " damage"
-                    ])
+                    // it deals damage equal to 3x the weapon's
+                    mkGen((_, weapon) =>
+                        `Characters within 20-ft must save, or be knocked down & take ${textForDamage(modDamage(weapon.damage, x => x * 3))} damage`
+                    )
                 ]
             }, {
                 themes: { any: ['earth'] },
@@ -4002,7 +4000,7 @@ export default {
                     const [desc, howItsMade, madeOf] = pickForTheme(weapon as WeaponGivenThemes<["fire" | "ice" | "dark" | "light" | "wizard" | "sweet"]>, effects, rng).chosen;
                     return {
                         desc,
-                        cost: `a charge per month that an expert would need to produce a regular version of the object, rounding up`,
+                        cost: `a charge per month that an expert would need to produce a regular version of the object`,
                         additionalNotes: [
                             `${howItsMade} a facsimile of an object of your choice.`,
                             `It's made ${madeOf}. Initially intangible, it finishes solidifying at the start of your next turn.`,
@@ -5009,44 +5007,37 @@ export default {
                      *  even when you aren't actually holding it. In 5e this would read "while you are attuned to". 
                      */
                     const reasonsToFly = {
-                        fire: new StringGenerator([
-                            "While using the weapon, you can ",
-                            mkGen((rng) => [
+                        fire: mkGen((rng) =>
+                            `While using the weapon, you can ${choice([
                                 "use the weapon to wreathe yourself in flames. This allows you to fly for some reason",
                                 "summon a pair of fiery wings. They allows you to fly",
-                            ].choice(rng)),
-                            ", as fast as you can walk."
-                        ]),
+                            ] as const, rng)}, as fast as you can walk.`
+                        ),
 
                         cloud: "The weapon can magically summon a small cloud. You can use it to fly, as fast as you can walk.",
                         earth: "The weapon contains a lodestone. You can its magnetism to fly, as fast as you can walk.",
 
-                        light: new StringGenerator([
-                            "While using the weapon, you can summon ",
-                            mkGen((rng) => [
+                        light: mkGen((rng) =>
+                            `While using the weapon, you can summon ${choice([
                                 "wings of light",
                                 "a pair of angel wings",
-                            ].choice(rng)),
-                            ". They allow you to fly, as fast as you can walk."
-                        ]),
+                            ] as const, rng)}. They allow you to fly, as fast as you can walk.`
+                        ),
 
-                        dark: new StringGenerator([
-                            "While using the weapon, you can summon ",
-                            mkGen((rng) => [
+                        dark: mkGen((rng) =>
+                            `While using the weapon, you can summon ${choice([
                                 "wings of black-light",
                                 "a pair of skeletal wings",
                                 "a pair of demonic wings",
                                 "a pair of dark & tattered angel wings",
                                 "wings made from pure darkness"
-                            ].choice(rng)),
-                            ". They allow you to fly, as fast as you can walk."
-                        ]),
+                            ] as const, rng)}. They allow you to fly, as fast as you can walk.`
+                        ),
                         wizard: "You can magically levitate, as fast as you can walk.",
 
                         steampunk: "The weapon can detach a series of jet-powered widgets. You can use them to fly, as fast as you can walk.",
-                        nature: new StringGenerator([
-                            "While using the weapon, you can summon a pair of ",
-                            mkGen((rng) => [
+                        nature: mkGen((rng) =>
+                            `While using the weapon, you can summon ${choice([
                                 "bird",
                                 "bat",
                                 "butterfly",
@@ -5055,9 +5046,8 @@ export default {
                                 "bee",
                                 "dragonfly",
                                 "pterodactyl"
-                            ].choice(rng)),
-                            " wings. They allow you to fly, as fast as you can walk."
-                        ])
+                            ] as const, rng)} wings. They allow you to fly, as fast as you can walk.`
+                        )
                     } as const;
 
                     const desc = genMaybeGen(pickForTheme(weapon, reasonsToFly, rng).chosen, rng);
@@ -5402,12 +5392,19 @@ export default {
     },
     languages: {
         add: [
-            ...(["The language of ice & snow."].map(x => toLang("ice", x))),
-            ...(["The language of fire."].map(x => toLang("fire", x))),
-            ...(["Angelic."].map(x => toLang("light", x))),
-            ...(["Demonic."].map(x => toLang("dark", x))),
-            ...(wildAnimalArr.map(animal => animal.plural.replace('giant ', '')).map(animal => toLang("nature", `The language of ${animal}`))),
-            ...(["Valkyrian."].map(x => toLang("cloud", x))),
+            ...(["Undercommon.", "Goblonic.", "Orcish."].map(x => toLang({ themes: { any: ["earth", "dark"] } }, x))),
+            ...(["Fire Giant.", "Red-Draconic."].map(x => toLang("fire", x))),
+            ...(["Demonic."].map(x => toLang({ themes: { any: ["fire", "dark"] } }, x))),
+            ...(["Necromantic."].map(x => toLang("dark", x))),
+            ...(["Mermish.", "Cetacean.", "Sea-Draconic."].map(x => toLang({ themes: { all: ["ice", "cloud"] } }, x))),
+            ...(["Frost Giant.", "White-Draconic."].map(x => toLang("ice", x))),
+            ...(["Angelic.", "Metal-Draconic.", "The liturgical language of their religion."].map(x => toLang("light", x))),
+            ...(['Druidic', ...wildAnimalArr.map(animal => `The language of ${animal.plural.replace('giant ', '')}`)].map(x => toLang("nature", x))),
+            ...(["The Machine Language used to instruct Clockwork Constructs."].map(x => toLang("steampunk", x))),
+            ...(["Valkyrian.", "Sky Giant.", "Blue-Draconic"].map(x => toLang("cloud", x))),
+            ...(["Cyclopean.", "Cave-Draconic"].map(x => toLang("earth", x))),
+            ...(["Black-Draconic."].map(x => toLang("sour", x))),
+            ...(["A long-lost language."].map(x => toLang("wizard", x))),
         ]
     },
     shapes: {

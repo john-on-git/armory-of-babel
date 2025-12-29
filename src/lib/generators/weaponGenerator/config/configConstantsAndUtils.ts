@@ -1,5 +1,5 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
-import { mkGen, StringGenerator, type Generator } from "$lib/generators/recursiveGenerator";
+import { mkGen, type Generator } from "$lib/generators/recursiveGenerator";
 import { gatherUUIDs } from "$lib/generators/weaponGenerator/provider";
 import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, type CapitalLetter, type DescriptorText, type Ephitet, type PartFeature, type PartMaterial, type Theme, type Weapon, type WeaponGivenThemes, type WeaponPartName, type WeaponRarity, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
@@ -467,7 +467,7 @@ export const MATERIALS = {
     })).value() as Record<`${(typeof nonPreciousStone)[number]}Chunk`, PartMaterial>
 } as const satisfies Record<string, PartFeature | Generator<PartFeature, [Weapon]> | PartMaterial | Generator<PartMaterial, [Weapon]>>;
 
-const amberGen = new StringGenerator(['a nodule of amber preserving an ancient ', mkGen((rng) => ['mosquito', 'fish', 'crustacean', 'lizard', 'dragonfly', 'hummingbird', 'shrew'].choice(rng))]);
+const amberGen = (rng: PRNG) => `a nodule of amber preserving an ancient ${choice(['mosquito', 'fish', 'crustacean', 'lizard', 'dragonfly', 'hummingbird', 'shrew'] as const, rng)}` as const;
 const embeddedArr = [
     ['a ruby', ephRed],
     ['a garnet', ephRed],
@@ -591,8 +591,8 @@ export const MISC_DESC_FEATURES = {
         amber: {
             descriptor: {
                 descType: 'possession',
-                singular: new StringGenerator([amberGen, ' embedded in it']),
-                plural: new StringGenerator([amberGen, ' embedded in them']),
+                singular: mkGen((rng) => `${amberGen(rng)} embedded in it`),
+                plural: mkGen((rng) => `${amberGen(rng)} embedded in them`),
             },
             ephitet: mkGen((rng) => ({ pre: ephOld.choice(rng) }))
         } as PartFeature
@@ -658,15 +658,15 @@ export const MISC_DESC_FEATURES = {
             descriptor: {
                 descType: 'possession',
                 singular: 'an amethyst bracelet wrapped around it',
-                plural: 'amethyst bracelet bracelets wrapped around them',
+                plural: 'amethyst bracelets wrapped around them',
             },
             ephitet: { pre: 'Chained' }
         },
         anyJewelChain: {
             descriptor: {
                 descType: 'possession',
-                singular: new StringGenerator(['a', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelet wrapped around it']),
-                plural: new StringGenerator(['', mkGen(rng => [MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material), 'bracelets wrapped around them']),
+                singular: mkGen(rng => `a ${[MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material} bracelet wrapped around it`),
+                plural: mkGen(rng => `${[MATERIALS.ruby, MATERIALS.emerald, MATERIALS.sapphire, MATERIALS.diamond, MATERIALS.amethyst].choice(rng).material} bracelets wrapped around them`),
             },
             ephitet: { pre: 'Bejewelled' }
         },

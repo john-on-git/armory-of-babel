@@ -25,11 +25,3 @@ export abstract class RecursiveGenerator<T, TArgs extends Array<unknown> = [], T
      */
     abstract generate: (rng: seedrandom.PRNG, ...args: TArgs) => T;
 }
-/**
- * @deprecated just use a template string
- */
-
-export class StringGenerator<TArgs extends Array<unknown> = []> extends RecursiveGenerator<string, TArgs> {
-    generate: (rng: seedrandom.PRNG, ...args: TArgs) => string = (rng, ...args) => this.children.reduce((acc, x) => acc + x.generate(rng, ...args), "");
-}
-
