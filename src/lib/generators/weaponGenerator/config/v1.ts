@@ -4102,8 +4102,8 @@ export default {
                 mkGen((rng, weapon) => {
                     const damageBoostByRarity = {
                         rare: ["2d6", "2d8", "2d10"],
-                        epic: ["3d6", "3d8", "3d10", "2d12"],
-                        legendary: ["3d10", "3d12"]
+                        epic: ["2d6", "2d8", "2d10", "2d12"],
+                        legendary: ["2d10", "2d12"]
                     } satisfies Record<Extract<WeaponRarity, 'rare' | 'epic' | 'legendary'>, `${number}d${CommonDieSize}`[]>;
                     const damage = (damageBoostByRarity[weapon.rarity as keyof typeof damageBoostByRarity] ?? ['Weapon < Rare! This is a bug, please report me.']).choice(rng);
 
