@@ -4388,7 +4388,7 @@ export default {
                 { themes: { all: ['ice', 'cloud'] } }
             ),
             new ProviderElement("underwater-warrior",
-                { miscPower: true, desc: `For this weapon, the usual maluses for underwater fighting are converted into bonuses.`, },
+                { miscPower: true, desc: `For this weapon, the usual penalties for underwater fighting are converted into bonuses.`, },
                 { themes: { all: ['ice', 'cloud'] } }
             ),
             new ProviderElement("quick",
