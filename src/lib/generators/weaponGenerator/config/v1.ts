@@ -4030,6 +4030,15 @@ export default {
     },
     passives: {
         add: [
+            new ProviderElement("icebreaker",
+                {
+                    miscPower: true,
+                    desc: "Deals 10× damage to ice (and creatures made entirely of ice).",
+                },
+                {
+                    themes: { any: ['fire'] }
+                }
+            ),
             new ProviderElement("disarm-immune",
                 mkGen((rng, weapon) => {
                     const hpByRarity = {
