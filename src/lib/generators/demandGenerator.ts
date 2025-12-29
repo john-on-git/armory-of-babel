@@ -2,7 +2,7 @@ import seedrandom from "seedrandom";
 import { mkGen, type Generator } from "./recursiveGenerator";
 import { ProviderElement } from "./weaponGenerator/provider";
 import { WeaponFeatureProvider } from "./weaponGenerator/weaponGeneratorLogic";
-import type { Theme, Weapon, WeaponPowerCond } from "./weaponGenerator/weaponGeneratorTypes";
+import type { Weapon, WeaponPowerCond, WeaponViewModel } from "./weaponGenerator/weaponGeneratorTypes";
 
 interface Demand {
     desc: Generator<string>;
@@ -48,7 +48,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["wizard", "steampunk"] satisfies Theme[]
+                any: ["wizard", "steampunk"]
             }
         }
     ),
@@ -58,7 +58,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["wizard"] satisfies Theme[]
+                any: ["wizard"]
             }
         }
     ),
@@ -68,7 +68,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["steampunk"] satisfies Theme[]
+                any: ["steampunk"]
             }
         }
     ),
@@ -78,7 +78,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["fire"] satisfies Theme[]
+                any: ["fire"]
             }
         }
     ),
@@ -95,7 +95,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["dark", "fire", "sour"] satisfies Theme[]
+                any: ["dark", "fire", "sour"]
             }
         }
     ),
@@ -105,7 +105,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["fire"] satisfies Theme[]
+                any: ["fire"]
             }
         }
     ),
@@ -115,7 +115,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["ice"] satisfies Theme[]
+                any: ["ice"]
             }
         }
     ),
@@ -125,7 +125,7 @@ const demands = [
         },
         {
             themes: {
-                none: ["sweet"] satisfies Theme[]
+                none: ["sweet"]
             }
         }
     ),
@@ -135,7 +135,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["light"] satisfies Theme[]
+                any: ["light"]
             }
         }
     ),
@@ -145,7 +145,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["dark"] satisfies Theme[]
+                any: ["dark"]
             }
         }
     ),
@@ -156,7 +156,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: ["nature"]
             }
         }
     ),
@@ -166,7 +166,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: ["nature"]
             }
         }
     ),
@@ -176,7 +176,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: ["nature"]
             }
         }
     ),
@@ -186,7 +186,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["nature"] satisfies Theme[]
+                any: ["nature"]
             }
         }
     ),
@@ -197,7 +197,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["light"] satisfies Theme[]
+                any: ["light"]
             }
         }
     ),
@@ -207,7 +207,7 @@ const demands = [
         },
         {
             themes: {
-                any: ["light"] satisfies Theme[]
+                any: ["light"]
             }
         }
     ),
@@ -217,7 +217,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["light", "fire"] satisfies Theme[]
+                all: ["light", "fire"]
             }
         }
     ),
@@ -227,7 +227,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["light", "sour"] satisfies Theme[]
+                all: ["light", "sour"]
             }
         }
     ),
@@ -244,7 +244,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["sour", "dark"] satisfies Theme[],
+                all: ["sour", "dark"],
             }
         }
     ),
@@ -254,7 +254,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["fire", "dark"] satisfies Theme[]
+                all: ["fire", "dark"]
             }
         }
     ),
@@ -264,7 +264,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["cloud", "dark"] satisfies Theme[]
+                all: ["cloud", "dark"]
             }
         }
     ),
@@ -274,7 +274,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["cloud", "dark"] satisfies Theme[]
+                all: ["cloud", "dark"]
             }
         }
     ),
@@ -284,7 +284,7 @@ const demands = [
         },
         {
             themes: {
-                all: ["ice", "dark"] satisfies Theme[]
+                all: ["ice", "dark"]
             }
         }
     ),
@@ -292,7 +292,11 @@ const demands = [
 
 const demandsProvider = new WeaponFeatureProvider<Demand>(demands);
 
-export default function mkDemand(weapon: Weapon): string {
+export default function mkDemand(weapon: Omit<WeaponViewModel, "sentient"> & {
+    sentient: Exclude<WeaponViewModel["sentient"], false>;
+}): string {
     const rng = seedrandom();
-    return demandsProvider.draw(rng, weapon).desc.generate(rng);
+    // TODO fix this unsafe cast by implementing a WeaponViewModelFeatureProvider
+    // for now, this means that Conds of demandsProvider can only safely use certain conditions
+    return demandsProvider.draw(rng, weapon as unknown as Weapon).desc.generate(rng);
 }

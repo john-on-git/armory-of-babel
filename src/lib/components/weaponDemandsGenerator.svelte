@@ -1,9 +1,6 @@
 <script lang="ts">
     import mkDemand from "$lib/generators/demandGenerator";
-    import {
-        type Weapon,
-        type WeaponViewModel,
-    } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+    import { type WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
     interface Props {
         /**
@@ -28,8 +25,7 @@
     // TODO button click functionality
     function generateDemand() {
         // generate the new demand
-        // TODO fix this unsafe cast
-        demand = mkDemand(weapon as unknown as Weapon);
+        demand = mkDemand(weapon);
 
         // switch animations
         fadeLock = !fadeLock;
