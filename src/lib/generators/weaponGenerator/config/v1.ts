@@ -5597,7 +5597,7 @@ export default {
                         {
                             particular: "Bladed Bow",
                             rarity: {
-                                gte: "legendary"
+                                gte: "rare"
                             }
                         }
                     ],
