@@ -61,13 +61,13 @@ export const wildAnimalArr = [
     { article: 'a', singular: 'giant ant', plural: "giant ants" },
     { article: 'a', singular: 'giant bee', plural: "giant bees" },
     { article: 'a', singular: 'giant dragonfly', plural: "giant dragonflies" },
-    { article: 'a', singular: 'hawk', plural: "giant hawks" },
-    { article: 'an', singular: 'owl', plural: "giant owls" },
-    { article: 'an', singular: 'eagle', plural: "giant eagles" },
-    { article: 'a', singular: 'seal', plural: "giant seals" },
-    { article: 'a', singular: 'tiger', plural: "giant tigers" },
-    { article: 'a', singular: 'lion', plural: "giant lions" },
-    { article: 'an', singular: 'crow', plural: "giant crows" }
+    { article: 'a', singular: 'hawk', plural: "hawks" },
+    { article: 'an', singular: 'owl', plural: "owls" },
+    { article: 'an', singular: 'eagle', plural: "eagles" },
+    { article: 'a', singular: 'seal', plural: "seals" },
+    { article: 'a', singular: 'tiger', plural: "tigers" },
+    { article: 'a', singular: 'lion', plural: "lions" },
+    { article: 'an', singular: 'crow', plural: "crows" }
 ] as const satisfies { article: 'a' | 'an'; singular: string; plural: string }[];
 
 export const singularWildAnimal = mkGen((rng) => {

@@ -5407,7 +5407,8 @@ export default {
             ...(["The language of fire."].map(x => toLang("fire", x))),
             ...(["Angelic."].map(x => toLang("light", x))),
             ...(["Demonic."].map(x => toLang("dark", x))),
-            ...(["Valkyrie."].map(x => toLang("cloud", x))),
+            ...(wildAnimalArr.map(animal => animal.plural.replace('giant ', '')).map(animal => toLang("nature", `The language of ${animal}`))),
+            ...(["Valkyrian."].map(x => toLang("cloud", x))),
         ]
     },
     shapes: {
