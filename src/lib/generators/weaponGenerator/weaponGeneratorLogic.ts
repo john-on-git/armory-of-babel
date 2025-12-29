@@ -432,7 +432,6 @@ function pickEphitet(rng: seedrandom.PRNG, weapon: Weapon): Ephitet | undefined 
     }
 }
 
-//export function genMaybeGen<T, TArgs extends Array<unknown>, TUnion extends T | ((TGenerator<T, TArgs>)) = T | ((TGenerator<T, TArgs>))>(x: TUnion, rng: seedrandom.PRNG, ...args: TArgs): T;
 export function genMaybeGen<T, TArgs extends Array<unknown>>(x: T | ((Generator<T, TArgs>)), rng: seedrandom.PRNG, ...args: TArgs): T {
     return typeof x === 'object' && x !== null && 'generate' in x ? x.generate(rng, ...args) : x;
 }
@@ -516,7 +515,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         passivePowers: [],
         sentient: isSentient ? {
             personality: [],
-            languages: ['Common.'],
+            languages: [{ UUID: 'common', desc: 'Common.', }],
             chanceOfMakingDemands: params.chanceOfMakingDemands
         } : false as const,
 
@@ -571,9 +570,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
 
 
     /*
-     * Generate the personality if the weapon is sentient.
+     * Generate the personality & languages if the weapon is sentient.
      */
-
     if (weapon.sentient) {
         const nPersonalities = 2;
         while (weapon.sentient.personality.length < nPersonalities) {
@@ -583,6 +581,22 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
                     ...choice,
                     desc: genMaybeGen(choice?.desc, rng, weapon)
                 });
+            }
+        }
+
+        for (let i = 0; i < params.nAdditionalLanguages; i++) {
+            try {
+                const choice = featureProviders.languageProvider.draw(rng, weapon);
+                if (choice != undefined) {
+                    weapon.sentient.languages.push(choice);
+                }
+            }
+            catch (e) {
+                // this error is almost definitely "provider failed to draw". It means we don't have enough powers. just log it and stop trying to generate any more
+                if (!silent) {
+                    console.error(e);
+                }
+                break;
             }
         }
     }
@@ -671,6 +685,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             break;
         }
     }
+
+
 
     // set the weapon's max charges to be enough to cast its most expensive power, if it was previously lower
     weapon.active.maxCharges =
@@ -766,7 +782,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         })),
         sentient: weapon.sentient ? {
             personality: weapon.sentient.personality.map(x => genMaybeGen(x.desc, rng, weapon)),
-            languages: weapon.sentient.languages,
+            languages: weapon.sentient.languages.map(x => x.desc),
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
         } : false,
     } satisfies WeaponViewModel;
@@ -843,12 +859,17 @@ export function textForDamage(damage: DamageDice & { as?: string }): string {
         .map(([k, v]) => textForDamageKey(k, v)).filter(x => x.length > 0).join(' + ');
 }
 
-export function toLang(theme: Theme, lang: string): ProviderElement<Language, WeaponPowerCond> {
+/**
+ * Boilerplate for making a language
+ * @param themeOrCond theme to require, in which case an appropriate cond is constructed, or a full cond
+ * @param lang name of the language to make
+ * @returns 
+ */
+export function toLang(themeOrCond: WeaponPowerCond | Theme, lang: string): ProviderElement<Language, WeaponPowerCond> {
     return new ProviderElement<Language, WeaponPowerCond>(
-        lang.replaceAll(/\s/g, '-').toLowerCase(),
-        { language: true, desc: lang }, {
-        themes: {
-            any: [theme]
-        }
-    });
+        lang.replaceAll(/\s/g, '-').replaceAll(/[^A-z]/g, '').toLowerCase(),
+        { desc: lang },
+        typeof themeOrCond === "string" ? {
+            themes: { any: [themeOrCond] }
+        } : themeOrCond);
 }

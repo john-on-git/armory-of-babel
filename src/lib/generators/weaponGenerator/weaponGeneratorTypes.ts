@@ -66,6 +66,7 @@ export interface WeaponGenerationParams {
     nActive: number;
     nUnlimitedActive: number;
     sentienceChance: number;
+    nAdditionalLanguages: number;
     chanceOfMakingDemands: Exclude<CommonDieSize, 20>;
 }
 
@@ -104,7 +105,7 @@ export interface Weapon {
     passivePowers: WithUUID<PassivePower>[];
     sentient: false | {
         personality: WithUUID<Personality>[];
-        languages: string[];
+        languages: WithUUID<Language>[];
         /**
          * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
          */
@@ -239,11 +240,9 @@ export interface RechargeMethod {
 }
 
 export interface PassivePower extends Power {
-    miscPower: true;
     desc?: string;
 }
 export interface Language extends Power {
-    language: true;
     desc: string;
 }
 
@@ -276,7 +275,7 @@ export type WeaponShape = {
 export interface WeaponPowerCond extends Cond {
     themes?: Quant<Theme>;
     personality?: Quant<Personality>;
-    languages?: Quant<string>;
+    languages?: Quant<Language>;
     activePowers?: Quant<ActivePower>;
     passivePowers?: Quant<PassivePower>;
     shapeFamily?: Quant<WeaponShape['group']>;
