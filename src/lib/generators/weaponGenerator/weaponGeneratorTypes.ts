@@ -83,7 +83,7 @@ export interface Weapon {
 
     rarity: WeaponRarity;
     /**
-     * True if the weapon is a negative. Negative weapons are very rare weapons that have a different rarity color. This is purely cosmetic.
+     * True if the weapon is a negative. Negative weapons are very rare weapons that have a different rarity color. Abilities are sometimes more powerful for negative weapons.
      * 
      * Common weapons cannot be negative, but enforcing this with the type threw a numer of issues, so we're only doing it for the viewmodel.
      */
