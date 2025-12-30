@@ -1,7 +1,6 @@
 import { getWeaponFeatureVersionController } from "$lib/generators/weaponGenerator/weaponFeatureVersionController";
-import { mkWeapon, mkWeaponsForAllRarities } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import type { FeatureProviderCollection, WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
-import _ from "lodash";
+import { mkWeapon } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import type { FeatureProviderCollection } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 
 const nRuns = 1e2;
 
@@ -111,36 +110,4 @@ describe('Weapon Generator', () => {
         //     { id: "test3", themes: ["ice", "light", "dark"], rarity: "legendary", name: "Moronius, Lumensteel Flail", damage: { as: "mace", const: 3 }, toHit: 3, active: { maxCharges: 6, rechargeMethod: "one charge each time you defeat an orc", powers: [{ desc: "Summon Ice Elemental", cost: 6, additionalNotes: ["Dissipates after 1 hour."] }, { desc: "Commune With Divinity", cost: 4 }, { desc: "Commune With Demon", cost: "at will" }] }, passivePowers: [{ desc: "Wielder is immune to the harmful effects of rays & beams." }, { desc: "1-in-2 chance to sense icy weather before it hits, giving just enough time to escape." }, { desc: "Menacing aura. Bonus to saves to frighten & intimidate." }], sentient: { personality: ["Pitiless.", "Tries to act mysterious."], languages: ["Common."], chanceOfMakingDemands: 8 } }
         // );
     });
-
-    it.skip('Manual utility / find a weapon with a particular feature', () => {
-        function cond(weapon: WeaponViewModel): boolean {
-            return weapon.passivePowers.some((x) => x.desc.startsWith("Pricking a sleeping person with the weapon"));
-        }
-        const start = 0;
-        const attempts = 10_000;
-
-        const end = start + attempts;
-        let i = start;
-        let weapons: WeaponViewModel[];
-        // let n: number;
-
-        do {
-            const {
-                weapons: nextWeapons,
-                //  n: nextN
-            } = mkWeaponsForAllRarities((++i).toString(), weaponFeaturesByVersion[weaponFeaturesByVersion.length - 1], undefined, undefined, true);
-            weapons = _.toArray(nextWeapons);
-            // n = nextN;
-        } while (i <= end && (!weapons.some(cond)));
-
-        const valid = weapons.filter(cond);
-
-        if (valid.length !== 0) {
-            console.log(`Found weapon @ ${i} (${valid.map(x => x.rarity).join(", ")})`);
-        }
-        else {
-            console.error('\x1b[31mfailed to find weapon');
-        }
-        expect(weapons.some(cond)).toBe(true);
-    })
 })
