@@ -4540,13 +4540,14 @@ export default {
                 }
             ),
             new ProviderElement("blade-of-truth",
-                {
+                mkGen((_, weapon) => ({
                     miscPower: true,
-                    desc: "Characters touching the weapon cannot lie."
-                }, {
-                themes: { any: ["light"], },
-                rarity: { gte: 'epic' }
-            }
+                    desc: `Characters touching the ${getBusinessEndDesc(weapon.shape)} cannot lie.`
+                })),
+                {
+                    themes: { any: ["light"], },
+                    rarity: { gte: 'epic' }
+                }
             ),
             new ProviderElement("detect-imposter-among-us",
                 mkGen((_, weapon) => weapon.sentient === false
