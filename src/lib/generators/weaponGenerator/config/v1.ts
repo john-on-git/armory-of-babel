@@ -4983,7 +4983,7 @@ export default {
                     desc: "Can shoot an endless stream of water from its tip, pressure as garden hose."
                 },
                 {
-                    themes: { any: ["cloud"] },
+                    themes: { all: ["cloud", "ice"] },
                 }
             ),
             new ProviderElement("stealth-in-rough-weather",
