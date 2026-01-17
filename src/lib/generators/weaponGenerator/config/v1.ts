@@ -2152,7 +2152,7 @@ export default {
                                 desc: "Sugar Rush",
                                 additionalNotes: [
                                     "You blast another character with a dusting of magical sugar, giving them extra energy.",
-                                    "For the rest of the scene, they can take one additional action one each of their turns."
+                                    "For the rest of the scene, they can take one additional action on each of their turns."
                                 ],
                             }
                         ],
