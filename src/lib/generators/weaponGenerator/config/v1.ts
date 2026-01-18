@@ -28,7 +28,7 @@ const assassinationDamageMultByRarity = {
     legendary: 4
 } as const satisfies Record<WeaponRarity, number>;
 
-export default {
+const v1 = {
     themes: {
         add: ([
             "fire" as const,
@@ -5667,3 +5667,5 @@ export default {
         ]
     }
 } satisfies DeltaCollection<WeaponFeaturesTypes>;
+
+export default v1;

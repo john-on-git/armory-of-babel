@@ -184,7 +184,9 @@ export interface Power {
     additionalNotes?: (string | (Generator<string, [Weapon]>))[];
 
     /**
-     * UUID or UUIDs of the description provider that is applied to weapons with this power
+     * UUID or UUIDs of the description provider that is applied to weapons with this power.
+     * 
+     * During generation, these parts are always applied first.
      */
     descriptorPartGenerator?: string | string[];
 

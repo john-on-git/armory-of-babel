@@ -1,7 +1,7 @@
 import { coldBiomeHorn as coldAnimalHorn, darkAnimalSkin, coldBiomeHorn as hotAnimalHorn, magicAnimalHorn } from "$lib/generators/foes";
 import { mkGen, type Generator } from "$lib/generators/recursiveGenerator";
-import { gatherUUIDs } from "$lib/generators/weaponGenerator/provider";
-import { pickForTheme } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
+import { gatherUUIDs, ProviderElement } from "$lib/generators/weaponGenerator/provider";
+import { pickForTheme, WeaponFeatureProvider } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
 import { gte, type CapitalLetter, type DescriptorText, type Ephitet, type PartFeature, type PartMaterial, type Theme, type Weapon, type WeaponGivenThemes, type WeaponPartName, type WeaponRarity, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import { titleCase } from "$lib/util/string";
@@ -181,13 +181,11 @@ export const ephRainbow = [{ pre: 'Prismatic' }, { pre: 'Rainbow' }, { pre: 'Var
 export const ephRed = [{ pre: 'Crimson' }, { pre: 'Blood-Stained' }, { pre: 'Bloody' }, { pre: 'Sanguine' }, { pre: 'Ruby' }, { post: ' of the King in Red', alliteratesWith: 'R' }] satisfies Ephitet[];
 
 // TODO these need more stuff
-export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] satisfies Ephitet[];
-export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }, { pre: 'Sapphire' }] satisfies Ephitet[];
-export const ephGreen = [{ pre: 'Green' }, { pre: 'Emerald' }, { post: ' of Val Verde', alliteratesWith: 'V' }] satisfies Ephitet[];
-export const ephGold = [{ pre: 'Golden' }, { pre: 'Auric' }, { post: ' of the Sun', alliteratesWith: 'S' }, { post: ' of Ra', alliteratesWith: 'R' }] satisfies Ephitet[];
-export const ephSweet = [{ pre: 'Candied' }] satisfies Ephitet[];
-
-
+export const ephPurple = [{ pre: 'Purple' }, { pre: 'Ultraviolet' }] as const satisfies Ephitet[];
+export const ephBlue = [{ pre: 'Blue' }, { pre: 'Cerulean' }, { pre: 'Azure' }, { pre: 'Sapphire' }] as const satisfies Ephitet[];
+export const ephGreen = [{ pre: 'Green' }, { pre: 'Emerald' }, { post: ' of Val Verde', alliteratesWith: 'V' }] as const satisfies Ephitet[];
+export const ephGold = [{ pre: 'Golden' }, { pre: 'Auric' }, { post: ' of the Sun', alliteratesWith: 'S' }, { post: ' of Ra', alliteratesWith: 'R' }] as const satisfies Ephitet[];
+export const ephSweet = [{ pre: 'Candied' }] as const satisfies Ephitet[];
 
 export const MATERIALS = {
     lemonWood: {
@@ -1213,3 +1211,19 @@ export function get5eDamageType(weaponShape: Weapon['shape']) {
             return "slashing";
     }
 }
+
+/**
+ * Provider for slime types for slime-themed powers
+ */
+export const slimeProvider = new WeaponFeatureProvider<{ color: string; ephGen: Ephitet[]; }>([
+    new ProviderElement('slime-green', { color: 'green', ephGen: ephGreen }, {}),
+    new ProviderElement('slime-yellow', { color: 'yellow', ephGen: ephGold }, { rarity: { gte: 'legendary' } }),
+    new ProviderElement('slime-orange', { color: 'orange', ephGen: ephGold }, { themes: { any: ['fire', 'earth'] } }),
+    new ProviderElement('slime-red', { color: 'yellow', ephGen: ephRed }, { themes: { any: ['fire', 'earth'] } }),
+    new ProviderElement('slime-pink', { color: 'green', ephGen: [{ pre: 'Pink' }] }, { themes: { any: ['sweet'] } }),
+    new ProviderElement('slime-purple', { color: 'purple', ephGen: ephPurple }, { themes: { any: ['sweet', 'wizard'] } }),
+    new ProviderElement('slime-blue', { color: 'blue', ephGen: ephBlue }, { themes: { any: ['sweet', 'wizard'] } }),
+    new ProviderElement('slime-black', { color: 'black', ephGen: ephBlack }, { themes: { any: ['dark', 'earth'] } }),
+    new ProviderElement('slime-white', { color: 'white', ephGen: ephWhite }, { themes: { any: ['light', 'ice'] } }),
+    new ProviderElement('slime-rainbow', { color: 'rainbow', ephGen: ephWhite }, { rarity: { gte: 'epic' } }),
+]);
