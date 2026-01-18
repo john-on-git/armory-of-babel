@@ -1,7 +1,7 @@
 import { type Generator } from "$lib/generators/recursiveGenerator";
 import { type PrimitiveContainer } from "$lib/util/versionController";
 import seedrandom from "seedrandom";
-import { ProviderElement, type Comp, type Cond, type Quant, type WithUUID } from "./provider";
+import { ProviderElement, type Comp, type CondAtom, type Quant, type WithUUID } from "./provider";
 import type { DescriptorProvider, WeaponFeatureProvider } from "./weaponGeneratorLogic";
 
 export const allThemes = [
@@ -274,7 +274,7 @@ export type WeaponShape = {
     group: WeaponShapeGroup;
 }
 
-export interface WeaponPowerCond extends Cond {
+export type WeaponPowerCondAtom = CondAtom & {
     themes?: Quant<Theme>;
     personality?: Quant<Personality>;
     languages?: Quant<Language>;
@@ -588,7 +588,7 @@ export interface FeatureProviderCollection {
 
 export interface WeaponFeaturesTypes {
     themes: PrimitiveContainer<Theme>;
-    nonRollableDescriptors: ProviderElement<DescriptorGenerator, { never: true }>;
+    nonRollableDescriptors: ProviderElement<DescriptorGenerator, never, { never: true }>;
     descriptors: ProviderElement<DescriptorGenerator>;
     personalities: ProviderElement<Personality>
 

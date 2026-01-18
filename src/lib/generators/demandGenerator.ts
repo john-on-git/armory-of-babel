@@ -2,26 +2,26 @@ import seedrandom from "seedrandom";
 import { mkGen, type Generator } from "./recursiveGenerator";
 import { ProviderElement } from "./weaponGenerator/provider";
 import { WeaponFeatureProvider } from "./weaponGenerator/weaponGeneratorLogic";
-import type { Weapon, WeaponPowerCond, WeaponViewModel } from "./weaponGenerator/weaponGeneratorTypes";
+import type { Weapon, WeaponPowerCondAtom, WeaponViewModel } from "./weaponGenerator/weaponGeneratorTypes";
 
 interface Demand {
     desc: Generator<string>;
 }
 
 const demands = [
-    new ProviderElement<Demand, WeaponPowerCond>('demand-adornments',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-adornments',
         {
             desc: mkGen("New Adornments (1 charge/100 GP spent).")
         },
         {}
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-interesting-attack',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-interesting-attack',
         {
             desc: mkGen("Perform an Interesting Attack (d4 charges).")
         },
         {}
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-oil',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-oil',
         {
             desc: mkGen((rng) =>
                 `To be Polished With ${[
@@ -42,7 +42,7 @@ const demands = [
         },
         {}
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-book',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-book',
         {
             desc: mkGen("New Reading Material (d4 charges).")
         },
@@ -52,7 +52,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-spellbook',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-spellbook',
         {
             desc: mkGen("Acquire New Spell (all charges).")
         },
@@ -62,7 +62,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-tech',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-tech',
         {
             desc: mkGen("Acquire New Technology (all charges).")
         },
@@ -72,7 +72,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-material',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-material',
         {
             desc: mkGen("Acquire Rare Crafting Material (all charges).")
         },
@@ -82,14 +82,14 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-poke-it',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-poke-it',
         {
             desc: mkGen("Interact With Specific Dungeon Object (d6 charges).")
         },
         {}
     ),
 
-    new ProviderElement<Demand, WeaponPowerCond>('demand-destruction',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-destruction',
         {
             desc: mkGen("Destroy Specific Object (d4 charges).")
         },
@@ -99,7 +99,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-pyromania',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-pyromania',
         {
             desc: mkGen("Immediately Start a Fire (d4 charges).")
         },
@@ -109,7 +109,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-cryomania',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-cryomania',
         {
             desc: mkGen("Cool Down Current Location (d4 charges).")
         },
@@ -119,7 +119,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-defeat-foe',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-defeat-foe',
         {
             desc: mkGen("Defeat Specific Foe (d6 charges).")
         },
@@ -129,7 +129,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-escort-mission',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-escort-mission',
         {
             desc: mkGen("Protect Specific NPC This Scene (d4 charges).")
         },
@@ -139,7 +139,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-drama',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-drama',
         {
             desc: mkGen("Incite Conflict With Specific NPC (d6 charges).")
         },
@@ -150,7 +150,7 @@ const demands = [
         }
     ),
 
-    new ProviderElement<Demand, WeaponPowerCond>('demand-release-beast',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-release-beast',
         {
             desc: mkGen("Release Specific Animal From Captivity (d4 charges).")
         },
@@ -160,7 +160,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-pet-dog',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-pet-dog',
         {
             desc: mkGen("Pet Specific Animal (charges based on danger).")
         },
@@ -170,7 +170,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-treehugger',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-treehugger',
         {
             desc: mkGen("Hug Specific Tree (d4 charges).")
         },
@@ -180,7 +180,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-plant-a-tree-under-whose-shade-you-will-never-rest',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-plant-a-tree-under-whose-shade-you-will-never-rest',
         {
             desc: mkGen("Plant Tree (d4 charges).")
         },
@@ -191,7 +191,7 @@ const demands = [
         }
     ),
 
-    new ProviderElement<Demand, WeaponPowerCond>('demand-legit-temple',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-legit-temple',
         {
             desc: mkGen("Make Haste to Closest Temple (all charges).")
         },
@@ -201,7 +201,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-simp-god',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-simp-god',
         {
             desc: mkGen("Make Offering to God (all charges).")
         },
@@ -211,7 +211,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demnand-drama-religious-fire',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demnand-drama-religious-fire',
         {
             desc: mkGen("Insult Religion of Infidel (all charges).")
         },
@@ -221,7 +221,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-drama-religious-sour',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-drama-religious-sour',
         {
             desc: mkGen("Insult Religion of Infidel (all charges).")
         },
@@ -232,13 +232,13 @@ const demands = [
         }
     ),
 
-    new ProviderElement<Demand, WeaponPowerCond>('demand-booze',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-booze',
         {
             desc: mkGen("Dipped in Beverage Worth At Least 100 GP (d4 charges).")
         },
         {}
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-sacrifice-acid',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-sacrifice-acid',
         {
             desc: mkGen("Dissolve Someone in Acid (1 charge per victim HD).")
         },
@@ -248,7 +248,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-sacrifice-fire',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-sacrifice-fire',
         {
             desc: mkGen("Burn Someone Alive (1 charge per victim HD).")
         },
@@ -258,7 +258,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-sacrifice-water',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-sacrifice-water',
         {
             desc: mkGen("Drown Someone (1 charge per victim HD).")
         },
@@ -268,7 +268,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-sacrifice-fall',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-sacrifice-fall',
         {
             desc: mkGen("Drop Someone to Their Death (1 charge per victim HD).")
         },
@@ -278,7 +278,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-sacrifice-ice',
+    new ProviderElement<Demand, WeaponPowerCondAtom>('demand-sacrifice-ice',
         {
             desc: mkGen("Freeze Someone to Death (1 charge per victim HD).")
         },
@@ -288,7 +288,7 @@ const demands = [
             }
         }
     ),
-] satisfies ProviderElement<Demand, WeaponPowerCond>[];
+] satisfies ProviderElement<Demand, WeaponPowerCondAtom>[];
 
 const demandsProvider = new WeaponFeatureProvider<Demand>(demands);
 

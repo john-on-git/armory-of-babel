@@ -4,7 +4,7 @@ import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterA
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, hasUUIDs, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
-import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type DescriptorGenerator, type DescriptorType, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCond, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
+import { gte, lt, type ActivePower, type CapitalLetter, type CommonDieSize, type DamageDice, type DescriptorGenerator, type DescriptorType, type Ephitet, type PartFeature, type PassivePower, type Personality, type RechargeMethod, type Theme, type Weapon, type WeaponFeaturesTypes, type WeaponGivenThemes, type WeaponPowerCondAtom, type WeaponRarity, type WeaponShape, type WeaponShapeGroup } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
 import { choice } from "$lib/util/choice";
 import "$lib/util/string";
 import { PrimitiveContainer, type DeltaCollection } from "$lib/util/versionController";
@@ -201,7 +201,7 @@ const v1 = {
                 { never: true }
             ),
             ...(wildAnimalArr.map(({ article, singular, plural }) =>
-                new ProviderElement<DescriptorGenerator, { never: true }>(`carved-resembling-${singular.toLowerCase().replaceAll(/\s+/g, '-')}`,
+                new ProviderElement<DescriptorGenerator, never, { never: true }>(`carved-resembling-${singular.toLowerCase().replaceAll(/\s+/g, '-')}`,
                     {
                         yields: 'feature',
                         generate: () => ({
@@ -1776,7 +1776,7 @@ const v1 = {
                     themes: { any: ["fire", "ice", "dark", "sweet"] },
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("cruel",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("cruel",
                 {
                     desc: "Cruel."
                 },
@@ -1784,7 +1784,7 @@ const v1 = {
                     themes: { any: ["sour", "dark"] },
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("curious",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("curious",
                 {
                     desc: "Curious."
                 },
@@ -1795,7 +1795,7 @@ const v1 = {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("know-it-all",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("know-it-all",
                 {
                     desc: "Know-it-All."
                 },
@@ -1806,7 +1806,7 @@ const v1 = {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("logical",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("logical",
                 {
                     desc: "Logical."
                 },
@@ -1817,7 +1817,7 @@ const v1 = {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("black-and-white-thinker",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("black-and-white-thinker",
                 {
                     desc: "Black & White Thinker."
                 },
@@ -1828,7 +1828,7 @@ const v1 = {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("kind",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("kind",
                 {
                     desc: "Kind."
                 },
@@ -1839,7 +1839,7 @@ const v1 = {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("honest",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("honest",
                 {
                     desc: "Honest."
                 },
@@ -1850,7 +1850,7 @@ const v1 = {
 
                 }
             ),
-            new ProviderElement<Personality, WeaponPowerCond>("merciless",
+            new ProviderElement<Personality, WeaponPowerCondAtom>("merciless",
                 {
                     desc: "Merciless."
                 },
@@ -1926,7 +1926,7 @@ const v1 = {
                 ]
             }, (theme, personality, i) => {
                 const formatted = personality.toTitleCase() + ".";
-                return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
+                return new ProviderElement<Personality, WeaponPowerCondAtom>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
                     {
                         desc: formatted
                     },
@@ -2026,7 +2026,7 @@ const v1 = {
                         mkGen(rng => `all charges when its wielder drives ${agentOfExtractivism.generate(rng)} to bankruptcy`)
                     ]
                 },
-                (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCond>(
+                (theme, x, i) => new ProviderElement<RechargeMethod, WeaponPowerCondAtom>(
                     `${theme}-recharge-${i}`,
                     { desc: x },
                     { themes: { any: [theme as Theme] } }
@@ -5236,7 +5236,7 @@ const v1 = {
                     }
                 }
             ),
-            new ProviderElement<Generator<PassivePower, [Weapon]>, WeaponPowerCond>(
+            new ProviderElement<Generator<PassivePower, [Weapon]>, WeaponPowerCondAtom>(
                 "death-blast",
                 mkGen<PassivePower, [Weapon]>((rng, weapon) => {
                     const { desc, featureUUID: featureUUID } = pickOrLinkWithEnergyCore(rng, weapon);
@@ -5627,12 +5627,12 @@ const v1 = {
                         }
                     ]
                 } satisfies
-                Record<WeaponShapeGroup, ((Pick<WeaponShape, "particular"> & WeaponPowerCond) | string)[]> as
-                Record<WeaponShapeGroup, ((Pick<WeaponShape, "particular"> & WeaponPowerCond) | string)[]>,
+                Record<WeaponShapeGroup, ((Pick<WeaponShape, "particular"> & WeaponPowerCondAtom) | string)[]> as
+                Record<WeaponShapeGroup, ((Pick<WeaponShape, "particular"> & WeaponPowerCondAtom) | string)[]>,
                 (k, shapeOrShapename) => {
                     switch (typeof shapeOrShapename) {
                         case "string":
-                            return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k}-${shapeOrShapename.toLocaleLowerCase()}`,
+                            return new ProviderElement<WeaponShape, WeaponPowerCondAtom>(`${k}-${shapeOrShapename.toLocaleLowerCase()}`,
                                 {
                                     particular: shapeOrShapename,
                                     group: k as WeaponShape["group"]
@@ -5645,7 +5645,7 @@ const v1 = {
                             {
                                 const shape = shapeOrShapename;
                                 if (shape !== null) {
-                                    return new ProviderElement<WeaponShape, WeaponPowerCond>(`${k.replaceAll(/\s/g, "-")}-${shape.particular.toLocaleLowerCase()}`,
+                                    return new ProviderElement<WeaponShape, WeaponPowerCondAtom>(`${k.replaceAll(/\s/g, "-")}-${shape.particular.toLocaleLowerCase()}`,
                                         {
                                             particular: shape.particular,
                                             group: k as WeaponShape["group"]

@@ -1,4 +1,4 @@
-import type { WeaponPowerCond } from '$lib/generators/weaponGenerator/weaponGeneratorTypes';
+import type { WeaponPowerCondAtom } from '$lib/generators/weaponGenerator/weaponGeneratorTypes';
 import { Patchable } from '$lib/util/versionController';
 import _ from 'lodash';
 import seedrandom from "seedrandom";
@@ -40,11 +40,11 @@ export function evComp<T>(comp: Comp<T>, x: T, ord: (x: T) => number) {
 // store all the UUIDs to catch duplicates for debugging
 const allUUIDs = new Set<string>();
 
-export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPowerCond> extends Patchable {
+export class ProviderElement<TThing, TCondAtom extends WeaponPowerCondAtom = WeaponPowerCondAtom, TTopLevelCond extends TopLevelCond<TCondAtom> = TopLevelCond<TCondAtom>> extends Patchable {
     thing: TThing;
-    cond: TCond;
+    cond: TTopLevelCond;
 
-    constructor(UUID: string, thing: TThing, cond: TCond) {
+    constructor(UUID: string, thing: TThing, cond: TTopLevelCond) {
         allUUIDs.add(UUID);
 
         super(UUID);
@@ -53,14 +53,22 @@ export class ProviderElement<TThing, TCond extends WeaponPowerCond = WeaponPower
     }
 }
 
-export interface Cond {
-    allowDuplicates?: boolean;
-    UUIDs?: Quant<string>
+export type CondAtom = {
+    UUIDs?: Quant<string>;
+}
+
+export type Cond<T extends CondAtom> = CondAtom | { and: readonly Cond<T>[] } | { or: readonly Cond<T>[] };
+
+/**
+ * Conditions that only make sense to include at the top level of a condition.
+ */
+export type TopLevelCond<TCondAtom extends CondAtom = CondAtom> = {
     /**
      * If present, this will never be chosen.
      */
-    never?: true;
-}
+    never: true;
+} | ({ allowDuplicates?: boolean } & TCondAtom);
+
 
 export type WithUUID<T extends object> = { UUID: string; } & T;
 
@@ -108,34 +116,48 @@ export function evQuantUUID(quantUUID: Quant<string>, x: { target: object } | { 
 
 
 
-export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TParams extends object> {
-    protected source: readonly ProviderElement<TThing, TCond>[];
+export abstract class ConditionalThingProvider<TThing, TParams extends object> {
+    protected source: readonly ProviderElement<TThing, CondAtom>[];
     protected defaultAllowDuplicates: boolean;
 
-    constructor(source: readonly ProviderElement<TThing, TCond>[], defaultAllowDuplicates = false) {
+    constructor(source: readonly ProviderElement<TThing, CondAtom>[], defaultAllowDuplicates = false) {
         this.source = source;
         this.defaultAllowDuplicates = defaultAllowDuplicates;
     }
 
-    protected condExecutor(element: ProviderElement<TThing, TCond>, params: TParams): boolean {
-        if (element.cond.never === true) {
-            return false;
+    protected condAtomExecutor(condAtom: CondAtom, _params: TParams, UUIDs: Set<string>): boolean {
+        return (
+            // cond.others provided -> cond.others is satisfied (de-morgan's)
+            (condAtom.UUIDs === undefined || evQuantUUID(condAtom.UUIDs, { set: UUIDs }))
+        );
+    }
+
+    protected condExecutor(cond: Cond<CondAtom>, params: TParams, UUIDs: Set<string>): boolean {
+        if ('and' in cond) {
+            return cond.and.every(subCondition => this.condExecutor(subCondition, params, UUIDs));
         }
-        // if the cond doesn't use either of the conditions that require checking UUIDs, there's no point in checking the params' UUIDs. just return true
-        if ((element.cond.allowDuplicates ?? this.defaultAllowDuplicates) && element.cond.UUIDs === undefined) {
-            return true;
+        else if ('or' in cond) {
+            return cond.or.some(subCondition => this.condExecutor(subCondition, params, UUIDs));
+        }
+        else {
+            return this.condAtomExecutor(cond, params, UUIDs);
+        }
+    };
+
+    protected topLevelCondExecutor(element: ProviderElement<TThing, CondAtom>, params: TParams): boolean {
+        if ('never' in element.cond) {
+            return false;
         }
         else {
             //otherwise get all the UUIDs in the target and evaluate the conditions
-            const allIDs = gatherUUIDs(params);
-
+            const allUUIDs = gatherUUIDs(params);
             return (
                 // uniqueness demanded -> no duplicates of this.UUID (de-morgan's)
-                (element.cond.allowDuplicates || !allIDs.has(element.UUID)) &&
+                ((element.cond.allowDuplicates) || !allUUIDs.has(element.UUID)) &&
 
-                // cond.others provided -> cond.others is satisfied (de-morgan's)
-                (element.cond.UUIDs === undefined || evQuantUUID(element.cond.UUIDs, { set: allIDs }))
-            );
+                // other conditions
+                this.condAtomExecutor(element.cond, params, allUUIDs)
+            )
         }
     };
 
@@ -147,7 +169,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
      * @returns a random thing meeting that is valid for conditions
      */
     draw(rng: seedrandom.PRNG, params: TParams): TThing & { UUID: string } {
-        const choice = this.source.filter(x => this.condExecutor(x, params)).choice(rng);
+        const choice = this.source.filter(x => this.topLevelCondExecutor(x, params)).choice(rng);
         if (choice === undefined) {
             throw new Error(`Provider failed to draw. No valid options for:\n${JSON.stringify(params, undefined, 1)}.\nFirst option:\n${JSON.stringify(this.source.length >= 1 ? this.source[0] : undefined)}`);
         }
@@ -165,7 +187,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
      * @param params the params to get all the things whose condition must hold for
      * @returns the set of things that may possibly be returned by calling this.draw with conditions 
      */
-    available: (params: TParams) => Set<TThing> = (params) => new Set(this.source.filter(x => this.condExecutor(x, params)).map(x => ({
+    available: (params: TParams) => Set<TThing> = (params) => new Set(this.source.filter(x => this.topLevelCondExecutor(x, params)).map(x => ({
         ...(x.thing),
         UUID: x.UUID
     })));

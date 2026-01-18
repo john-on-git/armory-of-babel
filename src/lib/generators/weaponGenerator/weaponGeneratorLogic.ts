@@ -6,9 +6,9 @@ import "$lib/util/choice";
 import '$lib/util/string';
 import _ from "lodash";
 import seedrandom, { type PRNG } from "seedrandom";
-import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement } from "./provider";
+import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement, type TopLevelCond } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
-import { commonDieSizes, type DamageDice, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, type WeaponShapeGroup, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
+import { commonDieSizes, type DamageDice, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCondAtom, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, type WeaponShapeGroup, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
 
 
 /**
@@ -157,43 +157,38 @@ function hasEyes(weapon: Weapon) { return hasUUIDs(weapon, allEyeProviders); }
  * @param map mapping function that takes in an element in one of the record arrays, and outputs an ability
  * @returns list of abilities
  */
-export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCond>): ProviderElement<T2, WeaponPowerCond>[] {
+export function toProviderSource<TKey extends string | number | symbol, T1, T2>(x: Record<TKey, T1[]>, map: (k: TKey, x: T1, i: number) => ProviderElement<T2, WeaponPowerCondAtom>): ProviderElement<T2, WeaponPowerCondAtom>[] {
     return Object.entries<T1[]>(x).map(([k, v]) => v.map((x, i) => map(k as TKey, x, i))).flat();
 }
 
 
-export class WeaponFeatureProvider<T, TCond extends WeaponPowerCond = WeaponPowerCond, TParams extends WeaponPowerCondParams = WeaponPowerCondParams> extends ConditionalThingProvider<T, TCond, TParams> {
-    constructor(source: ProviderElement<T, TCond>[], defaultAllowDuplicates = false) {
+export class WeaponFeatureProvider<T> extends ConditionalThingProvider<T, WeaponPowerCondParams> {
+    constructor(source: ProviderElement<T, WeaponPowerCondAtom>[], defaultAllowDuplicates = false) {
         super(source, defaultAllowDuplicates);
     }
 
-    protected override condExecutor(element: ProviderElement<T, TCond>, params: TParams): boolean {
-
+    protected override condAtomExecutor(condAtom: WeaponPowerCondAtom, params: WeaponPowerCondParams, UUIDs: Set<string>): boolean {
         const ord = (x: WeaponRarity) => ({
             common: 0,
             uncommon: 1,
             rare: 2,
             epic: 3,
             legendary: 4,
-        }[x])
-
-        return (
-            super.condExecutor(element, params) && //uniqueness OK
-            (!element.cond.isSentient || params.sentient) && // sentience OK
-            (!element.cond.rarity || evComp(element.cond.rarity, params.rarity, ord)) && // rarity OK
-            (!element.cond.themes || evQuant(element.cond.themes, params.themes)) && // themes OK
-            (!element.cond.personality || evQuant(element.cond.personality, params.sentient ? params.sentient.personality : [])) && // personality OK
-            (!element.cond.activePowers || evQuant(element.cond.activePowers, params.active.powers)) && // actives OK
-            (!element.cond.passivePowers || evQuant(element.cond.passivePowers, params.passivePowers)) && // passives OK
-            (!element.cond.languages || evQuant(element.cond.languages, params.sentient ? params.sentient.languages : [])) && // languages OK
-            (!element.cond.shapeFamily || evQuant(element.cond.shapeFamily, params.shape.group)) && // shapes OK
-            (!element.cond.shapeParticular || evQuant(element.cond.shapeParticular, params.shape.particular)) // shape particular OK
-        );
+        }[x]);
+        return super.condAtomExecutor(condAtom, params, UUIDs) && (!condAtom.isSentient || params.sentient) && // sentience OK
+            (!condAtom.rarity || evComp(condAtom.rarity, params.rarity, ord)) && // rarity OK
+            (!condAtom.themes || evQuant(condAtom.themes, params.themes)) && // themes OK
+            (!condAtom.personality || evQuant(condAtom.personality, params.sentient ? params.sentient.personality : [])) && // personality OK
+            (!condAtom.activePowers || evQuant(condAtom.activePowers, params.active.powers)) && // actives OK
+            (!condAtom.passivePowers || evQuant(condAtom.passivePowers, params.passivePowers)) && // passives OK
+            (!condAtom.languages || evQuant(condAtom.languages, params.sentient ? params.sentient.languages : [])) && // languages OK
+            (!condAtom.shapeFamily || evQuant(condAtom.shapeFamily, params.shape.group)) && // shapes OK
+            (!condAtom.shapeParticular || evQuant(condAtom.shapeParticular, params.shape.particular)) // shape particular OK
     }
 }
 
-export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerator, WeaponPowerCond, DescriptorCondParams> {
-    constructor(source: ProviderElement<DescriptorGenerator, WeaponPowerCond>[], defaultAllowDuplicates = false) {
+export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerator> {
+    constructor(source: ProviderElement<DescriptorGenerator, WeaponPowerCondAtom>[], defaultAllowDuplicates = false) {
         super(source, defaultAllowDuplicates);
     }
 
@@ -218,9 +213,9 @@ export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerato
         });
     }
 
-    protected override condExecutor(element: ProviderElement<DescriptorGenerator, WeaponPowerCond>, params: DescriptorCondParams): boolean {
+    protected override topLevelCondExecutor(element: ProviderElement<DescriptorGenerator, WeaponPowerCondAtom>, params: DescriptorCondParams): boolean {
         return (
-            super.condExecutor(element, params) &&
+            super.topLevelCondExecutor(element, params) &&
             this.placementIsPossible(element.thing, params) // placement possible
         )
     }
@@ -865,8 +860,8 @@ export function textForDamage(damage: DamageDice & { as?: string }): string {
  * @param lang name of the language to make
  * @returns 
  */
-export function toLang(themeOrCond: WeaponPowerCond | Theme, lang: string): ProviderElement<Language, WeaponPowerCond> {
-    return new ProviderElement<Language, WeaponPowerCond>(
+export function toLang(themeOrCond: TopLevelCond<WeaponPowerCondAtom> | Theme, lang: string): ProviderElement<Language, WeaponPowerCondAtom> {
+    return new ProviderElement<Language, WeaponPowerCondAtom>(
         lang.replaceAll(/\s/g, '-').replaceAll(/[^A-z]/g, '').toLowerCase(),
         { desc: lang },
         typeof themeOrCond === "string" ? {
