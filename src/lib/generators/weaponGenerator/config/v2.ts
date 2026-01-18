@@ -32,21 +32,20 @@ export const slimeProvider = new WeaponFeatureProvider<{ color: string; ephGen: 
             ]
         }
     ),
-    new ProviderElement('slime-red', { color: 'yellow', ephGen: ephRed }, { themes: { any: ['fire', 'earth'] } }),
-    new ProviderElement('slime-pink', { color: 'green', ephGen: [{ pre: 'Pink' }] }, { themes: { any: ['sweet'] } }),
+    new ProviderElement('slime-red', { color: 'red', ephGen: ephRed }, { themes: { any: ['fire', 'earth'] } }),
+    new ProviderElement('slime-pink', { color: 'pink', ephGen: [{ pre: 'Pink' }] }, { themes: { any: ['sweet'] } }),
     new ProviderElement('slime-purple', { color: 'purple', ephGen: ephPurple },
         {
             or: [
-                { themes: { any: ['sweet', 'wizard'] } },
+                { themes: { any: ['wizard'] } },
                 { rarity: { eq: 'epic' } },
             ]
         }
     ),
     new ProviderElement('slime-blue', { color: 'blue', ephGen: ephBlue }, {
         or: [
-            { themes: { any: ['wizard', 'ice'] } }, // blue is smart & cold
-            { themes: { all: ['cloud', 'ice'] } }, // blue like water
-            { rarity: { eq: 'rare' } }, // blue is rare
+            { themes: { any: ['wizard', 'ice', 'cloud'] } },
+            { rarity: { eq: 'rare' } },
         ]
     }),
     new ProviderElement('slime-black', { color: 'black', ephGen: ephBlack }, { themes: { any: ['dark', 'earth'] } }),
@@ -86,13 +85,13 @@ const v2 = {
                 mkGen((_, weapon) => {
                     const businessEnd = getBusinessEndDesc(weapon.shape)
                     return {
-                        desc: `The ${businessEnd == 'weapon' ? `${businessEnd} is` : `${businessEnd} & core are`} made of slime. The wielder can manipulate the weapon like clay, but it's otherwise as strong as steel. It also bounces strongly.`,
-                        descriptorPartGenerator: 'slime'
+                        desc: `The ${businessEnd == 'weapon' ? `${businessEnd} is` : `${businessEnd} & core are`} made of slime. The wielder can manipulate the weapon like clay, but it's otherwise as strong as steel. It's also very bouncy.`,
+                        descriptorPartGenerator: 'slime-body-descriptor'
                     }
                 }),
                 {
-                    themes: { any: ["wizard", "nature", "sour"] },
-                    shapeFamily: { none: rangedWeaponShapeFamilies }
+                    themes: { any: ["wizard", "nature", "sour"] }, // slimes are sometimes magical constructs, other times natural creatures. Slimes are often corrosive.
+                    shapeFamily: { none: rangedWeaponShapeFamilies } // I don't see how it would be useful.
                 }
             ),
         ]
