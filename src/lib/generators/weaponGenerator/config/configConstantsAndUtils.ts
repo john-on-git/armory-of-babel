@@ -994,7 +994,7 @@ export const embeddableParts = ['crossguard', 'spearShaft', 'pommel', 'base', 'q
 /**
  * Parts of a weapon that visual indicators of a resource can go on.
  */
-export const counterAcceptingParts = ['blade', 'body', 'shaft', 'spearShaft', 'maceHead', 'maceHeads', 'blades', 'limbs', 'base'] as const satisfies WeaponPartName[];
+export const gemChargeBarAcceptingParts = ['blade', 'body', 'shaft', 'spearShaft', 'maceHead', 'maceHeads', 'blades', 'limbs', 'base'] as const satisfies WeaponPartName[];
 
 export const counterCapacityByRarity = {
     common: 2,

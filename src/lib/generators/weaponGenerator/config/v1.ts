@@ -1,6 +1,6 @@
 import { pluralUnholyFoe, singularUnholyFoe, singularWildAnimalStructured, wildAnimalArr } from "$lib/generators/foes";
 import { mkGen, type Generator } from "$lib/generators/recursiveGenerator";
-import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterAcceptingParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, geodableWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, pomelledWeaponShapeFamilies, rangedWeaponShapeFamilies, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
+import { animeWeaponShapes, bluntWeaponShapeFamilies, businessEndParts, counterCapacityByRarity, edgedWeaponShapeFamilies, embeddableParts, ephBlack, ephBlue, ephCold, ephExplorer, ephGold, ephGreen, ephHot, ephPurple, ephRed, ephSky, ephSteampunk, ephWizard, eyeAcceptingParts, gemChargeBarAcceptingParts, geodableWeaponShapes, get5eDamageType, grippedWeaponShapeFamilies, holdingParts, linkWithEnergyCore, MATERIALS, MISC_DESC_FEATURES, pickOrLinkWithEnergyCore, pointedWeaponShapes, pomelledWeaponShapeFamilies, rangedWeaponShapeFamilies, smallDieWeaponShapeFamilies, streakCapacityByRarity, swordlikeWeaponShapeFamilies, twoHandedWeaponShapeFamilies, wrappableParts, type PossibleCoreThemes } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
 import { ProviderElement } from "$lib/generators/weaponGenerator/provider";
 import { getBusinessEndDesc, multName, pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
 import { genMaybeGen, hasUUIDs, maxDamage, modDamage, pickForTheme, textForDamage, toLang, toProviderSource } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
@@ -231,7 +231,7 @@ const v1 = {
                             ephitet: mkGen({ pre: "Bejewelled" }),
                         }
                     }),
-                    applicableTo: { any: counterAcceptingParts }
+                    applicableTo: { any: gemChargeBarAcceptingParts }
                 },
                 /**
                  * Can only be added by the passive power "streak"
@@ -249,7 +249,7 @@ const v1 = {
                             ephitet: mkGen({ pre: "Bejewelled" }),
                         }
                     }),
-                    applicableTo: { any: counterAcceptingParts }
+                    applicableTo: { any: gemChargeBarAcceptingParts }
                 },
                 /**
                  * Can only be added by the passive power "counter"
