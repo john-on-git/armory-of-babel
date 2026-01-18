@@ -3708,26 +3708,22 @@ const v1 = {
                 },
                 UUIDs: { none: ['weapon-animal-transformation'] }
             }),
-            new ProviderElement('immovable-bc-earth', {
+            new ProviderElement('immovable', {
                 desc: 'Immovable',
                 cost: 1,
                 additionalNotes: ["If something attempts to move you against your will, you can expend a charge to be unaffected by it."]
             },
                 {
-                    themes: { any: ['earth'] },
-                    UUIDs: { none: ['immovable-bc-weapon-shape'] }
-                }
-            ),
-            new ProviderElement('immovable-bc-weapon-shape', {
-                desc: 'Immovable',
-                cost: 1,
-                additionalNotes: ["If something attempts to move you against your will, you can expend a charge to be unaffected by it."]
-            },
-                {
-                    shapeFamily: {
-                        any: ['greatsword', 'greataxe']
-                    },
-                    UUIDs: { none: ['immovable-bc-earth'] }
+                    or: [
+                        {
+                            shapeFamily: {
+                                any: ['greatsword', 'greataxe']
+                            },
+                        },
+                        {
+                            themes: { any: ['earth'] },
+                        }
+                    ]
                 }
             ),
             new ProviderElement("assassinate-lethal",
@@ -3772,7 +3768,7 @@ const v1 = {
                 {
 
                     shapeFamily: {
-                        any: ['greataxe', 'greataxe (or musket)', 'polearm'] //2h axe-like
+                        any: ['greataxe', 'greataxe (or musket)', 'polearm'] // 2h axe-like
                     },
                 }
             ),

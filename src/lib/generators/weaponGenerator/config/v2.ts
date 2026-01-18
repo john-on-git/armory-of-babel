@@ -11,15 +11,45 @@ import type { DeltaCollection } from "$lib/util/versionController";
  * Provider for slime types for slime-themed powers
  */
 export const slimeProvider = new WeaponFeatureProvider<{ color: string; ephGen: Ephitet[]; }>([
-    new ProviderElement('slime-green', { color: 'green', ephGen: ephGreen }, {}),
+    new ProviderElement('slime-white', { color: 'white', ephGen: ephWhite }, {
+        or: [
+            { themes: { any: ['light', 'ice'] } },
+            { rarity: { eq: 'common' } }
+        ]
+    }),
+    new ProviderElement('slime-green', { color: 'green', ephGen: ephGreen }, {
+        or: [
+            { themes: { any: ['fire', 'earth'] } },
+            { rarity: { eq: 'uncommon' } }
+        ]
+    }),
     new ProviderElement('slime-yellow', { color: 'yellow', ephGen: ephGold }, { rarity: { gte: 'legendary' } }),
-    new ProviderElement('slime-orange', { color: 'orange', ephGen: ephGold }, { themes: { any: ['fire', 'earth'] } }),
+    new ProviderElement('slime-orange', { color: 'orange', ephGen: ephGold },
+        {
+            or: [
+                { themes: { any: ['fire', 'earth'] } },
+                { rarity: { eq: 'legendary' } }
+            ]
+        }
+    ),
     new ProviderElement('slime-red', { color: 'yellow', ephGen: ephRed }, { themes: { any: ['fire', 'earth'] } }),
     new ProviderElement('slime-pink', { color: 'green', ephGen: [{ pre: 'Pink' }] }, { themes: { any: ['sweet'] } }),
-    new ProviderElement('slime-purple', { color: 'purple', ephGen: ephPurple }, { themes: { any: ['sweet', 'wizard'] } }),
-    new ProviderElement('slime-blue', { color: 'blue', ephGen: ephBlue }, { themes: { any: ['sweet', 'wizard'] } }),
+    new ProviderElement('slime-purple', { color: 'purple', ephGen: ephPurple },
+        {
+            or: [
+                { themes: { any: ['sweet', 'wizard'] } },
+                { rarity: { eq: 'epic' } },
+            ]
+        }
+    ),
+    new ProviderElement('slime-blue', { color: 'blue', ephGen: ephBlue }, {
+        or: [
+            { themes: { any: ['wizard', 'ice'] } }, // blue is smart & cold
+            { themes: { all: ['cloud', 'ice'] } }, // blue like water
+            { rarity: { eq: 'rare' } }, // blue is rare
+        ]
+    }),
     new ProviderElement('slime-black', { color: 'black', ephGen: ephBlack }, { themes: { any: ['dark', 'earth'] } }),
-    new ProviderElement('slime-white', { color: 'white', ephGen: ephWhite }, { themes: { any: ['light', 'ice'] } }),
     new ProviderElement('slime-rainbow', { color: 'rainbow', ephGen: ephWhite }, { rarity: { gte: 'epic' } }),
 ]);
 
