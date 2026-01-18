@@ -4540,13 +4540,14 @@ export default {
                 }
             ),
             new ProviderElement("blade-of-truth",
-                {
+                mkGen((_, weapon) => ({
                     miscPower: true,
-                    desc: "Characters touching the weapon cannot lie."
-                }, {
-                themes: { any: ["light"], },
-                rarity: { gte: 'epic' }
-            }
+                    desc: `Characters touching the ${getBusinessEndDesc(weapon.shape)} cannot lie.`
+                })),
+                {
+                    themes: { any: ["light"], },
+                    rarity: { gte: 'epic' }
+                }
             ),
             new ProviderElement("detect-imposter-among-us",
                 mkGen((_, weapon) => weapon.sentient === false
@@ -4982,7 +4983,7 @@ export default {
                     desc: "Can shoot an endless stream of water from its tip, pressure as garden hose."
                 },
                 {
-                    themes: { any: ["cloud"] },
+                    themes: { all: ["cloud", "ice"] },
                 }
             ),
             new ProviderElement("stealth-in-rough-weather",
