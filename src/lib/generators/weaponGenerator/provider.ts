@@ -57,7 +57,7 @@ export type CondAtom = {
     UUIDs?: Quant<string>;
 }
 
-export type Cond<T extends CondAtom> = CondAtom | { and: readonly Cond<T>[] } | { or: readonly Cond<T>[] };
+export type Cond<TCondAtom extends CondAtom> = TCondAtom | { and: readonly Cond<TCondAtom>[] } | { or: readonly Cond<TCondAtom>[] };
 
 /**
  * Conditions that only make sense to include at the top level of a condition.
@@ -67,7 +67,7 @@ export type TopLevelCond<TCondAtom extends CondAtom = CondAtom> = {
      * If present, this will never be chosen.
      */
     never: true;
-} | ({ allowDuplicates?: boolean } & TCondAtom);
+} | ({ allowDuplicates?: boolean } & TCondAtom & { UUIDs?: Quant<string>; }) | (Cond<TCondAtom> & ({ and: readonly Cond<TCondAtom>[] } | { or: readonly Cond<TCondAtom>[] }));
 
 
 export type WithUUID<T extends object> = { UUID: string; } & T;
@@ -153,10 +153,10 @@ export abstract class ConditionalThingProvider<TThing, TParams extends object> {
             const allUUIDs = gatherUUIDs(params);
             return (
                 // uniqueness demanded -> no duplicates of this.UUID (de-morgan's)
-                ((element.cond.allowDuplicates) || !allUUIDs.has(element.UUID)) &&
+                (('allowDuplicates' in element.cond && element.cond.allowDuplicates) || !allUUIDs.has(element.UUID)) &&
 
                 // other conditions
-                this.condAtomExecutor(element.cond, params, allUUIDs)
+                this.condExecutor(element.cond, params, allUUIDs)
             )
         }
     };
