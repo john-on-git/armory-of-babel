@@ -1999,7 +1999,7 @@ export default {
                     sour: [
                         `all charges after an hour immersed in acid`,
                         `all charges when used to fell a citrus tree`,
-                        mkGen((_, weapon: Weapon) => `one charge each time ${pronounLoc[weapon.pronouns].singular.possessive} wielder insults someone`)
+                        mkGen((_, weapon: Weapon) => `one charge each time ${pronounLoc[weapon.pronouns].singular.possessive} wielder angers someone by insulting them`)
                     ],
                     cloud: [
                         `all charges when struck by lightning`,
