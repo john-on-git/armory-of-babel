@@ -3351,7 +3351,7 @@ export default {
                     desc: "Create Servant",
                     cost: 3,
                     additionalNotes: [
-                        "Create an small ichorous being that obeys you without question. It dissolves into sludge after 2d6 days."
+                        "Create a small ichorous being that obeys you without question. It dissolves into sludge after 2d6 days."
                     ]
                 },
                 {

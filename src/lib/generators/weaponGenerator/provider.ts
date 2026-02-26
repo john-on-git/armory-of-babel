@@ -144,7 +144,7 @@ export abstract class ConditionalThingProvider<TThing, TCond extends Cond, TPara
      * returns a thing that is available given this condition
      * @param rng seedrandom randomness source to pick using
      * @param params the params that the return value's condition must hold for
-     * @returns a random thing meeting that is valid for conditions
+     * @returns a random thing that is valid for conditions
      */
     draw(rng: seedrandom.PRNG, params: TParams): TThing & { UUID: string } {
         const choice = this.source.filter(x => this.condExecutor(x, params)).choice(rng);
