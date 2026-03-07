@@ -593,9 +593,9 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                descType: 'possession',
-                                singular: 'a large crystal orb embedded in it, containing a howling blizzard',
-                                plural: 'a large crystal orb embedded in them, containing a welter of winter weather'
+                                    descType: 'possession',
+                                    singular: 'a large crystal orb embedded in it, containing a howling blizzard',
+                                    plural: 'a large crystal orb embedded in them, containing a welter of winter weather'
                             },
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
@@ -2011,7 +2011,7 @@ export default {
                         mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder learns a new spell`),
                         mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder wins a wizard duel`),
                         mkGen((_, weapon: Weapon) => `one charge when ${pronounLoc[weapon.pronouns].singular.possessive} wielder finishes reading a new book`),
-                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder views the night sky`),
+                        mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder watches the sun set`),
                     ],
                     steampunk: [
                         mkGen((_, weapon: Weapon) => `all charges when ${pronounLoc[weapon.pronouns].singular.possessive} wielder invents something`),
