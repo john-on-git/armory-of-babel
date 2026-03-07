@@ -1,5 +1,8 @@
 - TODO                                                  Difficulty, Time, Impact (1-10)
 
+    - Idea Mining:
+        - https://www.tumblr.com/petterwass/809184143358509056/jetix-angel-cut-chainsaw-by-saraobject
+
     - Broken.
         75325055869813330000
 
