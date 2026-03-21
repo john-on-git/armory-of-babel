@@ -74,7 +74,6 @@ const angloFixedNamedGenerator = mkGen((...args: [PRNG, Exclude<Pronouns, 'objec
         "Eve",
         "Ashley",
         "Alice",
-        "Triss",
         "Stacy",
         "Lucy",
         "Lily",

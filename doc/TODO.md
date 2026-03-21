@@ -21,7 +21,14 @@
         - Zelda magic shoot sword ability can roll on ranged weapons. Kinda funny though.
         - Steampunk theme should disallow natural materials.
 
+    - Rework Demands.
+        - Not happy with the state of them. Not contributing to the original vision (character as specialised tool).
+
     - Generator setup.
+        - Whimsy Slider.
+            - Will need to tag all abilities.
+
+
         - Configuration.
             - Ban / Force Themes
             - 5e mode.
