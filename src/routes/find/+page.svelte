@@ -59,12 +59,13 @@
             workers.forEach((worker) => worker.terminate());
             workerResults = null;
         } catch (e) {
-            console.log("Failed to find weapon.");
+            console.error("Failed to find weapon.");
         }
     }
 </script>
 
 <button
+    style="margin-top: 2rem;"
     onclick={findWeaponAsync}
     disabled={workerResults !== null &&
         workerResults.some((workerResult) => workerResult === "working")}
@@ -72,7 +73,7 @@
 </button>
 {#if weapons !== null}
     {#each weapons as weapon}
-        <h1 style="text-align:center">{weapon.id}</h1>
+        <h1 style="text-align:center;">{weapon.id}</h1>
         <WeaponDisplay {weapon} fadeLock={true} />
         <hr />
     {/each}

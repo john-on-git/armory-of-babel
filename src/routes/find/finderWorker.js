@@ -9,7 +9,7 @@ export const N_THREADS = 16;
 
 /** Weapon ID to start searching at.
  */
-const START = 0;
+const START = 200;
 
 /** Number of weapons to check before giving up.
  */
@@ -20,7 +20,7 @@ const ATTEMPTS = 100_000;
  * @param {import("../../lib/generators/weaponGenerator/weaponGeneratorTypes").WeaponViewModel} weapon
  */
 function cond(weapon) {
-    return weapon.rarity === "rare" && weapon.name === "Moonlight Scimitar";
+    return weapon.sentient === false && weapon.passivePowers.some(power => power.desc.includes("enter their dreams"));
     // return weapon.rarity === "epic" && weapon.sentient === false && weapon.damage.as === "axe" && weapon.themes.includes('ice') && /obsidian/gi.test(weapon.description);
 }
 
@@ -33,7 +33,7 @@ onmessage = (onMessageEvent) => {
             return weaponFeatureVersionController.getVersion(weaponFeatureVersionController.getLatestVersionNum())
         })();
         const end = (START + ATTEMPTS) + ((START + ATTEMPTS) % N_THREADS); // round up to N_THREADS (it will do this anyway but this should clarify what's going on)
-        let i = onMessageEvent.data;
+        let i = START + onMessageEvent.data;
         let weaponsWithCondResult;
         let validWeaponFound = false;
 
