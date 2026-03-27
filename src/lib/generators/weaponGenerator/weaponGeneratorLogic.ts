@@ -101,6 +101,7 @@ function structureDescFor(shape: WeaponShape) {
             case 'Quintuple Flail':
             case "Bident":
             case "Trident":
+            case "Great-Scythe":
                 return weaponStructures[shapeToStructure[shape.particular]];
             default:
                 return weaponStructures[shapeToStructure[shape.group]];
@@ -187,7 +188,7 @@ export class WeaponFeatureProvider<T, TCond extends WeaponPowerCond = WeaponPowe
             (!element.cond.passivePowers || evQuant(element.cond.passivePowers, params.passivePowers)) && // passives OK
             (!element.cond.languages || evQuant(element.cond.languages, params.sentient ? params.sentient.languages : [])) && // languages OK
             (!element.cond.shapeFamily || evQuant(element.cond.shapeFamily, params.shape.group)) && // shapes OK
-            (!element.cond.shapeParticular || evQuant(element.cond.shapeParticular, params.shape.particular)) // shape particular OK
+            (!element.cond.shapeParticular || evQuant(element.cond.shapeParticular, params.shape.particular)) // shape particular OK 
         );
     }
 }
@@ -205,14 +206,6 @@ export class DescriptorProvider extends WeaponFeatureProvider<DescriptorGenerato
 
         // there must be least one part that can accept the element 
         return flatDesc(params.description).some(([k, v]) => {
-            // console.log(
-            //     thing, '\n', k, v.material, '\n',
-
-            //     evQuant(thing.applicableTo, k), '&&', (!(thing.yields === 'material') || v.material === undefined),
-            //     '=', evQuant(thing.applicableTo, k) && (!(thing.yields === 'material') || v.material === undefined),
-
-            //     '\n\n'
-            // );
             // the element must be applicable to this part, and if the element is a material the part can't already have a material
             return evQuant(thing.applicableTo, k) && (!(thing.yields === 'material') || v.material === undefined)
         });

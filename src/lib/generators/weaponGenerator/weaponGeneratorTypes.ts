@@ -410,6 +410,11 @@ export const weaponStructures = {
         holding: ['grip'],
         other: ['crossguard', 'pommel', 'barrel']
     },
+    scytheLike: {
+        business: ['blade'],
+        holding: ['grip'],
+        other: ['shaft', 'pommel']
+    },
     scytheRifleLike: {
         business: ['blade'],
         holding: ['grip'],
@@ -466,6 +471,7 @@ export const shapeToStructure = {
     "Triple Flail": "multiFlailLike",
     "Quadruple Flail": "multiFlailLike",
     "Quintuple Flail": "multiFlailLike",
+    "Great-Scythe": "scytheLike",
 
     "Bident": "forkLike",
     "Trident": "forkLike"
