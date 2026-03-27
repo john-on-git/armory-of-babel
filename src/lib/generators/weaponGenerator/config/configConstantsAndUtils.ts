@@ -694,11 +694,11 @@ export const MISC_DESC_FEATURES = {
                 { phrase: `word "Darkness"`, ephitets: ephBlack },
                 { phrase: `word "Pain"`, ephitets: [{ pre: "Cenobite's" }] as Ephitet[] },
                 { phrase: `word "Blood"`, ephitets: [{ pre: "Cenobite's" }] },
-                { phrase: `word "Drugs"`, ephitets: [{ pre: "Party" }] },
+                // { phrase: `word "Drugs"`, ephitets: [{ pre: "Party" }] },
                 { phrase: `phrase "Hail Satan"`, ephitets: ephDemon },
                 { phrase: `number "666"`, ephitets: ephDemon },
                 { phrase: `word "Chaos"`, ephitets: ephBlack },
-                { phrase: `phrase "Forged to Kill"`, ephitets: [{ post: " of War" }] },
+                // { phrase: `phrase "Forged to Kill"`, ephitets: [{ post: " of War" }] },
                 // bit too silly
                 // { phrase: `phrase "Emo Vibes Only"`, ephitets: [{ pre: "Emo" }] },
                 // { phrase: `phrase "Another Cog in the Murder Machine"`, ephitets: [{ pre: "Rebel's Own" }] },
