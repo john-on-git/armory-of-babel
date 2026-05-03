@@ -774,8 +774,8 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             ...(power.additionalNotes === undefined ? {} : { additionalNotes: power.additionalNotes.map(desc => genMaybeGen(desc, rng, weapon)) })
         })),
         sentient: weapon.sentient ? {
-            personality: weapon.sentient.personality.map(x => genMaybeGen(x.desc, rng, weapon)),
-            languages: weapon.sentient.languages.map(x => x.desc),
+            personality: weapon.sentient.personality.map(x => ({ desc: genMaybeGen(x.desc, rng, weapon) })),
+            languages: weapon.sentient.languages.map(x => ({ desc: genMaybeGen(x.desc, rng, weapon) })),
             chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
         } : false,
     } satisfies WeaponViewModel;

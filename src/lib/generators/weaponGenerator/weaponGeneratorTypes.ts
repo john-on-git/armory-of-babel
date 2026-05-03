@@ -155,8 +155,8 @@ export type WeaponViewModel = {
     }
     passivePowers: PassivePowerView[];
     sentient: false | {
-        personality: string[];
-        languages: string[];
+        personality: (Personality & { desc: string })[];
+        languages: (Language & { desc: string })[];
         /**
          * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
          */
@@ -277,29 +277,11 @@ export interface WeaponPowerCond extends Cond {
      * Condition on a theme by text.
      */
     themes?: Quant<Theme>;
-    /**
-     * Condition on a personality by UUID.
-     */
     personality?: Quant<Personality>;
-    /**
-     * Condition on a language by UUID.
-     */
     languages?: Quant<Language>;
-    /**
-     * Condition on an active power by UUID.
-     */
     activePowers?: Quant<ActivePower>;
-    /**
-     * Condition on a passive power by UUID.
-     */
     passivePowers?: Quant<PassivePower>;
-    /**
-     * Condition on a shape family by text.
-     */
     shapeFamily?: Quant<WeaponShape['group']>;
-    /**
-     * Condition on a particular language by text.
-     */
     shapeParticular?: Quant<WeaponShape['particular']>;
     /**
      * Condition on a rarity.

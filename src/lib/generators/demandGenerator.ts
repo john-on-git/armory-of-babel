@@ -21,7 +21,17 @@ const demands = [
         },
         {
             personality: {
-                none: [{ desc: "pacifist" }]
+                none: [{ desc: "Pacifist" }]
+            }
+        }
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-defeat-foe',
+        {
+            desc: mkGen("Display of Wielder's Loyalty (d6 charges).")
+        },
+        {
+            personality: {
+                any: [{ desc: "Jealous" }]
             }
         }
     ),
@@ -31,7 +41,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "greedy" }]
+                any: [{ desc: "Greedy" }]
             }
         }
     ),
@@ -41,7 +51,17 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "standoffish" }, { desc: "short-fuse" }, { desc: "haughty" }, { desc: 'antagonistic' }]
+                any: [{ desc: "Standoffish" }, { desc: "Short Fuse" }, { desc: "Haughty" }, { desc: 'Antagonistic' }]
+            }
+        }
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-debate',
+        {
+            desc: mkGen("Destroy Foe in Debate (d6 charges).")
+        },
+        {
+            personality: {
+                any: [{ desc: "Logical" }]
             }
         }
     ),
@@ -51,7 +71,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "curious" }]
+                any: [{ desc: "Curious" }, { desc: "Know-it-All" }]
             }
         }
     ),
@@ -61,7 +81,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "depressive" }, { desc: "lazy" }]
+                any: [{ desc: "Depressive" }, { desc: "Lazy" }]
             }
         }
     ),
@@ -71,7 +91,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "curious" }]
+                any: [{ desc: "Curious" }]
             }
         }
     ),
@@ -81,7 +101,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "open-minded" }, { desc: "curious" }]
+                any: [{ desc: "Open-Minded" }, { desc: "Curious" }]
             }
         }
     ),
@@ -101,7 +121,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "industrious" }]
+                any: [{ desc: "Industrious" }]
             }
         }
     ),
@@ -111,7 +131,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -121,7 +141,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "kind" }, { desc: "compassionate" }]
+                any: [{ desc: "Kind" }, { desc: "Compassionate" }]
             }
         }
     ),
@@ -131,7 +151,7 @@ const demands = [
         },
         {
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -225,7 +245,7 @@ const demands = [
                 all: ["light"]
             },
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -239,7 +259,7 @@ const demands = [
                 all: ["sour", "dark"],
             },
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -252,7 +272,7 @@ const demands = [
                 all: ["fire", "dark"]
             },
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -265,7 +285,7 @@ const demands = [
                 all: ["cloud", "dark"]
             },
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -278,7 +298,7 @@ const demands = [
                 all: ["cloud", "dark"]
             },
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),
@@ -291,7 +311,7 @@ const demands = [
                 all: ["ice", "dark"]
             },
             personality: {
-                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+                any: [{ desc: "Vengeful" }, { desc: "Cruel" }, { desc: "Merciless" }, { desc: "Standoffish" }, { desc: "Short Fuse" }]
             }
         }
     ),

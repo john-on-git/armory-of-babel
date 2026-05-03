@@ -27,6 +27,8 @@
         // generate the new demand
         demand = mkDemand(weapon);
 
+        console.log(weapon, demand);
+
         // switch animations
         fadeLock = !fadeLock;
     }

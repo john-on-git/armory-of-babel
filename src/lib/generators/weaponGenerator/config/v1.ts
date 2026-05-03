@@ -1904,7 +1904,7 @@ export default {
                 fire: [
                     "compassionate",
                     "standoffish",
-                    "short fuse",
+                    "Short Fuse",
                 ],
                 ice: [
                     "cold",
