@@ -184,7 +184,7 @@
                             {#each weapon.sentient.personality as personality}
                                 <div class="weapon-generator-list-item">
                                     <p>
-                                        {personality}
+                                        {personality}.
                                     </p>
                                 </div>
                             {/each}
