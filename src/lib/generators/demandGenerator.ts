@@ -9,46 +9,59 @@ interface Demand {
 }
 
 const demands = [
+    new ProviderElement<Demand, WeaponPowerCond>('demand-poke-it',
+        {
+            desc: mkGen("Interact With Specific Dungeon Object (d6 charges).")
+        },
+        {}
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-defeat-foe',
+        {
+            desc: mkGen("Defeat Specific Foe (d6 charges).")
+        },
+        {
+            personality: {
+                none: [{ desc: "pacifist" }]
+            }
+        }
+    ),
     new ProviderElement<Demand, WeaponPowerCond>('demand-adornments',
         {
             desc: mkGen("New Adornments (1 charge/100 GP spent).")
         },
-        {}
+        {
+            personality: {
+                any: [{ desc: "greedy" }]
+            }
+        }
     ),
     new ProviderElement<Demand, WeaponPowerCond>('demand-interesting-attack',
         {
             desc: mkGen("Perform an Interesting Attack (d4 charges).")
         },
-        {}
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-oil',
         {
-            desc: mkGen((rng) =>
-                `To be Polished With ${[
-                    "a White Whale's Wax (all charges)",
-                    "Giant Bees' Wax (d10 charges)",
-                    'Clove Oil (d8 charges)',
-                    "Frankincense Oil (d8 charges)",
-                    "Myrrh Oil (d8 charges)",
-                    'Oud Oil (d8 charges)',
-                    'Sandalwood Oil (d6 charges)',
-                    'Rose Oil (d6 charges)',
-                    'Shellac Wax (d6 charges)',
-                    'Palm Wax (d6 charges)',
-                    'Oil (d4 charges)',
-                    'Wax (d4 charges)'
-                ].choice(rng)}.`
-            )
-        },
-        {}
+            personality: {
+                any: [{ desc: "standoffish" }, { desc: "short-fuse" }, { desc: "haughty" }, { desc: 'antagonistic' }]
+            }
+        }
     ),
     new ProviderElement<Demand, WeaponPowerCond>('demand-book',
         {
             desc: mkGen("New Reading Material (d4 charges).")
         },
         {
-            themes: {
-                any: ["wizard", "steampunk"]
+            personality: {
+                any: [{ desc: "curious" }]
+            }
+        }
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-spellbook',
+        {
+            desc: mkGen("To be Left Alone This Session (d12 charges).")
+        },
+        {
+            personality: {
+                any: [{ desc: "depressive" }, { desc: "lazy" }]
             }
         }
     ),
@@ -57,8 +70,18 @@ const demands = [
             desc: mkGen("Acquire New Spell (all charges).")
         },
         {
-            themes: {
-                any: ["wizard"]
+            personality: {
+                any: [{ desc: "curious" }]
+            }
+        }
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-tourism',
+        {
+            desc: mkGen("Experience New Culture (all charges).")
+        },
+        {
+            personality: {
+                any: [{ desc: "open-minded" }, { desc: "curious" }]
             }
         }
     ),
@@ -74,28 +97,41 @@ const demands = [
     ),
     new ProviderElement<Demand, WeaponPowerCond>('demand-material',
         {
-            desc: mkGen("Acquire Rare Crafting Material (all charges).")
+            desc: mkGen("Craft Item Using Rare Material (all charges).")
         },
         {
-            themes: {
-                any: ["fire"]
+            personality: {
+                any: [{ desc: "industrious" }]
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-poke-it',
-        {
-            desc: mkGen("Interact With Specific Dungeon Object (d6 charges).")
-        },
-        {}
-    ),
-
     new ProviderElement<Demand, WeaponPowerCond>('demand-destruction',
         {
             desc: mkGen("Destroy Specific Object (d4 charges).")
         },
         {
-            themes: {
-                any: ["dark", "fire", "sour"]
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
+            }
+        }
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-escort-mission',
+        {
+            desc: mkGen("Protect Specific NPC This Scene (d4 charges).")
+        },
+        {
+            personality: {
+                any: [{ desc: "kind" }, { desc: "compassionate" }]
+            }
+        }
+    ),
+    new ProviderElement<Demand, WeaponPowerCond>('demand-drama',
+        {
+            desc: mkGen("Incite Conflict With Specific NPC (d6 charges).")
+        },
+        {
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),
@@ -119,37 +155,6 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-defeat-foe',
-        {
-            desc: mkGen("Defeat Specific Foe (d6 charges).")
-        },
-        {
-            themes: {
-                none: ["sweet"]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-escort-mission',
-        {
-            desc: mkGen("Protect Specific NPC This Scene (d4 charges).")
-        },
-        {
-            themes: {
-                any: ["light"]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-drama',
-        {
-            desc: mkGen("Incite Conflict With Specific NPC (d6 charges).")
-        },
-        {
-            themes: {
-                any: ["dark"]
-            }
-        }
-    ),
-
     new ProviderElement<Demand, WeaponPowerCond>('demand-release-beast',
         {
             desc: mkGen("Release Specific Animal From Captivity (d4 charges).")
@@ -217,27 +222,14 @@ const demands = [
         },
         {
             themes: {
-                all: ["light", "fire"]
-            }
-        }
-    ),
-    new ProviderElement<Demand, WeaponPowerCond>('demand-drama-religious-sour',
-        {
-            desc: mkGen("Insult Religion of Infidel (all charges).")
-        },
-        {
-            themes: {
-                all: ["light", "sour"]
+                all: ["light"]
+            },
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),
 
-    new ProviderElement<Demand, WeaponPowerCond>('demand-booze',
-        {
-            desc: mkGen("Dipped in Beverage Worth At Least 100 GP (d4 charges).")
-        },
-        {}
-    ),
     new ProviderElement<Demand, WeaponPowerCond>('demand-sacrifice-acid',
         {
             desc: mkGen("Dissolve Someone in Acid (1 charge per victim HD).")
@@ -245,6 +237,9 @@ const demands = [
         {
             themes: {
                 all: ["sour", "dark"],
+            },
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),
@@ -255,6 +250,9 @@ const demands = [
         {
             themes: {
                 all: ["fire", "dark"]
+            },
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),
@@ -265,6 +263,9 @@ const demands = [
         {
             themes: {
                 all: ["cloud", "dark"]
+            },
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),
@@ -275,6 +276,9 @@ const demands = [
         {
             themes: {
                 all: ["cloud", "dark"]
+            },
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),
@@ -285,6 +289,9 @@ const demands = [
         {
             themes: {
                 all: ["ice", "dark"]
+            },
+            personality: {
+                any: [{ desc: "vengeful" }, { desc: "cruel" }, { desc: "merciless" }, { desc: "standoffish" }, { desc: "short-fuse" }]
             }
         }
     ),

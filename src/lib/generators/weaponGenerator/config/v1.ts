@@ -593,9 +593,9 @@ export default {
                     generate: () => {
                         return {
                             descriptor: {
-                                    descType: 'possession',
-                                    singular: 'a large crystal orb embedded in it, containing a howling blizzard',
-                                    plural: 'a large crystal orb embedded in them, containing a welter of winter weather'
+                                descType: 'possession',
+                                singular: 'a large crystal orb embedded in it, containing a howling blizzard',
+                                plural: 'a large crystal orb embedded in them, containing a welter of winter weather'
                             },
                             ephitet: mkGen(rng => ephCold.choice(rng)),
                         }
@@ -1751,7 +1751,7 @@ export default {
         add: [
             new ProviderElement("pacifist",
                 {
-                    desc: "Pacifist."
+                    desc: "Pacifist"
                 },
                 {
                     themes: { none: ["dark"] },
@@ -1762,7 +1762,7 @@ export default {
             ),
             new ProviderElement("jealous",
                 {
-                    desc: "Jealous."
+                    desc: "Jealous"
                 },
                 {
                     themes: { none: ["light", "steampunk", "wizard"] },
@@ -1770,7 +1770,7 @@ export default {
             ),
             new ProviderElement("vengeful",
                 {
-                    desc: "Vengeful."
+                    desc: "Vengeful"
                 },
                 {
                     themes: { any: ["fire", "ice", "dark", "sweet"] },
@@ -1778,7 +1778,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("cruel",
                 {
-                    desc: "Cruel."
+                    desc: "Cruel"
                 },
                 {
                     themes: { any: ["sour", "dark"] },
@@ -1786,7 +1786,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("curious",
                 {
-                    desc: "Curious."
+                    desc: "Curious"
                 },
                 {
                     themes: {
@@ -1797,7 +1797,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("know-it-all",
                 {
-                    desc: "Know-it-All."
+                    desc: "Know-it-All"
                 },
                 {
                     themes: {
@@ -1808,7 +1808,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("logical",
                 {
-                    desc: "Logical."
+                    desc: "Logical"
                 },
                 {
                     themes: {
@@ -1819,18 +1819,55 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("black-and-white-thinker",
                 {
-                    desc: "Black & White Thinker."
+                    desc: "Black & White Thinker"
                 },
                 {
                     themes: {
                         any: ["ice", "light"]
                     },
 
+                    personality: {
+                        none: [{ desc: "open-minded" }, { desc: "curious" }]
+                    }
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("open-minded",
+                {
+                    desc: "Open-Minded"
+                },
+                {
+                    themes: {
+                        any: ["ice", "light"]
+                    },
+
+                    personality: {
+                        none: [{ desc: "black-and-white-thinker" }]
+                    }
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("industrious",
+                {
+                    desc: "Industrious"
+                },
+                {
+                    themes: {
+                        any: ["fire", "steampunk", "earth"]
+                    },
+                }
+            ),
+            new ProviderElement<Personality, WeaponPowerCond>("lazy",
+                {
+                    desc: "Lazy"
+                },
+                {
+                    themes: {
+                        any: ["cloud", "nature"]
+                    },
                 }
             ),
             new ProviderElement<Personality, WeaponPowerCond>("kind",
                 {
-                    desc: "Kind."
+                    desc: "Kind"
                 },
                 {
                     themes: {
@@ -1841,7 +1878,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("honest",
                 {
-                    desc: "Honest."
+                    desc: "Honest"
                 },
                 {
                     themes: {
@@ -1852,7 +1889,7 @@ export default {
             ),
             new ProviderElement<Personality, WeaponPowerCond>("merciless",
                 {
-                    desc: "Merciless."
+                    desc: "Merciless"
                 },
                 {
                     themes: {
@@ -1897,7 +1934,6 @@ export default {
                     "quiet",
                     "depressive",
                     "short fuse",
-                    "sadistic",
                     "enjoys provoking others"
                 ],
                 light: [
@@ -1908,7 +1944,6 @@ export default {
                     "overconfident"
                 ],
                 steampunk: [
-                    "open-minded",
                     "impatient",
                     "skeptic"
                 ],
@@ -1919,14 +1954,13 @@ export default {
                 ],
                 earth: [
                     "callous",
-                    "Strong Work Ethic",
                     "greedy",
-                    "distrustful of strangers",
+                    "Close-Minded",
                     "Detail-Oriented"
                 ]
             }, (theme, personality, i) => {
-                const formatted = personality.toTitleCase() + ".";
-                return new ProviderElement<Personality, WeaponPowerCond>(`${theme}-${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
+                const formatted = personality.toTitleCase() + "";
+                return new ProviderElement<Personality, WeaponPowerCond>(`${personality.toLowerCase().replaceAll(/\s/g, "-")}-${i}`,
                     {
                         desc: formatted
                     },
