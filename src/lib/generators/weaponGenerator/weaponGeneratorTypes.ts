@@ -67,7 +67,7 @@ export interface WeaponGenerationParams {
     nUnlimitedActive: number;
     sentienceChance: number;
     nAdditionalLanguages: number;
-    chanceOfMakingDemands: Exclude<CommonDieSize, 20>;
+    egoDie: Exclude<CommonDieSize, 20>;
 }
 
 
@@ -107,9 +107,9 @@ export interface Weapon {
         personality: WithUUID<Personality>[];
         languages: WithUUID<Language>[];
         /**
-         * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
+         * Gains / Loses this many charges when a demand is interacted with.
          */
-        chanceOfMakingDemands: CommonDieSize;
+        egoDie: Exclude<CommonDieSize, 20>;
     }
 
     themes: Theme[],
@@ -157,10 +157,13 @@ export type WeaponViewModel = {
     sentient: false | {
         personality: (Personality & { desc: string })[];
         languages: (Language & { desc: string })[];
-        /**
-         * Each scene, a sentient weapon has a 1-in-this chance of making a demand.
-         */
-        chanceOfMakingDemands: CommonDieSize;
+        demands: {
+            /**
+             * Gains / Loses this many charges when a demand is interacted with.
+             */
+            egoDie: CommonDieSize;
+            currentDemand: string;
+        }
     }
 } & ({
     rarity: Exclude<WeaponRarity, 'common'>;

@@ -1,3 +1,5 @@
+
+import mkDemand from "$lib/generators/demandGenerator";
 import { angloFirstNameGenerator, grecoRomanFirstNameGenerator } from "$lib/generators/nameGenerator";
 import { type Generator } from "$lib/generators/recursiveGenerator";
 import { allEyeProviders } from "$lib/generators/weaponGenerator/config/configConstantsAndUtils";
@@ -9,7 +11,6 @@ import seedrandom, { type PRNG } from "seedrandom";
 import { ConditionalThingProvider, evComp, evQuant, evQuantUUID, gatherUUIDs, ProviderElement } from "./provider";
 import { defaultWeaponRarityConfigFactory, WEAPON_TO_HIT } from "./weaponGeneratorConfigLoader";
 import { commonDieSizes, type DamageDice, type DescriptorCondParams, type DescriptorGenerator, type Ephitet, type FeatureProviderCollection, type Language, type PassiveBonus, type Pronouns, shapeToStructure, type StructuredDescription, type Theme, type Weapon, type WeaponGenerationParams, type WeaponGivenThemes, type WeaponPart, type WeaponPartName, type WeaponPowerCond, type WeaponPowerCondParams, weaponRarities, weaponRaritiesOrd, type WeaponRarity, type WeaponRarityConfig, type WeaponShape, type WeaponShapeGroup, weaponStructures, type WeaponViewModel } from "./weaponGeneratorTypes";
-
 
 /**
  * Weapons have a 1/NEGATIVE_CHANCE chance of being negative.
@@ -509,7 +510,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         sentient: isSentient ? {
             personality: [],
             languages: [{ UUID: 'common', desc: 'Common.', }],
-            chanceOfMakingDemands: params.chanceOfMakingDemands
+            egoDie: params.egoDie
         } : false as const,
 
         themes: [],
@@ -776,7 +777,10 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
         sentient: weapon.sentient ? {
             personality: weapon.sentient.personality.map(x => ({ desc: genMaybeGen(x.desc, rng, weapon) })),
             languages: weapon.sentient.languages.map(x => ({ desc: genMaybeGen(x.desc, rng, weapon) })),
-            chanceOfMakingDemands: weapon.sentient.chanceOfMakingDemands
+            demands: {
+                egoDie: weapon.sentient.egoDie,
+                currentDemand: mkDemand({ ...weapon, sentient: weapon.sentient }), // we need to spread weapon so that TS can pick up the type of weapon.sentient
+            }
         } : false,
     } satisfies WeaponViewModel;
 

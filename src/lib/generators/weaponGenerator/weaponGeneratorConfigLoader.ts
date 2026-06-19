@@ -15,7 +15,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
             nUnlimitedActive: 0,
             sentienceChance: 0,
             nAdditionalLanguages: 0,
-            chanceOfMakingDemands: ([10 as const, 12 as const]).choice(rng),
+            egoDie: ([10 as const, 12 as const]).choice(rng),
         })
     },
     uncommon: {
@@ -28,7 +28,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
             nUnlimitedActive: 0,
             sentienceChance: 0.1,
             nAdditionalLanguages: ([1, 2]).choice(rng),
-            chanceOfMakingDemands: ([8 as const, 10 as const]).choice(rng),
+            egoDie: ([8 as const, 10 as const]).choice(rng),
         })
     },
     rare: {
@@ -41,7 +41,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
             nUnlimitedActive: 0,
             sentienceChance: 1 / 3,
             nAdditionalLanguages: ([1, 2, 2]).choice(rng),
-            chanceOfMakingDemands: ([8 as const, 10 as const]).choice(rng),
+            egoDie: ([8 as const, 10 as const]).choice(rng),
         })
     },
     epic: {
@@ -54,7 +54,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
             nUnlimitedActive: 0,
             sentienceChance: 1 / 2,
             nAdditionalLanguages: 1,
-            chanceOfMakingDemands: ([6 as const, 8 as const, 10 as const]).choice(rng),
+            egoDie: ([6 as const, 8 as const, 10 as const]).choice(rng),
         })
     },
     legendary: {
@@ -67,7 +67,7 @@ export const defaultWeaponRarityConfigFactory = (): WeaponRarityConfig => ({
             nUnlimitedActive: 1,
             sentienceChance: 1,
             nAdditionalLanguages: ([1, 2, 2, 3, 3]).choice(rng),
-            chanceOfMakingDemands: ([4 as const, 6 as const, 8 as const]).choice(rng),
+            egoDie: ([4 as const, 6 as const, 8 as const]).choice(rng),
         })
     }
 });

@@ -28,6 +28,7 @@
     // track the open / closed state of the sidebar, linking it to local storage
     let sidebarState = $state<SideBarState>("initClosed");
     const sidebarStorage = writable<SideBarState>(
+        // svelte-ignore state_referenced_locally this *is* intended to capture the initial state, but maybe this isn't the ideal way to do this, then 🤔
         localStorage.getItem(localStorageKey) === "initOpen"
             ? "initOpen"
             : "initClosed",
@@ -54,16 +55,6 @@
         sidebarState = newVal;
     });
 
-    // function toggleExpanded() {
-    //     const INVERT: Record<SideBarState, SideBarState> = {
-    //         initOpen: "closed",
-    //         initClosed: "open",
-    //         open: "closed",
-    //         closed: "open",
-    //     };
-    //     // open the sidebar if it's 'initial' or 'closed';
-    //     sidebarStorage.update((prevVal) => INVERT[prevVal]);
-    // }
     function setSideBar(newState: "open" | "closed") {
         sidebarStorage.set(newState);
     }

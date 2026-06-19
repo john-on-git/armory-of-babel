@@ -2,7 +2,7 @@
     import Flasher, {
         type FlasherInterface,
     } from "$lib/components/Flasher.svelte";
-    import WeaponDemandsGenerator from "$lib/components/weaponDemandsGenerator.svelte";
+    import WeaponDemandsGenerator from "$lib/components/weaponDemandsDisplay.svelte";
     import { pronounLoc } from "$lib/generators/weaponGenerator/weaponDescriptionLogic";
     import { textForDamage } from "$lib/generators/weaponGenerator/weaponGeneratorLogic";
     import type { WeaponViewModel } from "$lib/generators/weaponGenerator/weaponGeneratorTypes";
