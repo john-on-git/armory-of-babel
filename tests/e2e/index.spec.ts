@@ -56,7 +56,10 @@ test.beforeEach(async ({ context }) => {
                         sentient: {
                             personality: [{ desc: 'pious' }, { desc: 'good' }, { desc: 'nice' }],
                             languages: [{ desc: 'Common' }, { desc: 'Adamic' }, { desc: 'French' }],
-                            egoDie: 6
+                            demands: {
+                                egoDie: 6,
+                                currentDemand: "Dance (1 charge)."
+                            }
                         }
                     };
                     return acc;
