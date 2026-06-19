@@ -708,8 +708,8 @@ export const MISC_DESC_FEATURES = {
             return {
                 descriptor: {
                     descType: 'property',
-                    singular: ` inscribed with the ${phrase}`,
-                    plural: ` inscribed with the ${phrase}`,
+                    singular: `is inscribed with the ${phrase}`,
+                    plural: `is inscribed with the ${phrase}`,
                 },
                 ephitet: mkGen((rng) => choice(ephitets, rng))
             }
