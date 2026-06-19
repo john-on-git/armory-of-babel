@@ -779,7 +779,7 @@ export function mkWeapon(rngSeed: string, featureProviders: FeatureProviderColle
             languages: weapon.sentient.languages.map(x => ({ desc: genMaybeGen(x.desc, rng, weapon) })),
             demands: {
                 egoDie: weapon.sentient.egoDie,
-                currentDemand: mkDemand({ ...weapon, sentient: weapon.sentient }), // we need to spread weapon so that TS can pick up the type of weapon.sentient
+                currentDemand: weapon.active.powers.length > 0 ? mkDemand({ ...weapon, sentient: weapon.sentient }) : null, // we need to spread weapon so that TS can pick up the type of weapon.sentient
             }
         } : false,
     } satisfies WeaponViewModel;

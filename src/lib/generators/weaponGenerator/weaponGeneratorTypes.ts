@@ -162,7 +162,10 @@ export type WeaponViewModel = {
              * Gains / Loses this many charges when a demand is interacted with.
              */
             egoDie: CommonDieSize;
-            currentDemand: string;
+            /**
+             * Demand for today, or null if the weapon doesn't use charges.
+             */
+            currentDemand: string | null;
         }
     }
 } & ({
