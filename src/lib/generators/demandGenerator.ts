@@ -374,7 +374,8 @@ const demands = [
 export default function mkDemand(weapon: Weapon & {
     sentient: Exclude<Weapon["sentient"], false>;
 }, date: Date = new Date()): string {
-    const rng = seedrandom(`${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`);
+    // the seed must include the weapon ID or all weapons will have the same demands
+    const rng = seedrandom(`${weapon.id} ${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`);
     // TODO fix this unsafe cast by implementing a WeaponViewModelFeatureProvider
     // for now, this means that Conds of demandsProvider can only safely use certain conditions
     return new WeaponFeatureProvider<Demand>(demands).draw(rng, weapon).desc.generate(rng, weapon);
