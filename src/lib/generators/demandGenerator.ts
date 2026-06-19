@@ -283,7 +283,7 @@ const demands = [
             }
         }
     ),
-    new ProviderElement<Demand, WeaponPowerCond>('demnand-drama-religious-fire',
+    new ProviderElement<Demand, WeaponPowerCond>('demand-drama-religious-fire',
         {
             desc: mkGen((_, weapon) => `Insult Religion of Infidel (1d${(weapon.sentient.egoDie)} charges).`)
         },
